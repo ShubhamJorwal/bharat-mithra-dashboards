@@ -3,7 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
   HiOutlineShieldCheck,
-  HiOutlineCheckCircle
+  HiOutlineCheckCircle,
+  HiOutlineCog,
+  HiOutlineOfficeBuilding,
+  HiOutlineDocumentText
 } from 'react-icons/hi';
 
 const EnterOTP = () => {
@@ -119,83 +122,139 @@ const EnterOTP = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <button
-          className="auth-back-btn"
-          onClick={() => navigate(otpType === 'reset-password' ? '/forgot-password' : '/request-code')}
-        >
-          <HiOutlineArrowLeft />
-          Back
-        </button>
-
-        <div className="auth-header">
-          <div className="auth-logo">
-            <HiOutlineShieldCheck />
+    <div className="auth-page">
+      {/* Left Side - Branding */}
+      <div className="auth-branding">
+        <div className="branding-content">
+          <div className="brand-logo">
+            <h2>Bharat <span>Mithra</span></h2>
           </div>
-          <h1>Verify Code</h1>
-          <p>
-            We've sent a 6-digit verification code to your registered email and mobile number.
-          </p>
+
+          <div className="brand-tagline">
+            <h1>Trusted by <span>Thousands</span>, Built for Indian Citizens</h1>
+            <p>Empowering citizens with seamless access to government services across India</p>
+          </div>
+
+          <div className="brand-stats">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineCog />
+              </div>
+              <div className="stat-number">1000+</div>
+              <div className="stat-label">Services Available</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineOfficeBuilding />
+              </div>
+              <div className="stat-number">100+</div>
+              <div className="stat-label">Service Centers</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineDocumentText />
+              </div>
+              <div className="stat-number">50+</div>
+              <div className="stat-label">Govt Schemes</div>
+            </div>
+          </div>
+
+          <div className="brand-features">
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>Passport & Visa Services</span>
+            </div>
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>PAN & Aadhaar Services</span>
+            </div>
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>Driving License & RC</span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {error && (
-          <div className="auth-message error">
-            {error}
-          </div>
-        )}
+      {/* Right Side - OTP Form */}
+      <div className="auth-form-section">
+        <div className="auth-form-container">
+          <div className="auth-header">
+            <button
+              className="auth-back-btn"
+              onClick={() => navigate(otpType === 'reset-password' ? '/forgot-password' : '/request-code')}
+            >
+              <HiOutlineArrowLeft />
+              Back
+            </button>
 
-        {success && (
-          <div className="auth-message success">
-            <HiOutlineCheckCircle />
-            {otpType === 'reset-password'
-              ? 'Verified! Redirecting to reset password...'
-              : 'Verified! Logging you in...'}
-          </div>
-        )}
-
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="otp-container" onPaste={handlePaste}>
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => { inputRefs.current[index] = el }}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`otp-input ${digit ? 'filled' : ''}`}
-                disabled={success}
-                autoFocus={index === 0}
-              />
-            ))}
+            <div className="auth-logo-small">
+              <HiOutlineShieldCheck />
+            </div>
+            <h1>Verify Code</h1>
+            <p>
+              We've sent a 6-digit verification code to your registered email and mobile number.
+            </p>
           </div>
 
-          <div className="otp-timer">
-            {canResend ? (
-              <p>
-                Didn't receive the code?{' '}
-                <button type="button" className="resend-btn" onClick={handleResend}>
-                  Resend Code
-                </button>
-              </p>
-            ) : (
-              <p>
-                Resend code in <span className="timer">{formatTime(timer)}</span>
-              </p>
-            )}
-          </div>
+          {error && (
+            <div className="auth-message error">
+              {error}
+            </div>
+          )}
 
-          <button
-            type="submit"
-            className="auth-btn"
-            disabled={isLoading || success || otp.join('').length !== 6}
-          >
-            {isLoading ? 'Verifying...' : 'Verify Code'}
-          </button>
-        </form>
+          {success && (
+            <div className="auth-message success">
+              <HiOutlineCheckCircle />
+              {otpType === 'reset-password'
+                ? 'Verified! Redirecting to reset password...'
+                : 'Verified! Logging you in...'}
+            </div>
+          )}
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="otp-container" onPaste={handlePaste}>
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => { inputRefs.current[index] = el }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className={`otp-input ${digit ? 'filled' : ''}`}
+                  disabled={success}
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+
+            <div className="otp-timer">
+              {canResend ? (
+                <p>
+                  Didn't receive the code?{' '}
+                  <button type="button" className="resend-btn" onClick={handleResend}>
+                    Resend Code
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  Resend code in <span className="timer">{formatTime(timer)}</span>
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={isLoading || success || otp.join('').length !== 6}
+            >
+              {isLoading ? 'Verifying...' : 'Verify Code'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

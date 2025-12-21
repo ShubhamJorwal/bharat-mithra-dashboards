@@ -1,38 +1,21 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  HiOutlineMail,
-  HiOutlineUser,
-  HiOutlineDeviceMobile,
   HiOutlineArrowLeft,
-  HiOutlineKey
+  HiOutlineKey,
+  HiOutlineUser,
+  HiOutlineCog,
+  HiOutlineOfficeBuilding,
+  HiOutlineDocumentText,
+  HiOutlineCheckCircle
 } from 'react-icons/hi';
-
-type RecoveryMethod = 'email' | 'mobile' | 'username';
 
 const ForgetPassword = () => {
   const navigate = useNavigate();
-  const [recoveryMethod, setRecoveryMethod] = useState<RecoveryMethod>('email');
   const [identifier, setIdentifier] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-
-  const getPlaceholder = () => {
-    switch (recoveryMethod) {
-      case 'email': return 'Enter your registered email';
-      case 'mobile': return 'Enter your registered mobile number';
-      case 'username': return 'Enter your username';
-    }
-  };
-
-  const getIcon = () => {
-    switch (recoveryMethod) {
-      case 'email': return <HiOutlineMail />;
-      case 'mobile': return <HiOutlineDeviceMobile />;
-      case 'username': return <HiOutlineUser />;
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +28,6 @@ const ForgetPassword = () => {
 
       // Store identifier for OTP verification
       sessionStorage.setItem('resetIdentifier', identifier);
-      sessionStorage.setItem('resetMethod', recoveryMethod);
 
       setSuccess(true);
 
@@ -61,87 +43,120 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <button className="auth-back-btn" onClick={() => navigate('/login')}>
-          <HiOutlineArrowLeft />
-          Back to Login
-        </button>
-
-        <div className="auth-header">
-          <div className="auth-logo">
-            <HiOutlineKey />
+    <div className="auth-page">
+      {/* Left Side - Branding */}
+      <div className="auth-branding">
+        <div className="branding-content">
+          <div className="brand-logo">
+            <h2>Bharat <span>Mithra</span></h2>
           </div>
-          <h1>Forgot Password?</h1>
-          <p>No worries! Enter your registered details and we'll send you a verification code.</p>
-        </div>
 
-        {/* Recovery Method Tabs */}
-        <div className="auth-tabs">
-          <button
-            className={`auth-tab ${recoveryMethod === 'email' ? 'active' : ''}`}
-            onClick={() => setRecoveryMethod('email')}
-          >
-            Email
-          </button>
-          <button
-            className={`auth-tab ${recoveryMethod === 'mobile' ? 'active' : ''}`}
-            onClick={() => setRecoveryMethod('mobile')}
-          >
-            Mobile
-          </button>
-          <button
-            className={`auth-tab ${recoveryMethod === 'username' ? 'active' : ''}`}
-            onClick={() => setRecoveryMethod('username')}
-          >
-            Username
-          </button>
-        </div>
-
-        {error && (
-          <div className="auth-message error">
-            {error}
+          <div className="brand-tagline">
+            <h1>Trusted by <span>Thousands</span>, Built for Indian Citizens</h1>
+            <p>Empowering citizens with seamless access to government services across India</p>
           </div>
-        )}
 
-        {success && (
-          <div className="auth-message success">
-            Verification code sent! Redirecting to OTP verification...
-          </div>
-        )}
-
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>
-              {recoveryMethod === 'email' ? 'Email Address' :
-               recoveryMethod === 'mobile' ? 'Mobile Number' : 'Username'}
-            </label>
-            <div className="input-wrapper">
-              <span className="input-icon">{getIcon()}</span>
-              <input
-                type={recoveryMethod === 'email' ? 'email' : 'text'}
-                placeholder={getPlaceholder()}
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                required
-                disabled={success}
-              />
+          <div className="brand-stats">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineCog />
+              </div>
+              <div className="stat-number">1000+</div>
+              <div className="stat-label">Services Available</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineOfficeBuilding />
+              </div>
+              <div className="stat-number">100+</div>
+              <div className="stat-label">Service Centers</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <HiOutlineDocumentText />
+              </div>
+              <div className="stat-number">50+</div>
+              <div className="stat-label">Govt Schemes</div>
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="auth-btn"
-            disabled={isLoading || success}
-          >
-            {isLoading ? 'Sending Code...' : 'Send Verification Code'}
-          </button>
-        </form>
+          <div className="brand-features">
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>Passport & Visa Services</span>
+            </div>
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>PAN & Aadhaar Services</span>
+            </div>
+            <div className="feature-item">
+              <HiOutlineCheckCircle />
+              <span>Driving License & RC</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div className="auth-footer">
-          <p>
-            Remember your password? <Link to="/login">Sign In</Link>
-          </p>
+      {/* Right Side - Forget Password Form */}
+      <div className="auth-form-section">
+        <div className="auth-form-container">
+          <div className="auth-header">
+            <button className="auth-back-btn" onClick={() => navigate('/login')}>
+              <HiOutlineArrowLeft />
+              Back to Login
+            </button>
+
+            <div className="auth-logo-small">
+              <HiOutlineKey />
+            </div>
+            <h1>Forgot Password?</h1>
+            <p>No worries! Enter your registered email, mobile or username and we'll send you a verification code.</p>
+          </div>
+
+          {error && (
+            <div className="auth-message error">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="auth-message success">
+              <HiOutlineCheckCircle />
+              Verification code sent! Redirecting to OTP verification...
+            </div>
+          )}
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Email, Mobile or Username</label>
+              <div className="input-wrapper">
+                <span className="input-icon"><HiOutlineUser /></span>
+                <input
+                  type="text"
+                  placeholder="Enter email, mobile or username"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                  disabled={success}
+                />
+              </div>
+              <span className="input-hint">We'll send a verification code to your registered email and mobile</span>
+            </div>
+
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={isLoading || success}
+            >
+              {isLoading ? 'Sending Code...' : 'Send Verification Code'}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p>
+              Remember your password? <Link to="/login">Sign In</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
