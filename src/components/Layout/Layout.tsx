@@ -1,27 +1,30 @@
-import { Outlet } from 'react-router-dom'
+import type { ReactNode } from "react";
 
-const DashboardLayout = () => {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="dashboard-layout">
       <aside className="sidebar">
-        {/* Sidebar content will go here */}
         <div className="sidebar-header">
           <h2>Dashboard</h2>
         </div>
         <nav className="sidebar-nav">
-          {/* Navigation items */}
+          {/* Navigation items will be added here */}
         </nav>
       </aside>
       <main className="main-content">
         <header className="top-header">
-          {/* Top header content */}
+          {/* Top header content will be added here */}
         </header>
         <div className="page-content">
-          <Outlet />
+          {children}
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default Layout;
