@@ -5,6 +5,13 @@ import AuthRoutes from "./AuthRoutes";
 import Layout from "../components/Layout/Layout";
 import Dashboard from "../views/Dashboard/Dashboard";
 
+// Auth Pages
+import Login from "../views/Auth/Login/Login";
+import ForgetPassword from "../views/Auth/ForgetPassword/ForgetPassword";
+import EnterOTP from "../views/Auth/EnterOTP/EnterOTP";
+import ResetPassword from "../views/Auth/ResetPassword/ResetPassword";
+import RequestCode from "../views/Auth/RequestCode/RequestCode";
+
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
   const { pathname } = useLocation();
@@ -18,6 +25,7 @@ const ScrollToTopOnMount = () => {
 
 // Router configuration
 const routerConfig = [
+  // Protected Routes (Dashboard)
   {
     path: "/",
     element: (
@@ -29,14 +37,50 @@ const routerConfig = [
     ),
     errorElement: <NotFoundPage />,
   },
+
+  // Auth Routes (Public Only)
   {
     path: "/login",
     element: (
       <AuthRoutes.PublicOnlyRoute>
-        <div>Login Page</div>
+        <Login />
       </AuthRoutes.PublicOnlyRoute>
     ),
   },
+  {
+    path: "/forgot-password",
+    element: (
+      <AuthRoutes.PublicOnlyRoute>
+        <ForgetPassword />
+      </AuthRoutes.PublicOnlyRoute>
+    ),
+  },
+  {
+    path: "/enter-otp",
+    element: (
+      <AuthRoutes.PublicOnlyRoute>
+        <EnterOTP />
+      </AuthRoutes.PublicOnlyRoute>
+    ),
+  },
+  {
+    path: "/reset-password",
+    element: (
+      <AuthRoutes.PublicOnlyRoute>
+        <ResetPassword />
+      </AuthRoutes.PublicOnlyRoute>
+    ),
+  },
+  {
+    path: "/request-code",
+    element: (
+      <AuthRoutes.PublicOnlyRoute>
+        <RequestCode />
+      </AuthRoutes.PublicOnlyRoute>
+    ),
+  },
+
+  // 404 Page
   {
     path: "*",
     element: <NotFoundPage />,
