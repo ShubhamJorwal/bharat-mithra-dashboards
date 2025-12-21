@@ -1,0 +1,111 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'reset';
+
+// Base styles
+body {
+  background: $bg-dark;
+  color: $text-light;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+// Dashboard Layout
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+// Sidebar
+.sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  background: $bg-dark-secondary;
+  border-right: 1px solid $bg-dark-tertiary;
+  position: fixed;
+  left: 0;
+  top: 0;
+  @include flex-column;
+  transition: width $transition-base;
+
+  .sidebar-header {
+    height: $header-height;
+    padding: 0 $spacing-lg;
+    @include flex-start;
+    border-bottom: 1px solid $bg-dark-tertiary;
+
+    h2 {
+      font-size: $font-xl;
+      font-weight: $font-bold;
+      color: $text-light;
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: $spacing-md;
+    overflow-y: auto;
+    @include custom-scrollbar;
+  }
+}
+
+// Main Content
+.main-content {
+  flex: 1;
+  margin-left: $sidebar-width;
+  @include flex-column;
+  min-height: 100vh;
+  transition: margin-left $transition-base;
+}
+
+// Top Header
+.top-header {
+  height: $header-height;
+  background: $bg-dark-secondary;
+  border-bottom: 1px solid $bg-dark-tertiary;
+  padding: 0 $spacing-xl;
+  @include flex-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+// Page Content
+.page-content {
+  flex: 1;
+  padding: $spacing-xl;
+  overflow-y: auto;
+  @include custom-scrollbar;
+}
+
+// Dashboard Page
+.dashboard-page {
+  h1 {
+    font-size: $font-3xl;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+// Utility classes
+.text-muted {
+  color: $text-muted;
+}
+
+.text-primary {
+  color: $primary-color;
+}
+
+.text-success {
+  color: $success-color;
+}
+
+.text-warning {
+  color: $warning-color;
+}
+
+.text-danger {
+  color: $danger-color;
+}
