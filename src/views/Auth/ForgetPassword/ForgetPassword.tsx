@@ -9,6 +9,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineCheckCircle
 } from 'react-icons/hi';
+import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
 
 const ForgetPassword = () => {
   const navigate = useNavigate();
@@ -99,6 +100,11 @@ const ForgetPassword = () => {
 
       {/* Right Side - Forget Password Form */}
       <div className="auth-form-section">
+        {/* Theme Switcher */}
+        <div className="auth-theme-switcher">
+          <ThemeSwitcher />
+        </div>
+
         <div className="auth-form-container">
           <div className="auth-header">
             <button className="auth-back-btn" onClick={() => navigate('/login')}>

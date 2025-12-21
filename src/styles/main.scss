@@ -3,11 +3,27 @@
 @use 'reset';
 @use 'auth';
 
+// CSS Variables defaults (Confluence theme)
+:root {
+  --color-primary: #0052CC;
+  --color-secondary: #172B4D;
+  --color-accent: #0065FF;
+  --color-background: #FFFFFF;
+  --color-background-secondary: #F4F5F7;
+  --color-text: #172B4D;
+  --color-text-secondary: #6B778C;
+  --color-border: #DFE1E6;
+  --color-success: #36B37E;
+  --color-warning: #FFAB00;
+  --color-danger: #DE350B;
+}
+
 // Base styles
 body {
-  background: $bg-dark;
-  color: $text-light;
+  background: var(--color-background);
+  color: var(--color-text);
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -24,24 +40,24 @@ body {
 .sidebar {
   width: $sidebar-width;
   height: 100vh;
-  background: $bg-dark-secondary;
-  border-right: 1px solid $bg-dark-tertiary;
+  background: var(--color-background);
+  border-right: 1px solid var(--color-border);
   position: fixed;
   left: 0;
   top: 0;
   @include flex-column;
-  transition: width $transition-base;
+  transition: width $transition-base, background-color 0.3s ease;
 
   .sidebar-header {
     height: $header-height;
     padding: 0 $spacing-lg;
     @include flex-start;
-    border-bottom: 1px solid $bg-dark-tertiary;
+    border-bottom: 1px solid var(--color-border);
 
     h2 {
       font-size: $font-xl;
       font-weight: $font-bold;
-      color: $text-light;
+      color: var(--color-text);
     }
   }
 
@@ -65,13 +81,14 @@ body {
 // Top Header
 .top-header {
   height: $header-height;
-  background: $bg-dark-secondary;
-  border-bottom: 1px solid $bg-dark-tertiary;
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
   padding: 0 $spacing-xl;
   @include flex-between;
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: background-color 0.3s ease;
 }
 
 // Page Content
@@ -79,6 +96,7 @@ body {
   flex: 1;
   padding: $spacing-xl;
   overflow-y: auto;
+  background: var(--color-background-secondary);
   @include custom-scrollbar;
 }
 
@@ -87,26 +105,42 @@ body {
   h1 {
     font-size: $font-3xl;
     margin-bottom: $spacing-lg;
+    color: var(--color-text);
+  }
+
+  p {
+    color: var(--color-text-secondary);
   }
 }
 
 // Utility classes
 .text-muted {
-  color: $text-muted;
+  color: var(--color-text-secondary);
 }
 
 .text-primary {
-  color: $primary-color;
+  color: var(--color-primary);
 }
 
 .text-success {
-  color: $success-color;
+  color: var(--color-success);
 }
 
 .text-warning {
-  color: $warning-color;
+  color: var(--color-warning);
 }
 
 .text-danger {
-  color: $danger-color;
+  color: var(--color-danger);
+}
+
+// Dark mode specific overrides
+body.dark-mode {
+  .sidebar {
+    background: var(--color-background-secondary);
+  }
+
+  .top-header {
+    background: var(--color-background-secondary);
+  }
 }

@@ -11,6 +11,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineCheckCircle
 } from 'react-icons/hi';
+import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -97,6 +98,11 @@ const Login = () => {
 
       {/* Right Side - Login Form */}
       <div className="auth-form-section">
+        {/* Theme Switcher */}
+        <div className="auth-theme-switcher">
+          <ThemeSwitcher />
+        </div>
+
         <div className="auth-form-container">
           <div className="auth-header">
             <div className="auth-logo-small">
