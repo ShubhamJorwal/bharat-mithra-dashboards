@@ -12,12 +12,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import Settings from '../../common/Settings/Settings';
 import './Topbar.scss';
 
-interface TopbarProps {
-  sidebarWidth: number;
-  isCollapsed: boolean;
-}
-
-const Topbar = ({ sidebarWidth, isCollapsed }: TopbarProps) => {
+const Topbar = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,13 +38,14 @@ const Topbar = ({ sidebarWidth, isCollapsed }: TopbarProps) => {
     navigate('/login');
   };
 
-  const collapsedWidth = 72;
-
   return (
-    <header
-      className="bm-topbar-wrapper"
-      style={{ left: isCollapsed ? collapsedWidth : sidebarWidth }}
-    >
+    <header className="bm-topbar-full">
+      <div className="bm-topbar-brand">
+        <span className="bm-brand-bharat">bharat</span>
+        <span className="bm-brand-dot">.</span>
+        <span className="bm-brand-mithra">mithra</span>
+      </div>
+
       <div className="bm-topbar-search-area">
         <div className="bm-search-box">
           <HiOutlineSearch className="bm-search-icon" />

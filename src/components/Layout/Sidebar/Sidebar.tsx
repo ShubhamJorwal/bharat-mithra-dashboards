@@ -122,24 +122,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       className={`bm-sidebar-panel ${isCollapsed ? 'collapsed' : ''} ${isResizing ? 'resizing' : ''}`}
       style={{ width: isCollapsed ? collapsedWidth : sidebarWidth }}
     >
-      <div className="bm-sidebar-header">
-        <div className="bm-brand-section">
-          {!isCollapsed ? (
-            <>
-              <div className="bm-brand-logo">
-                <span>BM</span>
-              </div>
-              <div className="bm-brand-info">
-                <h1>Bharat Mithra</h1>
-                <span className="bm-brand-desc">Government Services</span>
-              </div>
-            </>
-          ) : (
-            <div className="bm-brand-logo">
-              <span>BM</span>
-            </div>
-          )}
-        </div>
+      <div className="bm-sidebar-top">
         <button
           className="bm-collapse-toggle"
           onClick={() => setIsCollapsed(!isCollapsed)}

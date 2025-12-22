@@ -28,15 +28,12 @@ const DashboardLayout = () => {
 
   return (
     <div className="bm-layout-wrapper">
+      <Topbar />
       <Sidebar
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         sidebarWidth={sidebarWidth}
         setSidebarWidth={setSidebarWidth}
-      />
-      <Topbar
-        sidebarWidth={sidebarWidth}
-        isCollapsed={isCollapsed}
       />
       <main
         className="bm-main-area"
