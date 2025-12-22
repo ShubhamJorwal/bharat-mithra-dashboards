@@ -5,7 +5,6 @@ import {
   HiOutlineDocumentText,
   HiOutlineUsers,
   HiOutlineChartBar,
-  HiOutlineCog,
   HiOutlineQuestionMarkCircle,
   HiOutlineLightningBolt,
   HiOutlineCollection,
@@ -16,6 +15,7 @@ import {
   HiOutlineChevronLeft,
   HiOutlineChevronRight
 } from 'react-icons/hi';
+import Settings from '../../common/Settings/Settings';
 import './Sidebar.scss';
 
 interface SidebarProps {
@@ -52,7 +52,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   const bottomNavItems = [
     { path: '/shortcuts', icon: HiOutlineLightningBolt, label: 'Shortcuts', badge: null },
     { path: '/help', icon: HiOutlineQuestionMarkCircle, label: 'Help & Support', badge: null },
-    { path: '/settings', icon: HiOutlineCog, label: 'Settings', badge: null },
   ];
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -151,6 +150,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       <div className="bm-sidebar-bottom">
         <div className="bm-nav-list">
           {bottomNavItems.map(renderNavItem)}
+          <Settings position="bottom-left" />
         </div>
       </div>
 

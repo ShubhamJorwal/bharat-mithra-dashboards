@@ -9,7 +9,6 @@ import {
   HiOutlineSun
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
-import Settings from '../../common/Settings/Settings';
 import './Topbar.scss';
 
 const Topbar = () => {
@@ -72,8 +71,6 @@ const Topbar = () => {
           <HiOutlineBell />
           <span className="bm-notification-dot"></span>
         </button>
-
-        <Settings position="top-right" />
 
         <div className="bm-profile-wrapper" ref={profileRef}>
           <button
