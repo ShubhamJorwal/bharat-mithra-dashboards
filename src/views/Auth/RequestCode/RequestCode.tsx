@@ -9,7 +9,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineCheckCircle
 } from 'react-icons/hi';
-import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
+import Settings from '../../../components/common/Settings/Settings';
 
 const RequestCode = () => {
   const navigate = useNavigate();
@@ -100,9 +100,9 @@ const RequestCode = () => {
 
       {/* Right Side - Request Code Form */}
       <div className="auth-form-section">
-        {/* Theme Switcher */}
+        {/* Settings */}
         <div className="auth-theme-switcher">
-          <ThemeSwitcher />
+          <Settings />
         </div>
 
         <div className="auth-form-container">

@@ -8,7 +8,7 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineDocumentText
 } from 'react-icons/hi';
-import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
+import Settings from '../../../components/common/Settings/Settings';
 
 const EnterOTP = () => {
   const navigate = useNavigate();
@@ -179,9 +179,9 @@ const EnterOTP = () => {
 
       {/* Right Side - OTP Form */}
       <div className="auth-form-section">
-        {/* Theme Switcher */}
+        {/* Settings */}
         <div className="auth-theme-switcher">
-          <ThemeSwitcher />
+          <Settings />
         </div>
 
         <div className="auth-form-container">
