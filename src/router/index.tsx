@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createBrowserRouter, useLocation } from "react-router-dom";
 import NotFoundPage from "./NotFoundPage";
 import AuthRoutes from "./AuthRoutes";
-import Layout from "../components/Layout/Layout";
+import DashboardLayout from "../components/Layout/DashboardLayout/DashboardLayout";
 import Dashboard from "../views/Dashboard/Dashboard";
 
 // Auth Pages
@@ -30,12 +30,60 @@ const routerConfig = [
     path: "/",
     element: (
       <AuthRoutes.ProtectedRoute>
-        <Layout>
-          <Dashboard />
-        </Layout>
+        <DashboardLayout />
       </AuthRoutes.ProtectedRoute>
     ),
     errorElement: <NotFoundPage />,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "services",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "applications",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "documents",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "calendar",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "reports",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "users",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "notifications",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "files",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "shortcuts",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "help",
+        element: <Dashboard />, // Placeholder
+      },
+      {
+        path: "settings",
+        element: <Dashboard />, // Placeholder
+      },
+    ],
   },
 
   // Auth Routes (Public Only)
