@@ -31,7 +31,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -43,7 +42,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -65,7 +63,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
   };
 
   const handleCustomColorApply = () => {
-    // Apply custom color to CSS variables
     document.documentElement.style.setProperty('--color-primary', customColor);
     document.documentElement.style.setProperty('--color-accent', customColor);
     localStorage.setItem('customThemeColor', customColor);
@@ -78,7 +75,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
     { id: 'privacy', icon: HiOutlineShieldCheck, label: 'Privacy & Security' },
   ];
 
-  // Single color themes (like Slack)
   const singleColorThemes = [
     { key: 'confluence', name: 'Aubergine', colors: ['#0052CC'] },
     { key: 'slack', name: 'Clementine', colors: ['#4A154B'] },
@@ -90,7 +86,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
     { key: 'darkMode', name: 'Mood Indigo', colors: ['#1a1d21'] },
   ];
 
-  // Gradient themes
   const gradientThemes = [
     { key: 'raspberry', name: 'Raspberry Beret', colors: ['#E91E63', '#9C27B0'] },
     { key: 'business', name: 'Big Business', colors: ['#1565C0', '#0D47A1'] },
@@ -106,7 +101,6 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
     { key: 'sunrise', name: 'Sunrise', colors: ['#FFAB40', '#FF6D00'] },
   ];
 
-  // Classic themes
   const classicThemes = [
     { key: 'chocoMint', name: 'Choco Mint', colors: ['#4DB6AC', '#00695C'] },
     { key: 'cmyk', name: 'CMYK', colors: ['#00BCD4', '#E91E63'] },
@@ -123,7 +117,7 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
     return (
       <button
         key={theme.key}
-        className={`color-swatch ${isSelected ? 'selected' : ''}`}
+        className={`bm-swatch-item ${isSelected ? 'selected' : ''}`}
         onClick={() => {
           if (theme.key in themeColors) {
             handleThemeSelect(theme.key as ThemeKey);
@@ -132,39 +126,38 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
         title={theme.name}
       >
         <div
-          className="swatch-color"
+          className="bm-swatch-circle"
           style={{
             background: theme.colors.length > 1
               ? `linear-gradient(135deg, ${theme.colors[0]} 50%, ${theme.colors[1]} 50%)`
               : theme.colors[0]
           }}
         >
-          {isSelected && <HiOutlineCheck className="check-icon" />}
+          {isSelected && <HiOutlineCheck className="bm-check-mark" />}
         </div>
-        <span className="swatch-name">{theme.name}</span>
+        <span className="bm-swatch-label">{theme.name}</span>
       </button>
     );
   };
 
   return (
-    <div className={`settings-wrapper ${position}`} ref={menuRef}>
+    <div className={`bm-settings-container ${position}`} ref={menuRef}>
       <button
-        className="settings-trigger"
+        className="bm-settings-btn"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Settings"
       >
         <HiOutlineCog />
       </button>
 
-      {/* Settings Dropdown Menu */}
       {isOpen && (
-        <div className="settings-dropdown">
-          <div className="dropdown-header">
+        <div className="bm-settings-menu">
+          <div className="bm-menu-title">
             <span>Settings</span>
           </div>
-          <div className="dropdown-items">
+          <div className="bm-menu-options">
             <button
-              className="dropdown-item"
+              className="bm-menu-item"
               onClick={() => {
                 setShowPreferences(true);
                 setIsOpen(false);
@@ -173,11 +166,11 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
               <HiOutlineColorSwatch />
               <span>Preferences</span>
             </button>
-            <button className="dropdown-item">
+            <button className="bm-menu-item">
               <HiOutlineBell />
               <span>Notifications</span>
             </button>
-            <button className="dropdown-item">
+            <button className="bm-menu-item">
               <HiOutlineShieldCheck />
               <span>Privacy</span>
             </button>
@@ -185,31 +178,29 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
         </div>
       )}
 
-      {/* Preferences Modal */}
       {showPreferences && (
-        <div className="preferences-overlay" onClick={() => setShowPreferences(false)}>
+        <div className="bm-prefs-backdrop" onClick={() => setShowPreferences(false)}>
           <div
-            className="preferences-modal"
+            className="bm-prefs-dialog"
             ref={modalRef}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-header">
+            <div className="bm-dialog-header">
               <h2>Preferences</h2>
               <button
-                className="close-btn"
+                className="bm-close-icon"
                 onClick={() => setShowPreferences(false)}
               >
                 <HiOutlineX />
               </button>
             </div>
 
-            <div className="modal-content">
-              {/* Sidebar */}
-              <div className="preferences-sidebar">
+            <div className="bm-dialog-body">
+              <div className="bm-prefs-nav">
                 {sidebarItems.map((item) => (
                   <button
                     key={item.id}
-                    className={`sidebar-item ${activeTab === item.id ? 'active' : ''}`}
+                    className={`bm-nav-tab ${activeTab === item.id ? 'active' : ''}`}
                     onClick={() => setActiveTab(item.id)}
                   >
                     <item.icon />
@@ -218,18 +209,17 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
                 ))}
               </div>
 
-              {/* Main Content */}
-              <div className="preferences-main">
+              <div className="bm-prefs-content">
                 {activeTab === 'appearance' && (
-                  <div className="appearance-settings">
-                    <div className="setting-section">
+                  <div className="bm-appearance-panel">
+                    <div className="bm-setting-block">
                       <h3>Color Mode</h3>
-                      <p className="section-desc">
+                      <p className="bm-block-desc">
                         Choose if Bharat Mithra's appearance should be light or dark, or follow your computer's settings.
                       </p>
-                      <div className="color-mode-options">
+                      <div className="bm-mode-selector">
                         <button
-                          className={`mode-btn ${colorMode === 'light' ? 'active' : ''}`}
+                          className={`bm-mode-option ${colorMode === 'light' ? 'active' : ''}`}
                           onClick={() => {
                             setColorMode('light');
                             if (currentTheme === 'darkMode') {
@@ -241,7 +231,7 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
                           <span>Light</span>
                         </button>
                         <button
-                          className={`mode-btn ${colorMode === 'dark' ? 'active' : ''}`}
+                          className={`bm-mode-option ${colorMode === 'dark' ? 'active' : ''}`}
                           onClick={() => {
                             setColorMode('dark');
                             setTheme('darkMode');
@@ -251,7 +241,7 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
                           <span>Dark</span>
                         </button>
                         <button
-                          className={`mode-btn ${colorMode === 'system' ? 'active' : ''}`}
+                          className={`bm-mode-option ${colorMode === 'system' ? 'active' : ''}`}
                           onClick={() => setColorMode('system')}
                         >
                           <HiOutlineDesktopComputer />
@@ -260,56 +250,56 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
                       </div>
                     </div>
 
-                    <div className="setting-section">
-                      <div className="themes-header">
+                    <div className="bm-setting-block">
+                      <div className="bm-themes-top">
                         <h3>Themes</h3>
-                        <div className="theme-tabs">
-                          <button className="tab-btn active">Preset themes</button>
-                          <button className="tab-btn">Custom theme</button>
+                        <div className="bm-theme-toggle">
+                          <button className="bm-toggle-btn active">Preset themes</button>
+                          <button className="bm-toggle-btn">Custom theme</button>
                         </div>
                       </div>
 
-                      <div className="theme-category">
+                      <div className="bm-theme-section">
                         <h4>Single color</h4>
-                        <div className="color-swatches">
+                        <div className="bm-swatches-grid">
                           {singleColorThemes.map(renderColorSwatch)}
                         </div>
                       </div>
 
-                      <div className="theme-category">
+                      <div className="bm-theme-section">
                         <h4>Fun and new</h4>
-                        <div className="color-swatches">
+                        <div className="bm-swatches-grid">
                           {gradientThemes.map(renderColorSwatch)}
                         </div>
                       </div>
 
-                      <div className="theme-category">
+                      <div className="bm-theme-section">
                         <h4>Updated classics</h4>
-                        <div className="color-swatches">
+                        <div className="bm-swatches-grid">
                           {classicThemes.map(renderColorSwatch)}
                         </div>
                       </div>
                     </div>
 
-                    <div className="setting-section">
+                    <div className="bm-setting-block">
                       <h3>Custom Color</h3>
-                      <p className="section-desc">Pick your own primary color</p>
-                      <div className="custom-color-picker">
+                      <p className="bm-block-desc">Pick your own primary color</p>
+                      <div className="bm-color-chooser">
                         <input
                           type="color"
                           value={customColor}
                           onChange={(e) => setCustomColor(e.target.value)}
-                          className="color-input"
+                          className="bm-color-picker"
                         />
                         <input
                           type="text"
                           value={customColor}
                           onChange={(e) => setCustomColor(e.target.value)}
-                          className="color-text-input"
+                          className="bm-color-hex"
                           placeholder="#0052CC"
                         />
                         <button
-                          className="apply-btn"
+                          className="bm-apply-color"
                           onClick={handleCustomColorApply}
                         >
                           Apply
@@ -320,23 +310,23 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
                 )}
 
                 {activeTab === 'notifications' && (
-                  <div className="notifications-settings">
+                  <div className="bm-notifications-panel">
                     <h3>Notification Settings</h3>
-                    <p className="section-desc">Manage your notification preferences</p>
+                    <p className="bm-block-desc">Manage your notification preferences</p>
                   </div>
                 )}
 
                 {activeTab === 'language' && (
-                  <div className="language-settings">
+                  <div className="bm-language-panel">
                     <h3>Language & Region</h3>
-                    <p className="section-desc">Set your language and regional preferences</p>
+                    <p className="bm-block-desc">Set your language and regional preferences</p>
                   </div>
                 )}
 
                 {activeTab === 'privacy' && (
-                  <div className="privacy-settings">
+                  <div className="bm-privacy-panel">
                     <h3>Privacy & Security</h3>
-                    <p className="section-desc">Manage your privacy and security settings</p>
+                    <p className="bm-block-desc">Manage your privacy and security settings</p>
                   </div>
                 )}
               </div>

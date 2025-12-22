@@ -15,7 +15,6 @@ const DashboardLayout = () => {
     return saved ? parseInt(saved) : 260;
   });
 
-  // Save sidebar state to localStorage
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
   }, [isCollapsed]);
@@ -24,15 +23,11 @@ const DashboardLayout = () => {
     localStorage.setItem('sidebarWidth', sidebarWidth.toString());
   }, [sidebarWidth]);
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
   const collapsedWidth = 72;
   const currentWidth = isCollapsed ? collapsedWidth : sidebarWidth;
 
   return (
-    <div className="dashboard-layout">
+    <div className="bm-layout-wrapper">
       <Sidebar
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
@@ -42,13 +37,12 @@ const DashboardLayout = () => {
       <Topbar
         sidebarWidth={sidebarWidth}
         isCollapsed={isCollapsed}
-        toggleSidebar={toggleSidebar}
       />
       <main
-        className="main-content"
+        className="bm-main-area"
         style={{ marginLeft: currentWidth }}
       >
-        <div className="page-content">
+        <div className="bm-page-container">
           <Outlet />
         </div>
       </main>

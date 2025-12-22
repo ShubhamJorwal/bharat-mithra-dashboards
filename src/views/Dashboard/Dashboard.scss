@@ -1,0 +1,24 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.bm-dashboard-container {
+  padding: $spacing-xl;
+  min-height: 100%;
+}
+
+.bm-dashboard-header {
+  margin-bottom: $spacing-xl;
+}
+
+.bm-dashboard-title {
+  font-size: 28px;
+  font-weight: $font-bold;
+  color: var(--color-text);
+  margin: 0 0 $spacing-xs;
+}
+
+.bm-dashboard-subtitle {
+  font-size: $font-base;
+  color: var(--color-text-secondary);
+  margin: 0;
+}

@@ -1,233 +1,24 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
-.dashboard-layout {
+.bm-layout-wrapper {
   min-height: 100vh;
   background: var(--color-background-secondary);
 }
 
-.main-content {
+.bm-main-area {
   min-height: 100vh;
-  padding-top: 64px; // Topbar height
+  padding-top: 60px;
   transition: margin-left 0.2s ease;
 }
 
-.page-content {
-  padding: $spacing-xl;
-  min-height: calc(100vh - 64px);
+.bm-page-container {
+  min-height: calc(100vh - 60px);
   @include custom-scrollbar;
-
-  @include sm {
-    padding: $spacing-md;
-  }
 }
 
-// Page Header Component
-.page-header {
-  margin-bottom: $spacing-xl;
-
-  .page-title {
-    font-size: $font-2xl;
-    font-weight: $font-bold;
-    color: var(--color-text);
-    margin: 0 0 $spacing-xs;
-  }
-
-  .page-subtitle {
-    font-size: $font-sm;
-    color: var(--color-text-secondary);
-    margin: 0;
-  }
-
-  .page-breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: $spacing-xs;
-    margin-bottom: $spacing-md;
-    font-size: $font-sm;
-
-    a {
-      color: var(--color-text-secondary);
-      transition: color $transition-fast;
-
-      &:hover {
-        color: var(--color-primary);
-      }
-    }
-
-    span {
-      color: var(--color-text-secondary);
-    }
-
-    .current {
-      color: var(--color-text);
-    }
-  }
-}
-
-// Stats Cards
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: $spacing-lg;
-  margin-bottom: $spacing-xl;
-}
-
-.stat-card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-xl;
-  padding: $spacing-xl;
-  transition: all $transition-fast;
-
-  &:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-
-  .stat-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: $spacing-md;
-  }
-
-  .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: $radius-lg;
-    @include flex-center;
-
-    svg {
-      font-size: 24px;
-    }
-
-    &.primary {
-      background: rgba(0, 82, 204, 0.1);
-      color: var(--color-primary);
-    }
-
-    &.success {
-      background: rgba(54, 179, 126, 0.1);
-      color: var(--color-success);
-    }
-
-    &.warning {
-      background: rgba(255, 171, 0, 0.1);
-      color: var(--color-warning);
-    }
-
-    &.danger {
-      background: rgba(222, 53, 11, 0.1);
-      color: var(--color-danger);
-    }
-  }
-
-  .stat-trend {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: $font-xs;
-    font-weight: $font-semibold;
-    padding: 4px 8px;
-    border-radius: $radius-full;
-
-    &.up {
-      background: rgba(54, 179, 126, 0.1);
-      color: var(--color-success);
-    }
-
-    &.down {
-      background: rgba(222, 53, 11, 0.1);
-      color: var(--color-danger);
-    }
-  }
-
-  .stat-value {
-    font-size: $font-3xl;
-    font-weight: $font-bold;
-    color: var(--color-text);
-    margin-bottom: $spacing-xs;
-  }
-
-  .stat-label {
-    font-size: $font-sm;
-    color: var(--color-text-secondary);
-  }
-}
-
-// Content Cards
-.content-card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-xl;
-  overflow: hidden;
-
-  .card-header {
-    padding: $spacing-lg $spacing-xl;
-    border-bottom: 1px solid var(--color-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    h3 {
-      font-size: $font-base;
-      font-weight: $font-semibold;
-      color: var(--color-text);
-      margin: 0;
-    }
-
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-    }
-  }
-
-  .card-body {
-    padding: $spacing-xl;
-  }
-
-  .card-footer {
-    padding: $spacing-md $spacing-xl;
-    border-top: 1px solid var(--color-border);
-    background: var(--color-background-secondary);
-  }
-}
-
-// Grid Layouts
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-lg;
-
-  @include md {
-    grid-template-columns: 1fr;
-  }
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: $spacing-lg;
-
-  @include lg {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include md {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Dark mode adjustments
 body.dark-mode {
-  .dashboard-layout {
+  .bm-layout-wrapper {
     background: var(--color-background);
-  }
-
-  .stat-card,
-  .content-card {
-    background: var(--color-background-secondary);
   }
 }

@@ -1,40 +1,39 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
-.settings-wrapper {
+.bm-settings-container {
   position: relative;
   z-index: 1000;
 
   &.top-right {
-    .settings-dropdown {
+    .bm-settings-menu {
       right: 0;
       top: calc(100% + 8px);
     }
   }
 
   &.bottom-left {
-    .settings-dropdown {
+    .bm-settings-menu {
       left: 0;
       bottom: calc(100% + 8px);
     }
   }
 }
 
-.settings-trigger {
+.bm-settings-btn {
   width: 40px;
   height: 40px;
   border-radius: $radius-lg;
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: none;
   color: var(--color-text-secondary);
   cursor: pointer;
   @include flex-center;
   transition: all $transition-fast;
 
   &:hover {
-    background: var(--color-background);
+    background: var(--color-background-secondary);
     color: var(--color-text);
-    border-color: var(--color-primary);
   }
 
   svg {
@@ -42,8 +41,7 @@
   }
 }
 
-// Dropdown Menu
-.settings-dropdown {
+.bm-settings-menu {
   position: absolute;
   width: 220px;
   background: var(--color-background);
@@ -52,7 +50,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 
-  .dropdown-header {
+  .bm-menu-title {
     padding: $spacing-md $spacing-lg;
     border-bottom: 1px solid var(--color-border);
     font-weight: $font-semibold;
@@ -60,11 +58,11 @@
     font-size: $font-sm;
   }
 
-  .dropdown-items {
+  .bm-menu-options {
     padding: $spacing-sm;
   }
 
-  .dropdown-item {
+  .bm-menu-item {
     width: 100%;
     display: flex;
     align-items: center;
@@ -89,17 +87,16 @@
   }
 }
 
-// Preferences Modal Overlay
-.preferences-overlay {
+.bm-prefs-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   @include flex-center;
   z-index: 2000;
-  animation: fadeIn 0.2s ease;
+  animation: bmFadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
+@keyframes bmFadeIn {
   from {
     opacity: 0;
   }
@@ -108,8 +105,7 @@
   }
 }
 
-// Preferences Modal
-.preferences-modal {
+.bm-prefs-dialog {
   width: 90%;
   max-width: 800px;
   max-height: 85vh;
@@ -118,10 +114,10 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: bmSlideUp 0.3s ease;
   overflow: hidden;
 
-  @keyframes slideUp {
+  @keyframes bmSlideUp {
     from {
       opacity: 0;
       transform: translateY(20px);
@@ -133,7 +129,7 @@
   }
 }
 
-.modal-header {
+.bm-dialog-header {
   @include flex-between;
   padding: $spacing-lg $spacing-xl;
   border-bottom: 1px solid var(--color-border);
@@ -145,7 +141,7 @@
     margin: 0;
   }
 
-  .close-btn {
+  .bm-close-icon {
     width: 32px;
     height: 32px;
     border-radius: $radius-md;
@@ -167,14 +163,13 @@
   }
 }
 
-.modal-content {
+.bm-dialog-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-// Sidebar
-.preferences-sidebar {
+.bm-prefs-nav {
   width: 200px;
   background: var(--color-background-secondary);
   padding: $spacing-md;
@@ -186,7 +181,7 @@
   }
 }
 
-.sidebar-item {
+.bm-nav-tab {
   width: 100%;
   display: flex;
   align-items: center;
@@ -220,15 +215,14 @@
   }
 }
 
-// Main Content
-.preferences-main {
+.bm-prefs-content {
   flex: 1;
   padding: $spacing-xl;
   overflow-y: auto;
   @include custom-scrollbar;
 }
 
-.setting-section {
+.bm-setting-block {
   margin-bottom: $spacing-2xl;
 
   h3 {
@@ -238,7 +232,7 @@
     margin-bottom: $spacing-xs;
   }
 
-  .section-desc {
+  .bm-block-desc {
     font-size: $font-sm;
     color: var(--color-text-secondary);
     margin-bottom: $spacing-lg;
@@ -246,13 +240,12 @@
   }
 }
 
-// Color Mode Options
-.color-mode-options {
+.bm-mode-selector {
   display: flex;
   gap: $spacing-md;
 }
 
-.mode-btn {
+.bm-mode-option {
   flex: 1;
   padding: $spacing-md $spacing-lg;
   background: var(--color-background);
@@ -281,8 +274,7 @@
   }
 }
 
-// Themes Header
-.themes-header {
+.bm-themes-top {
   @include flex-between;
   margin-bottom: $spacing-lg;
 
@@ -290,12 +282,12 @@
     margin-bottom: 0;
   }
 
-  .theme-tabs {
+  .bm-theme-toggle {
     display: flex;
     gap: $spacing-sm;
   }
 
-  .tab-btn {
+  .bm-toggle-btn {
     padding: $spacing-xs $spacing-md;
     background: transparent;
     border: none;
@@ -317,8 +309,7 @@
   }
 }
 
-// Theme Categories
-.theme-category {
+.bm-theme-section {
   margin-bottom: $spacing-xl;
 
   h4 {
@@ -329,14 +320,13 @@
   }
 }
 
-// Color Swatches
-.color-swatches {
+.bm-swatches-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: $spacing-md;
 }
 
-.color-swatch {
+.bm-swatch-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -357,33 +347,32 @@
     background: var(--color-background-secondary);
   }
 
-  .swatch-color {
+  .bm-swatch-circle {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     @include flex-center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
-    .check-icon {
+    .bm-check-mark {
       color: #ffffff;
       font-size: 20px;
     }
   }
 
-  .swatch-name {
+  .bm-swatch-label {
     font-size: $font-xs;
     color: var(--color-text);
     text-align: center;
   }
 }
 
-// Custom Color Picker
-.custom-color-picker {
+.bm-color-chooser {
   display: flex;
   align-items: center;
   gap: $spacing-md;
 
-  .color-input {
+  .bm-color-picker {
     width: 48px;
     height: 48px;
     padding: 0;
@@ -402,7 +391,7 @@
     }
   }
 
-  .color-text-input {
+  .bm-color-hex {
     flex: 1;
     max-width: 120px;
     padding: $spacing-sm $spacing-md;
@@ -419,7 +408,7 @@
     }
   }
 
-  .apply-btn {
+  .bm-apply-color {
     padding: $spacing-sm $spacing-lg;
     background: var(--color-primary);
     color: #ffffff;
@@ -436,10 +425,9 @@
   }
 }
 
-// Other Settings Sections
-.notifications-settings,
-.language-settings,
-.privacy-settings {
+.bm-notifications-panel,
+.bm-language-panel,
+.bm-privacy-panel {
   h3 {
     font-size: $font-lg;
     font-weight: $font-semibold;
