@@ -11,9 +11,10 @@ import {
   HiOutlineMoon,
   HiOutlineDesktopComputer
 } from 'react-icons/hi';
-import { useTheme, themeColors, ThemeKey } from '../../../context/ThemeContext';
+import { useTheme, themeColors } from '../../../context/ThemeContext';
 import './Settings.scss';
 
+type ThemeKey = keyof typeof themeColors;
 type ColorMode = 'light' | 'dark' | 'system';
 
 interface SettingsProps {
