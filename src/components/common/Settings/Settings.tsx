@@ -26,7 +26,7 @@ const Settings = ({ position = 'top-right' }: SettingsProps) => {
   const [activeTab, setActiveTab] = useState('appearance');
   const [colorMode, setColorMode] = useState<ColorMode>('light');
   const [customColor, setCustomColor] = useState('#0052CC');
-  const { currentTheme, setTheme } = useTheme();
+  const { theme: currentTheme, setTheme } = useTheme();
   const menuRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
