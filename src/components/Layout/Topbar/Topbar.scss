@@ -11,10 +11,11 @@
   left: 0;
   right: 0;
   z-index: 100;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  padding: 0 $spacing-lg;
-  gap: $spacing-lg;
+  padding: 0 16px;
+  gap: 16px;
 }
 
 // Brand
@@ -40,18 +41,19 @@
   color: #2E7D32;
 }
 
-// Search
+// Search - Centered
 .bm-topbar-search {
-  flex: 1;
-  max-width: 400px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: 8px;
   background: var(--color-background-secondary);
   border: 1px solid var(--color-border);
   border-radius: $radius-md;
-  padding: 0 $spacing-md;
-  height: 32px;
+  padding: 0 12px;
+  height: 34px;
   transition: all $transition-fast;
 
   &:focus-within {
@@ -93,12 +95,11 @@
   color: var(--color-text-secondary);
 }
 
-// Actions
+// Actions - Right aligned
 .bm-topbar-actions {
   display: flex;
   align-items: center;
-  gap: $spacing-xs;
-  flex-shrink: 0;
+  gap: 4px;
 }
 
 .bm-action-btn {

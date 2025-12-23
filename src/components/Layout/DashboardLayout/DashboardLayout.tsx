@@ -12,7 +12,7 @@ const DashboardLayout = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem('sidebarWidth');
-    return saved ? parseInt(saved) : 220;
+    return saved ? parseInt(saved) : 240;
   });
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const DashboardLayout = () => {
     localStorage.setItem('sidebarWidth', sidebarWidth.toString());
   }, [sidebarWidth]);
 
-  const collapsedWidth = 56;
+  const collapsedWidth = 64;
   const currentWidth = isCollapsed ? collapsedWidth : sidebarWidth;
 
   return (

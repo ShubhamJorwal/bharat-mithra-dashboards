@@ -30,9 +30,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
 
-  const minWidth = 200;
-  const maxWidth = 280;
-  const collapsedWidth = 56;
+  const minWidth = 220;
+  const maxWidth = 300;
+  const collapsedWidth = 64;
 
   const mainNavItems = [
     { path: '/', icon: HiOutlineHome, label: 'Dashboard', badge: null },
