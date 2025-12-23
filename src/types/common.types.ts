@@ -1,33 +1,52 @@
-// Common types for the dashboard
-
 export interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-  role: string
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface ApiResponse<T> {
-  success: boolean
-  data: T
-  message?: string
-  error?: string
+export type UserRole = 'admin' | 'user' | 'manager' | 'viewer';
+
+export interface SelectOption {
+  label: string;
+  value: string | number;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
+export interface TableColumn<T> {
+  key: keyof T | string;
+  title: string;
+  sortable?: boolean;
+  width?: string | number;
+  render?: (value: unknown, record: T, index: number) => React.ReactNode;
+}
+
+export interface FilterOption {
+  field: string;
+  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'startsWith' | 'endsWith';
+  value: string | number | boolean;
+}
+
+export interface DateRange {
+  startDate: Date | null;
+  endDate: Date | null;
+}
+
+export type Status = 'pending' | 'approved' | 'rejected' | 'processing' | 'completed';
+
+export interface StatusConfig {
+  label: string;
+  color: string;
+  bgColor: string;
 }
 
 export interface QueryParams {
-  page?: number
-  limit?: number
-  search?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  [key: string]: string | number | boolean | undefined
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  [key: string]: string | number | boolean | undefined;
 }
