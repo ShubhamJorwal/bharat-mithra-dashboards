@@ -1,9 +1,9 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
-.bm-topbar-full {
-  width: 100vw;
-  height: 60px;
+.bm-topbar {
+  width: 100%;
+  height: 48px;
   background: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   position: fixed;
@@ -13,18 +13,18 @@
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 $spacing-xl;
-  gap: $spacing-xl;
+  padding: 0 $spacing-lg;
+  gap: $spacing-lg;
 }
 
+// Brand
 .bm-topbar-brand {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: -0.5px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
 }
 
 .bm-brand-bharat {
@@ -40,35 +40,29 @@
   color: #2E7D32;
 }
 
-.bm-topbar-search-area {
-  display: flex;
-  align-items: center;
+// Search
+.bm-topbar-search {
   flex: 1;
-  max-width: 480px;
-}
-
-.bm-search-box {
-  flex: 1;
+  max-width: 400px;
   display: flex;
   align-items: center;
   gap: $spacing-sm;
   background: var(--color-background-secondary);
   border: 1px solid var(--color-border);
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   padding: 0 $spacing-md;
-  height: 40px;
+  height: 32px;
   transition: all $transition-fast;
 
   &:focus-within {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
     background: var(--color-background);
   }
 }
 
 .bm-search-icon {
   color: var(--color-text-secondary);
-  font-size: 18px;
+  font-size: 14px;
   flex-shrink: 0;
 }
 
@@ -78,7 +72,7 @@
   border: none;
   background: transparent;
   color: var(--color-text);
-  font-size: $font-sm;
+  font-size: 13px;
 
   &::placeholder {
     color: var(--color-text-secondary);
@@ -89,181 +83,40 @@
   }
 }
 
-.bm-topbar-actions-area {
+.bm-search-shortcut {
+  font-size: 11px;
+  font-family: inherit;
+  padding: 2px 6px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+}
+
+// Actions
+.bm-topbar-actions {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
   flex-shrink: 0;
 }
 
-.bm-topbar-action-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-lg;
+.bm-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
   background: transparent;
   border: none;
   color: var(--color-text-secondary);
   cursor: pointer;
   @include flex-center;
   position: relative;
-  transition: all $transition-fast;
-
-  &:hover {
-    background: var(--color-background-secondary);
-    color: var(--color-text);
-  }
-
-  svg {
-    font-size: 20px;
-  }
-}
-
-.bm-notification-btn {
-  position: relative;
-}
-
-.bm-notification-dot {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  background: var(--color-danger);
-  border-radius: 50%;
-  border: 2px solid var(--color-background);
-}
-
-.bm-profile-wrapper {
-  position: relative;
-  margin-left: $spacing-xs;
-}
-
-.bm-profile-trigger {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-xs;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: $radius-lg;
-  cursor: pointer;
   transition: all $transition-fast;
 
   &:hover,
   &.active {
     background: var(--color-background-secondary);
-    border-color: var(--color-border);
-  }
-}
-
-.bm-profile-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: $radius-lg;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  @include flex-center;
-
-  span {
-    color: #ffffff;
-    font-size: $font-sm;
-    font-weight: $font-semibold;
-  }
-}
-
-.bm-profile-chevron {
-  color: var(--color-text-secondary);
-  font-size: 16px;
-  transition: transform $transition-fast;
-
-  &.rotated {
-    transform: rotate(180deg);
-  }
-}
-
-.bm-profile-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 260px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-xl;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  z-index: 1000;
-  animation: bmDropdownFadeIn 0.2s ease;
-
-  @keyframes bmDropdownFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-
-.bm-profile-info {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-lg;
-}
-
-.bm-profile-avatar-lg {
-  width: 48px;
-  height: 48px;
-  border-radius: $radius-lg;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  @include flex-center;
-  flex-shrink: 0;
-
-  span {
-    color: #ffffff;
-    font-size: $font-base;
-    font-weight: $font-semibold;
-  }
-}
-
-.bm-profile-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.bm-profile-name {
-  font-size: $font-base;
-  font-weight: $font-semibold;
-  color: var(--color-text);
-}
-
-.bm-profile-email {
-  font-size: $font-sm;
-  color: var(--color-text-secondary);
-}
-
-.bm-profile-divider {
-  height: 1px;
-  background: var(--color-border);
-}
-
-.bm-profile-logout {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-  width: 100%;
-  padding: $spacing-md $spacing-lg;
-  background: transparent;
-  border: none;
-  color: var(--color-danger);
-  font-size: $font-sm;
-  cursor: pointer;
-  transition: background $transition-fast;
-
-  &:hover {
-    background: rgba(222, 53, 11, 0.05);
+    color: var(--color-text);
   }
 
   svg {
@@ -271,23 +124,276 @@
   }
 }
 
-// Dark mode adjustments
-body.dark-mode {
-  .bm-topbar-full {
+.bm-notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--color-danger);
+  color: #fff;
+  border-radius: $radius-full;
+  @include flex-center;
+}
+
+// Notification Dropdown
+.bm-notification-wrapper,
+.bm-profile-wrapper {
+  position: relative;
+}
+
+.bm-notification-dropdown,
+.bm-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  animation: dropdownFade 0.15s ease;
+  overflow: hidden;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bm-notification-dropdown {
+  width: 340px;
+}
+
+.bm-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid var(--color-border);
+
+  span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+}
+
+.bm-mark-read {
+  font-size: 12px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.bm-notification-list {
+  max-height: 320px;
+  overflow-y: auto;
+  @include custom-scrollbar;
+}
+
+.bm-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
     background: var(--color-background-secondary);
   }
 
-  .bm-search-box {
+  &.unread {
+    background: rgba(var(--color-primary-rgb, 0, 82, 204), 0.04);
+
+    .bm-notification-title {
+      font-weight: 600;
+    }
+  }
+}
+
+.bm-notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bm-notification-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.bm-notification-message {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bm-notification-time {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.bm-dropdown-footer {
+  padding: $spacing-sm $spacing-lg;
+  border-top: 1px solid var(--color-border);
+
+  button {
+    width: 100%;
+    font-size: 12px;
+    color: var(--color-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-sm 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Profile
+.bm-avatar-btn {
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover,
+  &.active {
+    background: var(--color-background-secondary);
+  }
+}
+
+.bm-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  @include flex-center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+
+  &.bm-avatar-lg {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+}
+
+.bm-profile-dropdown {
+  width: 240px;
+  padding: $spacing-sm 0;
+}
+
+.bm-profile-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+}
+
+.bm-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bm-profile-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.bm-profile-email {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bm-dropdown-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: $spacing-sm 0;
+}
+
+.bm-dropdown-menu {
+  padding: 0;
+}
+
+.bm-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  width: 100%;
+  padding: $spacing-sm $spacing-lg;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: var(--color-background-secondary);
+  }
+
+  svg {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
+
+  &.bm-logout {
+    color: var(--color-danger);
+
+    svg {
+      color: var(--color-danger);
+    }
+  }
+}
+
+// Dark mode
+body.dark-mode {
+  .bm-topbar {
+    background: var(--color-background-secondary);
+  }
+
+  .bm-topbar-search {
     background: var(--color-background);
   }
 
+  .bm-notification-dropdown,
   .bm-profile-dropdown {
     background: var(--color-background-secondary);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  }
-
-  .bm-notification-dot {
-    border-color: var(--color-background-secondary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
   .bm-brand-bharat {

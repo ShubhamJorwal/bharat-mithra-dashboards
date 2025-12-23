@@ -13,9 +13,9 @@ import {
   HiOutlineCalendar,
   HiOutlineFolder,
   HiOutlineChevronLeft,
-  HiOutlineChevronRight
+  HiOutlineChevronRight,
+  HiOutlineCog
 } from 'react-icons/hi';
-import Settings from '../../common/Settings/Settings';
 import './Sidebar.scss';
 
 interface SidebarProps {
@@ -30,9 +30,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
 
-  const minWidth = 220;
-  const maxWidth = 320;
-  const collapsedWidth = 72;
+  const minWidth = 200;
+  const maxWidth = 280;
+  const collapsedWidth = 56;
 
   const mainNavItems = [
     { path: '/', icon: HiOutlineHome, label: 'Dashboard', badge: null },
@@ -51,7 +51,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
 
   const bottomNavItems = [
     { path: '/shortcuts', icon: HiOutlineLightningBolt, label: 'Shortcuts', badge: null },
-    { path: '/help', icon: HiOutlineQuestionMarkCircle, label: 'Help & Support', badge: null },
+    { path: '/help', icon: HiOutlineQuestionMarkCircle, label: 'Help', badge: null },
+    { path: '/settings', icon: HiOutlineCog, label: 'Settings', badge: null },
   ];
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -96,7 +97,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       <NavLink
         key={item.path}
         to={item.path}
-        className={`bm-nav-link ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
+        className={`bm-nav-item ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
         title={isCollapsed ? item.label : undefined}
       >
         <span className="bm-nav-icon">
@@ -104,12 +105,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
         </span>
         {!isCollapsed && (
           <>
-            <span className="bm-nav-text">{item.label}</span>
+            <span className="bm-nav-label">{item.label}</span>
             {item.badge && <span className="bm-nav-badge">{item.badge}</span>}
           </>
         )}
         {isCollapsed && item.badge && (
-          <span className="bm-nav-badge-indicator"></span>
+          <span className="bm-badge-dot"></span>
         )}
       </NavLink>
     );
@@ -118,45 +119,44 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   return (
     <aside
       ref={sidebarRef}
-      className={`bm-sidebar-panel ${isCollapsed ? 'collapsed' : ''} ${isResizing ? 'resizing' : ''}`}
+      className={`bm-sidebar ${isCollapsed ? 'collapsed' : ''} ${isResizing ? 'resizing' : ''}`}
       style={{ width: isCollapsed ? collapsedWidth : sidebarWidth }}
     >
-      <div className="bm-sidebar-top">
-        <button
-          className="bm-collapse-toggle"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? <HiOutlineChevronRight /> : <HiOutlineChevronLeft />}
-        </button>
-      </div>
-
-      <nav className="bm-sidebar-navigation">
-        <div className="bm-nav-group">
-          {!isCollapsed && <span className="bm-nav-group-label">Main Menu</span>}
+      <nav className="bm-sidebar-nav">
+        <div className="bm-nav-section">
+          {!isCollapsed && <span className="bm-nav-section-title">Menu</span>}
           <div className="bm-nav-list">
             {mainNavItems.map(renderNavItem)}
           </div>
         </div>
 
-        <div className="bm-nav-group">
-          {!isCollapsed && <span className="bm-nav-group-label">Management</span>}
+        <div className="bm-nav-section">
+          {!isCollapsed && <span className="bm-nav-section-title">Management</span>}
           <div className="bm-nav-list">
             {secondaryNavItems.map(renderNavItem)}
           </div>
         </div>
       </nav>
 
-      <div className="bm-sidebar-bottom">
+      <div className="bm-sidebar-footer">
         <div className="bm-nav-list">
           {bottomNavItems.map(renderNavItem)}
-          <Settings position="bottom-left" />
+        </div>
+        <div className="bm-collapse-section">
+          <button
+            className="bm-collapse-btn"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            title={isCollapsed ? 'Expand' : 'Collapse'}
+          >
+            {isCollapsed ? <HiOutlineChevronRight /> : <HiOutlineChevronLeft />}
+            {!isCollapsed && <span>Collapse</span>}
+          </button>
         </div>
       </div>
 
       {!isCollapsed && (
         <div
-          className="bm-resize-bar"
+          className="bm-resize-handle"
           onMouseDown={handleMouseDown}
         />
       )}

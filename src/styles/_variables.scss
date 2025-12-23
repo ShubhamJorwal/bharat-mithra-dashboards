@@ -18,13 +18,13 @@ $bg-light: #ffffff;
 $bg-light-secondary: #f1f5f9;
 $text-dark: #1e293b;
 
-// Spacing
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 1rem;
-$spacing-lg: 1.5rem;
-$spacing-xl: 2rem;
-$spacing-2xl: 3rem;
+// Spacing (compact like Vercel/Slack)
+$spacing-xs: 4px;
+$spacing-sm: 6px;
+$spacing-md: 10px;
+$spacing-lg: 14px;
+$spacing-xl: 20px;
+$spacing-2xl: 28px;
 
 // Border radius
 $radius-sm: 0.25rem;
@@ -39,12 +39,12 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
-// Sidebar
-$sidebar-width: 260px;
-$sidebar-collapsed-width: 80px;
+// Sidebar (compact)
+$sidebar-width: 220px;
+$sidebar-collapsed-width: 56px;
 
-// Header
-$header-height: 64px;
+// Header (compact)
+$header-height: 48px;
 
 // Transitions
 $transition-fast: 150ms ease;
