@@ -5,30 +5,34 @@
   padding: $spacing-lg;
 }
 
-// Page Header
+// Page Header with Gradient
 .bm-page-header {
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  position: relative;
 }
 
 .bm-page-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 2px;
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 4px;
 }
 
 .bm-page-desc {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text-secondary);
   margin: 0;
 }
 
-// Stats Row
+// Stats Row with Modern Cards
 .bm-stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-md;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-xl;
 
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
@@ -40,28 +44,158 @@
 }
 
 .bm-stat-card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-md;
-  padding: $spacing-md;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-border-light);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Decorative gradient orb
+  &::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  // Accent line at top
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  // Color variants
+  &--primary::before {
+    background: radial-gradient(circle, rgba(0, 82, 204, 0.15) 0%, transparent 70%);
+  }
+
+  &--success::before {
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+  }
+
+  &--warning::before {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  }
+
+  &--danger::before {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+  }
+}
+
+.bm-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-lg;
+  @include flex-center;
+  margin-bottom: $spacing-md;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 1px solid currentColor;
+    opacity: 0.2;
+  }
+
+  svg {
+    font-size: 24px;
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.1), rgba(0, 82, 204, 0.05));
+    color: var(--color-primary);
+  }
+
+  &--success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    color: #22c55e;
+  }
+
+  &--warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+    color: #f59e0b;
+  }
+
+  &--danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+    color: #ef4444;
+  }
 }
 
 .bm-stat-value {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   color: var(--color-text);
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
 }
 
 .bm-stat-label {
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text);
-  margin-bottom: 2px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.bm-stat-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .bm-stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: $radius-full;
+
+  svg {
+    font-size: 12px;
+  }
+
+  &--positive {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  &--negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+}
+
+.bm-stat-subtext {
   font-size: 12px;
   color: var(--color-text-secondary);
 }
@@ -70,34 +204,53 @@
 .bm-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: $spacing-md;
+  gap: $spacing-lg;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 }
 
-// Card
+// Modern Glass Card
 .bm-card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-md;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-border-light);
+  border-radius: $radius-lg;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .bm-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-md;
-  border-bottom: 1px solid var(--color-border);
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid var(--color-border-light);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .bm-card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+  }
 }
 
 .bm-link-btn {
@@ -106,14 +259,16 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 4px 10px;
+  border-radius: $radius-full;
+  transition: all $transition-fast;
 
   &:hover {
-    text-decoration: underline;
+    background: rgba(var(--color-primary-rgb), 0.1);
   }
 }
 
-// Quick Actions
+// Quick Actions with Modern Hover
 .bm-actions-grid {
   display: flex;
   flex-direction: column;
@@ -123,27 +278,60 @@
   display: flex;
   align-items: center;
   gap: $spacing-md;
-  padding: $spacing-md;
+  padding: $spacing-md $spacing-lg;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-light);
   cursor: pointer;
   text-align: left;
-  transition: background $transition-fast;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
 
   &:last-child {
     border-bottom: none;
   }
 
   &:hover {
-    background: var(--color-background-secondary);
+    background: rgba(var(--color-primary-rgb), 0.03);
+    padding-left: calc($spacing-lg + 4px);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
 .bm-action-icon {
-  font-size: 18px;
-  color: var(--color-text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1), rgba(var(--color-primary-rgb), 0.05));
+  color: var(--color-primary);
+  @include flex-center;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  svg {
+    font-size: 18px;
+  }
+
+  .bm-quick-action:hover & {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.2);
+  }
 }
 
 .bm-action-content {
@@ -153,9 +341,10 @@
 
 .bm-action-label {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-text);
+  margin-bottom: 2px;
 }
 
 .bm-action-desc {
@@ -166,12 +355,14 @@
 
 .bm-action-arrow {
   font-size: 16px;
-  color: var(--color-text-secondary);
+  color: var(--color-primary);
   opacity: 0;
-  transition: opacity $transition-fast;
+  transform: translateX(-8px);
+  transition: all 0.2s ease;
 
   .bm-quick-action:hover & {
     opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -186,11 +377,16 @@
   align-items: center;
   justify-content: space-between;
   gap: $spacing-md;
-  padding: $spacing-md;
-  border-bottom: 1px solid var(--color-border);
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background 0.2s ease;
 
   &:last-child {
     border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(var(--color-primary-rgb), 0.02);
   }
 }
 
@@ -204,6 +400,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text);
+  margin-bottom: 2px;
 }
 
 .bm-activity-date {
@@ -212,52 +409,76 @@
   color: var(--color-text-secondary);
 }
 
-// Status Badge
+// Modern Status Badge
 .bm-status {
   font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
+  font-weight: 600;
+  padding: 4px 10px;
   border-radius: $radius-full;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
   &--pending {
-    background: rgba(245, 158, 11, 0.1);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.1));
     color: #d97706;
   }
 
   &--completed {
-    background: rgba(34, 197, 94, 0.1);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.1));
     color: #16a34a;
   }
 
   &--approved {
-    background: rgba(59, 130, 246, 0.1);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.1));
     color: #2563eb;
   }
 
   &--rejected {
-    background: rgba(239, 68, 68, 0.1);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.1));
     color: #dc2626;
   }
 }
 
 // Dark mode
 body.dark-mode {
+  .bm-page-title {
+    background: linear-gradient(135deg, var(--color-text) 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bm-stat-card {
+    background: var(--color-background-secondary);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .bm-card {
+    background: var(--color-background-secondary);
+  }
+
+  .bm-card-header {
+    background: var(--color-background);
+  }
+
   .bm-status {
     &--pending {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(245, 158, 11, 0.2);
     }
 
     &--completed {
-      background: rgba(34, 197, 94, 0.15);
+      background: rgba(34, 197, 94, 0.2);
     }
 
     &--approved {
-      background: rgba(59, 130, 246, 0.15);
+      background: rgba(59, 130, 246, 0.2);
     }
 
     &--rejected {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.2);
     }
   }
 }

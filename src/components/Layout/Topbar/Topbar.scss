@@ -4,8 +4,10 @@
 .bm-topbar {
   width: 100%;
   height: 48px;
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--color-border-light);
   position: fixed;
   top: 0;
   left: 0;
@@ -14,57 +16,101 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  padding: 0 16px;
-  gap: 16px;
+  padding: 0 20px;
+  gap: 20px;
 }
 
-// Brand
+// Brand with Gradient
 .bm-topbar-brand {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
+
+  // Subtle glow effect
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #5D4037, #C62828, #2E7D32);
+    border-radius: 1px;
+    opacity: 0.3;
+  }
 }
 
 .bm-brand-bharat {
-  color: #5D4037;
+  background: linear-gradient(135deg, #5D4037, #8D6E63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .bm-brand-dot {
   color: #C62828;
-  margin: 0 1px;
+  margin: 0 2px;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .bm-brand-mithra {
-  color: #2E7D32;
+  background: linear-gradient(135deg, #2E7D32, #66BB6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-// Search - Centered
+// Search - Centered with Glass Effect
 .bm-topbar-search {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-md;
-  padding: 0 12px;
+  gap: 10px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light);
+  border-radius: $radius-lg;
+  padding: 0 14px;
   height: 34px;
-  transition: all $transition-fast;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
 
   &:focus-within {
     border-color: var(--color-primary);
     background: var(--color-background);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
 .bm-search-icon {
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
@@ -75,6 +121,7 @@
   background: transparent;
   color: var(--color-text);
   font-size: 13px;
+  font-weight: 500;
 
   &::placeholder {
     color: var(--color-text-secondary);
@@ -88,10 +135,11 @@
 .bm-search-shortcut {
   font-size: 11px;
   font-family: inherit;
-  padding: 2px 6px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  font-weight: 600;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--color-background-secondary), var(--color-background));
+  border: 1px solid var(--color-border-light);
+  border-radius: $radius-md;
   color: var(--color-text-secondary);
 }
 
@@ -99,25 +147,27 @@
 .bm-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .bm-action-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: $radius-md;
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-lg;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
   @include flex-center;
   position: relative;
-  transition: all $transition-fast;
+  transition: all 0.2s ease;
 
   &:hover,
   &.active {
-    background: var(--color-background-secondary);
-    color: var(--color-text);
+    background: rgba(var(--color-primary-rgb), 0.08);
+    border-color: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+    transform: scale(1.05);
   }
 
   svg {
@@ -127,17 +177,25 @@
 
 .bm-notification-badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
   font-size: 10px;
-  font-weight: 600;
-  background: var(--color-danger);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-danger), #ff6b6b);
   color: #fff;
   border-radius: $radius-full;
   @include flex-center;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  animation: badgePop 0.3s ease;
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 // Notification Dropdown
@@ -149,30 +207,31 @@
 .bm-notification-dropdown,
 .bm-profile-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-light);
   border-radius: $radius-lg;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-xl);
   z-index: 1000;
-  animation: dropdownFade 0.15s ease;
+  animation: dropdownSlide 0.2s ease;
   overflow: hidden;
+  backdrop-filter: var(--glass-blur);
 }
 
-@keyframes dropdownFade {
+@keyframes dropdownSlide {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .bm-notification-dropdown {
-  width: 340px;
+  width: 360px;
 }
 
 .bm-dropdown-header {
@@ -180,29 +239,45 @@
   align-items: center;
   justify-content: space-between;
   padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-light);
+  background: rgba(255, 255, 255, 0.5);
 
   span {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+      border-radius: 2px;
+    }
   }
 }
 
 .bm-mark-read {
   font-size: 12px;
+  font-weight: 500;
   color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: $radius-md;
+  transition: background 0.2s ease;
 
   &:hover {
-    text-decoration: underline;
+    background: rgba(var(--color-primary-rgb), 0.1);
   }
 }
 
 .bm-notification-list {
-  max-height: 320px;
+  max-height: 340px;
   overflow-y: auto;
   @include custom-scrollbar;
 }
@@ -213,17 +288,47 @@
   gap: $spacing-md;
   padding: $spacing-md $spacing-lg;
   cursor: pointer;
-  transition: background $transition-fast;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
 
   &:hover {
-    background: var(--color-background-secondary);
+    background: rgba(var(--color-primary-rgb), 0.03);
+    padding-left: calc($spacing-lg + 4px);
+
+    &::after {
+      opacity: 1;
+    }
   }
 
   &.unread {
-    background: rgba(var(--color-primary-rgb, 0, 82, 204), 0.04);
+    background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.06), transparent);
 
     .bm-notification-title {
       font-weight: 600;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
     }
   }
 }
@@ -238,7 +343,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .bm-notification-message {
@@ -258,19 +363,23 @@
 
 .bm-dropdown-footer {
   padding: $spacing-sm $spacing-lg;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-light);
+  background: rgba(255, 255, 255, 0.3);
 
   button {
     width: 100%;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
     padding: $spacing-sm 0;
+    border-radius: $radius-md;
+    transition: background 0.2s ease;
 
     &:hover {
-      text-decoration: underline;
+      background: rgba(var(--color-primary-rgb), 0.05);
     }
   }
 }
@@ -279,36 +388,52 @@
 .bm-avatar-btn {
   padding: 4px;
   background: transparent;
-  border: none;
-  border-radius: $radius-md;
+  border: 1px solid transparent;
+  border-radius: $radius-lg;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all 0.2s ease;
 
   &:hover,
   &.active {
-    background: var(--color-background-secondary);
+    background: rgba(var(--color-primary-rgb), 0.05);
+    border-color: rgba(var(--color-primary-rgb), 0.1);
+
+    .bm-avatar {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+    }
   }
 }
 
 .bm-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: $radius-md;
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-lg;
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   @include flex-center;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: #fff;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid rgba(var(--color-primary-rgb), 0.2);
+  }
 
   &.bm-avatar-lg {
-    width: 36px;
-    height: 36px;
-    font-size: 13px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
   }
 }
 
 .bm-profile-dropdown {
-  width: 240px;
+  width: 260px;
   padding: $spacing-sm 0;
 }
 
@@ -326,7 +451,7 @@
 
 .bm-profile-name {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -342,7 +467,7 @@
 
 .bm-dropdown-divider {
   height: 1px;
-  background: var(--color-border);
+  background: linear-gradient(90deg, transparent, var(--color-border-light), transparent);
   margin: $spacing-sm 0;
 }
 
@@ -355,21 +480,29 @@
   align-items: center;
   gap: $spacing-md;
   width: 100%;
-  padding: $spacing-sm $spacing-lg;
+  padding: $spacing-sm + 2 $spacing-lg;
   background: none;
   border: none;
   font-size: 13px;
+  font-weight: 500;
   color: var(--color-text);
   cursor: pointer;
-  transition: background $transition-fast;
+  transition: all 0.15s ease;
+  position: relative;
 
   &:hover {
-    background: var(--color-background-secondary);
+    background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.08), transparent);
+    padding-left: calc($spacing-lg + 4px);
   }
 
   svg {
     font-size: 16px;
     color: var(--color-text-secondary);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
   }
 
   &.bm-logout {
@@ -378,6 +511,10 @@
     svg {
       color: var(--color-danger);
     }
+
+    &:hover {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.08), transparent);
+    }
   }
 }
 
@@ -385,6 +522,7 @@
 body.dark-mode {
   .bm-topbar {
     background: var(--color-background-secondary);
+    backdrop-filter: none;
   }
 
   .bm-topbar-search {
@@ -394,14 +532,28 @@ body.dark-mode {
   .bm-notification-dropdown,
   .bm-profile-dropdown {
     background: var(--color-background-secondary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .bm-dropdown-header {
+    background: var(--color-background);
+  }
+
+  .bm-dropdown-footer {
+    background: var(--color-background);
   }
 
   .bm-brand-bharat {
-    color: #A1887F;
+    background: linear-gradient(135deg, #A1887F, #BCAAA4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .bm-brand-mithra {
-    color: #81C784;
+    background: linear-gradient(135deg, #81C784, #A5D6A7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }

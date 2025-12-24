@@ -12,6 +12,12 @@ import EnterOTP from "../views/Auth/EnterOTP/EnterOTP";
 import ResetPassword from "../views/Auth/ResetPassword/ResetPassword";
 import RequestCode from "../views/Auth/RequestCode/RequestCode";
 
+// Users Pages
+import { UserList, UserDetails, UserCreate, UserEdit } from "../views/Users";
+
+// Services Pages
+import { ServiceList, ServiceDetails, ServiceCreate } from "../views/Services";
+
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
   const { pathname } = useLocation();
@@ -39,10 +45,37 @@ const routerConfig = [
         index: true,
         element: <Dashboard />,
       },
+      // Users Routes
+      {
+        path: "users",
+        element: <UserList />,
+      },
+      {
+        path: "users/new",
+        element: <UserCreate />,
+      },
+      {
+        path: "users/:id",
+        element: <UserDetails />,
+      },
+      {
+        path: "users/:id/edit",
+        element: <UserEdit />,
+      },
+      // Services Routes
       {
         path: "services",
-        element: <Dashboard />, // Placeholder
+        element: <ServiceList />,
       },
+      {
+        path: "services/new",
+        element: <ServiceCreate />,
+      },
+      {
+        path: "services/:id",
+        element: <ServiceDetails />,
+      },
+      // Other Routes (Placeholders)
       {
         path: "applications",
         element: <Dashboard />, // Placeholder
@@ -57,10 +90,6 @@ const routerConfig = [
       },
       {
         path: "reports",
-        element: <Dashboard />, // Placeholder
-      },
-      {
-        path: "users",
         element: <Dashboard />, // Placeholder
       },
       {

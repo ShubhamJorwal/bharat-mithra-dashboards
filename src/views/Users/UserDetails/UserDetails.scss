@@ -1,0 +1,233 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.bm-user-details {
+  padding: 0;
+}
+
+.bm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bm-back-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  @include flex-center;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: var(--color-background);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  svg {
+    font-size: 16px;
+  }
+}
+
+.bm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Details Grid
+.bm-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Profile Card
+.bm-profile-card {
+  padding: 0;
+}
+
+.bm-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.bm-profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  @include flex-center;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: $radius-lg;
+    object-fit: cover;
+  }
+}
+
+.bm-profile-info {
+  flex: 1;
+}
+
+.bm-profile-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.bm-profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// Badge & Status (using same styles from UserList)
+.bm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: $radius-full;
+  text-transform: capitalize;
+
+  &--info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  &--success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  &--warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  &--danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+}
+
+.bm-status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  text-transform: capitalize;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &--success::before {
+    background: #22c55e;
+  }
+
+  &--warning::before {
+    background: #f59e0b;
+  }
+
+  &--danger::before {
+    background: #ef4444;
+  }
+}
+
+// Profile Details
+.bm-profile-details {
+  padding: 16px 20px;
+}
+
+.bm-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bm-detail-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bm-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bm-detail-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.bm-detail-value {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+// Activity Card
+.bm-activity-card {
+  padding: 0;
+  height: fit-content;
+}
+
+.bm-activity-content {
+  padding: 16px;
+}
+
+.bm-activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bm-activity-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.bm-activity-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}

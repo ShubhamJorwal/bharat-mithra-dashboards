@@ -1,12 +1,5 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  avatar?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Use User from api.types.ts instead
+// Legacy User type moved to api.types.ts
 
 export type UserRole = 'admin' | 'user' | 'manager' | 'viewer';
 

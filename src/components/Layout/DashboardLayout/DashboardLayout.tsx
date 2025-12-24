@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
+import AnimatedBackground from '../../common/AnimatedBackground';
 import './DashboardLayout.scss';
 
 const DashboardLayout = () => {
@@ -12,7 +13,7 @@ const DashboardLayout = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem('sidebarWidth');
-    return saved ? parseInt(saved) : 240;
+    return saved ? parseInt(saved) : 200;
   });
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="bm-layout-wrapper">
+      <AnimatedBackground variant="subtle" />
       <Topbar />
       <Sidebar
         isCollapsed={isCollapsed}
