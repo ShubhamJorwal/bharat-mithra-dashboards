@@ -12,12 +12,10 @@ import {
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
   HiOutlineClock,
-  HiOutlineMenu,
   HiOutlineCollection,
   HiOutlineDocumentText,
   HiOutlineUserGroup,
-  HiOutlineChartBar,
-  HiOutlineChevronDown
+  HiOutlineChartBar
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
 import './Topbar.scss';
