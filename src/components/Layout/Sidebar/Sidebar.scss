@@ -22,7 +22,7 @@
 
     .bm-nav-item {
       justify-content: center;
-      padding: 10px;
+      padding: 6px 10px;
 
       .bm-nav-icon {
         margin-right: 0;
@@ -49,7 +49,7 @@
 .bm-sidebar-nav {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 10px;
+  padding: 16px 8px;
   @include custom-scrollbar;
 }
 

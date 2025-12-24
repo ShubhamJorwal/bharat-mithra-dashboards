@@ -42,7 +42,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
 
   const minWidth = 180;
   const maxWidth = 500;
-  const collapsedWidth = 54;
+  const collapsedWidth = 46;
 
   const mainNavItems: NavItem[] = [
     { path: '/', icon: HiOutlineHome, label: 'Dashboard', badge: null },
