@@ -19,6 +19,14 @@ import { UserList, UserDetails, UserCreate, UserEdit } from "../views/Users";
 import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit } from "../views/Services";
 import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Categories";
 
+// Geography Pages
+import NationalDashboard from "../views/Geography/National/NationalDashboard";
+import StateList from "../views/Geography/States/StateList";
+import DistrictList from "../views/Geography/Districts/DistrictList";
+import TalukList from "../views/Geography/Taluks/TalukList";
+import GramPanchayatList from "../views/Geography/GramPanchayats/GramPanchayatList";
+import VillageList from "../views/Geography/Villages/VillageList";
+
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
   const { pathname } = useLocation();
@@ -92,6 +100,31 @@ const routerConfig = [
       {
         path: "services/categories/:id/edit",
         element: <CategoryEdit />,
+      },
+      // Geography Routes
+      {
+        path: "geography",
+        element: <NationalDashboard />,
+      },
+      {
+        path: "geography/states",
+        element: <StateList />,
+      },
+      {
+        path: "geography/districts",
+        element: <DistrictList />,
+      },
+      {
+        path: "geography/taluks",
+        element: <TalukList />,
+      },
+      {
+        path: "geography/gram-panchayats",
+        element: <GramPanchayatList />,
+      },
+      {
+        path: "geography/villages",
+        element: <VillageList />,
       },
       // Other Routes (Placeholders)
       {

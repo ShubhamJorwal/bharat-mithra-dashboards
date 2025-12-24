@@ -15,7 +15,8 @@ import {
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
   HiOutlineChevronDown,
-  HiOutlineCog
+  HiOutlineCog,
+  HiOutlineGlobe
 } from 'react-icons/hi';
 import './Sidebar.scss';
 
@@ -46,6 +47,20 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
 
   const mainNavItems: NavItem[] = [
     { path: '/', icon: HiOutlineHome, label: 'Dashboard', badge: null },
+    {
+      path: '/geography',
+      icon: HiOutlineGlobe,
+      label: 'Geography',
+      badge: null,
+      subItems: [
+        { path: '/geography', label: 'India Overview' },
+        { path: '/geography/states', label: 'States & UTs' },
+        { path: '/geography/districts', label: 'Districts' },
+        { path: '/geography/taluks', label: 'Taluks' },
+        { path: '/geography/gram-panchayats', label: 'Gram Panchayats' },
+        { path: '/geography/villages', label: 'Villages' },
+      ]
+    },
     {
       path: '/services',
       icon: HiOutlineCollection,

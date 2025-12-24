@@ -504,3 +504,376 @@ export interface UsersQueryParams extends PaginationParams {
 }
 
 export type RequestConfig = AxiosRequestConfig;
+
+// ==========================================
+// GEOGRAPHY API TYPES - India Administrative Data
+// ==========================================
+
+// National Summary
+export interface NationalSummary {
+  country: string;
+  country_hindi: string;
+  capital: string;
+  total_states: number;
+  total_union_territories: number;
+  total_districts: number;
+  total_taluks: number;
+  total_gram_panchayats: number;
+  total_villages: number;
+  total_municipalities: number;
+  zones: {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+    central: number;
+    northeast: number;
+  };
+}
+
+// State / Union Territory
+export interface State {
+  id: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  iso_code?: string;
+  state_type: 'state' | 'union_territory';
+  zone: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
+  capital?: string;
+  largest_city?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  official_languages?: string[];
+  total_districts: number;
+  total_taluks: number;
+  total_gram_panchayats: number;
+  total_villages: number;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateStateRequest {
+  name: string;
+  name_hindi?: string;
+  code: string;
+  iso_code?: string;
+  state_type: 'state' | 'union_territory';
+  zone: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
+  capital?: string;
+  largest_city?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  official_languages?: string[];
+  sort_order?: number;
+}
+
+export interface UpdateStateRequest {
+  name?: string;
+  name_hindi?: string;
+  code?: string;
+  iso_code?: string;
+  state_type?: 'state' | 'union_territory';
+  zone?: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
+  capital?: string;
+  largest_city?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  official_languages?: string[];
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// District
+export interface District {
+  id: string;
+  state_id: string;
+  state_name?: string;
+  state_code?: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  total_taluks: number;
+  total_gram_panchayats: number;
+  total_villages: number;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateDistrictRequest {
+  state_id: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  sort_order?: number;
+}
+
+export interface UpdateDistrictRequest {
+  name?: string;
+  name_hindi?: string;
+  code?: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  literacy_rate?: number;
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// Taluk / Tehsil / Mandal / Block
+export interface Taluk {
+  id: string;
+  district_id: string;
+  state_id: string;
+  district_name?: string;
+  state_name?: string;
+  state_code?: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  total_gram_panchayats: number;
+  total_villages: number;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateTalukRequest {
+  district_id: string;
+  state_id: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  sort_order?: number;
+}
+
+export interface UpdateTalukRequest {
+  name?: string;
+  name_hindi?: string;
+  code?: string;
+  headquarters?: string;
+  area_sq_km?: number;
+  population?: number;
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// Gram Panchayat
+export interface GramPanchayat {
+  id: string;
+  taluk_id: string;
+  district_id: string;
+  state_id: string;
+  taluk_name?: string;
+  district_name?: string;
+  state_name?: string;
+  state_code?: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  lgd_code?: string;
+  pin_code?: string;
+  sarpanch_name?: string;
+  sarpanch_mobile?: string;
+  latitude?: number;
+  longitude?: number;
+  population?: number;
+  households?: number;
+  total_villages: number;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateGramPanchayatRequest {
+  taluk_id: string;
+  district_id: string;
+  state_id: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  lgd_code?: string;
+  pin_code?: string;
+  sarpanch_name?: string;
+  sarpanch_mobile?: string;
+  latitude?: number;
+  longitude?: number;
+  population?: number;
+  households?: number;
+  sort_order?: number;
+}
+
+export interface UpdateGramPanchayatRequest {
+  name?: string;
+  name_hindi?: string;
+  code?: string;
+  lgd_code?: string;
+  pin_code?: string;
+  sarpanch_name?: string;
+  sarpanch_mobile?: string;
+  latitude?: number;
+  longitude?: number;
+  population?: number;
+  households?: number;
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// Village
+export interface Village {
+  id: string;
+  gram_panchayat_id: string;
+  taluk_id: string;
+  district_id: string;
+  state_id: string;
+  gram_panchayat_name?: string;
+  taluk_name?: string;
+  district_name?: string;
+  state_name?: string;
+  state_code?: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  census_code?: string;
+  lgd_code?: string;
+  pin_code?: string;
+  population?: number;
+  male_population?: number;
+  female_population?: number;
+  households?: number;
+  area_sq_km?: number;
+  area_hectares?: number;
+  latitude?: number;
+  longitude?: number;
+  // Village Head
+  village_head_name?: string;
+  village_head_mobile?: string;
+  // Amenities
+  has_primary_school?: boolean;
+  has_middle_school?: boolean;
+  has_high_school?: boolean;
+  has_primary_health_center?: boolean;
+  has_post_office?: boolean;
+  has_bank?: boolean;
+  has_atm?: boolean;
+  has_bus_stop?: boolean;
+  has_railway_station?: boolean;
+  has_electricity?: boolean;
+  has_tap_water?: boolean;
+  has_internet?: boolean;
+  is_active: boolean;
+  sort_order?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateVillageRequest {
+  gram_panchayat_id: string;
+  taluk_id: string;
+  district_id: string;
+  state_id: string;
+  name: string;
+  name_hindi?: string;
+  code: string;
+  census_code?: string;
+  lgd_code?: string;
+  pin_code?: string;
+  population?: number;
+  male_population?: number;
+  female_population?: number;
+  households?: number;
+  area_sq_km?: number;
+  latitude?: number;
+  longitude?: number;
+  has_primary_school?: boolean;
+  has_middle_school?: boolean;
+  has_high_school?: boolean;
+  has_primary_health_center?: boolean;
+  has_post_office?: boolean;
+  has_bank?: boolean;
+  has_atm?: boolean;
+  has_bus_stop?: boolean;
+  has_railway_station?: boolean;
+  has_electricity?: boolean;
+  has_tap_water?: boolean;
+  has_internet?: boolean;
+  sort_order?: number;
+}
+
+export interface UpdateVillageRequest {
+  name?: string;
+  name_hindi?: string;
+  code?: string;
+  census_code?: string;
+  lgd_code?: string;
+  pin_code?: string;
+  population?: number;
+  male_population?: number;
+  female_population?: number;
+  households?: number;
+  area_sq_km?: number;
+  latitude?: number;
+  longitude?: number;
+  has_primary_school?: boolean;
+  has_middle_school?: boolean;
+  has_high_school?: boolean;
+  has_primary_health_center?: boolean;
+  has_post_office?: boolean;
+  has_bank?: boolean;
+  has_atm?: boolean;
+  has_bus_stop?: boolean;
+  has_railway_station?: boolean;
+  has_electricity?: boolean;
+  has_tap_water?: boolean;
+  has_internet?: boolean;
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// Geography Search Result
+export interface GeographySearchResult {
+  id: string;
+  type: 'state' | 'district' | 'taluk' | 'gram_panchayat' | 'village';
+  name: string;
+  name_hindi?: string;
+  code: string;
+  parent_name?: string;
+  full_path: string;
+}
+
+// Geography Query Params
+export interface GeographyQueryParams extends PaginationParams {
+  search?: string;
+  state_id?: string;
+  district_id?: string;
+  taluk_id?: string;
+  gram_panchayat_id?: string;
+  state_type?: 'state' | 'union_territory';
+  zone?: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
+  is_active?: boolean;
+  sort_by?: string;
+  sort_order?: 0 | 1; // 0 = DESC, 1 = ASC
+}
