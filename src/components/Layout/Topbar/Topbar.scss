@@ -1,115 +1,229 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
+// Navy Blue Theme Colors
+$navy-dark: #0a1628;
+$navy-primary: #0f1d32;
+$navy-light: #162544;
+$navy-accent: #1e3a5f;
+
 .bm-topbar {
   width: 100%;
   height: 48px;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--color-border-light);
+  background: linear-gradient(135deg, $navy-dark 0%, $navy-primary 50%, $navy-dark 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  padding: 0 20px;
-  gap: 20px;
-}
-
-// Brand with Gradient
-.bm-topbar-brand {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  position: relative;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 16px;
 
-  // Subtle glow effect
-  // &::after {
-  //   content: '';
-  //   position: absolute;
-  //   bottom: -4px;
-  //   left: 0;
-  //   right: 0;
-  //   height: 2px;
-  //   background: linear-gradient(90deg, #5D4037, #C62828, #2E7D32);
-  //   border-radius: 1px;
-  //   opacity: 0.3;
-  // }
-}
-
-.bm-brand-bharat {
-  background: linear-gradient(135deg, #5D4037, #8D6E63);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.bm-brand-dot {
-  color: #C62828;
-  margin: 0 2px;
-  animation: pulseDot 2s ease-in-out infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.bm-brand-mithra {
-  background: linear-gradient(135deg, #2E7D32, #66BB6A);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// Search - Centered with Glass Effect
-.bm-topbar-search {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border-light);
-  border-radius: $radius-lg;
-  padding: 0 14px;
-  height: 34px;
-  transition: all 0.2s ease;
-  position: relative;
-
+  // Subtle animated gradient overlay
   &::before {
     content: '';
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(59, 130, 246, 0.03) 25%,
+      rgba(139, 92, 246, 0.03) 50%,
+      rgba(59, 130, 246, 0.03) 75%,
+      transparent 100%
+    );
+    animation: shimmer 8s ease-in-out infinite;
     pointer-events: none;
-    z-index: -1;
+  }
+}
+
+// Left Section
+.bm-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+// Center Section - Dashboard Info (Clickable Profile)
+.bm-topbar-center {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.bm-dashboard-info {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 0px 5px 10px;
+  // background: rgba(255, 255, 255, 0.06);
+  // border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover,
+  &.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  &:focus-within {
-    border-color: var(--color-primary);
-    background: var(--color-background);
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+  .bm-avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    font-weight: 400;
+    flex-shrink: 0;
+  }
+}
 
-    &::before {
-      opacity: 1;
-    }
+.bm-dashboard-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.bm-dashboard-divider {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+}
+
+.bm-agent-name {
+  font-size: 13px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bm-dropdown-arrow {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.2s ease;
+  // margin-left: 4px;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+// Menu Button
+.bm-menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  @include flex-center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+
+  svg {
+    font-size: 20px;
+  }
+}
+
+// Navigation Controls
+.bm-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.bm-nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-md;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  @include flex-center;
+  transition: all 0.15s ease;
+
+  &:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  svg {
+    font-size: 16px;
+  }
+}
+
+.bm-history-btn {
+  margin-left: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 0px;
+  // padding-left
+}
+
+// History Dropdown
+.bm-history-wrapper {
+  position: relative;
+}
+
+// Search Wrapper
+.bm-search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 360px;
+}
+
+.bm-topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-sm;
+  padding: 0 5px;
+  height: 30px;
+  transition: all 0.2s ease;
+
+  &:focus-within,
+  &.focused {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   }
 }
 
 .bm-search-icon {
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 16px;
   flex-shrink: 0;
 }
@@ -119,12 +233,13 @@
   height: 100%;
   border: none;
   background: transparent;
-  color: var(--color-text);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 500;
+  min-width: 0;
 
   &::placeholder {
-    color: var(--color-text-secondary);
+    color: rgba(255, 255, 255, 0.4);
   }
 
   &:focus {
@@ -133,14 +248,165 @@
 }
 
 .bm-search-shortcut {
-  font-size: 11px;
+  font-size: 10px;
   font-family: inherit;
   font-weight: 600;
-  padding: 3px 8px;
-  background: linear-gradient(135deg, var(--color-background-secondary), var(--color-background));
-  border: 1px solid var(--color-border-light);
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: $radius-sm;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+// Search Dropdown
+.bm-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  min-width: 320px;
+  border-radius: $radius-lg;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: dropdownSlide 0.2s ease;
+  overflow: hidden;
+}
+
+.bm-search-dropdown-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  span {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.bm-search-suggestions {
+  padding: 6px;
+}
+
+.bm-search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
   border-radius: $radius-md;
-  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.bm-suggestion-icon {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.bm-suggestion-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.bm-suggestion-type {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-radius: $radius-sm;
+  text-transform: capitalize;
+}
+
+.bm-search-dropdown-footer {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  span {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+
+    kbd {
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: $radius-sm;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0 2px;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(-100%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+}
+
+// Bharat Mithra Brand with Indian Flag Colors
+.bm-topbar-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.bm-brand-bharat {
+  background: linear-gradient(135deg, #ff9933, #ffb366);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(255, 153, 51, 0.3);
+}
+
+.bm-brand-dot {
+  color: #ffffff;
+  margin: 0 2px;
+  font-size: 24px;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.9); }
+}
+
+.bm-brand-mithra {
+  background: linear-gradient(135deg, #138808, #4caf50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(19, 136, 8, 0.3);
+}
+
+// Divider between logo and menu
+.bm-topbar-divider {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  margin: 0 8px;
 }
 
 // Actions - Right aligned
@@ -148,15 +414,18 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
 }
 
 .bm-action-btn {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border-radius: $radius-lg;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   @include flex-center;
   position: relative;
@@ -164,14 +433,15 @@
 
   &:hover,
   &.active {
-    background: rgba(var(--color-primary-rgb), 0.08);
-    border-color: rgba(var(--color-primary-rgb), 0.1);
-    color: var(--color-primary);
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   svg {
-    font-size: 18px;
+    font-size: 22px;
   }
 }
 
@@ -184,7 +454,7 @@
   padding: 0 4px;
   font-size: 10px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-danger), #ff6b6b);
+  background: linear-gradient(135deg, #ef4444, #f87171);
   color: #fff;
   border-radius: $radius-full;
   @include flex-center;
@@ -204,19 +474,230 @@
   position: relative;
 }
 
-.bm-notification-dropdown,
-.bm-profile-dropdown {
+// Dark Dropdown Base Styles
+.bm-dark-dropdown {
+  background: linear-gradient(135deg, $navy-dark 0%, $navy-primary 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+  .bm-dropdown-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    span {
+      color: #ffffff;
+
+      &::before {
+        background: linear-gradient(180deg, #60a5fa, #a78bfa);
+      }
+    }
+  }
+
+  .bm-dropdown-footer {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    button {
+      color: #60a5fa;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.1);
+      }
+    }
+  }
+
+  .bm-dropdown-divider {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  .bm-mark-read {
+    color: #60a5fa;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.15);
+    }
+  }
+
+  .bm-notification-item {
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &.unread {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+
+      &::before {
+        background: #60a5fa;
+      }
+    }
+
+    &::after {
+      background: linear-gradient(180deg, #60a5fa, #a78bfa);
+    }
+  }
+
+  .bm-notification-title {
+    color: #ffffff;
+  }
+
+  .bm-notification-message {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .bm-notification-time {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .bm-history-item {
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.current {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
+
+      .bm-history-title {
+        color: #60a5fa;
+      }
+
+      &::before {
+        background: #60a5fa;
+      }
+    }
+  }
+
+  .bm-history-title {
+    color: #ffffff;
+  }
+
+  .bm-history-time {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .bm-profile-name {
+    color: #ffffff;
+  }
+
+  .bm-profile-email {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .bm-dropdown-item {
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.12), transparent);
+      color: #ffffff;
+    }
+
+    svg {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:hover svg {
+      color: #60a5fa;
+    }
+
+    &.bm-logout {
+      color: #f87171;
+
+      svg {
+        color: #f87171;
+      }
+
+      &:hover {
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.12), transparent);
+      }
+    }
+  }
+
+  .bm-avatar {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
+    &::after {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.bm-history-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: 0;
-  background: var(--color-background);
-  border: 1px solid var(--color-border-light);
+  left: 0;
+  width: 280px;
   border-radius: $radius-lg;
-  box-shadow: var(--shadow-xl);
   z-index: 1000;
   animation: dropdownSlide 0.2s ease;
   overflow: hidden;
-  backdrop-filter: var(--glass-blur);
+}
+
+.bm-history-list {
+  max-height: 320px;
+  overflow-y: auto;
+  @include custom-scrollbar;
+  padding: $spacing-xs 0;
+}
+
+.bm-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: $spacing-sm $spacing-lg;
+  background: none;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  position: relative;
+}
+
+.bm-history-title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.bm-history-time {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.bm-notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  border-radius: $radius-lg;
+  z-index: 1000;
+  animation: dropdownSlide 0.2s ease;
+  overflow: hidden;
+}
+
+.bm-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: $radius-lg;
+  z-index: 1000;
+  animation: dropdownSlideCenter 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes dropdownSlideCenter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 @keyframes dropdownSlide {
@@ -239,13 +720,11 @@
   align-items: center;
   justify-content: space-between;
   padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid var(--color-border-light);
-  background: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid;
 
   span {
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-text);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -254,7 +733,6 @@
       content: '';
       width: 4px;
       height: 14px;
-      background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
       border-radius: 2px;
     }
   }
@@ -263,17 +741,12 @@
 .bm-mark-read {
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: $radius-md;
   transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(var(--color-primary-rgb), 0.1);
-  }
 }
 
 .bm-notification-list {
@@ -298,13 +771,11 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
     opacity: 0;
     transition: opacity 0.2s ease;
   }
 
   &:hover {
-    background: rgba(var(--color-primary-rgb), 0.03);
     padding-left: calc($spacing-lg + 4px);
 
     &::after {
@@ -313,8 +784,6 @@
   }
 
   &.unread {
-    background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.06), transparent);
-
     .bm-notification-title {
       font-weight: 600;
     }
@@ -327,7 +796,6 @@
       transform: translateY(-50%);
       width: 8px;
       height: 8px;
-      background: var(--color-primary);
       border-radius: 50%;
     }
   }
@@ -342,14 +810,12 @@
   display: block;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text);
   margin-bottom: 3px;
 }
 
 .bm-notification-message {
   display: block;
   font-size: 12px;
-  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -357,30 +823,23 @@
 
 .bm-notification-time {
   font-size: 11px;
-  color: var(--color-text-secondary);
   flex-shrink: 0;
 }
 
 .bm-dropdown-footer {
   padding: $spacing-sm $spacing-lg;
-  border-top: 1px solid var(--color-border-light);
-  background: rgba(255, 255, 255, 0.3);
+  border-top: 1px solid;
 
   button {
     width: 100%;
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
     padding: $spacing-sm 0;
     border-radius: $radius-md;
     transition: background 0.2s ease;
-
-    &:hover {
-      background: rgba(var(--color-primary-rgb), 0.05);
-    }
   }
 }
 
@@ -395,12 +854,12 @@
 
   &:hover,
   &.active {
-    background: rgba(var(--color-primary-rgb), 0.05);
-    border-color: rgba(var(--color-primary-rgb), 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
 
     .bm-avatar {
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
   }
 }
@@ -409,11 +868,11 @@
   width: 30px;
   height: 30px;
   border-radius: $radius-lg;
-  // background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  // background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   @include flex-center;
   font-size: 12px;
   font-weight: 700;
-  color: black;
+  color: white;
   transition: all 0.2s ease;
   position: relative;
 
@@ -422,7 +881,7 @@
     position: absolute;
     inset: -2px;
     border-radius: inherit;
-    border: 2px solid rgba(var(--color-primary-rgb), 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
   &.bm-avatar-lg {
@@ -453,13 +912,11 @@
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-text);
 }
 
 .bm-profile-email {
   display: block;
   font-size: 12px;
-  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -467,7 +924,6 @@
 
 .bm-dropdown-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-border-light), transparent);
   margin: $spacing-sm 0;
 }
 
@@ -485,75 +941,43 @@
   border: none;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text);
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
 
   &:hover {
-    background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.08), transparent);
     padding-left: calc($spacing-lg + 4px);
   }
 
   svg {
     font-size: 16px;
-    color: var(--color-text-secondary);
     transition: transform 0.2s ease;
   }
 
   &:hover svg {
     transform: scale(1.1);
   }
-
-  &.bm-logout {
-    color: var(--color-danger);
-
-    svg {
-      color: var(--color-danger);
-    }
-
-    &:hover {
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.08), transparent);
-    }
-  }
 }
 
-// Dark mode
-body.dark-mode {
-  .bm-topbar {
-    background: var(--color-background-secondary);
-    backdrop-filter: none;
-  }
+// Custom scrollbar for dark dropdowns
+.bm-dark-dropdown {
+  .bm-notification-list,
+  .bm-history-list {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
 
-  .bm-topbar-search {
-    background: var(--color-background);
-  }
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
 
-  .bm-notification-dropdown,
-  .bm-profile-dropdown {
-    background: var(--color-background-secondary);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
 
-  .bm-dropdown-header {
-    background: var(--color-background);
-  }
-
-  .bm-dropdown-footer {
-    background: var(--color-background);
-  }
-
-  .bm-brand-bharat {
-    background: linear-gradient(135deg, #A1887F, #BCAAA4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .bm-brand-mithra {
-    background: linear-gradient(135deg, #81C784, #A5D6A7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
   }
 }

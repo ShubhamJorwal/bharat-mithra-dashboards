@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENOME Services API Documentation</title>
+</head>
+<body>
+<h1>GENOME Services API Documentation</h1>
+<p><strong>Base URL:</strong> <code>http://genome-alb-1599622395.ap-south-1.elb.amazonaws.com/api/v1</code></p>
+
+<hr>
+
+<!-- ==================== CATEGORIES ==================== -->
+<h2>1. CATEGORIES API</h2>
+
+<h3>1.1 Get Active Categories</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories
+
+<strong>Description:</strong> Get all active categories (for public use)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Categories fetched successfully",
+    "data": [
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440001",
+            "name": "Certificates",
+            "name_hindi": "प्रमाण पत्र",
+            "slug": "certificates",
+            "description": "All certificate related services",
+            "icon_url": "https://cdn.example.com/icons/certificates.png",
+            "parent_id": null,
+            "sort_order": 1,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440002",
+            "name": "Land Records",
+            "name_hindi": "भूमि अभिलेख",
+            "slug": "land-records",
+            "description": "Land and property related services",
+            "icon_url": "https://cdn.example.com/icons/land.png",
+            "parent_id": null,
+            "sort_order": 2,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+        }
+    ]
+}
+</pre>
+
+<h3>1.2 Get All Categories (Admin)</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories/all?include_inactive=true
+
+<strong>Description:</strong> Get all categories including inactive ones (for admin)
+
+<strong>Query Parameters:</strong>
+- include_inactive: boolean (optional, default: false)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "All categories fetched successfully",
+    "data": [
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440001",
+            "name": "Certificates",
+            "name_hindi": "प्रमाण पत्र",
+            "slug": "certificates",
+            "description": "All certificate related services",
+            "icon_url": "https://cdn.example.com/icons/certificates.png",
+            "parent_id": null,
+            "sort_order": 1,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+        }
+    ]
+}
+</pre>
+
+<h3>1.3 Create Category</h3>
+<pre>
+<strong>POST</strong> /api/v1/categories
+
+<strong>Description:</strong> Create a new category
+
+<strong>Request Body:</strong>
+{
+    "name": "Certificates",
+    "name_hindi": "प्रमाण पत्र",
+    "slug": "certificates",
+    "description": "All certificate related services",
+    "icon_url": "https://cdn.example.com/icons/certificates.png",
+    "parent_id": null,
+    "sort_order": 1
+}
+
+<strong>Required Fields:</strong>
+- name (string, min: 2, max: 100)
+
+<strong>Optional Fields:</strong>
+- name_hindi (string)
+- slug (string) - auto-generated from name if not provided
+- description (string)
+- icon_url (string)
+- parent_id (uuid) - for subcategories
+- sort_order (integer, default: 0)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Category created successfully",
+    "data": {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Certificates",
+        "name_hindi": "प्रमाण पत्र",
+        "slug": "certificates",
+        "description": "All certificate related services",
+        "icon_url": "https://cdn.example.com/icons/certificates.png",
+        "parent_id": null,
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>1.4 Get Category by ID</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories/:id
+
+<strong>Example:</strong> GET /api/v1/categories/550e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Category fetched successfully",
+    "data": {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Certificates",
+        "name_hindi": "प्रमाण पत्र",
+        "slug": "certificates",
+        "description": "All certificate related services",
+        "icon_url": "https://cdn.example.com/icons/certificates.png",
+        "parent_id": null,
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>1.5 Get Category by Slug</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories/slug/:slug
+
+<strong>Example:</strong> GET /api/v1/categories/slug/certificates
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Category fetched successfully",
+    "data": {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Certificates",
+        "name_hindi": "प्रमाण पत्र",
+        "slug": "certificates",
+        "description": "All certificate related services",
+        "icon_url": "https://cdn.example.com/icons/certificates.png",
+        "parent_id": null,
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>1.6 Get Subcategories</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories/:id/subcategories
+
+<strong>Description:</strong> Get all subcategories of a parent category
+
+<strong>Example:</strong> GET /api/v1/categories/550e8400-e29b-41d4-a716-446655440001/subcategories
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Subcategories fetched successfully",
+    "data": [
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440010",
+            "name": "Caste Certificates",
+            "name_hindi": "जाति प्रमाण पत्र",
+            "slug": "caste-certificates",
+            "description": "Caste related certificates",
+            "icon_url": null,
+            "parent_id": "550e8400-e29b-41d4-a716-446655440001",
+            "sort_order": 1,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+        }
+    ]
+}
+</pre>
+
+<h3>1.7 Get Services by Category</h3>
+<pre>
+<strong>GET</strong> /api/v1/categories/:id/services
+
+<strong>Description:</strong> Get all services under a category
+
+<strong>Example:</strong> GET /api/v1/categories/550e8400-e29b-41d4-a716-446655440001/services
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Services fetched successfully",
+    "data": [
+        {
+            "id": "660e8400-e29b-41d4-a716-446655440001",
+            "category_id": "550e8400-e29b-41d4-a716-446655440001",
+            "name": "Caste Certificate",
+            "name_hindi": "जाति प्रमाण पत्र",
+            "slug": "caste-certificate",
+            "description": "Apply for caste certificate",
+            "description_hindi": "जाति प्रमाण पत्र के लिए आवेदन करें",
+            "department": "Revenue Department",
+            "department_hindi": "राजस्व विभाग",
+            "service_fee": 50.00,
+            "platform_fee": 10.00,
+            "total_fee": 60.00,
+            "processing_time": "7-15 days",
+            "is_active": true,
+            "is_popular": true,
+            "is_featured": false
+        }
+    ]
+}
+</pre>
+
+<h3>1.8 Update Category</h3>
+<pre>
+<strong>PUT</strong> /api/v1/categories/:id
+
+<strong>Example:</strong> PUT /api/v1/categories/550e8400-e29b-41d4-a716-446655440001
+
+<strong>Request Body:</strong> (all fields optional)
+{
+    "name": "Certificates & Documents",
+    "name_hindi": "प्रमाण पत्र और दस्तावेज",
+    "slug": "certificates-documents",
+    "description": "Updated description",
+    "icon_url": "https://cdn.example.com/icons/certificates-new.png",
+    "parent_id": null,
+    "is_active": true,
+    "sort_order": 1
+}
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Category updated successfully",
+    "data": {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Certificates & Documents",
+        "name_hindi": "प्रमाण पत्र और दस्तावेज",
+        "slug": "certificates-documents",
+        "description": "Updated description",
+        "icon_url": "https://cdn.example.com/icons/certificates-new.png",
+        "parent_id": null,
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-16T14:00:00Z"
+    }
+}
+</pre>
+
+<h3>1.9 Delete Category</h3>
+<pre>
+<strong>DELETE</strong> /api/v1/categories/:id
+
+<strong>Description:</strong> Soft delete a category (sets is_active to false)
+
+<strong>Example:</strong> DELETE /api/v1/categories/550e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Category deleted successfully"
+}
+</pre>
+
+<hr>
+
+<!-- ==================== SERVICES ==================== -->
+<h2>2. SERVICES API</h2>
+
+<h3>2.1 Get Services (Paginated)</h3>
+<pre>
+<strong>GET</strong> /api/v1/services?page=1&limit=20&category_id=uuid
+
+<strong>Query Parameters:</strong>
+- page: integer (default: 1)
+- limit: integer (default: 20, max: 100)
+- category_id: uuid (optional) - filter by category
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Services fetched successfully",
+    "data": [
+        {
+            "id": "660e8400-e29b-41d4-a716-446655440001",
+            "category_id": "550e8400-e29b-41d4-a716-446655440001",
+            "name": "Caste Certificate",
+            "name_hindi": "जाति प्रमाण पत्र",
+            "slug": "caste-certificate",
+            "description": "Apply for caste certificate online",
+            "description_hindi": "ऑनलाइन जाति प्रमाण पत्र के लिए आवेदन करें",
+            "department": "Revenue Department",
+            "department_hindi": "राजस्व विभाग",
+            "ministry": "Ministry of Social Justice",
+            "eligibility_criteria": "Must be a resident of the state",
+            "required_documents": ["Aadhaar Card", "Ration Card", "School Certificate"],
+            "processing_time": "7-15 days",
+            "service_fee": 50.00,
+            "platform_fee": 10.00,
+            "total_fee": 60.00,
+            "is_free_service": false,
+            "icon_url": "https://cdn.example.com/icons/caste.png",
+            "banner_url": "https://cdn.example.com/banners/caste.png",
+            "official_url": "https://state.gov.in/caste",
+            "is_active": true,
+            "is_popular": true,
+            "is_featured": true,
+            "total_applications": 15420,
+            "average_rating": 4.5,
+            "available_states": ["UP", "MP", "RJ", "BR"],
+            "available_locations": "all",
+            "form_fields": "{\"sections\":[{\"id\":\"personal\",\"title\":\"Personal Details\",\"fields\":[{\"name\":\"caste\",\"type\":\"select\",\"label\":\"Caste\",\"required\":true}]}]}",
+            "sort_order": 1,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-15T10:30:00Z"
+        }
+    ],
+    "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 45,
+        "total_pages": 3
+    }
+}
+</pre>
+
+<h3>2.2 Get All Services</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/all?page=1&limit=100&include_inactive=false
+
+<strong>Query Parameters:</strong>
+- page: integer (default: 1)
+- limit: integer (default: 100)
+- include_inactive: boolean (default: false)
+
+<strong>Response:</strong> Same as 2.1
+</pre>
+
+<h3>2.3 Get Popular Services</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/popular?limit=10
+
+<strong>Query Parameters:</strong>
+- limit: integer (default: 10)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Popular services fetched successfully",
+    "data": [
+        {
+            "id": "660e8400-e29b-41d4-a716-446655440001",
+            "name": "Caste Certificate",
+            "name_hindi": "जाति प्रमाण पत्र",
+            "slug": "caste-certificate",
+            "total_applications": 15420,
+            "average_rating": 4.5,
+            "is_popular": true,
+            ...
+        }
+    ]
+}
+</pre>
+
+<h3>2.4 Get Featured Services</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/featured?limit=10
+
+<strong>Query Parameters:</strong>
+- limit: integer (default: 10)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Featured services fetched successfully",
+    "data": [...]
+}
+</pre>
+
+<h3>2.5 Search Services</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/search?q=caste&page=1&limit=20
+
+<strong>Query Parameters:</strong>
+- q: string (required) - search query
+- page: integer (default: 1)
+- limit: integer (default: 20)
+
+<strong>Description:</strong> Searches in name, name_hindi, description, department, slug
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Search results",
+    "data": [...],
+    "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 5,
+        "total_pages": 1
+    }
+}
+</pre>
+
+<h3>2.6 Create Service</h3>
+<pre>
+<strong>POST</strong> /api/v1/services
+
+<strong>Request Body:</strong>
+{
+    "category_id": "550e8400-e29b-41d4-a716-446655440001",
+    "name": "Caste Certificate",
+    "name_hindi": "जाति प्रमाण पत्र",
+    "slug": "caste-certificate",
+    "description": "Apply for caste certificate online. This certificate is required for various government schemes and reservations.",
+    "description_hindi": "ऑनलाइन जाति प्रमाण पत्र के लिए आवेदन करें। यह प्रमाण पत्र विभिन्न सरकारी योजनाओं और आरक्षण के लिए आवश्यक है।",
+    "department": "Revenue Department",
+    "department_hindi": "राजस्व विभाग",
+    "ministry": "Ministry of Social Justice",
+    "eligibility_criteria": "Must be a permanent resident of the state. Applicant must belong to SC/ST/OBC category.",
+    "required_documents": [
+        "Aadhaar Card",
+        "Ration Card",
+        "School Leaving Certificate",
+        "Father's Caste Certificate",
+        "Residence Proof"
+    ],
+    "processing_time": "7-15 working days",
+    "service_fee": 50.00,
+    "platform_fee": 10.00,
+    "is_free_service": false,
+    "icon_url": "https://cdn.example.com/icons/caste.png",
+    "banner_url": "https://cdn.example.com/banners/caste.png",
+    "official_url": "https://state.gov.in/caste-certificate",
+    "is_popular": true,
+    "is_featured": true,
+    "available_states": ["UP", "MP", "RJ", "BR", "JH", "CG"],
+    "available_locations": "all",
+    "form_fields": "{\"sections\":[{\"id\":\"personal\",\"title\":\"Personal Details\",\"title_hindi\":\"व्यक्तिगत विवरण\",\"fields\":[{\"name\":\"applicant_caste\",\"type\":\"select\",\"label\":\"Caste\",\"label_hindi\":\"जाति\",\"required\":true,\"options\":[{\"value\":\"sc\",\"label\":\"Scheduled Caste\"},{\"value\":\"st\",\"label\":\"Scheduled Tribe\"},{\"value\":\"obc\",\"label\":\"Other Backward Class\"}]},{\"name\":\"sub_caste\",\"type\":\"text\",\"label\":\"Sub-Caste\",\"label_hindi\":\"उप-जाति\",\"required\":true}]}]}",
+    "sort_order": 1
+}
+
+<strong>Required Fields:</strong>
+- category_id (uuid)
+- name (string, min: 2, max: 200)
+- description (string)
+- department (string)
+
+<strong>Optional Fields:</strong>
+- name_hindi, description_hindi, department_hindi (strings)
+- slug (auto-generated if not provided)
+- ministry, eligibility_criteria (strings)
+- required_documents (array of strings)
+- processing_time (string)
+- service_fee, platform_fee (decimal, default: 0)
+- is_free_service (boolean, default: false)
+- icon_url, banner_url, official_url (strings)
+- is_popular, is_featured (boolean, default: false)
+- available_states (array of state codes)
+- available_locations (string)
+- form_fields (JSON string - for dynamic form fields)
+- sort_order (integer, default: 0)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Service created successfully",
+    "data": {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        "category_id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Caste Certificate",
+        "name_hindi": "जाति प्रमाण पत्र",
+        "slug": "caste-certificate",
+        "description": "Apply for caste certificate online...",
+        "description_hindi": "ऑनलाइन जाति प्रमाण पत्र...",
+        "department": "Revenue Department",
+        "department_hindi": "राजस्व विभाग",
+        "ministry": "Ministry of Social Justice",
+        "eligibility_criteria": "Must be a permanent resident...",
+        "required_documents": ["Aadhaar Card", "Ration Card", ...],
+        "processing_time": "7-15 working days",
+        "service_fee": 50.00,
+        "platform_fee": 10.00,
+        "total_fee": 60.00,
+        "is_free_service": false,
+        "icon_url": "https://cdn.example.com/icons/caste.png",
+        "banner_url": "https://cdn.example.com/banners/caste.png",
+        "official_url": "https://state.gov.in/caste-certificate",
+        "is_active": true,
+        "is_popular": true,
+        "is_featured": true,
+        "total_applications": 0,
+        "average_rating": 0,
+        "available_states": ["UP", "MP", "RJ", "BR", "JH", "CG"],
+        "available_locations": "all",
+        "form_fields": "{...}",
+        "sort_order": 1,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>2.7 Get Service by ID</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/:id
+
+<strong>Example:</strong> GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Service fetched successfully",
+    "data": {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        "category_id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Caste Certificate",
+        "name_hindi": "जाति प्रमाण पत्र",
+        "slug": "caste-certificate",
+        "description": "Apply for caste certificate online",
+        "description_hindi": "ऑनलाइन जाति प्रमाण पत्र के लिए आवेदन करें",
+        "department": "Revenue Department",
+        "department_hindi": "राजस्व विभाग",
+        "ministry": "Ministry of Social Justice",
+        "eligibility_criteria": "Must be a resident of the state",
+        "required_documents": ["Aadhaar Card", "Ration Card", "School Certificate"],
+        "processing_time": "7-15 days",
+        "service_fee": 50.00,
+        "platform_fee": 10.00,
+        "total_fee": 60.00,
+        "is_free_service": false,
+        "icon_url": "https://cdn.example.com/icons/caste.png",
+        "banner_url": "https://cdn.example.com/banners/caste.png",
+        "official_url": "https://state.gov.in/caste",
+        "is_active": true,
+        "is_popular": true,
+        "is_featured": true,
+        "total_applications": 15420,
+        "average_rating": 4.5,
+        "available_states": ["UP", "MP", "RJ", "BR"],
+        "available_locations": "all",
+        "form_fields": "{...}",
+        "sort_order": 1,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z",
+        "category": {
+            "id": "550e8400-e29b-41d4-a716-446655440001",
+            "name": "Certificates",
+            "name_hindi": "प्रमाण पत्र",
+            "slug": "certificates"
+        }
+    }
+}
+</pre>
+
+<h3>2.8 Get Service by Slug</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/slug/:slug
+
+<strong>Example:</strong> GET /api/v1/services/slug/caste-certificate
+
+<strong>Response:</strong> Same as 2.7
+</pre>
+
+<h3>2.9 Update Service</h3>
+<pre>
+<strong>PUT</strong> /api/v1/services/:id
+
+<strong>Example:</strong> PUT /api/v1/services/660e8400-e29b-41d4-a716-446655440001
+
+<strong>Request Body:</strong> (all fields optional)
+{
+    "category_id": "550e8400-e29b-41d4-a716-446655440002",
+    "name": "Caste Certificate (Updated)",
+    "name_hindi": "जाति प्रमाण पत्र (अपडेट)",
+    "slug": "caste-certificate-updated",
+    "description": "Updated description",
+    "description_hindi": "अपडेट विवरण",
+    "department": "Revenue Department",
+    "department_hindi": "राजस्व विभाग",
+    "ministry": "Ministry of Social Justice",
+    "eligibility_criteria": "Updated eligibility",
+    "required_documents": ["Aadhaar Card", "Ration Card"],
+    "processing_time": "5-10 working days",
+    "service_fee": 40.00,
+    "platform_fee": 10.00,
+    "is_free_service": false,
+    "icon_url": "https://cdn.example.com/icons/caste-new.png",
+    "banner_url": "https://cdn.example.com/banners/caste-new.png",
+    "official_url": "https://state.gov.in/caste-new",
+    "is_active": true,
+    "is_popular": true,
+    "is_featured": false,
+    "available_states": ["UP", "MP"],
+    "available_locations": "urban",
+    "form_fields": "{...updated form fields...}",
+    "sort_order": 2
+}
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Service updated successfully",
+    "data": {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        ...updated fields...
+    }
+}
+</pre>
+
+<h3>2.10 Delete Service</h3>
+<pre>
+<strong>DELETE</strong> /api/v1/services/:id
+
+<strong>Description:</strong> Soft delete a service (sets deleted_at and is_active=false)
+
+<strong>Example:</strong> DELETE /api/v1/services/660e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Service deleted successfully"
+}
+</pre>
+
+<h3>2.11 Get Service Form</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/:id/form
+
+<strong>Description:</strong> Get the active form schema for a service
+
+<strong>Example:</strong> GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001/form
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form fetched successfully",
+    "data": {
+        "id": "770e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "version": 2,
+        "form_schema": {
+            "title": "Caste Certificate Application",
+            "description": "Fill in the details to apply for caste certificate",
+            "sections": [
+                {
+                    "id": "personal",
+                    "title": "Personal Details",
+                    "title_hindi": "व्यक्तिगत विवरण",
+                    "sort_order": 1,
+                    "fields": [
+                        {
+                            "id": "full_name",
+                            "name": "full_name",
+                            "label": "Full Name",
+                            "label_hindi": "पूरा नाम",
+                            "type": "text",
+                            "placeholder": "Enter your full name",
+                            "required": true,
+                            "sort_order": 1,
+                            "validation": {
+                                "min_length": 2,
+                                "max_length": 100
+                            }
+                        },
+                        {
+                            "id": "caste",
+                            "name": "caste",
+                            "label": "Caste",
+                            "label_hindi": "जाति",
+                            "type": "select",
+                            "required": true,
+                            "sort_order": 2,
+                            "options": [
+                                {"value": "sc", "label": "Scheduled Caste", "label_hindi": "अनुसूचित जाति"},
+                                {"value": "st", "label": "Scheduled Tribe", "label_hindi": "अनुसूचित जनजाति"},
+                                {"value": "obc", "label": "OBC", "label_hindi": "अन्य पिछड़ा वर्ग"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "documents",
+                    "title": "Document Upload",
+                    "title_hindi": "दस्तावेज़ अपलोड",
+                    "sort_order": 2,
+                    "fields": [
+                        {
+                            "id": "aadhaar",
+                            "name": "aadhaar_doc",
+                            "label": "Aadhaar Card",
+                            "label_hindi": "आधार कार्ड",
+                            "type": "file",
+                            "required": true,
+                            "sort_order": 1,
+                            "validation": {
+                                "file_types": ["pdf", "jpg", "png"],
+                                "max_file_size": 2097152
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>2.12 Get Service FAQs</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/:id/faqs
+
+<strong>Example:</strong> GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001/faqs
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "FAQs fetched successfully",
+    "data": [
+        {
+            "id": "880e8400-e29b-41d4-a716-446655440001",
+            "service_id": "660e8400-e29b-41d4-a716-446655440001",
+            "question": "How long does it take to get the certificate?",
+            "question_hindi": "प्रमाण पत्र प्राप्त करने में कितना समय लगता है?",
+            "answer": "The certificate is usually issued within 7-15 working days after successful verification.",
+            "answer_hindi": "सफल सत्यापन के बाद प्रमाण पत्र आमतौर पर 7-15 कार्य दिवसों के भीतर जारी किया जाता है।",
+            "sort_order": 1,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z"
+        },
+        {
+            "id": "880e8400-e29b-41d4-a716-446655440002",
+            "service_id": "660e8400-e29b-41d4-a716-446655440001",
+            "question": "What documents are required?",
+            "question_hindi": "कौन से दस्तावेज आवश्यक हैं?",
+            "answer": "You need Aadhaar Card, Ration Card, and Father's Caste Certificate.",
+            "answer_hindi": "आपको आधार कार्ड, राशन कार्ड और पिता का जाति प्रमाण पत्र चाहिए।",
+            "sort_order": 2,
+            "is_active": true,
+            "created_at": "2024-01-15T10:30:00Z"
+        }
+    ]
+}
+</pre>
+
+<hr>
+
+<!-- ==================== FORMS ==================== -->
+<h2>3. FORMS API</h2>
+
+<h3>3.1 Create Form</h3>
+<pre>
+<strong>POST</strong> /api/v1/forms
+
+<strong>Description:</strong> Create a new form version for a service. Previous versions are automatically deactivated.
+
+<strong>Request Body:</strong>
+{
+    "service_id": "660e8400-e29b-41d4-a716-446655440001",
+    "form_schema": {
+        "title": "Caste Certificate Application Form",
+        "description": "Please fill all required fields",
+        "sections": [
+            {
+                "id": "personal_info",
+                "title": "Personal Information",
+                "title_hindi": "व्यक्तिगत जानकारी",
+                "description": "Enter your personal details",
+                "sort_order": 1,
+                "fields": [
+                    {
+                        "id": "full_name",
+                        "name": "full_name",
+                        "label": "Full Name (as per Aadhaar)",
+                        "label_hindi": "पूरा नाम (आधार के अनुसार)",
+                        "type": "text",
+                        "placeholder": "Enter full name",
+                        "help_text": "Name should match your Aadhaar card",
+                        "required": true,
+                        "sort_order": 1,
+                        "validation": {
+                            "min_length": 2,
+                            "max_length": 100,
+                            "pattern": "^[a-zA-Z\\s]+$",
+                            "pattern_msg": "Only alphabets and spaces allowed"
+                        }
+                    },
+                    {
+                        "id": "dob",
+                        "name": "date_of_birth",
+                        "label": "Date of Birth",
+                        "label_hindi": "जन्म तिथि",
+                        "type": "date",
+                        "required": true,
+                        "sort_order": 2,
+                        "validation": {}
+                    },
+                    {
+                        "id": "gender",
+                        "name": "gender",
+                        "label": "Gender",
+                        "label_hindi": "लिंग",
+                        "type": "select",
+                        "required": true,
+                        "sort_order": 3,
+                        "validation": {},
+                        "options": [
+                            {"value": "male", "label": "Male", "label_hindi": "पुरुष"},
+                            {"value": "female", "label": "Female", "label_hindi": "महिला"},
+                            {"value": "other", "label": "Other", "label_hindi": "अन्य"}
+                        ]
+                    },
+                    {
+                        "id": "caste_category",
+                        "name": "caste_category",
+                        "label": "Caste Category",
+                        "label_hindi": "जाति श्रेणी",
+                        "type": "select",
+                        "required": true,
+                        "sort_order": 4,
+                        "validation": {},
+                        "options": [
+                            {"value": "sc", "label": "Scheduled Caste (SC)", "label_hindi": "अनुसूचित जाति"},
+                            {"value": "st", "label": "Scheduled Tribe (ST)", "label_hindi": "अनुसूचित जनजाति"},
+                            {"value": "obc", "label": "Other Backward Class (OBC)", "label_hindi": "अन्य पिछड़ा वर्ग"}
+                        ]
+                    },
+                    {
+                        "id": "sub_caste",
+                        "name": "sub_caste",
+                        "label": "Sub-Caste",
+                        "label_hindi": "उप-जाति",
+                        "type": "text",
+                        "required": true,
+                        "sort_order": 5,
+                        "validation": {
+                            "max_length": 100
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "address_info",
+                "title": "Address Details",
+                "title_hindi": "पता विवरण",
+                "sort_order": 2,
+                "fields": [
+                    {
+                        "id": "address",
+                        "name": "address",
+                        "label": "Full Address",
+                        "label_hindi": "पूरा पता",
+                        "type": "textarea",
+                        "required": true,
+                        "sort_order": 1,
+                        "validation": {
+                            "max_length": 500
+                        }
+                    },
+                    {
+                        "id": "pincode",
+                        "name": "pincode",
+                        "label": "PIN Code",
+                        "label_hindi": "पिन कोड",
+                        "type": "text",
+                        "required": true,
+                        "sort_order": 2,
+                        "validation": {
+                            "min_length": 6,
+                            "max_length": 6,
+                            "pattern": "^[0-9]{6}$",
+                            "pattern_msg": "Enter valid 6-digit PIN code"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "documents",
+                "title": "Document Upload",
+                "title_hindi": "दस्तावेज़ अपलोड",
+                "sort_order": 3,
+                "fields": [
+                    {
+                        "id": "aadhaar_doc",
+                        "name": "aadhaar_document",
+                        "label": "Aadhaar Card (Front & Back)",
+                        "label_hindi": "आधार कार्ड (आगे और पीछे)",
+                        "type": "file",
+                        "required": true,
+                        "sort_order": 1,
+                        "validation": {
+                            "file_types": ["pdf", "jpg", "jpeg", "png"],
+                            "max_file_size": 2097152
+                        }
+                    },
+                    {
+                        "id": "father_caste_cert",
+                        "name": "father_caste_certificate",
+                        "label": "Father's Caste Certificate",
+                        "label_hindi": "पिता का जाति प्रमाण पत्र",
+                        "type": "file",
+                        "required": true,
+                        "sort_order": 2,
+                        "validation": {
+                            "file_types": ["pdf", "jpg", "jpeg", "png"],
+                            "max_file_size": 2097152
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+<strong>Field Types Supported:</strong>
+- text, textarea, number, email, tel, date, time, datetime
+- select, radio, checkbox, multi-select
+- file (for document uploads)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form created successfully",
+    "data": {
+        "id": "770e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "version": 1,
+        "form_schema": {...},
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>3.2 Get Form by ID</h3>
+<pre>
+<strong>GET</strong> /api/v1/forms/:id
+
+<strong>Example:</strong> GET /api/v1/forms/770e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form fetched successfully",
+    "data": {
+        "id": "770e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "version": 1,
+        "form_schema": {...},
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>3.3 Update Form</h3>
+<pre>
+<strong>PUT</strong> /api/v1/forms/:id
+
+<strong>Example:</strong> PUT /api/v1/forms/770e8400-e29b-41d4-a716-446655440001
+
+<strong>Request Body:</strong>
+{
+    "form_schema": {
+        "title": "Updated Form Title",
+        "sections": [...]
+    },
+    "is_active": true
+}
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form updated successfully",
+    "data": {
+        "id": "770e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "version": 1,
+        "form_schema": {...updated...},
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-16T14:00:00Z"
+    }
+}
+</pre>
+
+<h3>3.4 Delete Form</h3>
+<pre>
+<strong>DELETE</strong> /api/v1/forms/:id
+
+<strong>Example:</strong> DELETE /api/v1/forms/770e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form deleted successfully"
+}
+</pre>
+
+<h3>3.5 Get Form Versions</h3>
+<pre>
+<strong>GET</strong> /api/v1/services/:id/form-versions
+
+<strong>Description:</strong> Get all form versions for a service
+
+<strong>Example:</strong> GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001/form-versions
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "Form versions fetched successfully",
+    "data": [
+        {
+            "id": "770e8400-e29b-41d4-a716-446655440002",
+            "service_id": "660e8400-e29b-41d4-a716-446655440001",
+            "version": 2,
+            "form_schema": {...},
+            "is_active": true,
+            "created_at": "2024-01-20T10:30:00Z",
+            "updated_at": "2024-01-20T10:30:00Z"
+        },
+        {
+            "id": "770e8400-e29b-41d4-a716-446655440001",
+            "service_id": "660e8400-e29b-41d4-a716-446655440001",
+            "version": 1,
+            "form_schema": {...},
+            "is_active": false,
+            "created_at": "2024-01-15T10:30:00Z",
+            "updated_at": "2024-01-20T10:30:00Z"
+        }
+    ]
+}
+</pre>
+
+<hr>
+
+<!-- ==================== FAQs ==================== -->
+<h2>4. FAQs API</h2>
+
+<h3>4.1 Create FAQ</h3>
+<pre>
+<strong>POST</strong> /api/v1/faqs
+
+<strong>Request Body:</strong>
+{
+    "service_id": "660e8400-e29b-41d4-a716-446655440001",
+    "question": "How long does it take to get the certificate?",
+    "question_hindi": "प्रमाण पत्र प्राप्त करने में कितना समय लगता है?",
+    "answer": "The certificate is usually issued within 7-15 working days after successful document verification. You can track your application status online.",
+    "answer_hindi": "सफल दस्तावेज़ सत्यापन के बाद प्रमाण पत्र आमतौर पर 7-15 कार्य दिवसों के भीतर जारी किया जाता है। आप अपने आवेदन की स्थिति ऑनलाइन ट्रैक कर सकते हैं।",
+    "sort_order": 1
+}
+
+<strong>Required Fields:</strong>
+- service_id (uuid)
+- question (string)
+- answer (string)
+
+<strong>Optional Fields:</strong>
+- question_hindi (string)
+- answer_hindi (string)
+- sort_order (integer, default: 0)
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "FAQ created successfully",
+    "data": {
+        "id": "880e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "question": "How long does it take to get the certificate?",
+        "question_hindi": "प्रमाण पत्र प्राप्त करने में कितना समय लगता है?",
+        "answer": "The certificate is usually issued within 7-15 working days...",
+        "answer_hindi": "सफल दस्तावेज़ सत्यापन के बाद...",
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>4.2 Get FAQ by ID</h3>
+<pre>
+<strong>GET</strong> /api/v1/faqs/:id
+
+<strong>Example:</strong> GET /api/v1/faqs/880e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "FAQ fetched successfully",
+    "data": {
+        "id": "880e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "question": "How long does it take to get the certificate?",
+        "question_hindi": "प्रमाण पत्र प्राप्त करने में कितना समय लगता है?",
+        "answer": "The certificate is usually issued within 7-15 working days...",
+        "answer_hindi": "सफल दस्तावेज़ सत्यापन के बाद...",
+        "sort_order": 1,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>4.3 Update FAQ</h3>
+<pre>
+<strong>PUT</strong> /api/v1/faqs/:id
+
+<strong>Example:</strong> PUT /api/v1/faqs/880e8400-e29b-41d4-a716-446655440001
+
+<strong>Request Body:</strong> (all fields optional)
+{
+    "question": "Updated question?",
+    "question_hindi": "अपडेट प्रश्न?",
+    "answer": "Updated answer.",
+    "answer_hindi": "अपडेट उत्तर।",
+    "is_active": true,
+    "sort_order": 2
+}
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "FAQ updated successfully",
+    "data": {
+        "id": "880e8400-e29b-41d4-a716-446655440001",
+        "service_id": "660e8400-e29b-41d4-a716-446655440001",
+        "question": "Updated question?",
+        "question_hindi": "अपडेट प्रश्न?",
+        "answer": "Updated answer.",
+        "answer_hindi": "अपडेट उत्तर।",
+        "sort_order": 2,
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z"
+    }
+}
+</pre>
+
+<h3>4.4 Delete FAQ</h3>
+<pre>
+<strong>DELETE</strong> /api/v1/faqs/:id
+
+<strong>Example:</strong> DELETE /api/v1/faqs/880e8400-e29b-41d4-a716-446655440001
+
+<strong>Response:</strong>
+{
+    "success": true,
+    "message": "FAQ deleted successfully"
+}
+</pre>
+
+<hr>
+
+<!-- ==================== ERROR RESPONSES ==================== -->
+<h2>5. ERROR RESPONSES</h2>
+
+<h3>5.1 Validation Error</h3>
+<pre>
+{
+    "success": false,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "Validation failed",
+        "details": {
+            "name": "Name is required",
+            "category_id": "Invalid category ID format"
+        }
+    }
+}
+</pre>
+
+<h3>5.2 Not Found Error</h3>
+<pre>
+{
+    "success": false,
+    "error": {
+        "code": "NOT_FOUND",
+        "message": "Service not found"
+    }
+}
+</pre>
+
+<h3>5.3 Internal Server Error</h3>
+<pre>
+{
+    "success": false,
+    "error": {
+        "code": "INTERNAL_ERROR",
+        "message": "An unexpected error occurred"
+    }
+}
+</pre>
+
+<h3>5.4 Unauthorized Error</h3>
+<pre>
+{
+    "success": false,
+    "error": {
+        "code": "UNAUTHORIZED",
+        "message": "Authentication required"
+    }
+}
+</pre>
+
+<hr>
+
+<!-- ==================== API ENDPOINTS SUMMARY ==================== -->
+<h2>6. API ENDPOINTS SUMMARY</h2>
+
+<h3>Categories</h3>
+<pre>
+GET    /api/v1/categories                    - List active categories
+GET    /api/v1/categories/all                - List all categories (admin)
+POST   /api/v1/categories                    - Create category
+GET    /api/v1/categories/:id                - Get category by ID
+GET    /api/v1/categories/slug/:slug         - Get category by slug
+GET    /api/v1/categories/:id/subcategories  - Get subcategories
+GET    /api/v1/categories/:id/services       - Get services in category
+PUT    /api/v1/categories/:id                - Update category
+DELETE /api/v1/categories/:id                - Delete category
+</pre>
+
+<h3>Services</h3>
+<pre>
+GET    /api/v1/services                      - List services (paginated)
+GET    /api/v1/services/all                  - List all services
+GET    /api/v1/services/popular              - Get popular services
+GET    /api/v1/services/featured             - Get featured services
+GET    /api/v1/services/search?q=            - Search services
+POST   /api/v1/services                      - Create service
+GET    /api/v1/services/:id                  - Get service by ID
+GET    /api/v1/services/slug/:slug           - Get service by slug
+PUT    /api/v1/services/:id                  - Update service
+DELETE /api/v1/services/:id                  - Delete service
+GET    /api/v1/services/:id/form             - Get service form
+GET    /api/v1/services/:id/form-versions    - Get all form versions
+GET    /api/v1/services/:id/faqs             - Get service FAQs
+</pre>
+
+<h3>Forms</h3>
+<pre>
+POST   /api/v1/forms                         - Create form
+GET    /api/v1/forms/:id                     - Get form by ID
+PUT    /api/v1/forms/:id                     - Update form
+DELETE /api/v1/forms/:id                     - Delete form
+</pre>
+
+<h3>FAQs</h3>
+<pre>
+POST   /api/v1/faqs                          - Create FAQ
+GET    /api/v1/faqs/:id                      - Get FAQ by ID
+PUT    /api/v1/faqs/:id                      - Update FAQ
+DELETE /api/v1/faqs/:id                      - Delete FAQ
+</pre>
+
+<hr>
+
+<h2>7. COMPLETE WORKFLOW EXAMPLE</h2>
+
+<h3>Step 1: Create a Category</h3>
+<pre>
+POST /api/v1/categories
+{
+    "name": "Certificates",
+    "name_hindi": "प्रमाण पत्र",
+    "description": "Government certificate services",
+    "sort_order": 1
+}
+</pre>
+
+<h3>Step 2: Create a Service under the Category</h3>
+<pre>
+POST /api/v1/services
+{
+    "category_id": "550e8400-e29b-41d4-a716-446655440001",
+    "name": "Caste Certificate",
+    "name_hindi": "जाति प्रमाण पत्र",
+    "description": "Apply for caste certificate",
+    "department": "Revenue Department",
+    "department_hindi": "राजस्व विभाग",
+    "required_documents": ["Aadhaar Card", "Ration Card"],
+    "processing_time": "7-15 days",
+    "service_fee": 50.00,
+    "platform_fee": 10.00,
+    "is_popular": true,
+    "available_states": ["UP", "MP", "RJ"],
+    "form_fields": "{}"
+}
+</pre>
+
+<h3>Step 3: Create a Form for the Service</h3>
+<pre>
+POST /api/v1/forms
+{
+    "service_id": "660e8400-e29b-41d4-a716-446655440001",
+    "form_schema": {
+        "title": "Caste Certificate Application",
+        "sections": [
+            {
+                "id": "personal",
+                "title": "Personal Details",
+                "fields": [
+                    {"name": "full_name", "type": "text", "label": "Full Name", "required": true},
+                    {"name": "caste", "type": "select", "label": "Caste", "required": true}
+                ]
+            }
+        ]
+    }
+}
+</pre>
+
+<h3>Step 4: Add FAQs for the Service</h3>
+<pre>
+POST /api/v1/faqs
+{
+    "service_id": "660e8400-e29b-41d4-a716-446655440001",
+    "question": "How long does it take?",
+    "question_hindi": "कितना समय लगता है?",
+    "answer": "7-15 working days",
+    "answer_hindi": "7-15 कार्य दिवस"
+}
+</pre>
+
+<h3>Step 5: Fetch Service with Form (Frontend)</h3>
+<pre>
+GET /api/v1/services/slug/caste-certificate
+GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001/form
+GET /api/v1/services/660e8400-e29b-41d4-a716-446655440001/faqs
+</pre>
+
+</body>
+</html>

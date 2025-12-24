@@ -69,7 +69,10 @@ export interface CreateCategoryRequest {
 export interface UpdateCategoryRequest {
   name?: string;
   name_hindi?: string;
+  slug?: string;
   description?: string;
+  icon_url?: string;
+  parent_id?: string | null;
   is_active?: boolean;
   sort_order?: number;
 }

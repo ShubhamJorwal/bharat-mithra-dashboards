@@ -135,10 +135,20 @@ const Dashboard = () => {
 
   return (
     <div className="bm-dashboard">
+      {/* Animated Background Effects */}
+      <div className="bm-dashboard-bg">
+        <div className="bm-bg-orb bm-bg-orb--1"></div>
+        <div className="bm-bg-orb bm-bg-orb--2"></div>
+        <div className="bm-bg-orb bm-bg-orb--3"></div>
+        <div className="bm-bg-orb bm-bg-orb--4"></div>
+        <div className="bm-bg-orb bm-bg-orb--5"></div>
+        <div className="bm-bg-grid"></div>
+      </div>
+
       <header className="bm-page-header">
         <div>
           <h1 className="bm-page-title">Dashboard</h1>
-          <p className="bm-page-desc">Welcome back, John. Here's what's happening.</p>
+          <p className="bm-page-desc">Welcome back, Thimma Shetty. Here's what's happening.</p>
         </div>
       </header>
 

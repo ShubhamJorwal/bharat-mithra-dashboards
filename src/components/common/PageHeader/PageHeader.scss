@@ -1,0 +1,322 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.bm-page-header {
+  position: relative;
+  padding: 28px 24px;
+  border-radius: $radius-xl;
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  &--gradient {
+    background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.08) 0%,
+      rgba(139, 92, 246, 0.06) 25%,
+      rgba(236, 72, 153, 0.05) 50%,
+      rgba(59, 130, 246, 0.07) 75%,
+      rgba(16, 185, 129, 0.06) 100%
+    );
+    border: 1px solid rgba(139, 92, 246, 0.15);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      animation: headerShimmer 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+  }
+
+  &--default {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+  }
+
+  &--minimal {
+    background: transparent;
+    border: none;
+    padding: 20px 0;
+  }
+}
+
+@keyframes headerShimmer {
+  0%, 100% {
+    opacity: 0;
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(100%) skewX(-15deg);
+  }
+}
+
+// Animated Background Container
+.bm-header-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+// Floating Gradient Objects
+.bm-bg-object {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.6;
+  animation: floatObject 8s ease-in-out infinite;
+
+  &--1 {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    top: -30px;
+    right: 10%;
+    animation-delay: 0s;
+    animation-duration: 7s;
+  }
+
+  &--2 {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ec4899, #f472b6);
+    top: 50%;
+    right: 25%;
+    animation-delay: -2s;
+    animation-duration: 9s;
+  }
+
+  &--3 {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    bottom: -20px;
+    right: 40%;
+    animation-delay: -4s;
+    animation-duration: 8s;
+  }
+
+  &--4 {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    top: 20%;
+    left: 30%;
+    animation-delay: -1s;
+    animation-duration: 10s;
+  }
+
+  &--5 {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    bottom: 10%;
+    left: 15%;
+    animation-delay: -3s;
+    animation-duration: 7.5s;
+  }
+}
+
+@keyframes floatObject {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(15px, -10px) scale(1.05);
+  }
+  50% {
+    transform: translate(5px, 15px) scale(0.95);
+  }
+  75% {
+    transform: translate(-10px, 5px) scale(1.02);
+  }
+}
+
+// Grid Overlay
+.bm-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+// Header Content
+.bm-page-header-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.bm-page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bm-page-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.15) 0%,
+    rgba(139, 92, 246, 0.2) 100%
+  );
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  @include flex-center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+  }
+
+  svg {
+    font-size: 24px;
+    color: #8b5cf6;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.bm-page-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bm-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+
+  // Subtle gradient text effect
+  background: linear-gradient(135deg,
+    var(--color-text) 0%,
+    var(--color-text) 70%,
+    rgba(139, 92, 246, 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.bm-page-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+  max-width: 500px;
+}
+
+.bm-page-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .bm-page-header {
+    padding: 20px 16px;
+
+    &--gradient {
+      .bm-bg-object {
+        opacity: 0.4;
+
+        &--1, &--2 {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .bm-page-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .bm-page-icon {
+    width: 44px;
+    height: 44px;
+
+    svg {
+      font-size: 20px;
+    }
+  }
+
+  .bm-page-title {
+    font-size: 18px;
+  }
+
+  .bm-page-header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+// Dark mode adjustments
+body.dark-mode {
+  .bm-page-header--gradient {
+    background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.12) 0%,
+      rgba(139, 92, 246, 0.1) 25%,
+      rgba(236, 72, 153, 0.08) 50%,
+      rgba(59, 130, 246, 0.1) 75%,
+      rgba(16, 185, 129, 0.08) 100%
+    );
+    border-color: rgba(139, 92, 246, 0.25);
+
+    &::before {
+      background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        transparent 100%
+      );
+    }
+  }
+
+  .bm-bg-object {
+    opacity: 0.4;
+    filter: blur(50px);
+  }
+
+  .bm-bg-grid {
+    background-image:
+      linear-gradient(rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+  }
+
+  .bm-page-icon {
+    background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.2) 0%,
+      rgba(139, 92, 246, 0.25) 100%
+    );
+    border-color: rgba(139, 92, 246, 0.3);
+
+    svg {
+      color: #a78bfa;
+    }
+  }
+}

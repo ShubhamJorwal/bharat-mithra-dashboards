@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
   HiOutlinePlus,
@@ -7,8 +7,8 @@ import {
   HiOutlineExclamationCircle
 } from 'react-icons/hi';
 import servicesApi from '../../../services/api/services.api';
-import type { ServiceCategory, CreateServiceRequest } from '../../../types/api.types';
-import './ServiceCreate.scss';
+import type { ServiceCategory, UpdateServiceRequest } from '../../../types/api.types';
+import './ServiceEdit.scss';
 
 interface ServiceFormData {
   name: string;
@@ -24,19 +24,23 @@ interface ServiceFormData {
   service_fee: number;
   platform_fee: number;
   is_free_service: boolean;
+  is_active: boolean;
   is_popular: boolean;
   is_featured: boolean;
   required_documents: string[];
   official_url: string;
 }
 
-const ServiceCreate = () => {
+const ServiceEdit = () => {
+  const { id: slug } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [serviceId, setServiceId] = useState<string>('');
+  const [notFound, setNotFound] = useState(false);
   const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
     name_hindi: '',
@@ -51,6 +55,7 @@ const ServiceCreate = () => {
     service_fee: 0,
     platform_fee: 0,
     is_free_service: false,
+    is_active: true,
     is_popular: false,
     is_featured: false,
     required_documents: [''],
@@ -58,28 +63,61 @@ const ServiceCreate = () => {
   });
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      setLoadingCategories(true);
-      setCategoriesError(null);
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      setNotFound(false);
+
       try {
-        const response = await servicesApi.getCategories();
-        if (response.success && response.data) {
-          setCategories(response.data);
+        // Fetch categories
+        const categoriesRes = await servicesApi.getCategories();
+        if (categoriesRes.success && categoriesRes.data) {
+          setCategories(categoriesRes.data);
         } else {
           setCategories([]);
-          setCategoriesError(response.message || 'Failed to load categories');
+        }
+
+        // Fetch service by slug
+        if (slug) {
+          const serviceRes = await servicesApi.getServiceBySlug(slug);
+          if (serviceRes.success && serviceRes.data) {
+            const service = serviceRes.data;
+            setServiceId(service.id);
+            setFormData({
+              name: service.name || '',
+              name_hindi: service.name_hindi || '',
+              category_id: service.category_id || '',
+              description: service.description || '',
+              description_hindi: service.description_hindi || '',
+              department: service.department || '',
+              department_hindi: service.department_hindi || '',
+              ministry: service.ministry || '',
+              eligibility_criteria: service.eligibility_criteria || '',
+              processing_time: service.processing_time || '',
+              service_fee: service.service_fee || 0,
+              platform_fee: service.platform_fee || 0,
+              is_free_service: service.is_free_service || false,
+              is_active: service.is_active !== false,
+              is_popular: service.is_popular || false,
+              is_featured: service.is_featured || false,
+              required_documents: service.required_documents?.length ? service.required_documents : [''],
+              official_url: service.official_url || ''
+            });
+          } else {
+            setNotFound(true);
+            setError(`Service "${slug}" not found.`);
+          }
         }
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
-        setCategories([]);
-        setCategoriesError('Unable to load categories. Please check your connection.');
+        console.error('Failed to fetch data:', err);
+        setError('Unable to load service. Please check your connection and try again.');
       } finally {
-        setLoadingCategories(false);
+        setLoading(false);
       }
     };
 
-    fetchCategories();
-  }, []);
+    fetchData();
+  }, [slug]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -119,12 +157,17 @@ const ServiceCreate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setSaveError(null);
+
+    if (!serviceId) {
+      setSaveError('Cannot save - service not found on server.');
+      return;
+    }
+
+    setSaving(true);
 
     try {
-      const createData: CreateServiceRequest = {
-        category_id: formData.category_id,
+      const updateData: UpdateServiceRequest = {
         name: formData.name,
         name_hindi: formData.name_hindi || undefined,
         description: formData.description,
@@ -137,38 +180,81 @@ const ServiceCreate = () => {
         service_fee: formData.service_fee,
         platform_fee: formData.platform_fee,
         is_free_service: formData.is_free_service,
+        is_active: formData.is_active,
         is_popular: formData.is_popular,
         is_featured: formData.is_featured,
         required_documents: formData.required_documents.filter(d => d.trim()),
         official_url: formData.official_url || undefined
       };
 
-      const response = await servicesApi.createService(createData);
-
+      const response = await servicesApi.updateService(serviceId, updateData);
       if (response.success) {
-        navigate('/services');
+        navigate(`/services/${slug}`);
       } else {
-        setError(response.message || 'Failed to create service');
+        setSaveError(response.message || 'Failed to update service');
       }
     } catch (err: unknown) {
-      console.error('Failed to create service:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create service. Please try again.';
-      setError(errorMessage);
+      console.error('Failed to update service:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update service. Please try again.';
+      setSaveError(errorMessage);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="bm-service-edit">
+        <div className="bm-loading-state">
+          <div className="bm-loading-spinner"></div>
+          <p>Loading service...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="bm-service-edit">
+        <header className="bm-page-header">
+          <div className="bm-header-left">
+            <button className="bm-back-btn" onClick={() => navigate('/services')}>
+              <HiOutlineArrowLeft />
+            </button>
+            <div>
+              <h1 className="bm-page-title">Service Not Found</h1>
+              <p className="bm-page-desc">The requested service could not be found</p>
+            </div>
+          </div>
+        </header>
+
+        <div className="bm-empty-state">
+          <div className="bm-empty-icon">
+            <HiOutlineExclamationCircle />
+          </div>
+          <h3>Service not found</h3>
+          <p>The service "{slug}" does not exist or has been deleted.</p>
+          <button
+            className="bm-btn bm-btn-primary"
+            onClick={() => navigate('/services')}
+          >
+            Back to Services
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bm-service-create">
+    <div className="bm-service-edit">
       <header className="bm-page-header">
         <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate('/services')}>
+          <button className="bm-back-btn" onClick={() => navigate(`/services/${slug}`)}>
             <HiOutlineArrowLeft />
           </button>
           <div>
-            <h1 className="bm-page-title">Create Service</h1>
-            <p className="bm-page-desc">Add a new government service</p>
+            <h1 className="bm-page-title">Edit Service</h1>
+            <p className="bm-page-desc">Update service information</p>
           </div>
         </div>
       </header>
@@ -181,10 +267,11 @@ const ServiceCreate = () => {
         </div>
       )}
 
-      {categoriesError && (
-        <div className="bm-alert bm-alert-warning">
+      {saveError && (
+        <div className="bm-alert bm-alert-error">
           <HiOutlineExclamationCircle />
-          <span>{categoriesError}</span>
+          <span>{saveError}</span>
+          <button className="bm-alert-close" onClick={() => setSaveError(null)}>&times;</button>
         </div>
       )}
 
@@ -227,14 +314,10 @@ const ServiceCreate = () => {
                   onChange={handleChange}
                   className="bm-select"
                   required
-                  disabled={loadingCategories || categories.length === 0}
+                  disabled={categories.length === 0}
                 >
                   <option value="">
-                    {loadingCategories
-                      ? 'Loading categories...'
-                      : categories.length === 0
-                        ? 'No categories available'
-                        : 'Select category'}
+                    {categories.length === 0 ? 'No categories available' : 'Select category'}
                   </option>
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>
@@ -399,8 +482,20 @@ const ServiceCreate = () => {
           </div>
 
           <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Visibility</h3>
+            <h3 className="bm-form-section-title">Status & Visibility</h3>
             <div className="bm-form-grid">
+              <div className="bm-form-group bm-checkbox-group">
+                <label className="bm-checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleChange}
+                    className="bm-checkbox"
+                  />
+                  <span>Active</span>
+                </label>
+              </div>
               <div className="bm-form-group bm-checkbox-group">
                 <label className="bm-checkbox-label">
                   <input
@@ -410,7 +505,7 @@ const ServiceCreate = () => {
                     onChange={handleChange}
                     className="bm-checkbox"
                   />
-                  <span>Mark as Popular</span>
+                  <span>Popular</span>
                 </label>
               </div>
               <div className="bm-form-group bm-checkbox-group">
@@ -422,7 +517,7 @@ const ServiceCreate = () => {
                     onChange={handleChange}
                     className="bm-checkbox"
                   />
-                  <span>Mark as Featured</span>
+                  <span>Featured</span>
                 </label>
               </div>
             </div>
@@ -465,17 +560,17 @@ const ServiceCreate = () => {
             <button
               type="button"
               className="bm-btn bm-btn-secondary"
-              onClick={() => navigate('/services')}
-              disabled={loading}
+              onClick={() => navigate(`/services/${slug}`)}
+              disabled={saving}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="bm-btn bm-btn-primary"
-              disabled={loading || categories.length === 0}
+              disabled={saving || !serviceId}
             >
-              {loading ? 'Creating...' : 'Create Service'}
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
@@ -484,4 +579,4 @@ const ServiceCreate = () => {
   );
 };
 
-export default ServiceCreate;
+export default ServiceEdit;

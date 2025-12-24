@@ -3,6 +3,112 @@
 
 .bm-dashboard {
   padding: $spacing-lg;
+  position: relative;
+  min-height: 100%;
+}
+
+// Animated Background Effects
+.bm-dashboard-bg {
+  position: fixed;
+  top: 48px;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bm-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: floatOrb 12s ease-in-out infinite;
+
+  &--1 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.2));
+    top: 5%;
+    right: 10%;
+    animation-delay: 0s;
+    animation-duration: 15s;
+  }
+
+  &--2 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(244, 114, 182, 0.15));
+    top: 40%;
+    right: 30%;
+    animation-delay: -3s;
+    animation-duration: 18s;
+  }
+
+  &--3 {
+    width: 250px;
+    height: 250px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(96, 165, 250, 0.2));
+    bottom: 10%;
+    left: 10%;
+    animation-delay: -6s;
+    animation-duration: 14s;
+  }
+
+  &--4 {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(52, 211, 153, 0.15));
+    top: 20%;
+    left: 25%;
+    animation-delay: -2s;
+    animation-duration: 16s;
+  }
+
+  &--5 {
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.12));
+    bottom: 30%;
+    right: 15%;
+    animation-delay: -4s;
+    animation-duration: 13s;
+  }
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  50% {
+    transform: translate(10px, 30px) scale(0.95);
+  }
+  75% {
+    transform: translate(-20px, 10px) scale(1.02);
+  }
+}
+
+.bm-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 20%, transparent 70%);
+}
+
+// Ensure content is above background
+.bm-page-header,
+.bm-stats-row,
+.bm-content-grid {
+  position: relative;
+  z-index: 1;
 }
 
 // Page Header with Gradient

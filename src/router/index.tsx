@@ -16,7 +16,8 @@ import RequestCode from "../views/Auth/RequestCode/RequestCode";
 import { UserList, UserDetails, UserCreate, UserEdit } from "../views/Users";
 
 // Services Pages
-import { ServiceList, ServiceDetails, ServiceCreate } from "../views/Services";
+import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit } from "../views/Services";
+import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Categories";
 
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
@@ -74,6 +75,23 @@ const routerConfig = [
       {
         path: "services/:id",
         element: <ServiceDetails />,
+      },
+      {
+        path: "services/:id/edit",
+        element: <ServiceEdit />,
+      },
+      // Categories Routes (under Services)
+      {
+        path: "services/categories",
+        element: <CategoryList />,
+      },
+      {
+        path: "services/categories/new",
+        element: <CategoryCreate />,
+      },
+      {
+        path: "services/categories/:id/edit",
+        element: <CategoryEdit />,
       },
       // Other Routes (Placeholders)
       {
