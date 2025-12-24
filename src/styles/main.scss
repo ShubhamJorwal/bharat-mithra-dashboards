@@ -151,15 +151,15 @@ body {
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-success));
-  }
+  // &::before {
+  //   content: '';
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   right: 0;
+  //   height: 3px;
+  //   background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-success));
+  // }
 }
 
 .bm-page-header-left {

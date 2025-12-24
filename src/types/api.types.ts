@@ -44,66 +44,165 @@ export interface ApiError {
 export interface ServiceCategory {
   id: string;
   name: string;
-  name_hindi: string;
+  name_hindi?: string;
   slug: string;
   description?: string;
+  description_hindi?: string;
   icon_url?: string;
-  parent_id?: string;
+  parent_id?: string | null;
   sort_order: number;
   is_active: boolean;
   created_at: string;
+  updated_at?: string;
 }
 
-// Service Types
+export interface CreateCategoryRequest {
+  name: string;
+  name_hindi?: string;
+  slug?: string;
+  description?: string;
+  icon_url?: string;
+  parent_id?: string | null;
+  sort_order?: number;
+}
+
+export interface UpdateCategoryRequest {
+  name?: string;
+  name_hindi?: string;
+  description?: string;
+  is_active?: boolean;
+  sort_order?: number;
+}
+
+// Service Types - Complete fields from GENOME API
 export interface Service {
   id: string;
   category_id: string;
   name: string;
-  name_hindi: string;
+  name_hindi?: string;
   slug: string;
   description: string;
+  description_hindi?: string;
   department: string;
   department_hindi?: string;
   ministry?: string;
   eligibility_criteria?: string;
+  eligibility_criteria_hindi?: string;
   required_documents?: string[];
   processing_time?: string;
   service_fee: number;
   platform_fee: number;
   total_fee: number;
   is_free_service: boolean;
+  icon_url?: string;
+  banner_url?: string;
+  official_url?: string;
+  is_active?: boolean;
   is_popular: boolean;
   is_featured: boolean;
-  icon_url?: string;
   total_applications?: number;
+  average_rating?: number;
+  available_states?: string[];
+  available_locations?: string;
+  sort_order?: number;
   created_at?: string;
   updated_at?: string;
 }
 
-// Service Form Types
-export interface ServiceFormField {
+export interface CreateServiceRequest {
+  category_id: string;
   name: string;
-  type: 'text' | 'date' | 'select' | 'checkbox' | 'file' | 'number' | 'email' | 'tel';
+  name_hindi?: string;
+  slug?: string;
+  description: string;
+  description_hindi?: string;
+  department: string;
+  department_hindi?: string;
+  ministry?: string;
+  eligibility_criteria?: string;
+  required_documents?: string[];
+  processing_time?: string;
+  service_fee?: number;
+  platform_fee?: number;
+  is_free_service?: boolean;
+  icon_url?: string;
+  banner_url?: string;
+  official_url?: string;
+  is_popular?: boolean;
+  is_featured?: boolean;
+  available_states?: string[];
+  available_locations?: string;
+  sort_order?: number;
+}
+
+export interface UpdateServiceRequest {
+  name?: string;
+  name_hindi?: string;
+  description?: string;
+  description_hindi?: string;
+  department?: string;
+  department_hindi?: string;
+  ministry?: string;
+  eligibility_criteria?: string;
+  required_documents?: string[];
+  processing_time?: string;
+  service_fee?: number;
+  platform_fee?: number;
+  is_free_service?: boolean;
+  icon_url?: string;
+  banner_url?: string;
+  official_url?: string;
+  is_active?: boolean;
+  is_popular?: boolean;
+  is_featured?: boolean;
+  available_states?: string[];
+  available_locations?: string;
+  sort_order?: number;
+}
+
+// Service Form Types - Complete from GENOME API
+export interface FormFieldOption {
+  value: string;
   label: string;
   label_hindi?: string;
+}
+
+export interface FormFieldValidation {
+  min_length?: number;
+  max_length?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
+  pattern_msg?: string;
+  file_types?: string[];
+  max_file_size?: number;
+}
+
+export interface ServiceFormField {
+  id: string;
+  name: string;
+  type: 'text' | 'textarea' | 'email' | 'phone' | 'number' | 'date' | 'select' | 'radio' | 'checkbox' | 'file';
+  label: string;
+  label_hindi?: string;
+  placeholder?: string;
   required: boolean;
-  options?: { value: string; label: string }[];
-  validation?: {
-    min?: number;
-    max?: number;
-    pattern?: string;
-  };
+  sort_order: number;
+  options?: FormFieldOption[];
+  validation?: FormFieldValidation;
 }
 
 export interface ServiceFormSection {
+  id: string;
   title: string;
   title_hindi?: string;
+  sort_order: number;
   fields: ServiceFormField[];
 }
 
 export interface ServiceFormSchema {
   title: string;
   title_hindi?: string;
+  description?: string;
   sections: ServiceFormSection[];
 }
 
@@ -114,17 +213,43 @@ export interface ServiceForm {
   form_schema: ServiceFormSchema;
   is_active: boolean;
   created_at: string;
+  updated_at?: string;
 }
 
-// Service FAQ Types
+export interface CreateFormRequest {
+  service_id: string;
+  form_schema: ServiceFormSchema;
+}
+
+// Service FAQ Types - Complete from GENOME API
 export interface ServiceFAQ {
   id: string;
   service_id: string;
   question: string;
-  question_hindi: string;
+  question_hindi?: string;
   answer: string;
-  answer_hindi: string;
+  answer_hindi?: string;
   sort_order: number;
+  is_active?: boolean;
+  created_at?: string;
+}
+
+export interface CreateFAQRequest {
+  service_id: string;
+  question: string;
+  question_hindi?: string;
+  answer: string;
+  answer_hindi?: string;
+  sort_order?: number;
+}
+
+export interface UpdateFAQRequest {
+  question?: string;
+  question_hindi?: string;
+  answer?: string;
+  answer_hindi?: string;
+  is_active?: boolean;
+  sort_order?: number;
 }
 
 // User Types - Complete 80+ fields from GENOME API
