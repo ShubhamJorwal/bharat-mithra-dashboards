@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  HiOutlineArrowLeft,
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineMail,
   HiOutlinePhone,
   HiOutlineCalendar,
   HiOutlineShieldCheck,
-  HiOutlineLocationMarker
+  HiOutlineLocationMarker,
+  HiOutlineUser
 } from 'react-icons/hi';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './UserDetails.scss';
 
 interface UserDetails {
@@ -99,27 +100,23 @@ const UserDetails = () => {
 
   return (
     <div className="bm-user-details">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate('/users')}>
-            <HiOutlineArrowLeft />
-          </button>
-          <div>
-            <h1 className="bm-page-title">User Details</h1>
-            <p className="bm-page-desc">View and manage user information</p>
-          </div>
-        </div>
-        <div className="bm-header-actions">
-          <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/users/${id}/edit`)}>
-            <HiOutlinePencil />
-            <span>Edit</span>
-          </button>
-          <button className="bm-btn bm-btn-danger">
-            <HiOutlineTrash />
-            <span>Delete</span>
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        icon={<HiOutlineUser />}
+        title="User Details"
+        description="View and manage user information"
+        actions={
+          <>
+            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/users/${id}/edit`)}>
+              <HiOutlinePencil />
+              <span>Edit</span>
+            </button>
+            <button className="bm-btn bm-btn-danger">
+              <HiOutlineTrash />
+              <span>Delete</span>
+            </button>
+          </>
+        }
+      />
 
       <div className="bm-details-grid">
         <div className="bm-card bm-profile-card">

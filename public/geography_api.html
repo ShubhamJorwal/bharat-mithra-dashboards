@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Geography API Documentation - Genome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+            color: #000;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .nav {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .nav a {
+            color: #0066cc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .nav a:hover {
+            background: #0066cc;
+            color: #fff;
+        }
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #FF9933;
+            border-bottom: 3px solid #138808;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0066cc;
+        }
+        .endpoint h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .method {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .get { background: #28a745; color: white; }
+        .post { background: #0066cc; color: white; }
+        .put { background: #ffc107; color: #000; }
+        .delete { background: #dc3545; color: white; }
+        .path {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #333;
+        }
+        .description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .params {
+            margin-top: 15px;
+        }
+        .params h4 {
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f0f0f0;
+            font-weight: 600;
+        }
+        .type {
+            font-family: monospace;
+            color: #0066cc;
+        }
+        .required {
+            color: #dc3545;
+            font-size: 0.8rem;
+        }
+        .optional {
+            color: #28a745;
+            font-size: 0.8rem;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-bool { color: #569cd6; }
+        .hierarchy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: linear-gradient(to right, #fff8f0, #f0fff0);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .hierarchy-item {
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 120px;
+        }
+        .hierarchy-item .icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        .hierarchy-arrow {
+            font-size: 1.5rem;
+            color: #138808;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #FF9933, #FFB366);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .filter-info {
+            background: #e8f4fd;
+            border: 1px solid #0066cc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .filter-info h4 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 30px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .badge-new { background: #28a745; color: white; }
+        .badge-beta { background: #ffc107; color: #000; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>India Geography API</h1>
+        <p>Complete API for India's Administrative Divisions - States, Districts, Taluks, Gram Panchayats & Villages</p>
+    </header>
+
+    <div class="container">
+        <nav class="nav">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#national">National</a></li>
+                <li><a href="#states">States</a></li>
+                <li><a href="#districts">Districts</a></li>
+                <li><a href="#taluks">Taluks</a></li>
+                <li><a href="#gram-panchayats">Gram Panchayats</a></li>
+                <li><a href="#villages">Villages</a></li>
+                <li><a href="#search">Search</a></li>
+                <li><a href="#filters">Filters</a></li>
+            </ul>
+        </nav>
+
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <h2>Overview</h2>
+            <p>The India Geography API provides comprehensive access to India's administrative hierarchy from national level down to individual villages.</p>
+
+            <div class="hierarchy">
+                <div class="hierarchy-item">
+                    <div class="icon">🇮🇳</div>
+                    <strong>India</strong>
+                    <div>National</div>
+                </div>
+                <span class="hierarchy-arrow">→</span>
+                <div class="hierarchy-item">
+                    <div class="icon">🏛️</div>
+                    <strong>States/UTs</strong>
+                    <div>36 Total</div>
+                </div>
+                <span class="hierarchy-arrow">→</span>
+                <div class="hierarchy-item">
+                    <div class="icon">🏢</div>
+                    <strong>Districts</strong>
+                    <div>773+</div>
+                </div>
+                <span class="hierarchy-arrow">→</span>
+                <div class="hierarchy-item">
+                    <div class="icon">🏘️</div>
+                    <strong>Taluks</strong>
+                    <div>Tehsils/Mandals</div>
+                </div>
+                <span class="hierarchy-arrow">→</span>
+                <div class="hierarchy-item">
+                    <div class="icon">🏡</div>
+                    <strong>Gram Panchayats</strong>
+                    <div>2.5 Lakh+</div>
+                </div>
+                <span class="hierarchy-arrow">→</span>
+                <div class="hierarchy-item">
+                    <div class="icon">🏠</div>
+                    <strong>Villages</strong>
+                    <div>6.5 Lakh+</div>
+                </div>
+            </div>
+
+            <h3>Base URL</h3>
+            <pre>https://api.example.com/api/v1/geography</pre>
+
+            <h3>Authentication</h3>
+            <p>All endpoints are public and do not require authentication for read operations. Write operations (POST, PUT, DELETE) may require admin authentication in future versions.</p>
+        </section>
+
+        <!-- National Summary -->
+        <section id="national" class="section">
+            <h2>National Summary</h2>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/india</span>
+                </h3>
+                <p class="description">Get complete India national summary with all administrative statistics.</p>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"message"</span>: <span class="json-string">"National summary retrieved successfully"</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"country"</span>: <span class="json-string">"India"</span>,
+    <span class="json-key">"country_hindi"</span>: <span class="json-string">"भारत"</span>,
+    <span class="json-key">"capital"</span>: <span class="json-string">"New Delhi"</span>,
+    <span class="json-key">"total_states"</span>: <span class="json-number">28</span>,
+    <span class="json-key">"total_union_territories"</span>: <span class="json-number">8</span>,
+    <span class="json-key">"total_districts"</span>: <span class="json-number">773</span>,
+    <span class="json-key">"total_taluks"</span>: <span class="json-number">5000</span>,
+    <span class="json-key">"total_gram_panchayats"</span>: <span class="json-number">250000</span>,
+    <span class="json-key">"total_villages"</span>: <span class="json-number">650000</span>,
+    <span class="json-key">"total_municipalities"</span>: <span class="json-number">4500</span>,
+    <span class="json-key">"zones"</span>: {
+      <span class="json-key">"north"</span>: <span class="json-number">7</span>,
+      <span class="json-key">"south"</span>: <span class="json-number">5</span>,
+      <span class="json-key">"east"</span>: <span class="json-number">4</span>,
+      <span class="json-key">"west"</span>: <span class="json-number">4</span>,
+      <span class="json-key">"central"</span>: <span class="json-number">2</span>,
+      <span class="json-key">"northeast"</span>: <span class="json-number">8</span>
+    }
+  }
+}</pre>
+            </div>
+        </section>
+
+        <!-- States Section -->
+        <section id="states" class="section">
+            <h2>States & Union Territories</h2>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/states</span>
+                </h3>
+                <p class="description">List all states and union territories with filtering and pagination.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>search</td><td class="type">string</td><td>Search by name</td></tr>
+                        <tr><td>state_type</td><td class="type">string</td><td>Filter: "state" or "union_territory"</td></tr>
+                        <tr><td>zone</td><td class="type">string</td><td>Filter: north, south, east, west, central, northeast</td></tr>
+                        <tr><td>page</td><td class="type">int</td><td>Page number (default: 1)</td></tr>
+                        <tr><td>per_page</td><td class="type">int</td><td>Items per page (default: 20, max: 100)</td></tr>
+                        <tr><td>sort_by</td><td class="type">string</td><td>Sort field: name, code, created_at, sort_order</td></tr>
+                        <tr><td>sort_order</td><td class="type">int</td><td>0 = DESC, 1 = ASC</td></tr>
+                    </table>
+                </div>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"uuid-here"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"Maharashtra"</span>,
+      <span class="json-key">"name_hindi"</span>: <span class="json-string">"महाराष्ट्र"</span>,
+      <span class="json-key">"code"</span>: <span class="json-string">"MH"</span>,
+      <span class="json-key">"iso_code"</span>: <span class="json-string">"IN-MH"</span>,
+      <span class="json-key">"state_type"</span>: <span class="json-string">"state"</span>,
+      <span class="json-key">"zone"</span>: <span class="json-string">"west"</span>,
+      <span class="json-key">"capital"</span>: <span class="json-string">"Mumbai"</span>,
+      <span class="json-key">"total_districts"</span>: <span class="json-number">36</span>,
+      <span class="json-key">"total_taluks"</span>: <span class="json-number">358</span>,
+      <span class="json-key">"total_gram_panchayats"</span>: <span class="json-number">28000</span>,
+      <span class="json-key">"total_villages"</span>: <span class="json-number">43000</span>
+    }
+  ],
+  <span class="json-key">"meta"</span>: {
+    <span class="json-key">"page"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"per_page"</span>: <span class="json-number">20</span>,
+    <span class="json-key">"total"</span>: <span class="json-number">36</span>,
+    <span class="json-key">"total_pages"</span>: <span class="json-number">2</span>
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    <span class="path">/geography/states</span>
+                </h3>
+                <p class="description">Create a new state or union territory.</p>
+
+                <h4>Request Body</h4>
+                <pre>{
+  <span class="json-key">"name"</span>: <span class="json-string">"Maharashtra"</span>,
+  <span class="json-key">"name_hindi"</span>: <span class="json-string">"महाराष्ट्र"</span>,
+  <span class="json-key">"code"</span>: <span class="json-string">"MH"</span>,
+  <span class="json-key">"iso_code"</span>: <span class="json-string">"IN-MH"</span>,
+  <span class="json-key">"state_type"</span>: <span class="json-string">"state"</span>,
+  <span class="json-key">"zone"</span>: <span class="json-string">"west"</span>,
+  <span class="json-key">"capital"</span>: <span class="json-string">"Mumbai"</span>,
+  <span class="json-key">"largest_city"</span>: <span class="json-string">"Mumbai"</span>,
+  <span class="json-key">"area_sq_km"</span>: <span class="json-number">307713</span>,
+  <span class="json-key">"population"</span>: <span class="json-number">112374333</span>
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/states/{id}</span>
+                </h3>
+                <p class="description">Get a specific state by ID.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/states/code/{code}</span>
+                </h3>
+                <p class="description">Get a state by its code (e.g., MH, KA, TN).</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/states/{id}/districts</span>
+                </h3>
+                <p class="description">Get all districts within a state with full details and statistics.</p>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"state"</span>: { ... },
+    <span class="json-key">"districts"</span>: [
+      {
+        <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Pune"</span>,
+        <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN"</span>,
+        <span class="json-key">"headquarters"</span>: <span class="json-string">"Pune"</span>,
+        <span class="json-key">"total_taluks"</span>: <span class="json-number">14</span>,
+        <span class="json-key">"total_gram_panchayats"</span>: <span class="json-number">1400</span>,
+        <span class="json-key">"total_villages"</span>: <span class="json-number">1866</span>
+      }
+    ],
+    <span class="json-key">"total_districts"</span>: <span class="json-number">36</span>
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/states/{id}/summary</span>
+                </h3>
+                <p class="description">Get state summary with aggregated statistics.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method put">PUT</span>
+                    <span class="path">/geography/states/{id}</span>
+                </h3>
+                <p class="description">Update a state's information.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/geography/states/{id}</span>
+                </h3>
+                <p class="description">Delete a state (soft delete).</p>
+            </div>
+        </section>
+
+        <!-- Districts Section -->
+        <section id="districts" class="section">
+            <h2>Districts</h2>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/districts</span>
+                </h3>
+                <p class="description">List all districts with filtering options.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>search</td><td class="type">string</td><td>Search by name</td></tr>
+                        <tr><td>state_id</td><td class="type">uuid</td><td>Filter by state</td></tr>
+                        <tr><td>page</td><td class="type">int</td><td>Page number</td></tr>
+                        <tr><td>per_page</td><td class="type">int</td><td>Items per page</td></tr>
+                        <tr><td>sort_by</td><td class="type">string</td><td>Sort field</td></tr>
+                        <tr><td>sort_order</td><td class="type">int</td><td>0 = DESC, 1 = ASC</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    <span class="path">/geography/districts</span>
+                </h3>
+                <p class="description">Create a new district.</p>
+
+                <h4>Request Body</h4>
+                <pre>{
+  <span class="json-key">"state_id"</span>: <span class="json-string">"uuid-of-state"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"Pune"</span>,
+  <span class="json-key">"name_hindi"</span>: <span class="json-string">"पुणे"</span>,
+  <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN"</span>,
+  <span class="json-key">"headquarters"</span>: <span class="json-string">"Pune"</span>,
+  <span class="json-key">"area_sq_km"</span>: <span class="json-number">15643</span>,
+  <span class="json-key">"population"</span>: <span class="json-number">9426959</span>
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/districts/{id}</span>
+                </h3>
+                <p class="description">Get a specific district by ID.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/districts/code/{code}</span>
+                </h3>
+                <p class="description">Get a district by its code.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/districts/{id}/taluks</span>
+                </h3>
+                <p class="description">Get all taluks within a district.</p>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"district"</span>: { ... },
+    <span class="json-key">"taluks"</span>: [
+      {
+        <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Haveli"</span>,
+        <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN-HAV"</span>,
+        <span class="json-key">"total_gram_panchayats"</span>: <span class="json-number">150</span>,
+        <span class="json-key">"total_villages"</span>: <span class="json-number">180</span>
+      }
+    ],
+    <span class="json-key">"total_taluks"</span>: <span class="json-number">14</span>
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/districts/{id}/summary</span>
+                </h3>
+                <p class="description">Get district summary with aggregated statistics.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method put">PUT</span>
+                    <span class="path">/geography/districts/{id}</span>
+                </h3>
+                <p class="description">Update a district.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/geography/districts/{id}</span>
+                </h3>
+                <p class="description">Delete a district (soft delete).</p>
+            </div>
+        </section>
+
+        <!-- Taluks Section -->
+        <section id="taluks" class="section">
+            <h2>Taluks / Tehsils / Mandals / Blocks</h2>
+            <p>Taluks are sub-district administrative units known by different names across India: Tehsils (North India), Mandals (Andhra/Telangana), Blocks (West Bengal).</p>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/taluks</span>
+                </h3>
+                <p class="description">List all taluks with filtering.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>search</td><td class="type">string</td><td>Search by name</td></tr>
+                        <tr><td>state_id</td><td class="type">uuid</td><td>Filter by state</td></tr>
+                        <tr><td>district_id</td><td class="type">uuid</td><td>Filter by district</td></tr>
+                        <tr><td>page</td><td class="type">int</td><td>Page number</td></tr>
+                        <tr><td>per_page</td><td class="type">int</td><td>Items per page</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    <span class="path">/geography/taluks</span>
+                </h3>
+                <p class="description">Create a new taluk.</p>
+
+                <h4>Request Body</h4>
+                <pre>{
+  <span class="json-key">"district_id"</span>: <span class="json-string">"uuid-of-district"</span>,
+  <span class="json-key">"state_id"</span>: <span class="json-string">"uuid-of-state"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"Haveli"</span>,
+  <span class="json-key">"name_hindi"</span>: <span class="json-string">"हवेली"</span>,
+  <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN-HAV"</span>,
+  <span class="json-key">"headquarters"</span>: <span class="json-string">"Pune"</span>
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/taluks/{id}</span>
+                </h3>
+                <p class="description">Get a specific taluk.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/taluks/{id}/gram-panchayats</span>
+                </h3>
+                <p class="description">Get all gram panchayats within a taluk.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/taluks/{id}/summary</span>
+                </h3>
+                <p class="description">Get taluk summary with statistics.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method put">PUT</span>
+                    <span class="path">/geography/taluks/{id}</span>
+                </h3>
+                <p class="description">Update a taluk.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/geography/taluks/{id}</span>
+                </h3>
+                <p class="description">Delete a taluk (soft delete).</p>
+            </div>
+        </section>
+
+        <!-- Gram Panchayats Section -->
+        <section id="gram-panchayats" class="section">
+            <h2>Gram Panchayats</h2>
+            <p>Gram Panchayats are the lowest tier of the Panchayati Raj system - the local self-government of villages in rural India.</p>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/gram-panchayats</span>
+                </h3>
+                <p class="description">List all gram panchayats with filtering.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>search</td><td class="type">string</td><td>Search by name</td></tr>
+                        <tr><td>state_id</td><td class="type">uuid</td><td>Filter by state</td></tr>
+                        <tr><td>district_id</td><td class="type">uuid</td><td>Filter by district</td></tr>
+                        <tr><td>taluk_id</td><td class="type">uuid</td><td>Filter by taluk</td></tr>
+                        <tr><td>page</td><td class="type">int</td><td>Page number</td></tr>
+                        <tr><td>per_page</td><td class="type">int</td><td>Items per page</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    <span class="path">/geography/gram-panchayats</span>
+                </h3>
+                <p class="description">Create a new gram panchayat.</p>
+
+                <h4>Request Body</h4>
+                <pre>{
+  <span class="json-key">"taluk_id"</span>: <span class="json-string">"uuid-of-taluk"</span>,
+  <span class="json-key">"district_id"</span>: <span class="json-string">"uuid-of-district"</span>,
+  <span class="json-key">"state_id"</span>: <span class="json-string">"uuid-of-state"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"Wagholi"</span>,
+  <span class="json-key">"name_hindi"</span>: <span class="json-string">"वाघोली"</span>,
+  <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN-HAV-WAG"</span>,
+  <span class="json-key">"lgd_code"</span>: <span class="json-string">"269876"</span>,
+  <span class="json-key">"pin_code"</span>: <span class="json-string">"412207"</span>,
+  <span class="json-key">"sarpanch_name"</span>: <span class="json-string">"Shri. Ramesh Patil"</span>,
+  <span class="json-key">"latitude"</span>: <span class="json-number">18.5793</span>,
+  <span class="json-key">"longitude"</span>: <span class="json-number">73.9830</span>
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/gram-panchayats/{id}</span>
+                </h3>
+                <p class="description">Get a specific gram panchayat.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/gram-panchayats/{id}/villages</span>
+                </h3>
+                <p class="description">Get all villages within a gram panchayat.</p>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"gram_panchayat"</span>: { ... },
+    <span class="json-key">"villages"</span>: [
+      {
+        <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Wagholi"</span>,
+        <span class="json-key">"code"</span>: <span class="json-string">"549876"</span>,
+        <span class="json-key">"population"</span>: <span class="json-number">25000</span>,
+        <span class="json-key">"households"</span>: <span class="json-number">5500</span>,
+        <span class="json-key">"pin_code"</span>: <span class="json-string">"412207"</span>
+      }
+    ],
+    <span class="json-key">"total_villages"</span>: <span class="json-number">3</span>
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method put">PUT</span>
+                    <span class="path">/geography/gram-panchayats/{id}</span>
+                </h3>
+                <p class="description">Update a gram panchayat.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/geography/gram-panchayats/{id}</span>
+                </h3>
+                <p class="description">Delete a gram panchayat (soft delete).</p>
+            </div>
+        </section>
+
+        <!-- Villages Section -->
+        <section id="villages" class="section">
+            <h2>Villages</h2>
+            <p>Villages are the smallest administrative units in rural India with census and amenity data.</p>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/villages</span>
+                </h3>
+                <p class="description">List all villages with filtering.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>search</td><td class="type">string</td><td>Search by name</td></tr>
+                        <tr><td>state_id</td><td class="type">uuid</td><td>Filter by state</td></tr>
+                        <tr><td>district_id</td><td class="type">uuid</td><td>Filter by district</td></tr>
+                        <tr><td>taluk_id</td><td class="type">uuid</td><td>Filter by taluk</td></tr>
+                        <tr><td>gram_panchayat_id</td><td class="type">uuid</td><td>Filter by gram panchayat</td></tr>
+                        <tr><td>pin_code</td><td class="type">string</td><td>Filter by PIN code</td></tr>
+                        <tr><td>page</td><td class="type">int</td><td>Page number</td></tr>
+                        <tr><td>per_page</td><td class="type">int</td><td>Items per page</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    <span class="path">/geography/villages</span>
+                </h3>
+                <p class="description">Create a new village.</p>
+
+                <h4>Request Body</h4>
+                <pre>{
+  <span class="json-key">"gram_panchayat_id"</span>: <span class="json-string">"uuid"</span>,
+  <span class="json-key">"taluk_id"</span>: <span class="json-string">"uuid"</span>,
+  <span class="json-key">"district_id"</span>: <span class="json-string">"uuid"</span>,
+  <span class="json-key">"state_id"</span>: <span class="json-string">"uuid"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"Kesnand"</span>,
+  <span class="json-key">"name_hindi"</span>: <span class="json-string">"केसनंद"</span>,
+  <span class="json-key">"code"</span>: <span class="json-string">"549877"</span>,
+  <span class="json-key">"census_code"</span>: <span class="json-string">"549877"</span>,
+  <span class="json-key">"lgd_code"</span>: <span class="json-string">"269877"</span>,
+  <span class="json-key">"population"</span>: <span class="json-number">5000</span>,
+  <span class="json-key">"male_population"</span>: <span class="json-number">2600</span>,
+  <span class="json-key">"female_population"</span>: <span class="json-number">2400</span>,
+  <span class="json-key">"households"</span>: <span class="json-number">1100</span>,
+  <span class="json-key">"pin_code"</span>: <span class="json-string">"412207"</span>,
+  <span class="json-key">"latitude"</span>: <span class="json-number">18.5820</span>,
+  <span class="json-key">"longitude"</span>: <span class="json-number">73.9950</span>,
+  <span class="json-key">"has_primary_school"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"has_primary_health_center"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"has_electricity"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"has_tap_water"</span>: <span class="json-bool">true</span>
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/villages/{id}</span>
+                </h3>
+                <p class="description">Get a specific village with all details.</p>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+    <span class="json-key">"name"</span>: <span class="json-string">"Kesnand"</span>,
+    <span class="json-key">"name_hindi"</span>: <span class="json-string">"केसनंद"</span>,
+    <span class="json-key">"code"</span>: <span class="json-string">"549877"</span>,
+    <span class="json-key">"gram_panchayat"</span>: <span class="json-string">"Wagholi"</span>,
+    <span class="json-key">"taluk"</span>: <span class="json-string">"Haveli"</span>,
+    <span class="json-key">"district"</span>: <span class="json-string">"Pune"</span>,
+    <span class="json-key">"state"</span>: <span class="json-string">"Maharashtra"</span>,
+    <span class="json-key">"population"</span>: <span class="json-number">5000</span>,
+    <span class="json-key">"male_population"</span>: <span class="json-number">2600</span>,
+    <span class="json-key">"female_population"</span>: <span class="json-number">2400</span>,
+    <span class="json-key">"households"</span>: <span class="json-number">1100</span>,
+    <span class="json-key">"pin_code"</span>: <span class="json-string">"412207"</span>,
+    <span class="json-key">"latitude"</span>: <span class="json-number">18.5820</span>,
+    <span class="json-key">"longitude"</span>: <span class="json-number">73.9950</span>,
+    <span class="json-key">"amenities"</span>: {
+      <span class="json-key">"has_primary_school"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"has_middle_school"</span>: <span class="json-bool">false</span>,
+      <span class="json-key">"has_high_school"</span>: <span class="json-bool">false</span>,
+      <span class="json-key">"has_primary_health_center"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"has_post_office"</span>: <span class="json-bool">false</span>,
+      <span class="json-key">"has_bank"</span>: <span class="json-bool">false</span>,
+      <span class="json-key">"has_atm"</span>: <span class="json-bool">false</span>,
+      <span class="json-key">"has_bus_stop"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"has_electricity"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"has_tap_water"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"has_internet"</span>: <span class="json-bool">true</span>
+    }
+  }
+}</pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/villages/code/{code}</span>
+                </h3>
+                <p class="description">Get a village by its census code.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method put">PUT</span>
+                    <span class="path">/geography/villages/{id}</span>
+                </h3>
+                <p class="description">Update a village.</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/geography/villages/{id}</span>
+                </h3>
+                <p class="description">Delete a village (soft delete).</p>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="search" class="section">
+            <h2>Universal Search</h2>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    <span class="path">/geography/search</span>
+                </h3>
+                <p class="description">Search across all location types - states, districts, taluks, gram panchayats, and villages.</p>
+
+                <div class="params">
+                    <h4>Query Parameters</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                        <tr><td>q</td><td class="type">string</td><td class="required">Yes</td><td>Search query (minimum 2 characters)</td></tr>
+                        <tr><td>type</td><td class="type">string</td><td><span class="optional">No</span></td><td>Filter by type: state, district, taluk, gram_panchayat, village</td></tr>
+                        <tr><td>state_id</td><td class="type">uuid</td><td><span class="optional">No</span></td><td>Limit search to a specific state</td></tr>
+                        <tr><td>limit</td><td class="type">int</td><td><span class="optional">No</span></td><td>Maximum results (default: 20, max: 100)</td></tr>
+                    </table>
+                </div>
+
+                <h4>Response</h4>
+                <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"query"</span>: <span class="json-string">"pune"</span>,
+    <span class="json-key">"results"</span>: [
+      {
+        <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+        <span class="json-key">"type"</span>: <span class="json-string">"district"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Pune"</span>,
+        <span class="json-key">"name_hindi"</span>: <span class="json-string">"पुणे"</span>,
+        <span class="json-key">"code"</span>: <span class="json-string">"MH-PUN"</span>,
+        <span class="json-key">"parent_name"</span>: <span class="json-string">"Maharashtra"</span>,
+        <span class="json-key">"full_path"</span>: <span class="json-string">"Maharashtra > Pune"</span>
+      },
+      {
+        <span class="json-key">"id"</span>: <span class="json-string">"uuid"</span>,
+        <span class="json-key">"type"</span>: <span class="json-string">"taluk"</span>,
+        <span class="json-key">"name"</span>: <span class="json-string">"Pune City"</span>,
+        <span class="json-key">"full_path"</span>: <span class="json-string">"Maharashtra > Pune > Pune City"</span>
+      }
+    ],
+    <span class="json-key">"total"</span>: <span class="json-number">15</span>
+  }
+}</pre>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section id="filters" class="section">
+            <h2>Common Filter Parameters</h2>
+            <p>All list endpoints support the following common filter parameters:</p>
+
+            <div class="filter-info">
+                <h4>Pagination</h4>
+                <table>
+                    <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td>page</td><td class="type">int</td><td>1</td><td>Page number (starts from 1)</td></tr>
+                    <tr><td>per_page</td><td class="type">int</td><td>20</td><td>Items per page (max: 100)</td></tr>
+                </table>
+            </div>
+
+            <div class="filter-info">
+                <h4>Sorting</h4>
+                <table>
+                    <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                    <tr><td>sort_by</td><td class="type">string</td><td>Field to sort by (name, code, created_at, sort_order, population)</td></tr>
+                    <tr><td>sort_order</td><td class="type">int</td><td><strong>0 = DESC</strong> (descending), <strong>1 = ASC</strong> (ascending)</td></tr>
+                </table>
+            </div>
+
+            <div class="filter-info">
+                <h4>Date Range</h4>
+                <table>
+                    <tr><th>Parameter</th><th>Type</th><th>Format</th><th>Description</th></tr>
+                    <tr><td>date_from</td><td class="type">string</td><td>YYYY-MM-DD</td><td>Start date for filtering</td></tr>
+                    <tr><td>date_to</td><td class="type">string</td><td>YYYY-MM-DD</td><td>End date for filtering</td></tr>
+                    <tr><td>date_field</td><td class="type">string</td><td>-</td><td>Which date field to filter (created_at, updated_at)</td></tr>
+                </table>
+            </div>
+
+            <div class="filter-info">
+                <h4>Status</h4>
+                <table>
+                    <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                    <tr><td>is_active</td><td class="type">bool</td><td>Filter by active status (true/false or 1/0)</td></tr>
+                    <tr><td>include_inactive</td><td class="type">bool</td><td>Include inactive records</td></tr>
+                </table>
+            </div>
+
+            <h3>Example Filter Usage</h3>
+            <pre>
+# Get all districts in Maharashtra, sorted by name ascending
+GET /geography/districts?state_id=uuid&sort_by=name&sort_order=1
+
+# Get villages created in last month, paginated
+GET /geography/villages?date_from=2024-12-01&date_to=2024-12-31&page=1&per_page=50
+
+# Search for locations containing "mumbai"
+GET /geography/search?q=mumbai&type=district
+
+# Get all active taluks in a district
+GET /geography/taluks?district_id=uuid&is_active=true
+            </pre>
+        </section>
+
+        <!-- Response Codes -->
+        <section class="section">
+            <h2>Response Status Codes</h2>
+            <table>
+                <tr><th>Code</th><th>Description</th></tr>
+                <tr><td>200</td><td>Success - Request completed successfully</td></tr>
+                <tr><td>201</td><td>Created - Resource created successfully</td></tr>
+                <tr><td>400</td><td>Bad Request - Invalid parameters or request body</td></tr>
+                <tr><td>404</td><td>Not Found - Resource not found</td></tr>
+                <tr><td>500</td><td>Internal Server Error - Something went wrong</td></tr>
+            </table>
+
+            <h3>Error Response Format</h3>
+            <pre>{
+  <span class="json-key">"success"</span>: <span class="json-bool">false</span>,
+  <span class="json-key">"message"</span>: <span class="json-string">"Resource not found"</span>,
+  <span class="json-key">"error"</span>: <span class="json-string">"state with id 'xyz' not found"</span>
+}</pre>
+        </section>
+
+        <footer>
+            <p>India Geography API v1.0 | Genome Project</p>
+            <p>Data sources: Census of India, Local Government Directory (LGD)</p>
+        </footer>
+    </div>
+</body>
+</html>

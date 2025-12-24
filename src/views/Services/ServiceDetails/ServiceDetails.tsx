@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  HiOutlineArrowLeft,
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineCollection,
   HiOutlineDocumentText,
   HiOutlineCalendar,
   HiOutlineTag,
-  HiOutlineClipboardList
+  HiOutlineClipboardList,
+  HiOutlineCube
 } from 'react-icons/hi';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './ServiceDetails.scss';
 
 interface ServiceDetails {
@@ -100,27 +101,23 @@ const ServiceDetails = () => {
 
   return (
     <div className="bm-service-details">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate('/services')}>
-            <HiOutlineArrowLeft />
-          </button>
-          <div>
-            <h1 className="bm-page-title">Service Details</h1>
-            <p className="bm-page-desc">View and manage service information</p>
-          </div>
-        </div>
-        <div className="bm-header-actions">
-          <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/services/${id}/edit`)}>
-            <HiOutlinePencil />
-            <span>Edit</span>
-          </button>
-          <button className="bm-btn bm-btn-danger">
-            <HiOutlineTrash />
-            <span>Delete</span>
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        icon={<HiOutlineCube />}
+        title="Service Details"
+        description="View and manage service information"
+        actions={
+          <>
+            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/services/${id}/edit`)}>
+              <HiOutlinePencil />
+              <span>Edit</span>
+            </button>
+            <button className="bm-btn bm-btn-danger">
+              <HiOutlineTrash />
+              <span>Delete</span>
+            </button>
+          </>
+        }
+      />
 
       <div className="bm-details-grid">
         <div className="bm-card bm-main-card">

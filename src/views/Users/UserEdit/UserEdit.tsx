@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { HiOutlineArrowLeft } from 'react-icons/hi';
+import { HiOutlineArrowLeft, HiOutlinePencilAlt } from 'react-icons/hi';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './UserEdit.scss';
 
 interface UserFormData {
@@ -86,17 +87,20 @@ const UserEdit = () => {
 
   return (
     <div className="bm-user-edit">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate(`/users/${id}`)}>
+      <PageHeader
+        icon={<HiOutlinePencilAlt />}
+        title="Edit User"
+        description="Update user information"
+        actions={
+          <button
+            className="bm-btn bm-btn-secondary"
+            onClick={() => navigate(`/users/${id}`)}
+          >
             <HiOutlineArrowLeft />
+            <span>Back</span>
           </button>
-          <div>
-            <h1 className="bm-page-title">Edit User</h1>
-            <p className="bm-page-desc">Update user information</p>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="bm-card">
         <form onSubmit={handleSubmit} className="bm-form">

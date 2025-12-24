@@ -4,10 +4,12 @@ import {
   HiOutlineArrowLeft,
   HiOutlinePlus,
   HiOutlineX,
-  HiOutlineExclamationCircle
+  HiOutlineExclamationCircle,
+  HiOutlineCube
 } from 'react-icons/hi';
 import servicesApi from '../../../services/api/services.api';
 import type { ServiceCategory, CreateServiceRequest } from '../../../types/api.types';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './ServiceCreate.scss';
 
 interface ServiceFormData {
@@ -161,17 +163,20 @@ const ServiceCreate = () => {
 
   return (
     <div className="bm-service-create">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate('/services')}>
+      <PageHeader
+        icon={<HiOutlineCube />}
+        title="Create Service"
+        description="Add a new government service"
+        actions={
+          <button
+            className="bm-btn bm-btn-secondary"
+            onClick={() => navigate('/services')}
+          >
             <HiOutlineArrowLeft />
+            <span>Back</span>
           </button>
-          <div>
-            <h1 className="bm-page-title">Create Service</h1>
-            <p className="bm-page-desc">Add a new government service</p>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       {error && (
         <div className="bm-alert bm-alert-error">

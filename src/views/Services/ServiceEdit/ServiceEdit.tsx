@@ -4,10 +4,12 @@ import {
   HiOutlineArrowLeft,
   HiOutlinePlus,
   HiOutlineX,
-  HiOutlineExclamationCircle
+  HiOutlineExclamationCircle,
+  HiOutlinePencilAlt
 } from 'react-icons/hi';
 import servicesApi from '../../../services/api/services.api';
 import type { ServiceCategory, UpdateServiceRequest } from '../../../types/api.types';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './ServiceEdit.scss';
 
 interface ServiceFormData {
@@ -216,17 +218,21 @@ const ServiceEdit = () => {
   if (notFound) {
     return (
       <div className="bm-service-edit">
-        <header className="bm-page-header">
-          <div className="bm-header-left">
-            <button className="bm-back-btn" onClick={() => navigate('/services')}>
+        <PageHeader
+          icon={<HiOutlineExclamationCircle />}
+          title="Service Not Found"
+          description="The requested service could not be found"
+          variant="minimal"
+          actions={
+            <button
+              className="bm-btn bm-btn-secondary"
+              onClick={() => navigate('/services')}
+            >
               <HiOutlineArrowLeft />
+              <span>Back</span>
             </button>
-            <div>
-              <h1 className="bm-page-title">Service Not Found</h1>
-              <p className="bm-page-desc">The requested service could not be found</p>
-            </div>
-          </div>
-        </header>
+          }
+        />
 
         <div className="bm-empty-state">
           <div className="bm-empty-icon">
@@ -247,17 +253,20 @@ const ServiceEdit = () => {
 
   return (
     <div className="bm-service-edit">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate(`/services/${slug}`)}>
+      <PageHeader
+        icon={<HiOutlinePencilAlt />}
+        title="Edit Service"
+        description="Update service information"
+        actions={
+          <button
+            className="bm-btn bm-btn-secondary"
+            onClick={() => navigate(`/services/${slug}`)}
+          >
             <HiOutlineArrowLeft />
+            <span>Back</span>
           </button>
-          <div>
-            <h1 className="bm-page-title">Edit Service</h1>
-            <p className="bm-page-desc">Update service information</p>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       {error && (
         <div className="bm-alert bm-alert-error">

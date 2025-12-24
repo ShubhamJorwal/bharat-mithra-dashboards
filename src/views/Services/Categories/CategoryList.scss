@@ -87,7 +87,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 16px;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -153,7 +153,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 10px 10px 10px 10px; // next new
   transition: background 0.15s ease;
 
   &:hover {

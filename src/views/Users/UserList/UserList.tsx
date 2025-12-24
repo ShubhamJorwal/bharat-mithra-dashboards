@@ -9,11 +9,11 @@ import {
   HiOutlineFilter,
   HiOutlineDotsVertical,
   HiOutlineShieldCheck,
-  HiOutlineUsers,
-  HiOutlineCheckCircle
+  HiOutlineUsers
 } from 'react-icons/hi';
 import usersApi from '../../../services/api/users.api';
 import type { User } from '../../../types/api.types';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './UserList.scss';
 
 // Mock data for development/demo when API is not available
@@ -198,36 +198,19 @@ const UserList = () => {
     );
   }
 
-  // Calculate active users count (with null safety)
-  const activeUsersCount = (users || []).filter(u => u.status === 'active').length;
-
   return (
     <div className="bm-users">
-      <header className="bm-page-header">
-        <div className="bm-page-header-left">
-          <div className="bm-page-icon">
-            <HiOutlineUsers />
-          </div>
-          <div className="bm-page-header-content">
-            <div className="bm-page-title-row">
-              <h1 className="bm-page-title">Users</h1>
-              <div className="bm-page-tags">
-                <span className="bm-tag bm-tag-success">
-                  <HiOutlineCheckCircle /> {activeUsersCount} Active
-                </span>
-                <span className="bm-tag bm-tag-info">{pagination.total} Total</span>
-              </div>
-            </div>
-            <p className="bm-page-desc">Manage all registered users and their access permissions</p>
-          </div>
-        </div>
-        <div className="bm-page-header-right">
+      <PageHeader
+        icon={<HiOutlineUsers />}
+        title="Users"
+        description="Manage all registered users and their access permissions"
+        actions={
           <button className="bm-btn bm-btn-primary" onClick={() => navigate('/users/new')}>
             <HiOutlinePlus />
             <span>Add User</span>
           </button>
-        </div>
-      </header>
+        }
+      />
 
       <div className="bm-card">
         <div className="bm-table-toolbar">

@@ -15,6 +15,7 @@ import {
 } from 'react-icons/hi';
 import servicesApi from '../../../services/api/services.api';
 import type { Service, ServiceCategory } from '../../../types/api.types';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './ServiceList.scss';
 
 const ServiceList = () => {
@@ -101,34 +102,30 @@ const ServiceList = () => {
 
   return (
     <div className="bm-services">
-      <header className="bm-page-header">
-        <div className="bm-page-header-left">
-          <div className="bm-page-icon">
-            <HiOutlineCube />
-          </div>
-          <div className="bm-page-header-content">
-            <h1 className="bm-page-title">Services</h1>
-            <p className="bm-page-desc">Manage government services for citizens</p>
-          </div>
-        </div>
-        <div className="bm-page-header-right">
-          <button
-            className="bm-btn bm-btn-secondary"
-            onClick={fetchData}
-            disabled={loading}
-          >
-            <HiOutlineRefresh className={loading ? 'bm-spin' : ''} />
-            <span>Refresh</span>
-          </button>
-          <button
-            className="bm-btn bm-btn-primary"
-            onClick={() => navigate('/services/new')}
-          >
-            <HiOutlinePlus />
-            <span>Add Service</span>
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        icon={<HiOutlineCube />}
+        title="Services"
+        description="Manage government services for citizens"
+        actions={
+          <>
+            <button
+              className="bm-btn bm-btn-secondary"
+              onClick={fetchData}
+              disabled={loading}
+            >
+              <HiOutlineRefresh className={loading ? 'bm-spin' : ''} />
+              <span>Refresh</span>
+            </button>
+            <button
+              className="bm-btn bm-btn-primary"
+              onClick={() => navigate('/services/new')}
+            >
+              <HiOutlinePlus />
+              <span>Add Service</span>
+            </button>
+          </>
+        }
+      />
 
       {error && (
         <div className="bm-alert bm-alert-error">

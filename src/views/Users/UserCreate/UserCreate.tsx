@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HiOutlineArrowLeft } from 'react-icons/hi';
+import { HiOutlineArrowLeft, HiOutlineUserAdd } from 'react-icons/hi';
+import { PageHeader } from '../../../components/common/PageHeader';
 import './UserCreate.scss';
 
 interface UserFormData {
@@ -49,17 +50,20 @@ const UserCreate = () => {
 
   return (
     <div className="bm-user-create">
-      <header className="bm-page-header">
-        <div className="bm-header-left">
-          <button className="bm-back-btn" onClick={() => navigate('/users')}>
+      <PageHeader
+        icon={<HiOutlineUserAdd />}
+        title="Create User"
+        description="Add a new user to the system"
+        actions={
+          <button
+            className="bm-btn bm-btn-secondary"
+            onClick={() => navigate('/users')}
+          >
             <HiOutlineArrowLeft />
+            <span>Back</span>
           </button>
-          <div>
-            <h1 className="bm-page-title">Create User</h1>
-            <p className="bm-page-desc">Add a new user to the system</p>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="bm-card">
         <form onSubmit={handleSubmit} className="bm-form">
