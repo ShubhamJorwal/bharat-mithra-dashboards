@@ -74,14 +74,14 @@
 .bm-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .bm-nav-item {
   display: flex;
   align-items: center;
-  padding: 11px 14px;
-  border-radius: $radius-lg;
+  padding: 6px 14px;
+  border-radius: $radius-sm;
   color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
@@ -244,8 +244,8 @@
 .bm-nav-subitem {
   display: flex;
   align-items: center;
-  padding: 8px 14px;
-  border-radius: $radius-md;
+  padding: 8px 14px 8px 24px;
+  border-radius: $radius-sm;
   color: var(--color-text-secondary);
   font-size: 13px;
   font-weight: 500;
@@ -256,7 +256,7 @@
   &::before {
     content: '';
     position: absolute;
-    left: 0;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     width: 6px;
