@@ -22,10 +22,16 @@ import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Ca
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
+import StateForm from "../views/Geography/States/StateForm";
+import StateDetails from "../views/Geography/States/StateDetails";
 import DistrictList from "../views/Geography/Districts/DistrictList";
+import DistrictForm from "../views/Geography/Districts/DistrictForm";
 import TalukList from "../views/Geography/Taluks/TalukList";
+import TalukForm from "../views/Geography/Taluks/TalukForm";
 import GramPanchayatList from "../views/Geography/GramPanchayats/GramPanchayatList";
+import GramPanchayatForm from "../views/Geography/GramPanchayats/GramPanchayatForm";
 import VillageList from "../views/Geography/Villages/VillageList";
+import VillageForm from "../views/Geography/Villages/VillageForm";
 
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
@@ -106,25 +112,74 @@ const routerConfig = [
         path: "geography",
         element: <NationalDashboard />,
       },
+      // States
       {
         path: "geography/states",
         element: <StateList />,
       },
       {
+        path: "geography/states/new",
+        element: <StateForm />,
+      },
+      {
+        path: "geography/states/:id",
+        element: <StateDetails />,
+      },
+      {
+        path: "geography/states/:id/edit",
+        element: <StateForm />,
+      },
+      // Districts
+      {
         path: "geography/districts",
         element: <DistrictList />,
       },
+      {
+        path: "geography/districts/new",
+        element: <DistrictForm />,
+      },
+      {
+        path: "geography/districts/:id/edit",
+        element: <DistrictForm />,
+      },
+      // Taluks
       {
         path: "geography/taluks",
         element: <TalukList />,
       },
       {
+        path: "geography/taluks/new",
+        element: <TalukForm />,
+      },
+      {
+        path: "geography/taluks/:id/edit",
+        element: <TalukForm />,
+      },
+      // Gram Panchayats
+      {
         path: "geography/gram-panchayats",
         element: <GramPanchayatList />,
       },
       {
+        path: "geography/gram-panchayats/new",
+        element: <GramPanchayatForm />,
+      },
+      {
+        path: "geography/gram-panchayats/:id/edit",
+        element: <GramPanchayatForm />,
+      },
+      // Villages
+      {
         path: "geography/villages",
         element: <VillageList />,
+      },
+      {
+        path: "geography/villages/new",
+        element: <VillageForm />,
+      },
+      {
+        path: "geography/villages/:id/edit",
+        element: <VillageForm />,
       },
       // Other Routes (Placeholders)
       {

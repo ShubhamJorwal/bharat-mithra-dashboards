@@ -162,6 +162,11 @@ const geographyApi = {
     return response.data;
   },
 
+  getTalukByCode: async (code: string): Promise<ApiResponse<Taluk>> => {
+    const response = await axiosInstance.get(`${BASE_URL}/taluks/code/${code}`);
+    return response.data;
+  },
+
   getTalukGramPanchayats: async (talukId: string, params: GeographyQueryParams = {}): Promise<PaginatedResponse<GramPanchayat>> => {
     const queryString = buildQueryString(params);
     const url = queryString ? `${BASE_URL}/taluks/${talukId}/gram-panchayats?${queryString}` : `${BASE_URL}/taluks/${talukId}/gram-panchayats`;
@@ -201,6 +206,16 @@ const geographyApi = {
 
   getGramPanchayatById: async (id: string): Promise<ApiResponse<GramPanchayat>> => {
     const response = await axiosInstance.get(`${BASE_URL}/gram-panchayats/${id}`);
+    return response.data;
+  },
+
+  getGramPanchayatByCode: async (code: string): Promise<ApiResponse<GramPanchayat>> => {
+    const response = await axiosInstance.get(`${BASE_URL}/gram-panchayats/code/${code}`);
+    return response.data;
+  },
+
+  getGramPanchayatSummary: async (gpId: string): Promise<ApiResponse<GramPanchayat>> => {
+    const response = await axiosInstance.get(`${BASE_URL}/gram-panchayats/${gpId}/summary`);
     return response.data;
   },
 

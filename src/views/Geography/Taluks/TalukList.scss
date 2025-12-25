@@ -1,274 +1,375 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
+// ==============================================
+// TALUKS LIST - Consistent Design
+// ==============================================
+
 .bm-taluks {
   padding: 0;
-}
 
-.bm-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  color: #64748b;
-}
+  // Loading State
+  .bm-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 16px;
+    color: var(--color-text-secondary);
 
-.bm-card {
-  background: #fff;
-  border-radius: $radius-lg;
-  overflow: hidden;
-}
-
-.bm-table-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  flex-wrap: wrap;
-}
-
-.bm-search-box {
-  position: relative;
-  flex: 1;
-  max-width: 320px;
-
-  .bm-search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
+    .bm-loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--color-border-light);
+      border-top-color: #10b981;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
   }
 
-  input {
-    width: 100%;
-    padding: 10px 12px 10px 40px;
-    border: 1px solid #e2e8f0;
+  // Card Container
+  .bm-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-radius: $radius-lg;
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+  }
+
+  // Table Toolbar
+  .bm-table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+  }
+
+  // Search Box
+  .bm-search-box {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+    min-width: 200px;
+
+    .bm-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-secondary);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px 10px 40px;
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: 14px;
+      background: var(--color-background);
+      color: var(--color-text);
+      transition: all 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      &::placeholder {
+        color: var(--color-text-secondary);
+      }
+    }
+  }
+
+  // Filters
+  .bm-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .bm-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .bm-filter-icon {
+        color: var(--color-text-secondary);
+        font-size: 18px;
+      }
+    }
+  }
+
+  // Select
+  .bm-select {
+    padding: 10px 36px 10px 12px;
+    border: 1px solid var(--color-border);
     border-radius: $radius-md;
     font-size: 14px;
+    color: var(--color-text);
+    background: var(--color-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 16px;
+    appearance: none;
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.2s;
 
     &:focus {
       outline: none;
-      border-color: #6366f1;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    &:hover {
+      border-color: var(--color-text-secondary);
     }
   }
-}
 
-.bm-filters {
-  display: flex;
-  gap: 12px;
-}
-
-.bm-filter-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bm-select {
-  padding: 10px 32px 10px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: $radius-md;
-  font-size: 14px;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 8px center;
-  background-size: 16px;
-  appearance: none;
-  min-width: 160px;
-}
-
-.bm-table-container {
-  overflow-x: auto;
-}
-
-.bm-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th, td {
-    padding: 14px 16px;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+  // Table Container
+  .bm-table-container {
+    overflow-x: auto;
+    @include custom-scrollbar;
   }
 
-  th {
-    background: #f8fafc;
-    font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
-    text-transform: uppercase;
+  // Table
+  .bm-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    th {
+      background: var(--color-background-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    td {
+      font-size: 14px;
+      color: var(--color-text);
+    }
+
+    tbody tr {
+      transition: background 0.15s;
+
+      &:hover {
+        background: var(--color-background-secondary);
+      }
+    }
   }
 
-  tbody tr:hover {
-    background: #f8fafc;
-  }
-}
-
-.bm-taluk-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.bm-taluk-code {
-  padding: 4px 8px;
-  background: linear-gradient(135deg, #ec4899, #f472b6);
-  color: #fff;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.bm-taluk-names {
-  display: flex;
-  flex-direction: column;
-}
-
-.bm-taluk-name {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.bm-taluk-name-hindi {
-  font-size: 12px;
-  color: #64748b;
-}
-
-.bm-state-badge {
-  padding: 4px 10px;
-  background: rgba(255, 153, 51, 0.1);
-  color: #FF9933;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.bm-stat-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-
-  svg {
-    font-size: 14px;
+  // Taluk Info
+  .bm-taluk-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  &--gp {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-  }
-
-  &--village {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-  }
-}
-
-.bm-table-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.bm-action-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #e2e8f0;
-  border-radius: $radius-sm;
-  background: #fff;
-  color: #64748b;
-  cursor: pointer;
-
-  &:hover {
-    background: #f8fafc;
-    color: #6366f1;
-    border-color: #6366f1;
-  }
-
-  &--danger:hover {
-    color: #ef4444;
-    border-color: #ef4444;
-    background: #fef2f2;
-  }
-}
-
-.bm-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60px 20px;
-  text-align: center;
-
-  .bm-empty-icon {
-    font-size: 48px;
-    color: #cbd5e1;
-    margin-bottom: 16px;
-  }
-
-  h3 {
-    margin: 0 0 8px;
-    color: #334155;
-  }
-
-  p {
-    margin: 0;
-    color: #64748b;
-  }
-}
-
-.bm-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: $radius-md;
-  cursor: pointer;
-  border: none;
-
-  &-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  .bm-taluk-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #ec4899, #f472b6);
     color: #fff;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
 
-    &:hover {
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  .bm-taluk-names {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bm-taluk-name {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .bm-taluk-name-hindi {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  // State Badge
+  .bm-state-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: rgba(255, 153, 51, 0.1);
+    color: #FF9933;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  // Stat Badge
+  .bm-stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+
+    svg {
+      font-size: 14px;
+    }
+
+    &--gp {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    &--village {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
     }
   }
 
-  &-secondary {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+  // Table Actions
+  .bm-table-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .bm-action-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    background: var(--color-background);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
 
     &:hover {
-      background: #e2e8f0;
+      background: var(--color-background-secondary);
+      color: #10b981;
+      border-color: #10b981;
+    }
+
+    &--danger:hover {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+      background: rgba(222, 53, 11, 0.08);
+    }
+
+    svg {
+      font-size: 16px;
     }
   }
-}
 
-.bm-spin {
-  animation: spin 1s linear infinite;
+  // Error State
+  .bm-error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+
+    .bm-error-icon {
+      font-size: 56px;
+      color: var(--color-danger);
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0 0 24px;
+      max-width: 400px;
+    }
+  }
+
+  // Empty State
+  .bm-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+
+    .bm-empty-icon {
+      font-size: 56px;
+      color: var(--color-border);
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0 0 24px;
+      max-width: 400px;
+    }
+  }
+
+  // Spin Animation
+  .bm-spin {
+    animation: spin 1s linear infinite;
+  }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-body.dark-mode {
-  .bm-card { background: #1e293b; }
-  .bm-table-toolbar { border-color: #334155; }
-  .bm-search-box input { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-  .bm-select { background-color: #0f172a; border-color: #334155; color: #f1f5f9; }
-  .bm-table th { background: #0f172a; color: #94a3b8; }
-  .bm-table td { border-color: #334155; color: #e2e8f0; }
-  .bm-table tbody tr:hover { background: #0f172a; }
-  .bm-taluk-name { color: #f1f5f9; }
-  .bm-action-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }
+// Responsive
+@media (max-width: 768px) {
+  .bm-taluks {
+    .bm-table-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .bm-search-box {
+      max-width: 100%;
+    }
+
+    .bm-filters {
+      flex-wrap: wrap;
+    }
+
+    .bm-select {
+      flex: 1;
+      min-width: 120px;
+    }
+  }
 }

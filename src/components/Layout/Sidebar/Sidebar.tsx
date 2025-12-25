@@ -176,7 +176,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
                 <NavLink
                   key={sub.path}
                   to={sub.path}
-                  end={sub.path === '/services'}
+                  end={sub.path === '/geography' || sub.path === '/services'}
                   className={({ isActive }) => `bm-nav-subitem ${isActive ? 'active' : ''}`}
                 >
                   <span className="bm-nav-label">{sub.label}</span>

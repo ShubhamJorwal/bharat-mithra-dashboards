@@ -62,23 +62,24 @@
   white-space: nowrap;
 }
 
-// Scrollbar styling
-@mixin custom-scrollbar($width: 6px, $track: transparent, $thumb: $bg-dark-tertiary) {
+// Scrollbar styling - theme aware
+@mixin custom-scrollbar($width: 6px) {
   &::-webkit-scrollbar {
     width: $width;
     height: $width;
   }
 
   &::-webkit-scrollbar-track {
-    background: $track;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: $thumb;
+    background: var(--scrollbar-thumb, rgba(148, 163, 184, 0.4));
     border-radius: $radius-full;
+    transition: background 0.2s ease;
 
     &:hover {
-      background: lighten($thumb, 10%);
+      background: var(--scrollbar-thumb-hover, rgba(148, 163, 184, 0.6));
     }
   }
 }

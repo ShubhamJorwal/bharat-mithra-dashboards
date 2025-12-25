@@ -31,6 +31,10 @@
   --glass-blur: blur(10px);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.3);
+
+  // Scrollbar - Light theme
+  --scrollbar-thumb: rgba(148, 163, 184, 0.4);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.6);
 }
 
 // Base styles
@@ -404,6 +408,10 @@ body.dark-mode {
   --glass-border: rgba(255, 255, 255, 0.1);
   --color-border-light: rgba(255, 255, 255, 0.1);
   --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+
+  // Scrollbar - Dark theme
+  --scrollbar-thumb: rgba(100, 116, 139, 0.5);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.7);
 
   .bm-card {
     background: var(--glass-bg);

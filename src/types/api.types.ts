@@ -538,6 +538,7 @@ export interface State {
   name_hindi?: string;
   code: string;
   iso_code?: string;
+  lgd_code?: string;
   state_type: 'state' | 'union_territory';
   zone: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
   capital?: string;
@@ -545,6 +546,7 @@ export interface State {
   area_sq_km?: number;
   population?: number;
   literacy_rate?: number;
+  official_language?: string;
   official_languages?: string[];
   total_districts: number;
   total_taluks: number;
@@ -561,6 +563,7 @@ export interface CreateStateRequest {
   name_hindi?: string;
   code: string;
   iso_code?: string;
+  lgd_code?: string;
   state_type: 'state' | 'union_territory';
   zone: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
   capital?: string;
@@ -568,7 +571,9 @@ export interface CreateStateRequest {
   area_sq_km?: number;
   population?: number;
   literacy_rate?: number;
+  official_language?: string;
   official_languages?: string[];
+  is_active?: boolean;
   sort_order?: number;
 }
 
@@ -577,6 +582,7 @@ export interface UpdateStateRequest {
   name_hindi?: string;
   code?: string;
   iso_code?: string;
+  lgd_code?: string;
   state_type?: 'state' | 'union_territory';
   zone?: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
   capital?: string;
@@ -584,6 +590,7 @@ export interface UpdateStateRequest {
   area_sq_km?: number;
   population?: number;
   literacy_rate?: number;
+  official_language?: string;
   official_languages?: string[];
   is_active?: boolean;
   sort_order?: number;
@@ -598,6 +605,7 @@ export interface District {
   name: string;
   name_hindi?: string;
   code: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
@@ -616,10 +624,12 @@ export interface CreateDistrictRequest {
   name: string;
   name_hindi?: string;
   code: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
   literacy_rate?: number;
+  is_active?: boolean;
   sort_order?: number;
 }
 
@@ -627,6 +637,7 @@ export interface UpdateDistrictRequest {
   name?: string;
   name_hindi?: string;
   code?: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
@@ -646,6 +657,7 @@ export interface Taluk {
   name: string;
   name_hindi?: string;
   code: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
@@ -663,9 +675,11 @@ export interface CreateTalukRequest {
   name: string;
   name_hindi?: string;
   code: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
+  is_active?: boolean;
   sort_order?: number;
 }
 
@@ -673,6 +687,7 @@ export interface UpdateTalukRequest {
   name?: string;
   name_hindi?: string;
   code?: string;
+  lgd_code?: string;
   headquarters?: string;
   area_sq_km?: number;
   population?: number;
@@ -801,11 +816,14 @@ export interface CreateVillageRequest {
   census_code?: string;
   lgd_code?: string;
   pin_code?: string;
+  village_head_name?: string;
+  village_head_mobile?: string;
   population?: number;
   male_population?: number;
   female_population?: number;
   households?: number;
   area_sq_km?: number;
+  area_hectares?: number;
   latitude?: number;
   longitude?: number;
   has_primary_school?: boolean;
@@ -820,6 +838,7 @@ export interface CreateVillageRequest {
   has_electricity?: boolean;
   has_tap_water?: boolean;
   has_internet?: boolean;
+  is_active?: boolean;
   sort_order?: number;
 }
 
@@ -830,11 +849,14 @@ export interface UpdateVillageRequest {
   census_code?: string;
   lgd_code?: string;
   pin_code?: string;
+  village_head_name?: string;
+  village_head_mobile?: string;
   population?: number;
   male_population?: number;
   female_population?: number;
   households?: number;
   area_sq_km?: number;
+  area_hectares?: number;
   latitude?: number;
   longitude?: number;
   has_primary_school?: boolean;
