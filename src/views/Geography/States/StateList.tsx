@@ -14,8 +14,7 @@ import {
   HiOutlineViewGrid,
   HiOutlineViewList,
   HiOutlineLocationMarker,
-  HiOutlineArrowRight,
-  HiOutlineGlobe
+  HiOutlineArrowRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { State } from '../../../types/api.types';
@@ -85,8 +84,8 @@ const StateList = () => {
   };
 
   const formatNumber = (num: number): string => {
-    if (num >= 10000000) return (num / 10000000).toFixed(1) + ' Cr';
-    if (num >= 100000) return (num / 100000).toFixed(1) + ' L';
+    if (num >= 10000000) return (num / 10000000).toFixed(1) + 'Cr';
+    if (num >= 100000) return (num / 100000).toFixed(1) + 'L';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toLocaleString();
   };
@@ -148,7 +147,7 @@ const StateList = () => {
                 onChange={(e) => setSelectedType(e.target.value)}
               >
                 <option value="all">All Types</option>
-                <option value="state">States Only</option>
+                <option value="state">States</option>
                 <option value="union_territory">Union Territories</option>
               </select>
             </div>
@@ -158,25 +157,23 @@ const StateList = () => {
               className="states-zone-select"
             >
               <option value="all">All Zones</option>
-              <option value="north">North Zone</option>
-              <option value="south">South Zone</option>
-              <option value="east">East Zone</option>
-              <option value="west">West Zone</option>
-              <option value="central">Central Zone</option>
-              <option value="northeast">Northeast Zone</option>
+              <option value="north">North</option>
+              <option value="south">South</option>
+              <option value="east">East</option>
+              <option value="west">West</option>
+              <option value="central">Central</option>
+              <option value="northeast">Northeast</option>
             </select>
             <div className="states-view-toggle">
               <button
                 className={viewMode === 'grid' ? 'active' : ''}
                 onClick={() => setViewMode('grid')}
-                title="Grid View"
               >
                 <HiOutlineViewGrid />
               </button>
               <button
                 className={viewMode === 'list' ? 'active' : ''}
                 onClick={() => setViewMode('list')}
-                title="List View"
               >
                 <HiOutlineViewList />
               </button>
@@ -198,76 +195,66 @@ const StateList = () => {
                   className="state-card"
                   onClick={() => navigate(`/geography/states/${state.id}`)}
                 >
-                  <div className="state-card__header">
-                    <div className="state-card__icon">
-                      <HiOutlineGlobe />
-                    </div>
-                    <div className="state-card__meta">
+                  <div className="state-card__top">
+                    <div className="state-card__title">
+                      <h3>{state.name}</h3>
                       <span className="state-card__code">{state.code}</span>
-                      <span className={`state-card__badge ${state.state_type === 'state' ? 'state-card__badge--state' : 'state-card__badge--ut'}`}>
-                        {state.state_type === 'state' ? 'State' : 'UT'}
-                      </span>
                     </div>
+                    <span className={`state-card__type ${state.state_type === 'state' ? 'state-card__type--state' : 'state-card__type--ut'}`}>
+                      {state.state_type === 'state' ? 'State' : 'UT'}
+                    </span>
                   </div>
 
-                  <div className="state-card__body">
-                    <h3 className="state-card__name">{state.name}</h3>
-                    <div className="state-card__info">
-                      <div className="state-card__info-item">
-                        <HiOutlineLocationMarker />
-                        <span>{state.capital || 'Capital N/A'}</span>
-                      </div>
-                      <div className="state-card__info-item">
-                        <HiOutlineMap />
-                        <span className="capitalize">{state.zone} Zone</span>
-                      </div>
+                  <div className="state-card__meta">
+                    <div className="state-card__meta-item">
+                      <HiOutlineLocationMarker />
+                      <span>{state.capital || 'N/A'}</span>
+                    </div>
+                    <div className="state-card__meta-item">
+                      <HiOutlineMap />
+                      <span className="capitalize">{state.zone}</span>
                     </div>
                   </div>
 
                   <div className="state-card__stats">
                     <div className="state-card__stat">
-                      <span className="state-card__stat-value">{state.total_districts || 0}</span>
-                      <span className="state-card__stat-label">Districts</span>
+                      <span className="state-card__stat-val">{state.total_districts || 0}</span>
+                      <span className="state-card__stat-lbl">Districts</span>
                     </div>
                     <div className="state-card__stat">
-                      <span className="state-card__stat-value">{formatNumber(state.total_taluks || 0)}</span>
-                      <span className="state-card__stat-label">Taluks</span>
+                      <span className="state-card__stat-val">{formatNumber(state.total_taluks || 0)}</span>
+                      <span className="state-card__stat-lbl">Taluks</span>
                     </div>
                     <div className="state-card__stat">
-                      <span className="state-card__stat-value">{state.population ? formatNumber(state.population) : '—'}</span>
-                      <span className="state-card__stat-label">Population</span>
+                      <span className="state-card__stat-val">{state.population ? formatNumber(state.population) : '—'}</span>
+                      <span className="state-card__stat-lbl">Population</span>
                     </div>
                   </div>
 
-                  <div className="state-card__footer">
-                    <div className="state-card__actions">
-                      <button
-                        className="state-card__action"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }}
-                        title="View Districts"
-                      >
-                        <HiOutlineOfficeBuilding />
-                      </button>
-                      <button
-                        className="state-card__action"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }}
-                        title="Edit"
-                      >
-                        <HiOutlinePencil />
-                      </button>
-                      <button
-                        className="state-card__action state-card__action--danger"
-                        onClick={(e) => handleDelete(e, state)}
-                        disabled={deleteLoading === state.id}
-                        title="Delete"
-                      >
-                        <HiOutlineTrash />
-                      </button>
-                    </div>
-                    <button className="state-card__view">
-                      <span>View Details</span>
-                      <HiOutlineArrowRight />
+                  <div className="state-card__actions">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }}
+                      title="Districts"
+                    >
+                      <HiOutlineOfficeBuilding />
                     </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }}
+                      title="Edit"
+                    >
+                      <HiOutlinePencil />
+                    </button>
+                    <button
+                      className="danger"
+                      onClick={(e) => handleDelete(e, state)}
+                      disabled={deleteLoading === state.id}
+                      title="Delete"
+                    >
+                      <HiOutlineTrash />
+                    </button>
+                    <span className="state-card__arrow">
+                      <HiOutlineArrowRight />
+                    </span>
                   </div>
                 </article>
               ))}
@@ -277,13 +264,13 @@ const StateList = () => {
               <table className="states-table">
                 <thead>
                   <tr>
-                    <th>State / Union Territory</th>
+                    <th>Name</th>
                     <th>Capital</th>
                     <th>Zone</th>
                     <th>Districts</th>
                     <th>Taluks</th>
                     <th>Population</th>
-                    <th>Actions</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -293,42 +280,22 @@ const StateList = () => {
                       onClick={() => navigate(`/geography/states/${state.id}`)}
                     >
                       <td>
-                        <div className="states-table__primary">
-                          <div className="states-table__icon">
-                            <HiOutlineGlobe />
-                          </div>
-                          <div className="states-table__info">
-                            <span className="states-table__name">{state.name}</span>
-                            <span className="states-table__sub">
-                              {state.code} · {state.state_type === 'state' ? 'State' : 'Union Territory'}
-                            </span>
-                          </div>
+                        <div className="states-table__name">
+                          <span className="states-table__title">{state.name}</span>
+                          <span className="states-table__sub">{state.code} · {state.state_type === 'state' ? 'State' : 'UT'}</span>
                         </div>
                       </td>
-                      <td><span className="states-table__text">{state.capital || '—'}</span></td>
+                      <td>{state.capital || '—'}</td>
                       <td><span className="states-table__zone capitalize">{state.zone}</span></td>
-                      <td><span className="states-table__num">{state.total_districts || 0}</span></td>
-                      <td><span className="states-table__num">{formatNumber(state.total_taluks || 0)}</span></td>
-                      <td><span className="states-table__num">{state.population ? formatNumber(state.population) : '—'}</span></td>
+                      <td className="num">{state.total_districts || 0}</td>
+                      <td className="num">{formatNumber(state.total_taluks || 0)}</td>
+                      <td className="num">{state.population ? formatNumber(state.population) : '—'}</td>
                       <td>
                         <div className="states-table__actions" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/states/${state.id}`)} title="View">
-                            <HiOutlineEye />
-                          </button>
-                          <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)} title="Districts">
-                            <HiOutlineOfficeBuilding />
-                          </button>
-                          <button onClick={() => navigate(`/geography/states/${state.id}/edit`)} title="Edit">
-                            <HiOutlinePencil />
-                          </button>
-                          <button
-                            className="danger"
-                            onClick={() => handleDelete({ stopPropagation: () => {} } as React.MouseEvent, state)}
-                            disabled={deleteLoading === state.id}
-                            title="Delete"
-                          >
-                            <HiOutlineTrash />
-                          </button>
+                          <button onClick={() => navigate(`/geography/states/${state.id}`)}><HiOutlineEye /></button>
+                          <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)}><HiOutlineOfficeBuilding /></button>
+                          <button onClick={() => navigate(`/geography/states/${state.id}/edit`)}><HiOutlinePencil /></button>
+                          <button className="danger" onClick={() => handleDelete({ stopPropagation: () => {} } as React.MouseEvent, state)} disabled={deleteLoading === state.id}><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -339,20 +306,15 @@ const StateList = () => {
           )
         ) : (
           <div className="states-empty">
-            <div className="states-empty__icon">
-              <HiOutlineMap />
-            </div>
+            <div className="states-empty__icon"><HiOutlineMap /></div>
             <h3>No states found</h3>
             <p>
               {searchQuery || selectedZone !== 'all' || selectedType !== 'all'
-                ? 'Try adjusting your search or filter criteria'
-                : 'Get started by adding your first state or union territory'}
+                ? 'Try adjusting your filters'
+                : 'Add your first state or union territory'}
             </p>
             {!searchQuery && selectedZone === 'all' && selectedType === 'all' && (
-              <button
-                className="bm-btn bm-btn-primary"
-                onClick={() => navigate('/geography/states/new')}
-              >
+              <button className="bm-btn bm-btn-primary" onClick={() => navigate('/geography/states/new')}>
                 <HiOutlinePlus />
                 <span>Add State/UT</span>
               </button>
