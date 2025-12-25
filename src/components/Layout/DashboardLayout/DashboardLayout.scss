@@ -7,14 +7,15 @@
 }
 
 .bm-main-area {
-  min-height: 100vh;
+  min-height: calc(100vh - 20px);
   transition: margin-left 0.2s ease;
   padding: 10px;
   padding-top: 58px;
+  height: calc(100vh - 68px);
 }
 
 .bm-page-container {
-  min-height: calc(100vh - 48px);
+  min-height: calc(100vh - 68px);
   @include custom-scrollbar;
 }
 

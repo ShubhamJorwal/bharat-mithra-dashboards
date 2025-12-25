@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HiOutlinePlus,
@@ -11,7 +11,16 @@ import {
   HiOutlineLocationMarker,
   HiOutlineUserGroup,
   HiOutlineHome,
-  HiOutlineExclamationCircle
+  HiOutlineExclamationCircle,
+  HiOutlineViewGrid,
+  HiOutlineViewList,
+  HiOutlineChevronRight,
+  HiOutlineChevronLeft,
+  HiOutlineChevronDoubleLeft,
+  HiOutlineChevronDoubleRight,
+  HiOutlineChevronUp,
+  HiOutlineChevronDown,
+  HiOutlineSwitchVertical
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { Taluk, State, District } from '../../../types/api.types';
@@ -20,146 +29,249 @@ import './TalukList.scss';
 
 const TalukList = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const districtIdFromUrl = searchParams.get('district_id');
-  const stateIdFromUrl = searchParams.get('state_id');
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  // Data state
   const [taluks, setTaluks] = useState<Taluk[]>([]);
   const [states, setStates] = useState<State[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStateId, setSelectedStateId] = useState<string>(stateIdFromUrl || 'all');
-  const [selectedDistrictId, setSelectedDistrictId] = useState<string>(districtIdFromUrl || 'all');
-  const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 0 });
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
+  // Filter state - synced with URL params
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
+  const [selectedStateId, setSelectedStateId] = useState<string>(searchParams.get('state_id') || 'all');
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string>(searchParams.get('district_id') || 'all');
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
+  const [itemsPerPage, setItemsPerPage] = useState(Number(searchParams.get('per_page')) || 12);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageInput, setPageInput] = useState(String(currentPage));
+
+  // View state
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+
+  // Sort state
+  const [sortBy, setSortBy] = useState<string>(searchParams.get('sort_by') || 'name');
+  const [sortOrder, setSortOrder] = useState<number>(Number(searchParams.get('sort_order')) || 1);
+
+  // Debounce search
   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== searchQuery) {
+        setSearchQuery(searchInput);
+        setCurrentPage(1);
+        setPageInput('1');
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, searchQuery]);
+
+  // Fetch states for filter dropdown
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await geographyApi.getStates({ per_page: 100 });
+        if (response.success && response.data) {
+          setStates(response.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch states:', err);
+      }
+    };
     fetchStates();
   }, []);
 
+  // Fetch districts when state changes
   useEffect(() => {
-    if (selectedStateId !== 'all') {
-      fetchDistricts();
-    } else {
-      setDistricts([]);
-      setSelectedDistrictId('all');
-    }
+    const fetchDistricts = async () => {
+      if (selectedStateId === 'all') {
+        setDistricts([]);
+        return;
+      }
+      try {
+        const response = await geographyApi.getDistricts({ state_id: selectedStateId, per_page: 100 });
+        if (response.success && response.data) {
+          setDistricts(response.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch districts:', err);
+      }
+    };
+    fetchDistricts();
   }, [selectedStateId]);
 
-  useEffect(() => {
-    fetchTaluks();
-  }, [selectedStateId, selectedDistrictId]);
-
-  const fetchStates = async () => {
-    try {
-      const response = await geographyApi.getStates({ per_page: 100 });
-      if (response.success && response.data) setStates(response.data);
-    } catch (err) {
-      console.error('Failed to fetch states:', err);
-    }
-  };
-
-  const fetchDistricts = async () => {
-    try {
-      const response = await geographyApi.getDistricts({ state_id: selectedStateId, per_page: 100 });
-      if (response.success && response.data) setDistricts(response.data);
-    } catch (err) {
-      console.error('Failed to fetch districts:', err);
-    }
-  };
-
-  const fetchTaluks = async () => {
+  // Fetch taluks from API
+  const fetchTaluks = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const params: Record<string, unknown> = { page: pagination.page, per_page: 50 };
+      const params: Record<string, unknown> = {
+        page: currentPage,
+        per_page: itemsPerPage,
+        sort_by: sortBy,
+        sort_order: sortOrder
+      };
+
+      if (searchQuery) params.search = searchQuery;
       if (selectedStateId !== 'all') params.state_id = selectedStateId;
       if (selectedDistrictId !== 'all') params.district_id = selectedDistrictId;
 
       const response = await geographyApi.getTaluks(params);
+
       if (response.success && response.data) {
         setTaluks(response.data);
-        setPagination({ page: response.meta?.page || 1, total: response.meta?.total || response.data.length, totalPages: response.meta?.total_pages || 1 });
+        setTotalItems(response.meta?.total || response.data.length);
+        setTotalPages(response.meta?.total_pages || Math.ceil((response.meta?.total || response.data.length) / itemsPerPage));
       } else {
         setError(response.message || 'Failed to load taluks');
         setTaluks([]);
+        setTotalItems(0);
+        setTotalPages(0);
       }
     } catch (err) {
       console.error('Failed to fetch taluks:', err);
-      setError('Unable to connect to the server. Please try again later.');
+      setError('Unable to connect to the server. Please try again.');
       setTaluks([]);
+      setTotalItems(0);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
+  }, [currentPage, itemsPerPage, searchQuery, selectedStateId, selectedDistrictId, sortBy, sortOrder]);
+
+  // Fetch on filter/pagination change
+  useEffect(() => {
+    fetchTaluks();
+  }, [fetchTaluks]);
+
+  // Update URL params when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (selectedStateId !== 'all') params.set('state_id', selectedStateId);
+    if (selectedDistrictId !== 'all') params.set('district_id', selectedDistrictId);
+    if (currentPage > 1) params.set('page', String(currentPage));
+    if (itemsPerPage !== 12) params.set('per_page', String(itemsPerPage));
+    if (sortBy !== 'name') params.set('sort_by', sortBy);
+    if (sortOrder !== 1) params.set('sort_order', String(sortOrder));
+
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, selectedStateId, selectedDistrictId, currentPage, itemsPerPage, sortBy, sortOrder, setSearchParams]);
+
+  // Reset filters
+  const handleStateChange = (value: string) => {
+    setSelectedStateId(value);
+    setSelectedDistrictId('all');
+    setCurrentPage(1);
+    setPageInput('1');
   };
 
-  const filteredTaluks = taluks.filter(taluk =>
-    taluk.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (taluk.name_hindi?.includes(searchQuery)) ||
-    taluk.code.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleDistrictChange = (value: string) => {
+    setSelectedDistrictId(value);
+    setCurrentPage(1);
+    setPageInput('1');
+  };
 
-  const handleDelete = async (taluk: Taluk) => {
-    if (window.confirm(`Are you sure you want to delete ${taluk.name}?`)) {
-      try {
-        await geographyApi.deleteTaluk(taluk.id);
-        setTaluks(taluks.filter(t => t.id !== taluk.id));
-      } catch (err) {
-        console.error('Failed to delete taluk:', err);
-        alert('Failed to delete taluk. Please try again.');
-      }
+  const handleDelete = async (e: React.MouseEvent, taluk: Taluk) => {
+    e.stopPropagation();
+    if (!window.confirm(`Are you sure you want to delete "${taluk.name}"?`)) return;
+
+    setDeleteLoading(taluk.id);
+    try {
+      await geographyApi.deleteTaluk(taluk.id);
+      fetchTaluks();
+    } catch (err) {
+      console.error('Failed to delete:', err);
+      setError('Failed to delete taluk. Please try again.');
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
   const formatNumber = (num: number): string => {
+    if (num >= 10000000) return (num / 10000000).toFixed(1) + 'Cr';
+    if (num >= 100000) return (num / 100000).toFixed(1) + 'L';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toLocaleString('en-IN');
+    return num.toLocaleString();
   };
 
-  if (loading) {
-    return (
-      <div className="bm-taluks">
-        <div className="bm-loading">Loading taluks...</div>
-      </div>
-    );
-  }
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      setPageInput(page.toString());
+    }
+  };
 
-  if (error) {
-    return (
-      <div className="bm-taluks">
-        <PageHeader
-          icon={<HiOutlineLocationMarker />}
-          title="Taluks / Tehsils / Mandals"
-          description="Manage all taluks across India"
-          actions={
-            <button className="bm-btn bm-btn-secondary" onClick={fetchTaluks}>
-              <HiOutlineRefresh />
-              <span>Retry</span>
-            </button>
-          }
-        />
-        <div className="bm-card">
-          <div className="bm-error-state">
-            <HiOutlineExclamationCircle className="bm-error-icon" />
-            <h3>Unable to Load Taluks</h3>
-            <p>{error}</p>
-            <button className="bm-btn bm-btn-primary" onClick={fetchTaluks}>
-              <HiOutlineRefresh />
-              <span>Try Again</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handlePageInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const page = parseInt(pageInput);
+      if (!isNaN(page) && page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+      } else {
+        setPageInput(currentPage.toString());
+      }
+    }
+  };
+
+  const handlePageInputBlur = () => {
+    const page = parseInt(pageInput);
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    } else {
+      setPageInput(currentPage.toString());
+    }
+  };
+
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+    setPageInput('1');
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+      setPageInput('1');
+    }
+  };
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 1 ? 0 : 1);
+    } else {
+      setSortBy(field);
+      setSortOrder(1);
+    }
+    setCurrentPage(1);
+    setPageInput('1');
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortBy !== field) return <HiOutlineSwitchVertical />;
+    return sortOrder === 1 ? <HiOutlineChevronUp /> : <HiOutlineChevronDown />;
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
-    <div className="bm-taluks">
+    <div className="tl">
       <PageHeader
         icon={<HiOutlineLocationMarker />}
-        title="Taluks / Tehsils / Mandals"
-        description={taluks.length > 0 ? `${pagination.total} Taluks across India` : 'Manage all taluks'}
+        title="Taluks / Tehsils"
+        description={`${totalItems} Taluks across India`}
         actions={
           <>
             <button className="bm-btn bm-btn-secondary" onClick={fetchTaluks} disabled={loading}>
@@ -174,100 +286,209 @@ const TalukList = () => {
         }
       />
 
-      <div className="bm-card">
-        <div className="bm-table-toolbar">
-          <div className="bm-search-box">
-            <HiOutlineSearch className="bm-search-icon" />
-            <input type="text" placeholder="Search taluks..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-          </div>
-          <div className="bm-filters">
-            <div className="bm-filter-group">
-              <HiOutlineFilter className="bm-filter-icon" />
-              <select value={selectedStateId} onChange={(e) => setSelectedStateId(e.target.value)} className="bm-select">
-                <option value="all">All States</option>
-                {states.map(state => (<option key={state.id} value={state.id}>{state.name}</option>))}
-              </select>
-            </div>
-            {selectedStateId !== 'all' && (
-              <select value={selectedDistrictId} onChange={(e) => setSelectedDistrictId(e.target.value)} className="bm-select">
-                <option value="all">All Districts</option>
-                {districts.map(district => (<option key={district.id} value={district.id}>{district.name}</option>))}
-              </select>
-            )}
+      {error && (
+        <div className="tl-alert">
+          <HiOutlineExclamationCircle />
+          <span>{error}</span>
+          <button onClick={() => setError(null)}>&times;</button>
+        </div>
+      )}
+
+      {/* Filter Bar */}
+      <div className="tl-bar">
+        <div className="tl-search">
+          <HiOutlineSearch />
+          <input
+            type="text"
+            placeholder="Search taluks..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
+        </div>
+        <div className="tl-filters">
+          <HiOutlineFilter className="tl-filter-icon" />
+          <select value={selectedStateId} onChange={(e) => handleStateChange(e.target.value)}>
+            <option value="all">All States</option>
+            {states.map(state => (
+              <option key={state.id} value={state.id}>{state.name}</option>
+            ))}
+          </select>
+          {selectedStateId !== 'all' && (
+            <select value={selectedDistrictId} onChange={(e) => handleDistrictChange(e.target.value)}>
+              <option value="all">All Districts</option>
+              {districts.map(district => (
+                <option key={district.id} value={district.id}>{district.name}</option>
+              ))}
+            </select>
+          )}
+          <div className="tl-toggle">
+            <button className={viewMode === 'grid' ? 'on' : ''} onClick={() => setViewMode('grid')}><HiOutlineViewGrid /></button>
+            <button className={viewMode === 'list' ? 'on' : ''} onClick={() => setViewMode('list')}><HiOutlineViewList /></button>
           </div>
         </div>
+      </div>
 
-        {filteredTaluks.length > 0 ? (
-          <div className="bm-table-container">
-            <table className="bm-table">
-              <thead>
-                <tr>
-                  <th>Taluk</th>
-                  <th>District</th>
-                  <th>State</th>
-                  <th>Headquarters</th>
-                  <th>Gram Panchayats</th>
-                  <th>Villages</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTaluks.map((taluk) => (
-                  <tr key={taluk.id}>
-                    <td>
-                      <div className="bm-taluk-info">
-                        <div className="bm-taluk-code">{taluk.code}</div>
-                        <div className="bm-taluk-names">
-                          <span className="bm-taluk-name">{taluk.name}</span>
-                          {taluk.name_hindi && <span className="bm-taluk-name-hindi">{taluk.name_hindi}</span>}
-                        </div>
-                      </div>
-                    </td>
-                    <td>{taluk.district_name}</td>
-                    <td><span className="bm-state-badge">{taluk.state_name}</span></td>
-                    <td>{taluk.headquarters || '-'}</td>
-                    <td>
-                      <span className="bm-stat-badge bm-stat-badge--gp">
-                        <HiOutlineUserGroup /> {formatNumber(taluk.total_gram_panchayats)}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="bm-stat-badge bm-stat-badge--village">
-                        <HiOutlineHome /> {formatNumber(taluk.total_villages)}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="bm-table-actions">
-                        <button className="bm-action-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View">
-                          <HiOutlineEye />
-                        </button>
-                        <button className="bm-action-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)} title="Edit">
-                          <HiOutlinePencil />
-                        </button>
-                        <button className="bm-action-btn bm-action-btn--danger" onClick={() => handleDelete(taluk)} title="Delete">
-                          <HiOutlineTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Content Area */}
+      <div className="tl-content">
+        {loading ? (
+          <div className="tl-loading">
+            <div className="tl-spinner"></div>
+            <p>Loading...</p>
           </div>
+        ) : taluks.length > 0 ? (
+          viewMode === 'grid' ? (
+            <div className="tl-grid">
+              {taluks.map((taluk) => (
+                <div
+                  key={taluk.id}
+                  className="tl-card"
+                  onClick={() => navigate(`/geography/taluks/${taluk.id}`)}
+                >
+                  <div className="tl-card__head">
+                    <div className="tl-card__info">
+                      <span className="tl-card__code">{taluk.code}</span>
+                      <h4 className="tl-card__name">{taluk.name}</h4>
+                      {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>}
+                    </div>
+                  </div>
+                  <div className="tl-card__location">
+                    <span>{taluk.district_name}</span>
+                    <span className="sep">•</span>
+                    <span className="state">{taluk.state_name}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label">Headquarters</span>
+                    <span className="tl-card__value">{taluk.headquarters || '—'}</span>
+                  </div>
+                  <div className="tl-card__nums">
+                    <div className="tl-card__num">
+                      <HiOutlineUserGroup />
+                      <strong>{formatNumber(taluk.total_gram_panchayats || 0)}</strong>
+                      <span>GPs</span>
+                    </div>
+                    <div className="tl-card__num">
+                      <HiOutlineHome />
+                      <strong>{formatNumber(taluk.total_villages || 0)}</strong>
+                      <span>Villages</span>
+                    </div>
+                  </div>
+                  <div className="tl-card__foot">
+                    <div className="tl-card__btns">
+                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`); }} title="Gram Panchayats">
+                        <HiOutlineUserGroup />
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/taluks/${taluk.id}/edit`); }} title="Edit">
+                        <HiOutlinePencil />
+                      </button>
+                      <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete">
+                        <HiOutlineTrash />
+                      </button>
+                    </div>
+                    <span className="tl-card__go"><HiOutlineChevronRight /></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="tl-table-wrap">
+              <table className="tl-table">
+                <thead>
+                  <tr>
+                    <th className="sortable" onClick={() => handleSort('name')}>
+                      <span>Taluk</span>
+                      {getSortIcon('name')}
+                    </th>
+                    <th>District</th>
+                    <th>State</th>
+                    <th className="sortable" onClick={() => handleSort('headquarters')}>
+                      <span>Headquarters</span>
+                      {getSortIcon('headquarters')}
+                    </th>
+                    <th className="sortable num" onClick={() => handleSort('total_gram_panchayats')}>
+                      <span>GPs</span>
+                      {getSortIcon('total_gram_panchayats')}
+                    </th>
+                    <th className="sortable num" onClick={() => handleSort('total_villages')}>
+                      <span>Villages</span>
+                      {getSortIcon('total_villages')}
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {taluks.map((taluk) => (
+                    <tr key={taluk.id} onClick={() => navigate(`/geography/taluks/${taluk.id}`)}>
+                      <td>
+                        <div className="tl-table__main">
+                          <span className="tl-table__code">{taluk.code}</span>
+                          <div className="tl-table__txt">
+                            <strong>{taluk.name}</strong>
+                            {taluk.name_hindi && <small>{taluk.name_hindi}</small>}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{taluk.district_name}</td>
+                      <td><span className="tl-table__state">{taluk.state_name}</span></td>
+                      <td>{taluk.headquarters || '—'}</td>
+                      <td className="num">{formatNumber(taluk.total_gram_panchayats || 0)}</td>
+                      <td className="num">{formatNumber(taluk.total_villages || 0)}</td>
+                      <td>
+                        <div className="tl-table__acts" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => navigate(`/geography/taluks/${taluk.id}`)}><HiOutlineEye /></button>
+                          <button onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)}><HiOutlineUserGroup /></button>
+                          <button onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)}><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id}><HiOutlineTrash /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
         ) : (
-          <div className="bm-empty-state">
-            <HiOutlineLocationMarker className="bm-empty-icon" />
-            <h3>No Taluks Found</h3>
-            <p>{searchQuery ? 'No taluks match your search criteria' : 'No taluks available. Add your first taluk to get started.'}</p>
-            {!searchQuery && (
-              <button className="bm-btn bm-btn-primary" onClick={() => navigate('/geography/taluks/new')}>
-                <HiOutlinePlus />
-                <span>Add Taluk</span>
+          <div className="tl-empty">
+            <HiOutlineLocationMarker />
+            <h4>No taluks found</h4>
+            <p>{searchQuery || selectedStateId !== 'all' ? 'Try adjusting your filters' : 'Add your first taluk'}</p>
+            {!searchQuery && selectedStateId === 'all' && (
+              <button className="bm-btn bm-btn-primary bm-btn-sm" onClick={() => navigate('/geography/taluks/new')}>
+                <HiOutlinePlus /> Add Taluk
               </button>
             )}
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      {!loading && taluks.length > 0 && (
+        <div className="tl-footer">
+          <div className="tl-footer__info">
+            <span>Showing {startIndex + 1}-{endIndex} of {totalItems}</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="tl-footer__perpage"
+            >
+              <option value={12}>12 / page</option>
+              <option value={24}>24 / page</option>
+              <option value={36}>36 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
+          </div>
+          <div className="tl-pagination">
+            <button className="tl-pagination__btn" onClick={() => handlePageChange(1)} disabled={currentPage === 1}><HiOutlineChevronDoubleLeft /></button>
+            <button className="tl-pagination__btn" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}><HiOutlineChevronLeft /></button>
+            <div className="tl-pagination__input">
+              <input type="text" value={pageInput} onChange={handlePageInputChange} onKeyDown={handlePageInputSubmit} onBlur={handlePageInputBlur} />
+              <span>of {totalPages || 1}</span>
+            </div>
+            <button className="tl-pagination__btn" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= totalPages}><HiOutlineChevronRight /></button>
+            <button className="tl-pagination__btn" onClick={() => handlePageChange(totalPages)} disabled={currentPage >= totalPages}><HiOutlineChevronDoubleRight /></button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HiOutlinePlus,
@@ -13,7 +13,13 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
-  HiOutlineChevronRight
+  HiOutlineChevronRight,
+  HiOutlineChevronLeft,
+  HiOutlineChevronDoubleLeft,
+  HiOutlineChevronDoubleRight,
+  HiOutlineChevronUp,
+  HiOutlineChevronDown,
+  HiOutlineSwitchVertical
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { State } from '../../../types/api.types';
@@ -22,49 +28,114 @@ import './StateList.scss';
 
 const StateList = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Data state
   const [states, setStates] = useState<State[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedZone, setSelectedZone] = useState<string>(searchParams.get('zone') || 'all');
-  const [selectedType, setSelectedType] = useState<string>(searchParams.get('type') || 'all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchStates();
-  }, [selectedZone, selectedType]);
+  // Filter state - synced with URL params
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
+  const [selectedZone, setSelectedZone] = useState<string>(searchParams.get('zone') || 'all');
+  const [selectedType, setSelectedType] = useState<string>(searchParams.get('type') || 'all');
 
-  const fetchStates = async () => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
+  const [itemsPerPage, setItemsPerPage] = useState(Number(searchParams.get('per_page')) || 12);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageInput, setPageInput] = useState(String(currentPage));
+
+  // View state
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // Sort state
+  const [sortBy, setSortBy] = useState<string>(searchParams.get('sort_by') || 'name');
+  const [sortOrder, setSortOrder] = useState<number>(Number(searchParams.get('sort_order')) || 1); // 1 = ASC, 0 = DESC
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== searchQuery) {
+        setSearchQuery(searchInput);
+        setCurrentPage(1);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput, searchQuery]);
+
+  // Fetch states from API
+  const fetchStates = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const params: Record<string, unknown> = { page: 1, per_page: 50 };
+      const params: Record<string, unknown> = {
+        page: currentPage,
+        per_page: itemsPerPage,
+        sort_by: sortBy,
+        sort_order: sortOrder
+      };
+
+      if (searchQuery) params.search = searchQuery;
       if (selectedZone !== 'all') params.zone = selectedZone;
       if (selectedType !== 'all') params.state_type = selectedType;
 
       const response = await geographyApi.getStates(params);
+
       if (response.success && response.data) {
         setStates(response.data);
+        setTotalItems(response.meta?.total || response.data.length);
+        setTotalPages(response.meta?.total_pages || Math.ceil((response.meta?.total || response.data.length) / itemsPerPage));
       } else {
         setError(response.message || 'Failed to load states');
         setStates([]);
+        setTotalItems(0);
+        setTotalPages(0);
       }
     } catch (err) {
       console.error('Failed to fetch states:', err);
       setError('Unable to connect to the server. Please try again.');
       setStates([]);
+      setTotalItems(0);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, itemsPerPage, searchQuery, selectedZone, selectedType, sortBy, sortOrder]);
 
-  const filteredStates = states.filter(state => {
-    const matchesSearch = state.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      state.code.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  // Fetch on filter/pagination change
+  useEffect(() => {
+    fetchStates();
+  }, [fetchStates]);
+
+  // Update URL params when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (selectedZone !== 'all') params.set('zone', selectedZone);
+    if (selectedType !== 'all') params.set('type', selectedType);
+    if (currentPage > 1) params.set('page', String(currentPage));
+    if (itemsPerPage !== 12) params.set('per_page', String(itemsPerPage));
+    if (sortBy !== 'name') params.set('sort_by', sortBy);
+    if (sortOrder !== 1) params.set('sort_order', String(sortOrder));
+
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, selectedZone, selectedType, currentPage, itemsPerPage, sortBy, sortOrder, setSearchParams]);
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (type: 'zone' | 'type', value: string) => {
+    if (type === 'zone') {
+      setSelectedZone(value);
+    } else {
+      setSelectedType(value);
+    }
+    setCurrentPage(1);
+    setPageInput('1');
+  };
 
   const handleDelete = async (e: React.MouseEvent, state: State) => {
     e.stopPropagation();
@@ -73,7 +144,8 @@ const StateList = () => {
     setDeleteLoading(state.id);
     try {
       await geographyApi.deleteState(state.id);
-      setStates(states.filter(s => s.id !== state.id));
+      // Refresh the list after delete
+      fetchStates();
     } catch (err) {
       console.error('Failed to delete:', err);
       setError('Failed to delete state. Please try again.');
@@ -89,8 +161,79 @@ const StateList = () => {
     return num.toLocaleString();
   };
 
-  const statesCount = filteredStates.filter(s => s.state_type === 'state').length;
-  const utsCount = filteredStates.filter(s => s.state_type === 'union_territory').length;
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      setPageInput(page.toString());
+    }
+  };
+
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value);
+  };
+
+  const handlePageInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const page = parseInt(pageInput);
+      if (!isNaN(page) && page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+      } else {
+        setPageInput(currentPage.toString());
+      }
+    }
+  };
+
+  const handlePageInputBlur = () => {
+    const page = parseInt(pageInput);
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    } else {
+      setPageInput(currentPage.toString());
+    }
+  };
+
+  const handleItemsPerPageChange = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+    setPageInput('1');
+  };
+
+  // Handle search on Enter key
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+      setPageInput('1');
+    }
+  };
+
+  // Handle sort
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      // Toggle order if same field
+      setSortOrder(sortOrder === 1 ? 0 : 1);
+    } else {
+      // New field, default to ascending
+      setSortBy(field);
+      setSortOrder(1);
+    }
+    setCurrentPage(1);
+    setPageInput('1');
+  };
+
+  // Get sort icon
+  const getSortIcon = (field: string) => {
+    if (sortBy !== field) return <HiOutlineSwitchVertical />;
+    return sortOrder === 1 ? <HiOutlineChevronUp /> : <HiOutlineChevronDown />;
+  };
+
+  const statesCount = states.filter(s => s.state_type === 'state').length;
+  const utsCount = states.filter(s => s.state_type === 'union_territory').length;
+
+  // Calculate display range
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
     <div className="sl">
@@ -120,49 +263,52 @@ const StateList = () => {
         </div>
       )}
 
-      <div className="sl-box">
-        <div className="sl-bar">
-          <div className="sl-search">
-            <HiOutlineSearch />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="sl-filters">
-            <HiOutlineFilter className="sl-filter-icon" />
-            <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
-              <option value="all">All Types</option>
-              <option value="state">States</option>
-              <option value="union_territory">UTs</option>
-            </select>
-            <select value={selectedZone} onChange={(e) => setSelectedZone(e.target.value)}>
-              <option value="all">All Zones</option>
-              <option value="north">North</option>
-              <option value="south">South</option>
-              <option value="east">East</option>
-              <option value="west">West</option>
-              <option value="central">Central</option>
-              <option value="northeast">Northeast</option>
-            </select>
-            <div className="sl-toggle">
-              <button className={viewMode === 'grid' ? 'on' : ''} onClick={() => setViewMode('grid')}><HiOutlineViewGrid /></button>
-              <button className={viewMode === 'list' ? 'on' : ''} onClick={() => setViewMode('list')}><HiOutlineViewList /></button>
-            </div>
+      {/* Filter Bar - Fixed */}
+      <div className="sl-bar">
+        <div className="sl-search">
+          <HiOutlineSearch />
+          <input
+            type="text"
+            placeholder="Search states..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
+        </div>
+        <div className="sl-filters">
+          <HiOutlineFilter className="sl-filter-icon" />
+          <select value={selectedType} onChange={(e) => handleFilterChange('type', e.target.value)}>
+            <option value="all">All Types</option>
+            <option value="state">States</option>
+            <option value="union_territory">UTs</option>
+          </select>
+          <select value={selectedZone} onChange={(e) => handleFilterChange('zone', e.target.value)}>
+            <option value="all">All Zones</option>
+            <option value="north">North</option>
+            <option value="south">South</option>
+            <option value="east">East</option>
+            <option value="west">West</option>
+            <option value="central">Central</option>
+            <option value="northeast">Northeast</option>
+          </select>
+          <div className="sl-toggle">
+            <button className={viewMode === 'grid' ? 'on' : ''} onClick={() => setViewMode('grid')}><HiOutlineViewGrid /></button>
+            <button className={viewMode === 'list' ? 'on' : ''} onClick={() => setViewMode('list')}><HiOutlineViewList /></button>
           </div>
         </div>
+      </div>
 
+      {/* Scrollable Content Area */}
+      <div className="sl-content">
         {loading ? (
           <div className="sl-loading">
             <div className="sl-spinner"></div>
             <p>Loading...</p>
           </div>
-        ) : filteredStates.length > 0 ? (
+        ) : states.length > 0 ? (
           viewMode === 'grid' ? (
             <div className="sl-grid">
-              {filteredStates.map((state) => (
+              {states.map((state) => (
                 <div
                   key={state.id}
                   className={`sl-card ${state.state_type === 'state' ? 'sl-card--state' : 'sl-card--ut'}`}
@@ -221,17 +367,32 @@ const StateList = () => {
               <table className="sl-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Capital</th>
+                    <th className="sortable" onClick={() => handleSort('name')}>
+                      <span>Name</span>
+                      {getSortIcon('name')}
+                    </th>
+                    <th className="sortable" onClick={() => handleSort('capital')}>
+                      <span>Capital</span>
+                      {getSortIcon('capital')}
+                    </th>
                     <th>Zone</th>
-                    <th>Districts</th>
-                    <th>Taluks</th>
-                    <th>Population</th>
+                    <th className="sortable num" onClick={() => handleSort('total_districts')}>
+                      <span>Districts</span>
+                      {getSortIcon('total_districts')}
+                    </th>
+                    <th className="sortable num" onClick={() => handleSort('total_taluks')}>
+                      <span>Taluks</span>
+                      {getSortIcon('total_taluks')}
+                    </th>
+                    <th className="sortable num" onClick={() => handleSort('population')}>
+                      <span>Population</span>
+                      {getSortIcon('population')}
+                    </th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredStates.map((state) => (
+                  {states.map((state) => (
                     <tr key={state.id} onClick={() => navigate(`/geography/states/${state.id}`)}>
                       <td>
                         <div className="sl-table__main">
@@ -276,6 +437,69 @@ const StateList = () => {
           </div>
         )}
       </div>
+
+      {/* Footer Bar - Fixed */}
+      {!loading && states.length > 0 && (
+        <div className="sl-footer">
+          <div className="sl-footer__info">
+            <span>Showing {startIndex + 1}-{endIndex} of {totalItems}</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="sl-footer__perpage"
+            >
+              <option value={12}>12 / page</option>
+              <option value={24}>24 / page</option>
+              <option value={36}>36 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
+          </div>
+          <div className="sl-pagination">
+            <button
+              className="sl-pagination__btn"
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              title="First Page"
+            >
+              <HiOutlineChevronDoubleLeft />
+            </button>
+            <button
+              className="sl-pagination__btn"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              title="Previous"
+            >
+              <HiOutlineChevronLeft />
+            </button>
+            <div className="sl-pagination__input">
+              <input
+                type="text"
+                value={pageInput}
+                onChange={handlePageInputChange}
+                onKeyDown={handlePageInputSubmit}
+                onBlur={handlePageInputBlur}
+              />
+              <span>of {totalPages || 1}</span>
+            </div>
+            <button
+              className="sl-pagination__btn"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              title="Next"
+            >
+              <HiOutlineChevronRight />
+            </button>
+            <button
+              className="sl-pagination__btn"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage >= totalPages}
+              title="Last Page"
+            >
+              <HiOutlineChevronDoubleRight />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

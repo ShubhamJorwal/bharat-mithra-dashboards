@@ -536,9 +536,11 @@ export interface State {
   id: string;
   name: string;
   name_hindi?: string;
+  name_local?: string;
   code: string;
   iso_code?: string;
   lgd_code?: string;
+  vehicle_code?: string;
   state_type: 'state' | 'union_territory';
   zone: 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';
   capital?: string;
@@ -546,6 +548,7 @@ export interface State {
   area_sq_km?: number;
   population?: number;
   literacy_rate?: number;
+  sex_ratio?: number;
   official_language?: string;
   official_languages?: string[];
   total_districts: number;
