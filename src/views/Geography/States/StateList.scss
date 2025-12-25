@@ -307,9 +307,10 @@
   &__name {
     font-size: 15px;
     font-weight: 600;
-    color: var(--color-text);
+    color: #1e40af; // Highlighted blue color for State/UT name
     margin: 0;
     line-height: 1.4;
+    transition: color 0.2s ease;
   }
 
   &__tag {
