@@ -13,10 +13,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
-  HiOutlineUsers,
-  HiOutlineLocationMarker,
-  HiOutlineChevronRight,
-  HiOutlineGlobeAlt
+  HiOutlineLocationMarker
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { State } from '../../../types/api.types';
@@ -85,19 +82,10 @@ const StateList = () => {
   };
 
   const formatNumber = (num: number): string => {
-    if (num >= 10000000) return (num / 10000000).toFixed(1) + 'Cr';
-    if (num >= 100000) return (num / 100000).toFixed(1) + 'L';
+    if (num >= 10000000) return (num / 10000000).toFixed(1) + ' Cr';
+    if (num >= 100000) return (num / 100000).toFixed(1) + ' L';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toLocaleString();
-  };
-
-  const zoneConfig: Record<string, { color: string; bg: string }> = {
-    north: { color: '#ca8a04', bg: '#fef9c3' },
-    south: { color: '#16a34a', bg: '#dcfce7' },
-    east: { color: '#2563eb', bg: '#dbeafe' },
-    west: { color: '#db2777', bg: '#fce7f3' },
-    central: { color: '#7c3aed', bg: '#ede9fe' },
-    northeast: { color: '#ea580c', bg: '#ffedd5' }
   };
 
   const statesCount = filteredStates.filter(s => s.state_type === 'state').length;
@@ -209,89 +197,64 @@ const StateList = () => {
                   className="bm-state-card"
                   onClick={() => navigate(`/geography/states/${state.id}`)}
                 >
-                  <div className="bm-card-top">
-                    <div
-                      className="bm-card-accent"
-                      style={{ background: zoneConfig[state.zone]?.color || '#6b7280' }}
-                    ></div>
-                    <div className="bm-card-header">
-                      <div className="bm-card-title-row">
-                        <span
-                          className="bm-card-code"
-                          style={{
-                            background: zoneConfig[state.zone]?.bg || '#f3f4f6',
-                            color: zoneConfig[state.zone]?.color || '#6b7280'
-                          }}
-                        >
-                          {state.code}
-                        </span>
-                        <h3 className="bm-card-title">{state.name}</h3>
-                      </div>
-                      <div className="bm-card-badges">
-                        <span className={`bm-type-badge ${state.state_type === 'state' ? 'is-state' : 'is-ut'}`}>
-                          {state.state_type === 'state' ? 'State' : 'UT'}
-                        </span>
-                      </div>
+                  <div className="bm-state-header">
+                    <div className="bm-state-icon">
+                      <HiOutlineMap />
                     </div>
-                    <div className="bm-card-info">
-                      <div className="bm-info-item">
+                    <span className={`bm-state-type ${state.state_type === 'state' ? 'is-state' : 'is-ut'}`}>
+                      {state.state_type === 'state' ? 'State' : 'UT'}
+                    </span>
+                  </div>
+                  <div className="bm-state-body">
+                    <div className="bm-state-code">{state.code}</div>
+                    <h3 className="bm-state-name">{state.name}</h3>
+                    <div className="bm-state-details">
+                      <div className="bm-state-detail">
                         <HiOutlineLocationMarker />
                         <span>{state.capital || 'N/A'}</span>
                       </div>
-                      <div className="bm-info-item">
-                        <HiOutlineGlobeAlt />
-                        <span style={{ color: zoneConfig[state.zone]?.color }}>{state.zone} Zone</span>
+                      <div className="bm-state-detail">
+                        <HiOutlineMap />
+                        <span className="capitalize">{state.zone} Zone</span>
                       </div>
                     </div>
                   </div>
-                  <div className="bm-card-stats">
-                    <div className="bm-stat-box">
-                      <HiOutlineOfficeBuilding />
-                      <div className="bm-stat-content">
-                        <span className="bm-stat-num">{state.total_districts || 0}</span>
-                        <span className="bm-stat-text">Districts</span>
-                      </div>
+                  <div className="bm-state-stats">
+                    <div className="bm-stat">
+                      <span className="bm-stat-value">{state.total_districts || 0}</span>
+                      <span className="bm-stat-label">Districts</span>
                     </div>
-                    <div className="bm-stat-box">
-                      <HiOutlineLocationMarker />
-                      <div className="bm-stat-content">
-                        <span className="bm-stat-num">{formatNumber(state.total_taluks || 0)}</span>
-                        <span className="bm-stat-text">Taluks</span>
-                      </div>
+                    <div className="bm-stat">
+                      <span className="bm-stat-value">{formatNumber(state.total_taluks || 0)}</span>
+                      <span className="bm-stat-label">Taluks</span>
                     </div>
-                    <div className="bm-stat-box">
-                      <HiOutlineUsers />
-                      <div className="bm-stat-content">
-                        <span className="bm-stat-num">{state.population ? formatNumber(state.population) : '—'}</span>
-                        <span className="bm-stat-text">Population</span>
-                      </div>
+                    <div className="bm-stat">
+                      <span className="bm-stat-value">{state.population ? formatNumber(state.population) : '—'}</span>
+                      <span className="bm-stat-label">Population</span>
                     </div>
                   </div>
-                  <div className="bm-card-footer">
+                  <div className="bm-state-actions">
                     <button
-                      className="bm-card-action"
+                      className="bm-btn bm-btn-ghost"
                       onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }}
                     >
                       <HiOutlineOfficeBuilding />
                       <span>Districts</span>
                     </button>
                     <button
-                      className="bm-card-action"
+                      className="bm-btn bm-btn-ghost"
                       onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }}
                     >
                       <HiOutlinePencil />
                       <span>Edit</span>
                     </button>
                     <button
-                      className="bm-card-action bm-card-action--danger"
+                      className="bm-btn bm-btn-ghost bm-btn-danger"
                       onClick={(e) => { e.stopPropagation(); handleDelete(state); }}
                       disabled={deleteLoading === state.id}
                     >
                       <HiOutlineTrash />
                     </button>
-                    <div className="bm-card-arrow">
-                      <HiOutlineChevronRight />
-                    </div>
                   </div>
                 </div>
               ))}
@@ -306,7 +269,6 @@ const StateList = () => {
                     <th>Zone</th>
                     <th>Districts</th>
                     <th>Taluks</th>
-                    <th>Villages</th>
                     <th>Population</th>
                     <th></th>
                   </tr>
@@ -318,48 +280,27 @@ const StateList = () => {
                       onClick={() => navigate(`/geography/states/${state.id}`)}
                     >
                       <td>
-                        <div className="bm-row-main">
-                          <span
-                            className="bm-row-code"
-                            style={{
-                              background: zoneConfig[state.zone]?.bg || '#f3f4f6',
-                              color: zoneConfig[state.zone]?.color || '#6b7280'
-                            }}
-                          >
-                            {state.code}
-                          </span>
-                          <div className="bm-row-info">
-                            <span className="bm-row-name">{state.name}</span>
-                            <span className={`bm-row-type ${state.state_type === 'state' ? 'is-state' : 'is-ut'}`}>
-                              {state.state_type === 'state' ? 'State' : 'Union Territory'}
-                            </span>
+                        <div className="bm-cell-main">
+                          <div className="bm-cell-icon">
+                            <HiOutlineMap />
+                          </div>
+                          <div className="bm-cell-info">
+                            <span className="bm-cell-name">{state.name}</span>
+                            <span className="bm-cell-code">{state.code} · {state.state_type === 'state' ? 'State' : 'Union Territory'}</span>
                           </div>
                         </div>
                       </td>
+                      <td>{state.capital || '—'}</td>
+                      <td><span className="bm-cell-zone capitalize">{state.zone}</span></td>
+                      <td><span className="bm-cell-num">{state.total_districts || 0}</span></td>
+                      <td><span className="bm-cell-num">{formatNumber(state.total_taluks || 0)}</span></td>
+                      <td><span className="bm-cell-num">{state.population ? formatNumber(state.population) : '—'}</span></td>
                       <td>
-                        <span className="bm-row-capital">{state.capital || '—'}</span>
-                      </td>
-                      <td>
-                        <span
-                          className="bm-row-zone"
-                          style={{
-                            background: zoneConfig[state.zone]?.bg || '#f3f4f6',
-                            color: zoneConfig[state.zone]?.color || '#6b7280'
-                          }}
-                        >
-                          {state.zone}
-                        </span>
-                      </td>
-                      <td><span className="bm-row-num">{state.total_districts || 0}</span></td>
-                      <td><span className="bm-row-num">{formatNumber(state.total_taluks || 0)}</span></td>
-                      <td><span className="bm-row-num">{formatNumber(state.total_villages || 0)}</span></td>
-                      <td><span className="bm-row-num bm-row-pop">{state.population ? formatNumber(state.population) : '—'}</span></td>
-                      <td>
-                        <div className="bm-row-actions" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/states/${state.id}`)} title="View Details">
+                        <div className="bm-cell-actions" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => navigate(`/geography/states/${state.id}`)} title="View">
                             <HiOutlineEye />
                           </button>
-                          <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)} title="View Districts">
+                          <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)} title="Districts">
                             <HiOutlineOfficeBuilding />
                           </button>
                           <button onClick={() => navigate(`/geography/states/${state.id}/edit`)} title="Edit">
