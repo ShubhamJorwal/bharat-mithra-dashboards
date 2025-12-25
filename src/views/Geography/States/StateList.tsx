@@ -13,8 +13,7 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
-  HiOutlineLocationMarker,
-  HiOutlineArrowRight
+  HiOutlineChevronRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { State } from '../../../types/api.types';
@@ -94,25 +93,18 @@ const StateList = () => {
   const utsCount = filteredStates.filter(s => s.state_type === 'union_territory').length;
 
   return (
-    <div className="states-page">
+    <div className="sl">
       <PageHeader
         icon={<HiOutlineMap />}
         title="States & Union Territories"
         description={`${statesCount} States, ${utsCount} Union Territories`}
         actions={
           <>
-            <button
-              className="bm-btn bm-btn-secondary"
-              onClick={fetchStates}
-              disabled={loading}
-            >
+            <button className="bm-btn bm-btn-secondary" onClick={fetchStates} disabled={loading}>
               <HiOutlineRefresh className={loading ? 'bm-spin' : ''} />
               <span>Refresh</span>
             </button>
-            <button
-              className="bm-btn bm-btn-primary"
-              onClick={() => navigate('/geography/states/new')}
-            >
+            <button className="bm-btn bm-btn-primary" onClick={() => navigate('/geography/states/new')}>
               <HiOutlinePlus />
               <span>Add State/UT</span>
             </button>
@@ -121,41 +113,32 @@ const StateList = () => {
       />
 
       {error && (
-        <div className="states-alert states-alert--error">
+        <div className="sl-alert">
           <HiOutlineExclamationCircle />
           <span>{error}</span>
           <button onClick={() => setError(null)}>&times;</button>
         </div>
       )}
 
-      <div className="states-container">
-        <div className="states-toolbar">
-          <div className="states-search">
+      <div className="sl-box">
+        <div className="sl-bar">
+          <div className="sl-search">
             <HiOutlineSearch />
             <input
               type="text"
-              placeholder="Search by name or code..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="states-filters">
-            <div className="states-filter">
-              <HiOutlineFilter />
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-              >
-                <option value="all">All Types</option>
-                <option value="state">States</option>
-                <option value="union_territory">Union Territories</option>
-              </select>
-            </div>
-            <select
-              value={selectedZone}
-              onChange={(e) => setSelectedZone(e.target.value)}
-              className="states-zone-select"
-            >
+          <div className="sl-filters">
+            <HiOutlineFilter className="sl-filter-icon" />
+            <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
+              <option value="all">All Types</option>
+              <option value="state">States</option>
+              <option value="union_territory">UTs</option>
+            </select>
+            <select value={selectedZone} onChange={(e) => setSelectedZone(e.target.value)}>
               <option value="all">All Zones</option>
               <option value="north">North</option>
               <option value="south">South</option>
@@ -164,104 +147,78 @@ const StateList = () => {
               <option value="central">Central</option>
               <option value="northeast">Northeast</option>
             </select>
-            <div className="states-view-toggle">
-              <button
-                className={viewMode === 'grid' ? 'active' : ''}
-                onClick={() => setViewMode('grid')}
-              >
-                <HiOutlineViewGrid />
-              </button>
-              <button
-                className={viewMode === 'list' ? 'active' : ''}
-                onClick={() => setViewMode('list')}
-              >
-                <HiOutlineViewList />
-              </button>
+            <div className="sl-toggle">
+              <button className={viewMode === 'grid' ? 'on' : ''} onClick={() => setViewMode('grid')}><HiOutlineViewGrid /></button>
+              <button className={viewMode === 'list' ? 'on' : ''} onClick={() => setViewMode('list')}><HiOutlineViewList /></button>
             </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="states-loading">
-            <div className="states-loading__spinner"></div>
-            <p>Loading states...</p>
+          <div className="sl-loading">
+            <div className="sl-spinner"></div>
+            <p>Loading...</p>
           </div>
         ) : filteredStates.length > 0 ? (
           viewMode === 'grid' ? (
-            <div className="states-grid">
+            <div className="sl-grid">
               {filteredStates.map((state) => (
-                <article
+                <div
                   key={state.id}
-                  className="state-card"
+                  className={`sl-card ${state.state_type === 'state' ? 'sl-card--state' : 'sl-card--ut'}`}
                   onClick={() => navigate(`/geography/states/${state.id}`)}
                 >
-                  <div className="state-card__top">
-                    <div className="state-card__title">
-                      <h3>{state.name}</h3>
-                      <span className="state-card__code">{state.code}</span>
+                  <div className="sl-card__head">
+                    <div className="sl-card__info">
+                      <span className="sl-card__code">{state.code}</span>
+                      <h4 className="sl-card__name">{state.name}</h4>
                     </div>
-                    <span className={`state-card__type ${state.state_type === 'state' ? 'state-card__type--state' : 'state-card__type--ut'}`}>
+                    <span className="sl-card__tag">
                       {state.state_type === 'state' ? 'State' : 'UT'}
                     </span>
                   </div>
-
-                  <div className="state-card__meta">
-                    <div className="state-card__meta-item">
-                      <HiOutlineLocationMarker />
-                      <span>{state.capital || 'N/A'}</span>
+                  <div className="sl-card__row">
+                    <span className="sl-card__label">Capital</span>
+                    <span className="sl-card__value">{state.capital || '—'}</span>
+                  </div>
+                  <div className="sl-card__row">
+                    <span className="sl-card__label">Zone</span>
+                    <span className="sl-card__value capitalize">{state.zone}</span>
+                  </div>
+                  <div className="sl-card__nums">
+                    <div className="sl-card__num">
+                      <strong>{state.total_districts || 0}</strong>
+                      <span>Districts</span>
                     </div>
-                    <div className="state-card__meta-item">
-                      <HiOutlineMap />
-                      <span className="capitalize">{state.zone}</span>
+                    <div className="sl-card__num">
+                      <strong>{formatNumber(state.total_taluks || 0)}</strong>
+                      <span>Taluks</span>
+                    </div>
+                    <div className="sl-card__num">
+                      <strong>{state.population ? formatNumber(state.population) : '—'}</strong>
+                      <span>Population</span>
                     </div>
                   </div>
-
-                  <div className="state-card__stats">
-                    <div className="state-card__stat">
-                      <span className="state-card__stat-val">{state.total_districts || 0}</span>
-                      <span className="state-card__stat-lbl">Districts</span>
+                  <div className="sl-card__foot">
+                    <div className="sl-card__btns">
+                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }} title="Districts">
+                        <HiOutlineOfficeBuilding />
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }} title="Edit">
+                        <HiOutlinePencil />
+                      </button>
+                      <button className="del" onClick={(e) => handleDelete(e, state)} disabled={deleteLoading === state.id} title="Delete">
+                        <HiOutlineTrash />
+                      </button>
                     </div>
-                    <div className="state-card__stat">
-                      <span className="state-card__stat-val">{formatNumber(state.total_taluks || 0)}</span>
-                      <span className="state-card__stat-lbl">Taluks</span>
-                    </div>
-                    <div className="state-card__stat">
-                      <span className="state-card__stat-val">{state.population ? formatNumber(state.population) : '—'}</span>
-                      <span className="state-card__stat-lbl">Population</span>
-                    </div>
+                    <span className="sl-card__go"><HiOutlineChevronRight /></span>
                   </div>
-
-                  <div className="state-card__actions">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }}
-                      title="Districts"
-                    >
-                      <HiOutlineOfficeBuilding />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }}
-                      title="Edit"
-                    >
-                      <HiOutlinePencil />
-                    </button>
-                    <button
-                      className="danger"
-                      onClick={(e) => handleDelete(e, state)}
-                      disabled={deleteLoading === state.id}
-                      title="Delete"
-                    >
-                      <HiOutlineTrash />
-                    </button>
-                    <span className="state-card__arrow">
-                      <HiOutlineArrowRight />
-                    </span>
-                  </div>
-                </article>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="states-table-wrap">
-              <table className="states-table">
+            <div className="sl-table-wrap">
+              <table className="sl-table">
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -275,27 +232,29 @@ const StateList = () => {
                 </thead>
                 <tbody>
                   {filteredStates.map((state) => (
-                    <tr
-                      key={state.id}
-                      onClick={() => navigate(`/geography/states/${state.id}`)}
-                    >
+                    <tr key={state.id} onClick={() => navigate(`/geography/states/${state.id}`)}>
                       <td>
-                        <div className="states-table__name">
-                          <span className="states-table__title">{state.name}</span>
-                          <span className="states-table__sub">{state.code} · {state.state_type === 'state' ? 'State' : 'UT'}</span>
+                        <div className="sl-table__main">
+                          <span className={`sl-table__tag ${state.state_type === 'state' ? 'st' : 'ut'}`}>
+                            {state.code}
+                          </span>
+                          <div className="sl-table__txt">
+                            <strong>{state.name}</strong>
+                            <small>{state.state_type === 'state' ? 'State' : 'Union Territory'}</small>
+                          </div>
                         </div>
                       </td>
                       <td>{state.capital || '—'}</td>
-                      <td><span className="states-table__zone capitalize">{state.zone}</span></td>
+                      <td><span className="sl-table__zone capitalize">{state.zone}</span></td>
                       <td className="num">{state.total_districts || 0}</td>
                       <td className="num">{formatNumber(state.total_taluks || 0)}</td>
                       <td className="num">{state.population ? formatNumber(state.population) : '—'}</td>
                       <td>
-                        <div className="states-table__actions" onClick={(e) => e.stopPropagation()}>
+                        <div className="sl-table__acts" onClick={(e) => e.stopPropagation()}>
                           <button onClick={() => navigate(`/geography/states/${state.id}`)}><HiOutlineEye /></button>
                           <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)}><HiOutlineOfficeBuilding /></button>
                           <button onClick={() => navigate(`/geography/states/${state.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="danger" onClick={() => handleDelete({ stopPropagation: () => {} } as React.MouseEvent, state)} disabled={deleteLoading === state.id}><HiOutlineTrash /></button>
+                          <button className="del" onClick={() => handleDelete({ stopPropagation: () => {} } as React.MouseEvent, state)} disabled={deleteLoading === state.id}><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -305,18 +264,13 @@ const StateList = () => {
             </div>
           )
         ) : (
-          <div className="states-empty">
-            <div className="states-empty__icon"><HiOutlineMap /></div>
-            <h3>No states found</h3>
-            <p>
-              {searchQuery || selectedZone !== 'all' || selectedType !== 'all'
-                ? 'Try adjusting your filters'
-                : 'Add your first state or union territory'}
-            </p>
+          <div className="sl-empty">
+            <HiOutlineMap />
+            <h4>No states found</h4>
+            <p>{searchQuery || selectedZone !== 'all' || selectedType !== 'all' ? 'Try adjusting your filters' : 'Add your first state'}</p>
             {!searchQuery && selectedZone === 'all' && selectedType === 'all' && (
-              <button className="bm-btn bm-btn-primary" onClick={() => navigate('/geography/states/new')}>
-                <HiOutlinePlus />
-                <span>Add State/UT</span>
+              <button className="bm-btn bm-btn-primary bm-btn-sm" onClick={() => navigate('/geography/states/new')}>
+                <HiOutlinePlus /> Add State/UT
               </button>
             )}
           </div>
