@@ -10,18 +10,18 @@
 .state-zone-badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
 }
 
 // Type badge
 .state-type-badge {
   display: inline-flex;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
   font-weight: 500;
   width: fit-content;
 
@@ -39,9 +39,9 @@
 // Zone inline badge
 .state-zone-inline {
   display: inline-flex;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
   font-weight: 500;
   width: fit-content;
   border: 1px solid;

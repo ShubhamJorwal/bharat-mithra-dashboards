@@ -141,12 +141,12 @@ const TalukDetails = () => {
           <HiOutlineMap /> States
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
-        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts?state_id=${taluk.state_id}`)}>
-          <HiOutlineOfficeBuilding /> {taluk.state_name}
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/states/${taluk.state_id}`)}>
+          {taluk.state_name}
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
         <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts/${taluk.district_id}`)}>
-          <HiOutlineOfficeBuilding /> {taluk.district_name}
+          {taluk.district_name}
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
         <span className="details-breadcrumb__item details-breadcrumb__item--current">

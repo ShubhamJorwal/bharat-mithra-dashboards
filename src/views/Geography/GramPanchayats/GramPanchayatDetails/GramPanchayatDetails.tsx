@@ -143,8 +143,8 @@ const GramPanchayatDetails = () => {
           <HiOutlineMap /> States
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
-        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts?state_id=${gramPanchayat.state_id}`)}>
-          <HiOutlineOfficeBuilding /> {gramPanchayat.state_name}
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/states/${gramPanchayat.state_id}`)}>
+          {gramPanchayat.state_name}
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
         <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts/${gramPanchayat.district_id}`)}>

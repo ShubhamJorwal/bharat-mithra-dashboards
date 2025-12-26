@@ -142,8 +142,8 @@ const DistrictDetails = () => {
           <HiOutlineMap /> States
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
-        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts?state_id=${district.state_id}`)}>
-          <HiOutlineOfficeBuilding /> {district.state_name}
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/states/${district.state_id}`)}>
+          {district.state_name}
         </span>
         <HiOutlineArrowRight className="details-breadcrumb__separator" />
         <span className="details-breadcrumb__item details-breadcrumb__item--current">
