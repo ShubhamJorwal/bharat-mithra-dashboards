@@ -19,7 +19,9 @@ import {
   HiOutlineChevronDoubleRight,
   HiOutlineChevronUp,
   HiOutlineChevronDown,
-  HiOutlineSwitchVertical
+  HiOutlineSwitchVertical,
+  HiOutlineArrowRight,
+  HiOutlineLocationMarker
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { State } from '../../../types/api.types';
@@ -312,23 +314,29 @@ const StateList = () => {
                 <div
                   key={state.id}
                   className={`sl-card ${state.state_type === 'state' ? 'sl-card--state' : 'sl-card--ut'}`}
-                  onClick={() => navigate(`/geography/states/${state.id}`)}
                 >
+                  <button
+                    className="sl-card__view-icon"
+                    onClick={() => navigate(`/geography/states/${state.id}`)}
+                    title="View Details"
+                  >
+                    <HiOutlineArrowRight />
+                  </button>
                   <div className="sl-card__head">
-                    <div className="sl-card__info">
+                    <div className="sl-card__badges">
                       <span className="sl-card__code">{state.code}</span>
-                      <h4 className="sl-card__name">{state.name}</h4>
+                      <span className={`sl-card__tag ${state.state_type === 'state' ? 'tag-state' : 'tag-ut'}`}>
+                        {state.state_type === 'state' ? 'State' : 'Union Territory'}
+                      </span>
                     </div>
-                    <span className="sl-card__tag">
-                      {state.state_type === 'state' ? 'State' : 'UT'}
-                    </span>
+                    <h4 className="sl-card__name">{state.name}</h4>
                   </div>
                   <div className="sl-card__row">
-                    <span className="sl-card__label">Capital</span>
+                    <span className="sl-card__label"><HiOutlineLocationMarker /> Capital</span>
                     <span className="sl-card__value">{state.capital || '—'}</span>
                   </div>
                   <div className="sl-card__row">
-                    <span className="sl-card__label">Zone</span>
+                    <span className="sl-card__label"><HiOutlineMap /> Zone</span>
                     <span className="sl-card__value capitalize">{state.zone}</span>
                   </div>
                   <div className="sl-card__nums">
@@ -347,17 +355,19 @@ const StateList = () => {
                   </div>
                   <div className="sl-card__foot">
                     <div className="sl-card__btns">
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts?state_id=${state.id}`); }} title="Districts">
+                      <button className="view-btn" onClick={() => navigate(`/geography/districts?state_id=${state.id}`)} title="View Districts">
                         <HiOutlineOfficeBuilding />
+                        <span className="btn-text">Districts</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/states/${state.id}/edit`); }} title="Edit">
+                      <button className="edit-btn" onClick={() => navigate(`/geography/states/${state.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
+                        <span className="btn-text">Edit</span>
                       </button>
                       <button className="del" onClick={(e) => handleDelete(e, state)} disabled={deleteLoading === state.id} title="Delete">
                         <HiOutlineTrash />
+                        <span className="btn-text">Delete</span>
                       </button>
                     </div>
-                    <span className="sl-card__go"><HiOutlineChevronRight /></span>
                   </div>
                 </div>
               ))}
@@ -392,30 +402,34 @@ const StateList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {states.map((state) => (
-                    <tr key={state.id} onClick={() => navigate(`/geography/states/${state.id}`)}>
+                  {states.map((state, index) => (
+                    <tr key={state.id} className={index % 2 === 1 ? 'row-alt' : ''}>
                       <td>
                         <div className="sl-table__main">
-                          <span className={`sl-table__tag ${state.state_type === 'state' ? 'st' : 'ut'}`}>
-                            {state.code}
-                          </span>
+                          <div className="sl-table__badges">
+                            <span className={`sl-table__code ${state.state_type === 'state' ? 'code-state' : 'code-ut'}`}>
+                              {state.code}
+                            </span>
+                            <span className={`sl-table__type ${state.state_type === 'state' ? 'type-state' : 'type-ut'}`}>
+                              {state.state_type === 'state' ? 'State' : 'UT'}
+                            </span>
+                          </div>
                           <div className="sl-table__txt">
                             <strong>{state.name}</strong>
-                            <small>{state.state_type === 'state' ? 'State' : 'Union Territory'}</small>
                           </div>
                         </div>
                       </td>
-                      <td>{state.capital || '—'}</td>
-                      <td><span className="sl-table__zone capitalize">{state.zone}</span></td>
+                      <td><span className="sl-table__capital"><HiOutlineOfficeBuilding /> {state.capital || '—'}</span></td>
+                      <td><span className="sl-table__zone capitalize"><HiOutlineMap /> {state.zone}</span></td>
                       <td className="num">{state.total_districts || 0}</td>
                       <td className="num">{formatNumber(state.total_taluks || 0)}</td>
                       <td className="num">{state.population ? formatNumber(state.population) : '—'}</td>
                       <td>
-                        <div className="sl-table__acts" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/states/${state.id}`)}><HiOutlineEye /></button>
-                          <button onClick={() => navigate(`/geography/districts?state_id=${state.id}`)}><HiOutlineOfficeBuilding /></button>
-                          <button onClick={() => navigate(`/geography/states/${state.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="del" onClick={() => handleDelete({ stopPropagation: () => {} } as React.MouseEvent, state)} disabled={deleteLoading === state.id}><HiOutlineTrash /></button>
+                        <div className="sl-table__acts">
+                          <button className="view-btn" onClick={() => navigate(`/geography/states/${state.id}`)} title="View Details"><HiOutlineEye /></button>
+                          <button className="nav-btn" onClick={() => navigate(`/geography/districts?state_id=${state.id}`)} title="View Districts"><HiOutlineOfficeBuilding /></button>
+                          <button className="edit-btn" onClick={() => navigate(`/geography/states/${state.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, state)} disabled={deleteLoading === state.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>

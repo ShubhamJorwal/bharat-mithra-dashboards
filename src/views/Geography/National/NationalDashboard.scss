@@ -149,15 +149,15 @@
   }
 
   // ==========================================
-  // HERO SECTION
+  // HERO SECTION - Clean Compact Design
   // ==========================================
   .bm-hero {
     position: relative;
-    padding: 40px;
-    border-radius: 24px;
-    margin-bottom: 32px;
+    padding: 20px 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
     overflow: hidden;
-    background: var(--color-background);
+    background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%);
     border: 1px solid var(--color-border-light);
   }
 
@@ -167,123 +167,130 @@
     pointer-events: none;
   }
 
-  .bm-hero-pattern {
+  // Dot pattern like module headers
+  .bm-hero-dots {
     position: absolute;
     inset: 0;
-    background-image:
-      radial-gradient(circle at 20% 50%, rgba(255, 153, 51, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 50%, rgba(19, 136, 8, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 50% 100%, rgba(0, 0, 128, 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(circle, rgba(255, 153, 51, 0.15) 1px, transparent 1px),
+                      radial-gradient(circle, rgba(19, 136, 8, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px, 20px 20px;
+    background-position: 0 0, 10px 10px;
+    opacity: 0.6;
   }
 
   .bm-hero-gradient {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.03));
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 153, 51, 0.05) 0%, transparent 50%, rgba(19, 136, 8, 0.05) 100%);
   }
 
   .bm-hero-content {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 32px;
+    justify-content: space-between;
+    gap: 24px;
     z-index: 1;
   }
 
-  .bm-india-emblem {
+  .bm-hero-left {
+    flex: 1;
+  }
+
+  // Simple Centered Flag
+  .bm-flag-showcase {
     position: relative;
     flex-shrink: 0;
   }
 
-  .bm-flag-wrapper {
-    position: relative;
-    z-index: 1;
-  }
-
-  .bm-flag {
-    width: 100px;
-    height: 67px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.15),
-      0 0 0 2px rgba(255, 255, 255, 0.1);
+  .bm-large-flag {
+    width: 120px;
+    height: 80px;
     display: flex;
     flex-direction: column;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
 
-    .bm-saffron {
-      flex: 1;
-      background: linear-gradient(135deg, #FF9933, #ff8c1a);
+  .bm-flag-stripe {
+    flex: 1;
+    position: relative;
+
+    &.bm-saffron {
+      background: linear-gradient(90deg, #FF9933 0%, #FF8C1A 100%);
     }
 
-    .bm-white {
-      flex: 1;
-      background: #fff;
+    &.bm-white {
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .bm-chakra {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #000080;
-      border-radius: 50%;
-      position: relative;
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        background: #000080;
-      }
-
-      &::before {
-        width: 2px;
-        height: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      &::after {
-        width: 100%;
-        height: 2px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-    }
-
-    .bm-green {
-      flex: 1;
-      background: linear-gradient(135deg, #138808, #0f6b06);
+    &.bm-green {
+      background: linear-gradient(90deg, #138808 0%, #0F6B06 100%);
     }
   }
 
-  .bm-emblem-glow {
+  // Ashoka Chakra - 24 spokes
+  .bm-ashoka-chakra {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #000080;
+    border-radius: 50%;
+    position: relative;
+    background: #fff;
+  }
+
+  .bm-chakra-center {
     position: absolute;
-    inset: -20px;
-    background: radial-gradient(circle, rgba(255, 153, 51, 0.2) 0%, transparent 70%);
-    filter: blur(20px);
-    z-index: 0;
-    animation: glowPulse 3s ease-in-out infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: #000080;
+    border-radius: 50%;
+  }
+
+  .bm-chakra-spoke {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 50%;
+    background: #000080;
+    transform-origin: center top;
+    margin-left: -0.5px;
+    margin-top: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 2px;
+      background: #000080;
+      border-radius: 50%;
+    }
   }
 
   .bm-hero-text {
     flex: 1;
 
     h1 {
-      font-size: 36px;
-      font-weight: 800;
+      font-size: 28px;
+      font-weight: 700;
       color: var(--color-text);
       margin: 0;
       line-height: 1.2;
 
       .bm-hindi {
         display: block;
-        font-size: 20px;
+        font-size: 14px;
         font-weight: 500;
         color: var(--color-text-secondary);
         margin-top: 4px;
@@ -295,21 +302,24 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 4px 12px;
+    background: linear-gradient(135deg, rgba(255, 153, 51, 0.12), rgba(19, 136, 8, 0.08));
+    border: 1px solid rgba(255, 153, 51, 0.2);
     border-radius: 20px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 
     svg {
       font-size: 14px;
-      color: #10b981;
+      color: #FF9933;
     }
 
     span {
-      font-size: 12px;
-      font-weight: 600;
-      color: #10b981;
+      font-size: 10px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF9933, #138808);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -319,13 +329,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 12px 0 0;
-    font-size: 15px;
+    margin: 8px 0 0;
+    font-size: 13px;
     color: var(--color-text-secondary);
 
     svg {
-      font-size: 18px;
-      color: #10b981;
+      font-size: 16px;
+      color: #138808;
     }
 
     strong {
@@ -335,9 +345,9 @@
   }
 
   .bm-refresh-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     border: 1px solid var(--color-border);
     background: var(--color-background);
     color: var(--color-text-secondary);
@@ -349,14 +359,15 @@
     flex-shrink: 0;
 
     svg {
-      font-size: 20px;
+      font-size: 18px;
     }
 
     &:hover {
-      background: #10b981;
-      border-color: #10b981;
+      background: linear-gradient(135deg, #FF9933, #138808);
+      border-color: transparent;
       color: #fff;
       transform: rotate(180deg);
+      box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3);
     }
   }
 
@@ -364,28 +375,28 @@
   // SECTION HEADERS
   // ==========================================
   .bm-section-header {
-    margin-bottom: 24px;
+    margin-bottom: 14px;
 
     h2 {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 20px;
+      gap: 8px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--color-text);
-      margin: 0 0 6px;
+      margin: 0 0 4px;
 
       svg {
-        font-size: 24px;
+        font-size: 18px;
         color: #10b981;
       }
     }
 
     p {
-      font-size: 14px;
+      font-size: 12px;
       color: var(--color-text-secondary);
       margin: 0;
-      padding-left: 34px;
+      padding-left: 26px;
     }
   }
 
@@ -393,21 +404,21 @@
   // STATS SECTION
   // ==========================================
   .bm-stats-section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
   }
 
   .bm-stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 12px;
   }
 
   .bm-stat-card {
     position: relative;
     background: var(--color-background);
     border: 1px solid var(--color-border-light);
-    border-radius: 20px;
-    padding: 24px;
+    border-radius: 14px;
+    padding: 16px;
     cursor: pointer;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -484,22 +495,22 @@
 
   .bm-stat-visual {
     position: relative;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
 
   .bm-stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 1;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 
     svg {
-      font-size: 28px;
+      font-size: 22px;
       color: #fff;
       transition: transform 0.3s ease;
     }
@@ -507,10 +518,10 @@
 
   .bm-stat-pattern {
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 100px;
-    height: 100px;
+    top: -16px;
+    right: -16px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     opacity: 0.08;
     transition: all 0.4s ease;
@@ -523,7 +534,7 @@
 
   .bm-stat-value {
     display: block;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 800;
     color: var(--color-text);
     line-height: 1.1;
@@ -531,20 +542,20 @@
 
   .bm-stat-label {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--color-text-secondary);
-    margin-top: 4px;
+    margin-top: 2px;
     font-weight: 500;
   }
 
   .bm-stat-hover {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 12px;
+    right: 12px;
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: #10b981;
     opacity: 0;
@@ -552,7 +563,7 @@
     transition: all 0.3s ease;
 
     svg {
-      font-size: 18px;
+      font-size: 14px;
     }
   }
 
@@ -560,11 +571,11 @@
   // HIERARCHY SECTION
   // ==========================================
   .bm-hierarchy-section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     background: var(--color-background);
     border: 1px solid var(--color-border-light);
-    border-radius: 24px;
-    padding: 32px;
+    border-radius: 16px;
+    padding: 20px;
     overflow: hidden;
   }
 
@@ -572,8 +583,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 8px;
-    padding: 20px 0;
+    gap: 6px;
+    padding: 12px 0;
     overflow-x: auto;
     @include custom-scrollbar;
   }
@@ -582,10 +593,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    padding: 20px 24px;
-    border-radius: 16px;
-    min-width: 130px;
+    gap: 8px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    min-width: 100px;
     text-align: center;
     transition: all 0.3s ease;
     position: relative;
@@ -630,20 +641,20 @@
   }
 
   .bm-h-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
 
     svg {
-      font-size: 24px;
+      font-size: 18px;
     }
 
     .bm-h-emoji {
-      font-size: 28px;
+      font-size: 22px;
     }
   }
 
@@ -654,13 +665,13 @@
   }
 
   .bm-h-title {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--color-text);
   }
 
   .bm-h-count {
-    font-size: 11px;
+    font-size: 9px;
     color: var(--color-text-secondary);
     font-weight: 500;
   }
@@ -672,7 +683,7 @@
     flex-shrink: 0;
 
     svg {
-      font-size: 20px;
+      font-size: 16px;
       color: var(--color-text-secondary);
       animation: arrowBounce 1.5s ease-in-out infinite;
     }
@@ -682,19 +693,19 @@
   // ZONES SECTION
   // ==========================================
   .bm-zones-section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
   }
 
   .bm-zones-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
+    gap: 10px;
   }
 
   .bm-zone-card {
     position: relative;
-    border-radius: 20px;
-    padding: 28px 20px;
+    border-radius: 14px;
+    padding: 18px 14px;
     cursor: pointer;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -763,17 +774,17 @@
 
   .bm-zone-value {
     display: block;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 800;
     line-height: 1;
   }
 
   .bm-zone-name {
     display: block;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--color-text-secondary);
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .bm-zone-direction {
@@ -781,7 +792,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
-    font-size: 60px;
+    font-size: 48px;
     font-weight: 900;
     color: rgba(0, 0, 0, 0.04);
     opacity: 0;
@@ -793,24 +804,24 @@
   // QUICK ACTIONS SECTION
   // ==========================================
   .bm-actions-section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
   }
 
   .bm-actions-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
+    gap: 10px;
   }
 
   .bm-action-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    padding: 24px 16px;
+    gap: 8px;
+    padding: 16px 12px;
     background: var(--color-background);
     border: 1px solid var(--color-border-light);
-    border-radius: 16px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -855,9 +866,9 @@
   }
 
   .bm-action-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -866,7 +877,7 @@
     z-index: 1;
 
     svg {
-      font-size: 24px;
+      font-size: 18px;
       transition: color 0.3s ease;
     }
 
@@ -897,7 +908,7 @@
   }
 
   .bm-action-label {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text);
     text-align: center;
@@ -908,9 +919,9 @@
 
   .bm-action-arrow {
     position: absolute;
-    bottom: 16px;
-    right: 16px;
-    font-size: 18px;
+    bottom: 12px;
+    right: 12px;
+    font-size: 14px;
     color: #10b981;
     opacity: 0;
     transform: translateX(-8px);
@@ -1004,56 +1015,87 @@
 @media (max-width: 768px) {
   .bm-national {
     .bm-hero {
-      padding: 24px;
+      padding: 16px;
     }
 
     .bm-hero-content {
       flex-direction: column;
       text-align: center;
-      gap: 20px;
+      gap: 16px;
+    }
+
+    .bm-large-flag {
+      width: 100px;
+      height: 66px;
+    }
+
+    .bm-ashoka-chakra {
+      width: 18px;
+      height: 18px;
+      border-width: 1.5px;
+    }
+
+    .bm-chakra-center {
+      width: 3px;
+      height: 3px;
+    }
+
+    .bm-hero-text {
+      text-align: center;
     }
 
     .bm-hero-text h1 {
-      font-size: 28px;
+      font-size: 24px;
+    }
+
+    .bm-subtitle {
+      justify-content: center;
+    }
+
+    .bm-title-badge {
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .bm-refresh-btn {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 12px;
+      right: 12px;
     }
 
     .bm-stats-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 8px;
     }
 
     .bm-stat-card {
-      padding: 20px;
+      padding: 12px;
     }
 
     .bm-stat-value {
-      font-size: 26px;
+      font-size: 22px;
     }
 
     .bm-zones-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
     .bm-zone-card {
-      padding: 20px 16px;
+      padding: 14px 12px;
     }
 
     .bm-zone-value {
-      font-size: 28px;
+      font-size: 24px;
     }
 
     .bm-actions-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
     .bm-hierarchy-section {
-      padding: 24px 16px;
+      padding: 16px 12px;
     }
 
     .bm-hierarchy-flow {
@@ -1064,8 +1106,9 @@
     .bm-hierarchy-item {
       flex-direction: row;
       text-align: left;
-      gap: 16px;
+      gap: 12px;
       min-width: unset;
+      padding: 10px 12px;
     }
 
     .bm-h-content {
@@ -1086,12 +1129,14 @@
     .bm-zones-grid,
     .bm-actions-grid {
       grid-template-columns: 1fr;
+      gap: 6px;
     }
 
     .bm-stat-card {
       flex-direction: row;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      padding: 10px 12px;
 
       .bm-stat-visual {
         margin-bottom: 0;
@@ -1101,18 +1146,25 @@
     .bm-zone-card {
       flex-direction: row;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      padding: 10px 12px;
     }
 
     .bm-zone-content {
       text-align: left;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .bm-zone-name {
       margin-top: 0;
+    }
+
+    .bm-action-card {
+      flex-direction: row;
+      padding: 10px 12px;
+      gap: 10px;
     }
   }
 }

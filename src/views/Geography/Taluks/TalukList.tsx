@@ -11,6 +11,8 @@ import {
   HiOutlineLocationMarker,
   HiOutlineUserGroup,
   HiOutlineHome,
+  HiOutlineOfficeBuilding,
+  HiOutlineMap,
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
@@ -20,7 +22,8 @@ import {
   HiOutlineChevronDoubleRight,
   HiOutlineChevronUp,
   HiOutlineChevronDown,
-  HiOutlineSwitchVertical
+  HiOutlineSwitchVertical,
+  HiOutlineArrowRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { Taluk, State, District } from '../../../types/api.types';
@@ -343,22 +346,23 @@ const TalukList = () => {
                 <div
                   key={taluk.id}
                   className="tl-card"
-                  onClick={() => navigate(`/geography/taluks/${taluk.id}`)}
                 >
+                  <button className="tl-card__view-icon" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View Details">
+                    <HiOutlineArrowRight />
+                  </button>
                   <div className="tl-card__head">
-                    <div className="tl-card__info">
+                    <div className="tl-card__badges">
                       <span className="tl-card__code">{taluk.code}</span>
-                      <h4 className="tl-card__name">{taluk.name}</h4>
-                      {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>}
+                      <span className="tl-card__district">{taluk.district_name}</span>
                     </div>
+                    <h4 className="tl-card__name">{taluk.name}</h4>
+                    {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>}
                   </div>
                   <div className="tl-card__location">
-                    <span>{taluk.district_name}</span>
-                    <span className="sep">•</span>
-                    <span className="state">{taluk.state_name}</span>
+                    <span className="state"><HiOutlineMap /> {taluk.state_name}</span>
                   </div>
                   <div className="tl-card__row">
-                    <span className="tl-card__label">Headquarters</span>
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> Headquarters</span>
                     <span className="tl-card__value">{taluk.headquarters || '—'}</span>
                   </div>
                   <div className="tl-card__nums">
@@ -375,17 +379,23 @@ const TalukList = () => {
                   </div>
                   <div className="tl-card__foot">
                     <div className="tl-card__btns">
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`); }} title="Gram Panchayats">
-                        <HiOutlineUserGroup />
+                      <button className="view-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View Details">
+                        <HiOutlineEye />
+                        <span className="btn-text">View</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/taluks/${taluk.id}/edit`); }} title="Edit">
+                      <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)} title="View Gram Panchayats">
+                        <HiOutlineUserGroup />
+                        <span className="btn-text">GPs</span>
+                      </button>
+                      <button className="edit-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
+                        <span className="btn-text">Edit</span>
                       </button>
                       <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete">
                         <HiOutlineTrash />
+                        <span className="btn-text">Delete</span>
                       </button>
                     </div>
-                    <span className="tl-card__go"><HiOutlineChevronRight /></span>
                   </div>
                 </div>
               ))}
@@ -417,28 +427,30 @@ const TalukList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {taluks.map((taluk) => (
-                    <tr key={taluk.id} onClick={() => navigate(`/geography/taluks/${taluk.id}`)}>
+                  {taluks.map((taluk, index) => (
+                    <tr key={taluk.id} className={index % 2 === 1 ? 'row-alt' : ''}>
                       <td>
                         <div className="tl-table__main">
-                          <span className="tl-table__code">{taluk.code}</span>
+                          <div className="tl-table__badges">
+                            <span className="tl-table__code">{taluk.code}</span>
+                          </div>
                           <div className="tl-table__txt">
                             <strong>{taluk.name}</strong>
                             {taluk.name_hindi && <small>{taluk.name_hindi}</small>}
                           </div>
                         </div>
                       </td>
-                      <td>{taluk.district_name}</td>
-                      <td><span className="tl-table__state">{taluk.state_name}</span></td>
-                      <td>{taluk.headquarters || '—'}</td>
+                      <td><span className="tl-table__district"><HiOutlineOfficeBuilding /> {taluk.district_name}</span></td>
+                      <td><span className="tl-table__state"><HiOutlineMap /> {taluk.state_name}</span></td>
+                      <td><span className="tl-table__hq"><HiOutlineLocationMarker /> {taluk.headquarters || '—'}</span></td>
                       <td className="num">{formatNumber(taluk.total_gram_panchayats || 0)}</td>
                       <td className="num">{formatNumber(taluk.total_villages || 0)}</td>
                       <td>
-                        <div className="tl-table__acts" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/taluks/${taluk.id}`)}><HiOutlineEye /></button>
-                          <button onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)}><HiOutlineUserGroup /></button>
-                          <button onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id}><HiOutlineTrash /></button>
+                        <div className="tl-table__acts">
+                          <button className="view-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View Details"><HiOutlineEye /></button>
+                          <button className="nav-btn" onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)} title="View GPs"><HiOutlineUserGroup /></button>
+                          <button className="edit-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>

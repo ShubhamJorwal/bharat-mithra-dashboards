@@ -102,28 +102,15 @@ const NationalDashboard = () => {
 
   return (
     <div className="bm-national">
-      {/* Hero Section */}
+      {/* Hero Section with Centered Flag */}
       <section className="bm-hero">
         <div className="bm-hero-bg">
-          <div className="bm-hero-pattern"></div>
+          <div className="bm-hero-dots"></div>
           <div className="bm-hero-gradient"></div>
         </div>
 
         <div className="bm-hero-content">
-          <div className="bm-india-emblem">
-            <div className="bm-flag-wrapper">
-              <div className="bm-flag">
-                <span className="bm-saffron"></span>
-                <span className="bm-white">
-                  <span className="bm-chakra"></span>
-                </span>
-                <span className="bm-green"></span>
-              </div>
-            </div>
-            <div className="bm-emblem-glow"></div>
-          </div>
-
-          <div className="bm-hero-text">
+          <div className="bm-hero-left">
             <div className="bm-title-badge">
               <HiOutlineSparkles />
               <span>National Overview</span>
@@ -136,6 +123,22 @@ const NationalDashboard = () => {
               <HiOutlineLocationMarker />
               <span>Capital: <strong>{data.capital}</strong></span>
             </p>
+          </div>
+
+          {/* Centered Flag - No Pole */}
+          <div className="bm-flag-showcase">
+            <div className="bm-large-flag">
+              <div className="bm-flag-stripe bm-saffron"></div>
+              <div className="bm-flag-stripe bm-white">
+                <div className="bm-ashoka-chakra">
+                  <div className="bm-chakra-center"></div>
+                  {[...Array(24)].map((_, i) => (
+                    <div key={i} className="bm-chakra-spoke" style={{ transform: `rotate(${i * 15}deg)` }}></div>
+                  ))}
+                </div>
+              </div>
+              <div className="bm-flag-stripe bm-green"></div>
+            </div>
           </div>
 
           <button

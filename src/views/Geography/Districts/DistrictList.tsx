@@ -19,7 +19,10 @@ import {
   HiOutlineChevronDoubleRight,
   HiOutlineChevronUp,
   HiOutlineChevronDown,
-  HiOutlineSwitchVertical
+  HiOutlineSwitchVertical,
+  HiOutlineArrowRight,
+  HiOutlineGlobeAlt,
+  HiOutlineUsers
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { District, State } from '../../../types/api.types';
@@ -308,18 +311,20 @@ const DistrictList = () => {
                 <div
                   key={district.id}
                   className="dl-card"
-                  onClick={() => navigate(`/geography/districts/${district.id}`)}
                 >
+                  <button className="dl-card__view-icon" onClick={() => navigate(`/geography/districts/${district.id}`)} title="View Details">
+                    <HiOutlineArrowRight />
+                  </button>
                   <div className="dl-card__head">
-                    <div className="dl-card__info">
+                    <div className="dl-card__badges">
                       <span className="dl-card__code">{district.code}</span>
-                      <h4 className="dl-card__name">{district.name}</h4>
-                      {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>}
+                      <span className="dl-card__state">{district.state_name}</span>
                     </div>
-                    <span className="dl-card__state">{district.state_name}</span>
+                    <h4 className="dl-card__name">{district.name}</h4>
+                    {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>}
                   </div>
                   <div className="dl-card__row">
-                    <span className="dl-card__label">Headquarters</span>
+                    <span className="dl-card__label"><HiOutlineLocationMarker /> Headquarters</span>
                     <span className="dl-card__value">{district.headquarters || '—'}</span>
                   </div>
                   <div className="dl-card__nums">
@@ -338,17 +343,23 @@ const DistrictList = () => {
                   </div>
                   <div className="dl-card__foot">
                     <div className="dl-card__btns">
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/taluks?district_id=${district.id}`); }} title="Taluks">
-                        <HiOutlineLocationMarker />
+                      <button className="view-btn" onClick={() => navigate(`/geography/districts/${district.id}`)} title="View Details">
+                        <HiOutlineEye />
+                        <span className="btn-text">View</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/districts/${district.id}/edit`); }} title="Edit">
+                      <button className="view-btn" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)} title="View Taluks">
+                        <HiOutlineLocationMarker />
+                        <span className="btn-text">Taluks</span>
+                      </button>
+                      <button className="edit-btn" onClick={() => navigate(`/geography/districts/${district.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
+                        <span className="btn-text">Edit</span>
                       </button>
                       <button className="del" onClick={(e) => handleDelete(e, district)} disabled={deleteLoading === district.id} title="Delete">
                         <HiOutlineTrash />
+                        <span className="btn-text">Delete</span>
                       </button>
                     </div>
-                    <span className="dl-card__go"><HiOutlineChevronRight /></span>
                   </div>
                 </div>
               ))}
@@ -381,29 +392,31 @@ const DistrictList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {districts.map((district) => (
-                    <tr key={district.id} onClick={() => navigate(`/geography/districts/${district.id}`)}>
+                  {districts.map((district, index) => (
+                    <tr key={district.id} className={index % 2 === 1 ? 'row-alt' : ''}>
                       <td>
                         <div className="dl-table__main">
-                          <span className="dl-table__code">{district.code}</span>
+                          <div className="dl-table__badges">
+                            <span className="dl-table__code">{district.code}</span>
+                          </div>
                           <div className="dl-table__txt">
                             <strong>{district.name}</strong>
                             {district.name_hindi && <small>{district.name_hindi}</small>}
                           </div>
                         </div>
                       </td>
-                      <td><span className="dl-table__state">{district.state_name}</span></td>
-                      <td>{district.headquarters || '—'}</td>
+                      <td><span className="dl-table__state"><HiOutlineOfficeBuilding /> {district.state_name}</span></td>
+                      <td><span className="dl-table__hq"><HiOutlineLocationMarker /> {district.headquarters || '—'}</span></td>
                       <td className="num">{district.total_taluks || 0}</td>
                       <td className="num">{formatNumber(district.total_gram_panchayats || 0)}</td>
                       <td className="num">{formatNumber(district.total_villages || 0)}</td>
                       <td className="num">{district.population ? formatNumber(district.population) : '—'}</td>
                       <td>
-                        <div className="dl-table__acts" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/districts/${district.id}`)}><HiOutlineEye /></button>
-                          <button onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)}><HiOutlineLocationMarker /></button>
-                          <button onClick={() => navigate(`/geography/districts/${district.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, district)} disabled={deleteLoading === district.id}><HiOutlineTrash /></button>
+                        <div className="dl-table__acts">
+                          <button className="view-btn" onClick={() => navigate(`/geography/districts/${district.id}`)} title="View Details"><HiOutlineEye /></button>
+                          <button className="nav-btn" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)} title="View Taluks"><HiOutlineLocationMarker /></button>
+                          <button className="edit-btn" onClick={() => navigate(`/geography/districts/${district.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, district)} disabled={deleteLoading === district.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>

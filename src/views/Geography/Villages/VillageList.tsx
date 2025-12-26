@@ -9,6 +9,9 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiOutlineHome,
+  HiOutlineUserGroup,
+  HiOutlineLocationMarker,
+  HiOutlineOfficeBuilding,
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
@@ -18,7 +21,8 @@ import {
   HiOutlineChevronDoubleRight,
   HiOutlineChevronUp,
   HiOutlineChevronDown,
-  HiOutlineSwitchVertical
+  HiOutlineSwitchVertical,
+  HiOutlineArrowRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { Village, State, District, Taluk, GramPanchayat } from '../../../types/api.types';
@@ -420,17 +424,20 @@ const VillageList = () => {
                 <div
                   key={village.id}
                   className="vl-card"
-                  onClick={() => navigate(`/geography/villages/${village.id}`)}
                 >
+                  <button className="vl-card__view-icon" onClick={() => navigate(`/geography/villages/${village.id}`)} title="View Details">
+                    <HiOutlineArrowRight />
+                  </button>
                   <div className="vl-card__head">
-                    <span className="vl-card__code">{village.code}</span>
+                    <div className="vl-card__badges">
+                      <span className="vl-card__code">{village.code}</span>
+                      <span className="vl-card__gp">{village.gram_panchayat_name}</span>
+                    </div>
                     <h4 className="vl-card__name">{village.name}</h4>
                     {village.name_hindi && <span className="vl-card__hindi">{village.name_hindi}</span>}
                   </div>
                   <div className="vl-card__location">
-                    <span>{village.gram_panchayat_name}</span>
-                    <span className="sep">•</span>
-                    <span>{village.taluk_name}</span>
+                    <span className="taluk"><HiOutlineLocationMarker /> {village.taluk_name}</span>
                   </div>
                   <div className="vl-card__stats">
                     <div className="vl-card__stat">
@@ -450,17 +457,19 @@ const VillageList = () => {
                   </div>
                   <div className="vl-card__foot">
                     <div className="vl-card__btns">
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/villages/${village.id}`); }} title="View">
+                      <button className="view-btn" onClick={() => navigate(`/geography/villages/${village.id}`)} title="View Details">
                         <HiOutlineEye />
+                        <span className="btn-text">View</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/villages/${village.id}/edit`); }} title="Edit">
+                      <button className="edit-btn" onClick={() => navigate(`/geography/villages/${village.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
+                        <span className="btn-text">Edit</span>
                       </button>
                       <button className="del" onClick={(e) => handleDelete(e, village)} disabled={deleteLoading === village.id} title="Delete">
                         <HiOutlineTrash />
+                        <span className="btn-text">Delete</span>
                       </button>
                     </div>
-                    <span className="vl-card__go"><HiOutlineChevronRight /></span>
                   </div>
                 </div>
               ))}
@@ -487,28 +496,30 @@ const VillageList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {villages.map((village) => (
-                    <tr key={village.id} onClick={() => navigate(`/geography/villages/${village.id}`)}>
+                  {villages.map((village, index) => (
+                    <tr key={village.id} className={index % 2 === 1 ? 'row-alt' : ''}>
                       <td>
                         <div className="vl-table__main">
-                          <span className="vl-table__code">{village.code}</span>
+                          <div className="vl-table__badges">
+                            <span className="vl-table__code">{village.code}</span>
+                          </div>
                           <div className="vl-table__txt">
                             <strong>{village.name}</strong>
                             {village.name_hindi && <small>{village.name_hindi}</small>}
                           </div>
                         </div>
                       </td>
-                      <td>{village.gram_panchayat_name}</td>
-                      <td>{village.taluk_name}</td>
-                      <td>{village.district_name}</td>
+                      <td><span className="vl-table__gp"><HiOutlineUserGroup /> {village.gram_panchayat_name}</span></td>
+                      <td><span className="vl-table__taluk"><HiOutlineLocationMarker /> {village.taluk_name}</span></td>
+                      <td><span className="vl-table__district"><HiOutlineOfficeBuilding /> {village.district_name}</span></td>
                       <td className="num">{formatNumber(village.population)}</td>
                       <td className="num">{formatNumber(village.households)}</td>
-                      <td>{village.pin_code || '—'}</td>
+                      <td><span className="vl-table__pin">{village.pin_code || '—'}</span></td>
                       <td>
-                        <div className="vl-table__acts" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/villages/${village.id}`)}><HiOutlineEye /></button>
-                          <button onClick={() => navigate(`/geography/villages/${village.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, village)} disabled={deleteLoading === village.id}><HiOutlineTrash /></button>
+                        <div className="vl-table__acts">
+                          <button className="view-btn" onClick={() => navigate(`/geography/villages/${village.id}`)} title="View Details"><HiOutlineEye /></button>
+                          <button className="edit-btn" onClick={() => navigate(`/geography/villages/${village.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, village)} disabled={deleteLoading === village.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>

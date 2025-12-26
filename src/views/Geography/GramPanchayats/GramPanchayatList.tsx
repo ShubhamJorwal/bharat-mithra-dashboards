@@ -12,6 +12,8 @@ import {
   HiOutlineHome,
   HiOutlinePhone,
   HiOutlineUser,
+  HiOutlineLocationMarker,
+  HiOutlineOfficeBuilding,
   HiOutlineExclamationCircle,
   HiOutlineViewGrid,
   HiOutlineViewList,
@@ -21,7 +23,9 @@ import {
   HiOutlineChevronDoubleRight,
   HiOutlineChevronUp,
   HiOutlineChevronDown,
-  HiOutlineSwitchVertical
+  HiOutlineSwitchVertical,
+  HiOutlineArrowRight,
+  HiOutlineMap
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { GramPanchayat, State, District, Taluk } from '../../../types/api.types';
@@ -384,19 +388,21 @@ const GramPanchayatList = () => {
                 <div
                   key={gp.id}
                   className="gpl-card"
-                  onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)}
                 >
+                  <button className="gpl-card__view-icon" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)} title="View Details">
+                    <HiOutlineArrowRight />
+                  </button>
                   <div className="gpl-card__head">
-                    <span className="gpl-card__code">{gp.code}</span>
+                    <div className="gpl-card__badges">
+                      <span className="gpl-card__code">{gp.code}</span>
+                      <span className="gpl-card__taluk">{gp.taluk_name}</span>
+                    </div>
                     <h4 className="gpl-card__name">{gp.name}</h4>
                     {gp.name_hindi && <span className="gpl-card__hindi">{gp.name_hindi}</span>}
                   </div>
                   <div className="gpl-card__location">
-                    <span>{gp.taluk_name}</span>
-                    <span className="sep">•</span>
-                    <span>{gp.district_name}</span>
-                    <span className="sep">•</span>
-                    <span className="state">{gp.state_name}</span>
+                    <span className="district"><HiOutlineOfficeBuilding /> {gp.district_name}</span>
+                    <span className="state"><HiOutlineMap /> {gp.state_name}</span>
                   </div>
                   {gp.sarpanch_name && (
                     <div className="gpl-card__sarpanch">
@@ -426,16 +432,22 @@ const GramPanchayatList = () => {
                     </div>
                   </div>
                   <div className="gpl-card__foot">
-                    {gp.pin_code && <span className="gpl-card__pin">PIN: {gp.pin_code}</span>}
                     <div className="gpl-card__btns">
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/villages?gram_panchayat_id=${gp.id}`); }} title="Villages">
-                        <HiOutlineHome />
+                      <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)} title="View Details">
+                        <HiOutlineEye />
+                        <span className="btn-text">View</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/geography/gram-panchayats/${gp.id}/edit`); }} title="Edit">
+                      <button className="view-btn" onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)} title="View Villages">
+                        <HiOutlineHome />
+                        <span className="btn-text">Villages</span>
+                      </button>
+                      <button className="edit-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
+                        <span className="btn-text">Edit</span>
                       </button>
                       <button className="del" onClick={(e) => handleDelete(e, gp)} disabled={deleteLoading === gp.id} title="Delete">
                         <HiOutlineTrash />
+                        <span className="btn-text">Delete</span>
                       </button>
                     </div>
                   </div>
@@ -466,19 +478,21 @@ const GramPanchayatList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {gramPanchayats.map((gp) => (
-                    <tr key={gp.id} onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)}>
+                  {gramPanchayats.map((gp, index) => (
+                    <tr key={gp.id} className={index % 2 === 1 ? 'row-alt' : ''}>
                       <td>
                         <div className="gpl-table__main">
-                          <span className="gpl-table__code">{gp.code}</span>
+                          <div className="gpl-table__badges">
+                            <span className="gpl-table__code">{gp.code}</span>
+                          </div>
                           <div className="gpl-table__txt">
                             <strong>{gp.name}</strong>
                             {gp.name_hindi && <small>{gp.name_hindi}</small>}
                           </div>
                         </div>
                       </td>
-                      <td>{gp.taluk_name}</td>
-                      <td>{gp.district_name}</td>
+                      <td><span className="gpl-table__taluk"><HiOutlineLocationMarker /> {gp.taluk_name}</span></td>
+                      <td><span className="gpl-table__district"><HiOutlineOfficeBuilding /> {gp.district_name}</span></td>
                       <td>
                         {gp.sarpanch_name ? (
                           <div className="gpl-table__sarpanch">
@@ -490,11 +504,11 @@ const GramPanchayatList = () => {
                       <td className="num">{gp.total_villages || 0}</td>
                       <td className="num">{formatNumber(gp.population)}</td>
                       <td>
-                        <div className="gpl-table__acts" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)}><HiOutlineEye /></button>
-                          <button onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)}><HiOutlineHome /></button>
-                          <button onClick={() => navigate(`/geography/gram-panchayats/${gp.id}/edit`)}><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, gp)} disabled={deleteLoading === gp.id}><HiOutlineTrash /></button>
+                        <div className="gpl-table__acts">
+                          <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)} title="View Details"><HiOutlineEye /></button>
+                          <button className="nav-btn" onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)} title="View Villages"><HiOutlineHome /></button>
+                          <button className="edit-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
+                          <button className="del" onClick={(e) => handleDelete(e, gp)} disabled={deleteLoading === gp.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>

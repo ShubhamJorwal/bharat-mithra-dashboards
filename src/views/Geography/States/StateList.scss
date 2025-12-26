@@ -210,117 +210,142 @@
 .sl-card {
   position: relative;
   background: var(--color-background);
-  // border: 1px solid var(--color-border);
   border-radius: $radius-lg;
-  cursor: pointer;
+  cursor: default;
   transition: all 0.25s ease;
   overflow: hidden;
   border: 1px dashed var(--color-border);
 
   &:hover {
-    // border-color: #3b82f6;
-    // background: rgba(59, 130, 246, 0.04);
-    box-shadow: 0 0px 30px rgba(59, 130, 246, 0.25);
-    // transform: translateY(-2px);
-    transform: scale(.95);
+    box-shadow: 0 0px 25px rgba(59, 130, 246, 0.15);
+    transform: scale(.98);
 
-    .sl-card__go {
+    .sl-card__view-icon {
       opacity: 1;
-      transform: translateX(0);
-    }
-
-    .sl-card__code {
-      background: var(--color-primary);
-      color: #fff;
+      transform: rotate(0deg);
     }
   }
 
-  // State type indicator line
-  // &::before {
-  //   content: '';
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   right: 0;
-  //   height: 3px;
-  //   background: var(--color-primary);
-  //   opacity: 0;
-  //   transition: opacity 0.25s ease;
-  // }
+  // View icon - positioned top-right
+  &__view-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    color: #3b82f6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    transform: rotate(-45deg);
+    z-index: 2;
 
-  &:hover::before {
-    opacity: 1;
+    svg {
+      font-size: 18px;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: #fff;
+      opacity: 1;
+      transform: rotate(0deg) scale(1.1);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
   }
 
   &--state {
-    .sl-card__tag {
-      background: rgba(59, 130, 246, 0.1);
+    .sl-card__view-icon {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
       color: #3b82f6;
+      &:hover {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: #fff;
+      }
     }
-    &::before { background: #3b82f6; }
-    &:hover { border-color: #3b82f6; }
-    &:hover .sl-card__code { background: #3b82f6; }
+    &:hover { border-color: rgba(59, 130, 246, 0.3); }
   }
 
   &--ut {
-    .sl-card__tag {
-      background: rgba(139, 92, 246, 0.1);
-      color: #8b5cf6;
+    .sl-card__view-icon {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+      color: #10b981;
+      &:hover {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      }
     }
-    &::before { background: #8b5cf6; }
-    &:hover { border-color: #8b5cf6; }
-    &:hover .sl-card__code { background: #8b5cf6; }
+    &:hover { border-color: rgba(16, 185, 129, 0.3); }
   }
 
   // Header
   &__head {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    // background: rgba(9, 1, 38, 0.1);
-    // padding: 16px 16px 12px;
-    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 12px 12px;
+    text-align: center;
   }
 
-  &__info {
-    flex: 1;
-    min-width: 0;
+  // Badges container - code + tag together
+  &__badges {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   &__code {
     display: inline-block;
-    padding: 4px 4px;
-    background: var(--color-background-secondary);
-    border-radius: 8px;
-    font-size: 11px;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.08), rgba(107, 114, 128, 0.04));
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: #6b7280;
     letter-spacing: 0.5px;
-    // margin-bottom: 8px;
     transition: all 0.25s ease;
-  }
-
-  &__name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1e40af; // Highlighted blue color for State/UT name
-    margin: 0;
-    line-height: 1.4;
-    transition: color 0.2s ease;
+    border: 1px solid rgba(107, 114, 128, 0.15);
   }
 
   &__tag {
-    flex-shrink: 0;
-    padding: 5px 5px;
+    display: inline-block;
+    padding: 5px 12px;
     font-size: 10px;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+
+    &.tag-state {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.06));
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    &.tag-ut {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.06));
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+  }
+
+  &__name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+    transition: color 0.2s ease;
   }
 
   // Info Rows
@@ -333,8 +358,16 @@
   }
 
   &__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
     color: var(--color-text-secondary);
+
+    svg {
+      font-size: 16px;
+      color: #9ca3af;
+    }
   }
 
   &__value {
@@ -381,58 +414,71 @@
   &__foot {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 10px 12px;
     border-top: 1px dashed var(--color-border);
   }
 
   &__btns {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 
     button {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
+      gap: 6px;
+      min-width: 32px;
       height: 32px;
+      padding: 0 12px;
       border: 1px solid var(--color-border);
-      border-radius: $radius-md;
+      border-radius: 20px;
       background: var(--color-background);
       color: var(--color-text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
+      font-size: 11px;
+      font-weight: 500;
 
-      svg { font-size: 14px; }
+      svg { font-size: 14px; flex-shrink: 0; }
+
+      // Desktop text labels
+      .btn-text {
+        display: none;
+        @media (min-width: 768px) {
+          display: inline;
+        }
+      }
 
       &:hover {
         background: var(--color-primary);
         border-color: var(--color-primary);
         color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+      }
+
+      &.view-btn:hover {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-color: transparent;
+      }
+
+      &.edit-btn:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
       }
 
       &.del:hover {
-        background: #ef4444;
-        border-color: #ef4444;
-        color: #fff;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
       }
     }
   }
 
   &__go {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: var(--color-primary);
-    border-radius: $radius-md;
-    color: #fff;
-    opacity: 0;
-    transform: translateX(-8px);
-    transition: all 0.25s ease;
-
-    svg { font-size: 16px; }
+    display: none;
   }
 }
 
@@ -508,12 +554,22 @@
   }
 
   tbody tr {
-    cursor: pointer;
-    transition: background 0.15s ease;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+
+    // Alternating row colors
+    &.row-alt {
+      background: rgba(248, 250, 252, 0.5);
+    }
 
     &:hover {
-      background: var(--color-background-secondary);
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+      border-left-color: #3b82f6;
+      transform: scale(1.005);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
       .sl-table__acts { opacity: 1; }
+      .sl-table__txt strong { color: #3b82f6; }
     }
 
     &:last-child td { border-bottom: none; }
@@ -525,25 +581,58 @@
     gap: 12px;
   }
 
-  &__tag {
+  // Badges container for table
+  &__badges {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__code {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 11px;
+    min-width: 48px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.5px;
+    transition: all 0.2s ease;
 
-    &.st {
-      background: rgba(59, 130, 246, 0.1);
+    &.code-state {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.06));
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    &.code-ut {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.06));
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+  }
+
+  &__type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    &.type-state {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04));
       color: #3b82f6;
     }
 
-    &.ut {
-      background: rgba(139, 92, 246, 0.1);
-      color: #8b5cf6;
+    &.type-ut {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+      color: #059669;
     }
   }
 
@@ -556,6 +645,7 @@
       font-size: 14px;
       font-weight: 600;
       color: var(--color-text);
+      transition: color 0.2s ease;
     }
 
     small {
@@ -564,46 +654,81 @@
     }
   }
 
+  &__capital {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 20px;
+    color: #059669;
+
+    svg { font-size: 16px; }
+  }
+
   &__zone {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 4px 12px;
     font-size: 11px;
     font-weight: 500;
     background: var(--color-background-secondary);
     border-radius: 20px;
     color: var(--color-text-secondary);
+
+    svg { font-size: 16px; color: var(--color-text-secondary); }
   }
 
   &__acts {
     display: flex;
     gap: 6px;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease;
 
     button {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 30px;
-      height: 30px;
+      width: 34px;
+      height: 34px;
       border: 1px solid var(--color-border);
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--color-background);
       color: var(--color-text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
 
-      svg { font-size: 14px; }
+      svg { font-size: 16px; }
 
       &:hover {
-        background: var(--color-primary);
-        border-color: var(--color-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &.view-btn:hover {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-color: transparent;
+        color: #fff;
+      }
+
+      &.nav-btn:hover {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-color: transparent;
+        color: #fff;
+      }
+
+      &.edit-btn:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-color: transparent;
         color: #fff;
       }
 
       &.del:hover {
-        background: #ef4444;
-        border-color: #ef4444;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border-color: transparent;
         color: #fff;
       }
     }
