@@ -4,7 +4,12 @@ import {
   HiOutlineRefresh,
   HiOutlineExclamationCircle,
   HiOutlineArrowRight,
-  HiOutlineChevronRight
+  HiOutlineChevronRight,
+  HiOutlineMap,
+  HiOutlineOfficeBuilding,
+  HiOutlineLocationMarker,
+  HiOutlineUserGroup,
+  HiOutlineHome
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { NationalSummary } from '../../../types/api.types';
@@ -45,6 +50,14 @@ const NationalDashboard = () => {
     return num.toLocaleString('en-IN');
   };
 
+  const formatCompact = (num: number | undefined): string => {
+    if (!num) return '0';
+    if (num >= 10000000) return (num / 10000000).toFixed(1) + ' Cr';
+    if (num >= 100000) return (num / 100000).toFixed(1) + ' L';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+
   if (loading) {
     return (
       <div className="nd">
@@ -73,12 +86,12 @@ const NationalDashboard = () => {
   }
 
   const hierarchyItems = [
-    { label: 'States', value: data.total_states, path: '/geography/states' },
-    { label: 'Union Territories', value: data.total_union_territories, path: '/geography/states?type=union_territory' },
-    { label: 'Districts', value: data.total_districts, path: '/geography/districts' },
-    { label: 'Taluks', value: data.total_taluks, path: '/geography/taluks' },
-    { label: 'Gram Panchayats', value: data.total_gram_panchayats, path: '/geography/gram-panchayats' },
-    { label: 'Villages', value: data.total_villages, path: '/geography/villages' }
+    { label: 'States', value: data.total_states, path: '/geography/states', icon: HiOutlineMap },
+    { label: 'Union Territories', value: data.total_union_territories, path: '/geography/states?type=union_territory', icon: HiOutlineMap },
+    { label: 'Districts', value: data.total_districts, path: '/geography/districts', icon: HiOutlineOfficeBuilding },
+    { label: 'Taluks', value: data.total_taluks, path: '/geography/taluks', icon: HiOutlineLocationMarker },
+    { label: 'Gram Panchayats', value: data.total_gram_panchayats, path: '/geography/gram-panchayats', icon: HiOutlineUserGroup },
+    { label: 'Villages', value: data.total_villages, path: '/geography/villages', icon: HiOutlineHome }
   ];
 
   const zones = data.zones ? [
@@ -90,43 +103,121 @@ const NationalDashboard = () => {
     { name: 'Northeast', count: data.zones.northeast, code: 'NE' }
   ] : [];
 
+  const totalEntities = (data.total_states || 0) + (data.total_union_territories || 0);
+
   return (
     <div className="nd">
-      {/* Header */}
-      <header className="nd-header">
-        <div className="nd-header__info">
-          <h1 className="nd-header__title">{data.country}</h1>
-          <span className="nd-header__subtitle">{data.country_hindi}</span>
+      {/* Hero Section with Flag */}
+      <header className="nd-hero">
+        <div className="nd-hero__content">
+          <div className="nd-hero__info">
+            <div className="nd-hero__badge">National Database</div>
+            <h1 className="nd-hero__title">{data.country}</h1>
+            <span className="nd-hero__subtitle">{data.country_hindi}</span>
+            <div className="nd-hero__meta">
+              <span>Capital: <strong>{data.capital}</strong></span>
+              <span className="nd-hero__divider">|</span>
+              <span>Entities: <strong>{totalEntities}</strong></span>
+            </div>
+          </div>
+
+          {/* Indian Flag */}
+          <div className="nd-flag">
+            <div className="nd-flag__container">
+              <div className="nd-flag__stripe nd-flag__stripe--saffron"></div>
+              <div className="nd-flag__stripe nd-flag__stripe--white">
+                <div className="nd-flag__chakra">
+                  <div className="nd-flag__chakra-center"></div>
+                  {[...Array(24)].map((_, i) => (
+                    <div key={i} className="nd-flag__spoke" style={{ transform: `rotate(${i * 15}deg)` }}></div>
+                  ))}
+                </div>
+              </div>
+              <div className="nd-flag__stripe nd-flag__stripe--green"></div>
+            </div>
+            <div className="nd-flag__pole"></div>
+          </div>
         </div>
-        <div className="nd-header__meta">
-          <span className="nd-header__capital">Capital: {data.capital}</span>
-          <button className="nd-header__refresh" onClick={fetchData} title="Refresh">
-            <HiOutlineRefresh />
-          </button>
-        </div>
+
+        <button className="nd-hero__refresh" onClick={fetchData} title="Refresh">
+          <HiOutlineRefresh />
+        </button>
       </header>
 
-      {/* Main Grid */}
-      <div className="nd-grid">
-        {hierarchyItems.map((item, index) => (
-          <article
-            key={item.label}
-            className="nd-card"
-            onClick={() => navigate(item.path)}
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <div className="nd-card__number">{formatNumber(item.value)}</div>
-            <div className="nd-card__label">{item.label}</div>
-            <HiOutlineArrowRight className="nd-card__arrow" />
-          </article>
-        ))}
-      </div>
+      {/* Main Stats Grid */}
+      <section className="nd-section">
+        <h2 className="nd-section__title">Administrative Overview</h2>
+        <div className="nd-grid">
+          {hierarchyItems.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <article
+                key={item.label}
+                className="nd-card"
+                onClick={() => navigate(item.path)}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="nd-card__icon">
+                  <IconComponent />
+                </div>
+                <div className="nd-card__content">
+                  <div className="nd-card__number">{formatNumber(item.value)}</div>
+                  <div className="nd-card__label">{item.label}</div>
+                </div>
+                <HiOutlineArrowRight className="nd-card__arrow" />
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Hierarchy Flow */}
+      <section className="nd-section">
+        <h2 className="nd-section__title">Governance Hierarchy</h2>
+        <div className="nd-flow">
+          <div className="nd-flow__item nd-flow__item--nation">
+            <span className="nd-flow__emoji">🇮🇳</span>
+            <span className="nd-flow__name">India</span>
+            <span className="nd-flow__count">Nation</span>
+          </div>
+          <div className="nd-flow__connector"><HiOutlineArrowRight /></div>
+          <div className="nd-flow__item">
+            <HiOutlineMap className="nd-flow__icon" />
+            <span className="nd-flow__name">States & UTs</span>
+            <span className="nd-flow__count">{totalEntities}</span>
+          </div>
+          <div className="nd-flow__connector"><HiOutlineArrowRight /></div>
+          <div className="nd-flow__item">
+            <HiOutlineOfficeBuilding className="nd-flow__icon" />
+            <span className="nd-flow__name">Districts</span>
+            <span className="nd-flow__count">{formatCompact(data.total_districts)}</span>
+          </div>
+          <div className="nd-flow__connector"><HiOutlineArrowRight /></div>
+          <div className="nd-flow__item">
+            <HiOutlineLocationMarker className="nd-flow__icon" />
+            <span className="nd-flow__name">Taluks</span>
+            <span className="nd-flow__count">{formatCompact(data.total_taluks)}</span>
+          </div>
+          <div className="nd-flow__connector"><HiOutlineArrowRight /></div>
+          <div className="nd-flow__item">
+            <HiOutlineUserGroup className="nd-flow__icon" />
+            <span className="nd-flow__name">Gram Panchayats</span>
+            <span className="nd-flow__count">{formatCompact(data.total_gram_panchayats)}</span>
+          </div>
+          <div className="nd-flow__connector"><HiOutlineArrowRight /></div>
+          <div className="nd-flow__item">
+            <HiOutlineHome className="nd-flow__icon" />
+            <span className="nd-flow__name">Villages</span>
+            <span className="nd-flow__count">{formatCompact(data.total_villages)}</span>
+          </div>
+        </div>
+      </section>
 
       {/* Zones Section */}
       {zones.length > 0 && (
-        <section className="nd-zones">
-          <h2 className="nd-zones__title">Regional Distribution</h2>
-          <div className="nd-zones__list">
+        <section className="nd-section">
+          <h2 className="nd-section__title">Regional Distribution</h2>
+          <div className="nd-zones">
             {zones.map((zone) => (
               <div
                 key={zone.name}
@@ -134,8 +225,10 @@ const NationalDashboard = () => {
                 onClick={() => navigate(`/geography/states?zone=${zone.name.toLowerCase()}`)}
               >
                 <span className="nd-zone__code">{zone.code}</span>
-                <span className="nd-zone__name">{zone.name}</span>
-                <span className="nd-zone__count">{zone.count}</span>
+                <div className="nd-zone__info">
+                  <span className="nd-zone__name">{zone.name}</span>
+                  <span className="nd-zone__count">{zone.count} States/UTs</span>
+                </div>
                 <HiOutlineChevronRight className="nd-zone__arrow" />
               </div>
             ))}
@@ -144,23 +237,28 @@ const NationalDashboard = () => {
       )}
 
       {/* Quick Links */}
-      <section className="nd-links">
-        <h2 className="nd-links__title">Quick Actions</h2>
-        <div className="nd-links__grid">
-          <button className="nd-link" onClick={() => navigate('/geography/states/new')}>
-            Add State
+      <section className="nd-section">
+        <h2 className="nd-section__title">Quick Actions</h2>
+        <div className="nd-actions">
+          <button className="nd-action" onClick={() => navigate('/geography/states/new')}>
+            <HiOutlineMap />
+            <span>Add State</span>
           </button>
-          <button className="nd-link" onClick={() => navigate('/geography/districts/new')}>
-            Add District
+          <button className="nd-action" onClick={() => navigate('/geography/districts/new')}>
+            <HiOutlineOfficeBuilding />
+            <span>Add District</span>
           </button>
-          <button className="nd-link" onClick={() => navigate('/geography/taluks/new')}>
-            Add Taluk
+          <button className="nd-action" onClick={() => navigate('/geography/taluks/new')}>
+            <HiOutlineLocationMarker />
+            <span>Add Taluk</span>
           </button>
-          <button className="nd-link" onClick={() => navigate('/geography/gram-panchayats/new')}>
-            Add Gram Panchayat
+          <button className="nd-action" onClick={() => navigate('/geography/gram-panchayats/new')}>
+            <HiOutlineUserGroup />
+            <span>Add GP</span>
           </button>
-          <button className="nd-link" onClick={() => navigate('/geography/villages/new')}>
-            Add Village
+          <button className="nd-action" onClick={() => navigate('/geography/villages/new')}>
+            <HiOutlineHome />
+            <span>Add Village</span>
           </button>
         </div>
       </section>

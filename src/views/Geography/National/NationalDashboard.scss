@@ -2,8 +2,14 @@
 @use '../../../styles/mixins' as *;
 
 // ==============================================
-// NATIONAL DASHBOARD - Clean Minimal Design
+// NATIONAL DASHBOARD - Clean Design with Flag
 // ==============================================
+
+// Indian Flag Colors
+$saffron: #FF9933;
+$flag-white: #FFFFFF;
+$green: #138808;
+$navy: #000080;
 
 .nd {
   padding: 0;
@@ -93,47 +99,79 @@
   }
 
   // ==============================================
-  // HEADER
+  // HERO SECTION
   // ==============================================
-  &-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--color-border-light);
+  &-hero {
+    position: relative;
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    overflow: hidden;
+
+    &__content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
 
     &__info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex: 1;
+    }
+
+    &__badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--color-background-secondary);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
     }
 
     &__title {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 700;
       color: var(--color-text);
       margin: 0;
       letter-spacing: -0.5px;
+      line-height: 1.1;
     }
 
     &__subtitle {
-      font-size: 14px;
+      display: block;
+      font-size: 16px;
       color: var(--color-text-secondary);
+      margin-top: 4px;
     }
 
     &__meta {
       display: flex;
       align-items: center;
-      gap: 16px;
-    }
-
-    &__capital {
+      gap: 8px;
+      margin-top: 16px;
       font-size: 13px;
       color: var(--color-text-secondary);
+
+      strong {
+        color: var(--color-text);
+        font-weight: 600;
+      }
+    }
+
+    &__divider {
+      color: var(--color-border);
     }
 
     &__refresh {
+      position: absolute;
+      top: 20px;
+      right: 20px;
       width: 36px;
       height: 36px;
       display: flex;
@@ -158,21 +196,121 @@
   }
 
   // ==============================================
-  // MAIN GRID - Stats Cards
+  // INDIAN FLAG
+  // ==============================================
+  &-flag {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-shrink: 0;
+
+    &__pole {
+      width: 4px;
+      height: 90px;
+      background: linear-gradient(180deg, #8B7355 0%, #6B5344 100%);
+      border-radius: 2px 0 0 2px;
+      box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    &__container {
+      width: 90px;
+      height: 60px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 2px 2px 0;
+      overflow: hidden;
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        0 4px 16px rgba(0, 0, 0, 0.08);
+      animation: nd-flag-wave 3s ease-in-out infinite;
+      transform-origin: left center;
+    }
+
+    &__stripe {
+      flex: 1;
+
+      &--saffron {
+        background: $saffron;
+      }
+
+      &--white {
+        background: $flag-white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &--green {
+        background: $green;
+      }
+    }
+
+    &__chakra {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid $navy;
+      border-radius: 50%;
+      position: relative;
+      animation: nd-chakra-spin 8s linear infinite;
+    }
+
+    &__chakra-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 3px;
+      background: $navy;
+      border-radius: 50%;
+    }
+
+    &__spoke {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0.8px;
+      height: 50%;
+      background: $navy;
+      transform-origin: center top;
+      margin-left: -0.4px;
+    }
+  }
+
+  // ==============================================
+  // SECTION STYLES
+  // ==============================================
+  &-section {
+    margin-bottom: 24px;
+
+    &__title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 0 0 16px;
+    }
+  }
+
+  // ==============================================
+  // STATS GRID
   // ==============================================
   &-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 40px;
+    gap: 14px;
   }
 
   &-card {
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     background: var(--color-background);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
-    padding: 24px;
+    padding: 18px 20px;
     cursor: pointer;
     transition: all 0.25s ease;
     animation: nd-fadeIn 0.4s ease forwards;
@@ -181,34 +319,62 @@
     &:hover {
       border-color: var(--color-text);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 
       .nd-card__arrow {
         opacity: 1;
         transform: translateX(0);
       }
+
+      .nd-card__icon {
+        background: var(--color-text);
+        color: var(--color-background);
+      }
+    }
+
+    &__icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-background-secondary);
+      border-radius: 10px;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+
+      svg {
+        font-size: 20px;
+        color: var(--color-text-secondary);
+      }
+    }
+
+    &__content {
+      flex: 1;
+      min-width: 0;
     }
 
     &__number {
-      font-size: 36px;
+      font-size: 24px;
       font-weight: 700;
       color: var(--color-text);
-      line-height: 1;
-      margin-bottom: 8px;
+      line-height: 1.1;
       font-variant-numeric: tabular-nums;
     }
 
     &__label {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--color-text-secondary);
       font-weight: 500;
+      margin-top: 2px;
     }
 
     &__arrow {
       position: absolute;
-      right: 20px;
+      right: 16px;
       top: 50%;
       transform: translateX(-8px) translateY(-50%);
-      font-size: 18px;
+      font-size: 16px;
       color: var(--color-text);
       opacity: 0;
       transition: all 0.25s ease;
@@ -216,71 +382,143 @@
   }
 
   // ==============================================
-  // ZONES SECTION
+  // HIERARCHY FLOW
+  // ==============================================
+  &-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 20px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+    overflow-x: auto;
+    @include custom-scrollbar;
+
+    &__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 18px;
+      background: var(--color-background-secondary);
+      border-radius: 10px;
+      min-width: 100px;
+      text-align: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      &--nation {
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.1), rgba(19, 136, 8, 0.1));
+      }
+    }
+
+    &__emoji {
+      font-size: 24px;
+    }
+
+    &__icon {
+      font-size: 20px;
+      color: var(--color-text-secondary);
+    }
+
+    &__name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    &__count {
+      font-size: 10px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    &__connector {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+
+      svg {
+        font-size: 14px;
+        animation: nd-arrow-pulse 1.5s ease-in-out infinite;
+      }
+    }
+  }
+
+  // ==============================================
+  // ZONES
   // ==============================================
   &-zones {
-    margin-bottom: 40px;
-
-    &__title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin: 0 0 16px;
-    }
-
-    &__list {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
-    }
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
   }
 
   &-zone {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     padding: 14px 16px;
-    background: var(--color-background-secondary);
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
-      background: var(--color-background-tertiary);
+      border-color: var(--color-text);
+      transform: translateY(-2px);
 
       .nd-zone__arrow {
         opacity: 1;
       }
+
+      .nd-zone__code {
+        background: var(--color-text);
+        color: var(--color-background);
+      }
     }
 
     &__code {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-background);
-      border-radius: 6px;
-      font-size: 10px;
+      background: var(--color-background-secondary);
+      border-radius: 8px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--color-text-secondary);
       flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    &__info {
+      flex: 1;
+      min-width: 0;
     }
 
     &__name {
-      flex: 1;
+      display: block;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--color-text);
     }
 
     &__count {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--color-text);
-      font-variant-numeric: tabular-nums;
+      display: block;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-top: 1px;
     }
 
     &__arrow {
@@ -288,30 +526,23 @@
       color: var(--color-text-muted);
       opacity: 0;
       transition: opacity 0.2s;
+      flex-shrink: 0;
     }
   }
 
   // ==============================================
-  // QUICK LINKS
+  // QUICK ACTIONS
   // ==============================================
-  &-links {
-    &__title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin: 0 0 16px;
-    }
-
-    &__grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+  &-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
-  &-link {
+  &-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 10px 18px;
     background: transparent;
     border: 1px solid var(--color-border);
@@ -322,10 +553,20 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
+    svg {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      transition: color 0.2s;
+    }
+
     &:hover {
       background: var(--color-text);
       border-color: var(--color-text);
       color: var(--color-background);
+
+      svg {
+        color: var(--color-background);
+      }
     }
   }
 }
@@ -350,6 +591,41 @@
   }
 }
 
+@keyframes nd-flag-wave {
+  0%, 100% {
+    transform: perspective(100px) rotateY(0deg) skewY(0deg);
+  }
+  25% {
+    transform: perspective(100px) rotateY(2deg) skewY(0.5deg);
+  }
+  50% {
+    transform: perspective(100px) rotateY(0deg) skewY(0deg);
+  }
+  75% {
+    transform: perspective(100px) rotateY(-1deg) skewY(-0.3deg);
+  }
+}
+
+@keyframes nd-chakra-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes nd-arrow-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+}
+
 // ==============================================
 // RESPONSIVE DESIGN
 // ==============================================
@@ -359,7 +635,7 @@
       grid-template-columns: repeat(3, 1fr);
     }
 
-    &-zones__list {
+    &-zones {
       grid-template-columns: repeat(3, 1fr);
     }
   }
@@ -371,52 +647,66 @@
       grid-template-columns: repeat(2, 1fr);
     }
 
-    &-zones__list {
+    &-zones {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    &-hero__content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    &-flag {
+      align-self: flex-end;
     }
   }
 }
 
 @media (max-width: 600px) {
   .nd {
-    &-header {
-      flex-direction: column;
-      gap: 16px;
+    &-hero {
+      padding: 20px;
 
       &__title {
-        font-size: 26px;
+        font-size: 28px;
       }
 
-      &__meta {
-        width: 100%;
-        justify-content: space-between;
+      &__refresh {
+        top: 16px;
+        right: 16px;
       }
     }
 
     &-grid {
       grid-template-columns: 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
     &-card {
-      padding: 20px;
+      padding: 16px;
+    }
 
-      &__number {
-        font-size: 28px;
+    &-flow {
+      padding: 16px;
+
+      &__item {
+        min-width: 80px;
+        padding: 12px 14px;
       }
     }
 
-    &-zones__list {
+    &-zones {
       grid-template-columns: 1fr;
       gap: 8px;
     }
 
-    &-links__grid {
+    &-actions {
       flex-direction: column;
     }
 
-    &-link {
-      text-align: center;
+    &-action {
+      justify-content: center;
     }
   }
 }
