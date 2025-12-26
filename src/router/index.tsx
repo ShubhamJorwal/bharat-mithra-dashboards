@@ -26,12 +26,16 @@ import StateForm from "../views/Geography/States/StateForm";
 import StateDetails from "../views/Geography/States/StateDetails";
 import DistrictList from "../views/Geography/Districts/DistrictList";
 import DistrictForm from "../views/Geography/Districts/DistrictForm";
+import DistrictDetails from "../views/Geography/Districts/DistrictDetails";
 import TalukList from "../views/Geography/Taluks/TalukList";
 import TalukForm from "../views/Geography/Taluks/TalukForm";
+import TalukDetails from "../views/Geography/Taluks/TalukDetails";
 import GramPanchayatList from "../views/Geography/GramPanchayats/GramPanchayatList";
 import GramPanchayatForm from "../views/Geography/GramPanchayats/GramPanchayatForm";
+import GramPanchayatDetails from "../views/Geography/GramPanchayats/GramPanchayatDetails";
 import VillageList from "../views/Geography/Villages/VillageList";
 import VillageForm from "../views/Geography/Villages/VillageForm";
+import VillageDetails from "../views/Geography/Villages/VillageDetails";
 
 // Scroll to top on route change
 const ScrollToTopOnMount = () => {
@@ -139,6 +143,10 @@ const routerConfig = [
         element: <DistrictForm />,
       },
       {
+        path: "geography/districts/:id",
+        element: <DistrictDetails />,
+      },
+      {
         path: "geography/districts/:id/edit",
         element: <DistrictForm />,
       },
@@ -150,6 +158,10 @@ const routerConfig = [
       {
         path: "geography/taluks/new",
         element: <TalukForm />,
+      },
+      {
+        path: "geography/taluks/:id",
+        element: <TalukDetails />,
       },
       {
         path: "geography/taluks/:id/edit",
@@ -165,6 +177,10 @@ const routerConfig = [
         element: <GramPanchayatForm />,
       },
       {
+        path: "geography/gram-panchayats/:id",
+        element: <GramPanchayatDetails />,
+      },
+      {
         path: "geography/gram-panchayats/:id/edit",
         element: <GramPanchayatForm />,
       },
@@ -176,6 +192,10 @@ const routerConfig = [
       {
         path: "geography/villages/new",
         element: <VillageForm />,
+      },
+      {
+        path: "geography/villages/:id",
+        element: <VillageDetails />,
       },
       {
         path: "geography/villages/:id/edit",

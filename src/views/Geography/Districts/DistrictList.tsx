@@ -53,7 +53,7 @@ const DistrictList = () => {
   const [pageInput, setPageInput] = useState(String(currentPage));
 
   // View state
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Sort state
   const [sortBy, setSortBy] = useState<string>(searchParams.get('sort_by') || 'name');
@@ -321,7 +321,7 @@ const DistrictList = () => {
                       <span className="dl-card__state">{district.state_name}</span>
                     </div>
                     <h4 className="dl-card__name">{district.name}</h4>
-                    {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>}
+                    {/* {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>} */}
                   </div>
                   <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> Headquarters</span>
@@ -343,11 +343,7 @@ const DistrictList = () => {
                   </div>
                   <div className="dl-card__foot">
                     <div className="dl-card__btns">
-                      <button className="view-btn" onClick={() => navigate(`/geography/districts/${district.id}`)} title="View Details">
-                        <HiOutlineEye />
-                        <span className="btn-text">View</span>
-                      </button>
-                      <button className="view-btn" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)} title="View Taluks">
+                      <button className="nav-btn" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)} title="View Taluks">
                         <HiOutlineLocationMarker />
                         <span className="btn-text">Taluks</span>
                       </button>

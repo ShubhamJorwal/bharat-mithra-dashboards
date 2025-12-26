@@ -457,10 +457,6 @@ const VillageList = () => {
                   </div>
                   <div className="vl-card__foot">
                     <div className="vl-card__btns">
-                      <button className="view-btn" onClick={() => navigate(`/geography/villages/${village.id}`)} title="View Details">
-                        <HiOutlineEye />
-                        <span className="btn-text">View</span>
-                      </button>
                       <button className="edit-btn" onClick={() => navigate(`/geography/villages/${village.id}/edit`)} title="Edit">
                         <HiOutlinePencil />
                         <span className="btn-text">Edit</span>

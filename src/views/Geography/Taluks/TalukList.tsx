@@ -56,7 +56,7 @@ const TalukList = () => {
   const [pageInput, setPageInput] = useState(String(currentPage));
 
   // View state
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Sort state
   const [sortBy, setSortBy] = useState<string>(searchParams.get('sort_by') || 'name');
@@ -356,7 +356,7 @@ const TalukList = () => {
                       <span className="tl-card__district">{taluk.district_name}</span>
                     </div>
                     <h4 className="tl-card__name">{taluk.name}</h4>
-                    {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>}
+                    {/* {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>} */}
                   </div>
                   <div className="tl-card__location">
                     <span className="state"><HiOutlineMap /> {taluk.state_name}</span>
@@ -367,23 +367,19 @@ const TalukList = () => {
                   </div>
                   <div className="tl-card__nums">
                     <div className="tl-card__num">
-                      <HiOutlineUserGroup />
+                      {/* <HiOutlineUserGroup /> */}
                       <strong>{formatNumber(taluk.total_gram_panchayats || 0)}</strong>
                       <span>GPs</span>
                     </div>
                     <div className="tl-card__num">
-                      <HiOutlineHome />
+                      {/* <HiOutlineHome /> */}
                       <strong>{formatNumber(taluk.total_villages || 0)}</strong>
                       <span>Villages</span>
                     </div>
                   </div>
                   <div className="tl-card__foot">
                     <div className="tl-card__btns">
-                      <button className="view-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View Details">
-                        <HiOutlineEye />
-                        <span className="btn-text">View</span>
-                      </button>
-                      <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)} title="View Gram Panchayats">
+                      <button className="nav-btn" onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)} title="View GPs">
                         <HiOutlineUserGroup />
                         <span className="btn-text">GPs</span>
                       </button>

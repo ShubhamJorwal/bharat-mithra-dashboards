@@ -433,11 +433,7 @@ const GramPanchayatList = () => {
                   </div>
                   <div className="gpl-card__foot">
                     <div className="gpl-card__btns">
-                      <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)} title="View Details">
-                        <HiOutlineEye />
-                        <span className="btn-text">View</span>
-                      </button>
-                      <button className="view-btn" onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)} title="View Villages">
+                      <button className="nav-btn" onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)} title="View Villages">
                         <HiOutlineHome />
                         <span className="btn-text">Villages</span>
                       </button>
