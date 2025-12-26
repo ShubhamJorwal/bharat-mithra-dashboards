@@ -10,11 +10,20 @@ import {
   HiOutlineUserGroup,
   HiOutlineHome,
   HiOutlineExclamationCircle,
-  HiOutlineMap
+  HiOutlineMap,
+  HiOutlineUsers,
+  HiOutlineGlobeAlt,
+  HiOutlineAcademicCap,
+  HiOutlineInformationCircle,
+  HiOutlineChartBar,
+  HiOutlineArrowRight,
+  HiOutlineCalendar,
+  HiOutlineHashtag
 } from 'react-icons/hi';
 import geographyApi from '../../../../services/api/geography.api';
 import type { District } from '../../../../types/api.types';
-import { PageHeader } from '../../../../components/common/PageHeader';
+import ConfirmModal from '../../../../components/common/ConfirmModal';
+import '../../_details-shared.scss';
 import './DistrictDetails.scss';
 
 const DistrictDetails = () => {
@@ -23,6 +32,8 @@ const DistrictDetails = () => {
   const [district, setDistrict] = useState<District | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -48,35 +59,52 @@ const DistrictDetails = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!district) return;
-    if (window.confirm(`Are you sure you want to delete ${district.name}? This action cannot be undone.`)) {
-      try {
-        await geographyApi.deleteDistrict(district.id);
-        navigate('/geography/districts');
-      } catch (err) {
-        console.error('Failed to delete district:', err);
-        alert('Failed to delete district. Please try again.');
-      }
+    setDeleteLoading(true);
+    try {
+      await geographyApi.deleteDistrict(district.id);
+      setDeleteModalOpen(false);
+      navigate('/geography/districts');
+    } catch (err) {
+      console.error('Failed to delete district:', err);
+      setError('Failed to delete district. Please try again.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+  };
+
   const formatNumber = (num: number | undefined): string => {
-    if (!num) return '-';
-    if (num >= 100000) {
-      return (num / 100000).toFixed(2) + ' Lakh';
-    } else if (num >= 1000) {
-      return num.toLocaleString('en-IN');
-    }
+    if (!num) return '—';
+    if (num >= 10000000) return (num / 10000000).toFixed(2) + ' Cr';
+    if (num >= 100000) return (num / 100000).toFixed(2) + ' Lakh';
+    if (num >= 1000) return num.toLocaleString('en-IN');
     return num.toString();
+  };
+
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return '—';
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   };
 
   if (loading) {
     return (
-      <div className="bm-district-details">
-        <div className="bm-loading-state">
-          <div className="bm-loading-spinner"></div>
-          <p>Loading district details...</p>
+      <div className="district-details">
+        <div className="details-loading">
+          <div className="details-loading__spinner"></div>
+          <span className="details-loading__text">Loading district details...</span>
         </div>
       </div>
     );
@@ -84,23 +112,18 @@ const DistrictDetails = () => {
 
   if (error || !district) {
     return (
-      <div className="bm-district-details">
-        <PageHeader
-          icon={<HiOutlineOfficeBuilding />}
-          title="District Details"
-          description="View district information"
-          actions={
+      <div className="district-details">
+        <div className="details-error">
+          <div className="details-error__icon">
+            <HiOutlineExclamationCircle />
+          </div>
+          <h3 className="details-error__title">Unable to Load District</h3>
+          <p className="details-error__message">{error || 'District not found'}</p>
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button className="bm-btn bm-btn-secondary" onClick={() => navigate('/geography/districts')}>
               <HiOutlineArrowLeft />
-              <span>Back</span>
+              <span>Go Back</span>
             </button>
-          }
-        />
-        <div className="bm-card">
-          <div className="bm-error-state">
-            <HiOutlineExclamationCircle className="bm-error-icon" />
-            <h3>Unable to Load District</h3>
-            <p>{error || 'District not found'}</p>
             <button className="bm-btn bm-btn-primary" onClick={() => id && fetchDistrict(id)}>
               <HiOutlineRefresh />
               <span>Try Again</span>
@@ -112,127 +135,256 @@ const DistrictDetails = () => {
   }
 
   return (
-    <div className="bm-district-details">
-      <PageHeader
-        icon={<HiOutlineOfficeBuilding />}
-        title={district.name}
-        description={district.name_hindi || 'District'}
-        actions={
-          <>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate('/geography/districts')}>
-              <HiOutlineArrowLeft />
-              <span>Back</span>
-            </button>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/geography/districts/${id}/edit`)}>
-              <HiOutlinePencil />
-              <span>Edit</span>
-            </button>
-            <button className="bm-btn bm-btn-danger" onClick={handleDelete}>
-              <HiOutlineTrash />
-              <span>Delete</span>
-            </button>
-          </>
-        }
-      />
+    <div className="district-details">
+      {/* Breadcrumb */}
+      <div className="details-breadcrumb">
+        <span className="details-breadcrumb__item" onClick={() => navigate('/geography/states')}>
+          <HiOutlineMap /> States
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts?state_id=${district.state_id}`)}>
+          <HiOutlineOfficeBuilding /> {district.state_name}
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item details-breadcrumb__item--current">
+          {district.name}
+        </span>
+      </div>
 
-      <div className="bm-details-grid">
-        {/* Basic Info Card */}
-        <div className="bm-card bm-info-card">
-          <div className="bm-card-header">
-            <h3>Basic Information</h3>
-          </div>
-          <div className="bm-info-grid">
-            <div className="bm-info-item">
-              <span className="bm-info-label">District Code</span>
-              <span className="bm-info-value bm-code-badge">
-                {district.code}
+      {/* Hero Section */}
+      <div className="details-hero">
+        <div className="details-hero__content">
+          <div className="details-hero__main">
+            <div className="details-hero__badges">
+              <span className="details-hero__code">{district.code}</span>
+              <span className="details-hero__type">
+                <HiOutlineOfficeBuilding /> District
               </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">State</span>
-              <span className="bm-info-value bm-state-badge" onClick={() => navigate(`/geography/states?state_id=${district.state_id}`)}>
-                <HiOutlineMap />
-                {district.state_name || '-'}
-              </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Headquarters</span>
-              <span className="bm-info-value">{district.headquarters || '-'}</span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">LGD Code</span>
-              <span className="bm-info-value">{district.lgd_code || '-'}</span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Status</span>
-              <span className={`bm-info-value bm-status-badge bm-status-badge--${district.is_active ? 'active' : 'inactive'}`}>
+              <span className={`details-hero__status details-hero__status--${district.is_active ? 'active' : 'inactive'}`}>
                 {district.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
+            <h1 className="details-hero__title">{district.name}</h1>
+            <p className="details-hero__subtitle">
+              {district.name_hindi ? `${district.name_hindi} • ` : ''}{district.state_name}, India
+            </p>
+          </div>
+          <div className="details-hero__actions">
+            <button className="details-hero__btn details-hero__btn--back" onClick={() => navigate('/geography/districts')}>
+              <HiOutlineArrowLeft />
+              <span>Back</span>
+            </button>
+            <button className="details-hero__btn details-hero__btn--edit" onClick={() => navigate(`/geography/districts/${id}/edit`)}>
+              <HiOutlinePencil />
+              <span>Edit</span>
+            </button>
+            <button className="details-hero__btn details-hero__btn--delete" onClick={handleDeleteClick}>
+              <HiOutlineTrash />
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="details-stats">
+        <div className="details-stat" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)}>
+          <div className="details-stat__icon details-stat__icon--taluks">
+            <HiOutlineLocationMarker />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{district.total_taluks || 0}</span>
+            <span className="details-stat__label">Taluks</span>
+          </div>
+          <HiOutlineArrowRight className="details-stat__arrow" />
+        </div>
+        <div className="details-stat" onClick={() => navigate(`/geography/gram-panchayats?district_id=${district.id}`)}>
+          <div className="details-stat__icon details-stat__icon--gps">
+            <HiOutlineUserGroup />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{formatNumber(district.total_gram_panchayats)}</span>
+            <span className="details-stat__label">Gram Panchayats</span>
+          </div>
+          <HiOutlineArrowRight className="details-stat__arrow" />
+        </div>
+        <div className="details-stat" onClick={() => navigate(`/geography/villages?district_id=${district.id}`)}>
+          <div className="details-stat__icon details-stat__icon--villages">
+            <HiOutlineHome />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{formatNumber(district.total_villages)}</span>
+            <span className="details-stat__label">Villages</span>
+          </div>
+          <HiOutlineArrowRight className="details-stat__arrow" />
+        </div>
+        <div className="details-stat">
+          <div className="details-stat__icon details-stat__icon--population">
+            <HiOutlineUsers />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{formatNumber(district.population)}</span>
+            <span className="details-stat__label">Population</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Grid */}
+      <div className="details-grid">
+        {/* Basic Information */}
+        <div className="details-card details-card--span-6 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineInformationCircle /> Basic Information
+            </h3>
+          </div>
+          <div className="details-card__body">
+            <div className="details-info">
+              <div className="details-info-item">
+                <span className="details-info-item__label">District Code</span>
+                <span className="details-info-item__code">{district.code}</span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">LGD Code</span>
+                <span className="details-info-item__value">{district.lgd_code || <span className="details-info-item__value--empty">Not specified</span>}</span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">State</span>
+                <span
+                  className="details-info-item__badge details-info-item__badge--orange"
+                  onClick={() => navigate(`/geography/states/${district.state_id}`)}
+                >
+                  <HiOutlineMap /> {district.state_name}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Headquarters</span>
+                <span className="details-info-item__value">
+                  {district.headquarters || <span className="details-info-item__value--empty">Not specified</span>}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Hindi Name</span>
+                <span className="details-info-item__value">
+                  {district.name_hindi || <span className="details-info-item__value--empty">Not specified</span>}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Status</span>
+                <span className={`details-info-item__status details-info-item__status--${district.is_active ? 'active' : 'inactive'}`}>
+                  {district.is_active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Statistics Card */}
-        <div className="bm-card bm-stats-card">
-          <div className="bm-card-header">
-            <h3>Statistics</h3>
+        {/* Demographics */}
+        <div className="details-card details-card--span-6 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineChartBar /> Demographics & Geography
+            </h3>
           </div>
-          <div className="bm-stats-grid">
-            <div className="bm-stat-item" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)}>
-              <div className="bm-stat-icon bm-stat-icon--taluks">
-                <HiOutlineLocationMarker />
+          <div className="details-card__body">
+            <div className="details-demographics">
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineUsers />
+                </div>
+                <span className="details-demographic__value">{formatNumber(district.population)}</span>
+                <span className="details-demographic__label">Population</span>
               </div>
-              <div className="bm-stat-content">
-                <span className="bm-stat-value">{district.total_taluks}</span>
-                <span className="bm-stat-label">Taluks</span>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineGlobeAlt />
+                </div>
+                <span className="details-demographic__value">
+                  {district.area_sq_km ? `${district.area_sq_km.toLocaleString('en-IN')}` : '—'}
+                </span>
+                <span className="details-demographic__label">Area (sq km)</span>
               </div>
-            </div>
-            <div className="bm-stat-item" onClick={() => navigate(`/geography/gram-panchayats?district_id=${district.id}`)}>
-              <div className="bm-stat-icon bm-stat-icon--gps">
-                <HiOutlineUserGroup />
-              </div>
-              <div className="bm-stat-content">
-                <span className="bm-stat-value">{formatNumber(district.total_gram_panchayats)}</span>
-                <span className="bm-stat-label">Gram Panchayats</span>
-              </div>
-            </div>
-            <div className="bm-stat-item" onClick={() => navigate(`/geography/villages?district_id=${district.id}`)}>
-              <div className="bm-stat-icon bm-stat-icon--villages">
-                <HiOutlineHome />
-              </div>
-              <div className="bm-stat-content">
-                <span className="bm-stat-value">{formatNumber(district.total_villages)}</span>
-                <span className="bm-stat-label">Villages</span>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineAcademicCap />
+                </div>
+                <span className="details-demographic__value">
+                  {district.literacy_rate ? `${district.literacy_rate}%` : '—'}
+                </span>
+                <span className="details-demographic__label">Literacy Rate</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Demographics Card */}
-        <div className="bm-card bm-demographics-card">
-          <div className="bm-card-header">
-            <h3>Demographics</h3>
+        {/* Quick Navigation */}
+        <div className="details-card details-card--span-12 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineLocationMarker /> Explore Sub-Divisions
+            </h3>
           </div>
-          <div className="bm-demographics-grid">
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Population</span>
-              <span className="bm-demographic-value">{formatNumber(district.population)}</span>
+          <div className="details-card__body--compact">
+            <div className="details-links">
+              <div className="details-link" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)}>
+                <div className="details-link__icon">
+                  <HiOutlineLocationMarker />
+                </div>
+                <span className="details-link__label">Taluks</span>
+                <span className="details-link__count">{district.total_taluks || 0}</span>
+              </div>
+              <div className="details-link" onClick={() => navigate(`/geography/gram-panchayats?district_id=${district.id}`)}>
+                <div className="details-link__icon">
+                  <HiOutlineUserGroup />
+                </div>
+                <span className="details-link__label">Gram Panchayats</span>
+                <span className="details-link__count">{formatNumber(district.total_gram_panchayats)}</span>
+              </div>
+              <div className="details-link" onClick={() => navigate(`/geography/villages?district_id=${district.id}`)}>
+                <div className="details-link__icon">
+                  <HiOutlineHome />
+                </div>
+                <span className="details-link__label">Villages</span>
+                <span className="details-link__count">{formatNumber(district.total_villages)}</span>
+              </div>
             </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Area</span>
-              <span className="bm-demographic-value">
-                {district.area_sq_km ? `${district.area_sq_km.toLocaleString('en-IN')} sq km` : '-'}
-              </span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Literacy Rate</span>
-              <span className="bm-demographic-value">
-                {district.literacy_rate ? `${district.literacy_rate}%` : '-'}
-              </span>
+          </div>
+        </div>
+
+        {/* Metadata */}
+        <div className="details-card details-card--span-12 details-animate">
+          <div className="details-card__body--compact">
+            <div className="details-meta">
+              <div className="details-meta__item">
+                <HiOutlineHashtag />
+                <span>ID: <strong>{district.id}</strong></span>
+              </div>
+              <div className="details-meta__item">
+                <HiOutlineCalendar />
+                <span>Created: <strong>{formatDate(district.created_at)}</strong></span>
+              </div>
+              <div className="details-meta__item">
+                <HiOutlineCalendar />
+                <span>Updated: <strong>{formatDate(district.updated_at)}</strong></span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete District"
+        message="Are you sure you want to delete this district? This action cannot be undone and will affect all related taluks, gram panchayats, and villages."
+        itemName={district.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading}
+      />
     </div>
   );
 };

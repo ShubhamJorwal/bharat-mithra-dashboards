@@ -27,6 +27,7 @@ import {
 import geographyApi from '../../../services/api/geography.api';
 import type { District, State } from '../../../types/api.types';
 import { PageHeader } from '../../../components/common/PageHeader';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import './DistrictList.scss';
 
 const DistrictList = () => {
@@ -39,6 +40,10 @@ const DistrictList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [districtToDelete, setDistrictToDelete] = useState<District | null>(null);
 
   // Filter state - synced with URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -150,13 +155,20 @@ const DistrictList = () => {
     setPageInput('1');
   };
 
-  const handleDelete = async (e: React.MouseEvent, district: District) => {
+  const handleDeleteClick = (e: React.MouseEvent, district: District) => {
     e.stopPropagation();
-    if (!window.confirm(`Are you sure you want to delete "${district.name}"?`)) return;
+    setDistrictToDelete(district);
+    setDeleteModalOpen(true);
+  };
 
-    setDeleteLoading(district.id);
+  const handleDeleteConfirm = async () => {
+    if (!districtToDelete) return;
+
+    setDeleteLoading(districtToDelete.id);
     try {
-      await geographyApi.deleteDistrict(district.id);
+      await geographyApi.deleteDistrict(districtToDelete.id);
+      setDeleteModalOpen(false);
+      setDistrictToDelete(null);
       fetchDistricts();
     } catch (err) {
       console.error('Failed to delete:', err);
@@ -164,6 +176,11 @@ const DistrictList = () => {
     } finally {
       setDeleteLoading(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setDistrictToDelete(null);
   };
 
   const formatNumber = (num: number): string => {
@@ -324,6 +341,10 @@ const DistrictList = () => {
                     {/* {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>} */}
                   </div>
                   <div className="dl-card__row">
+                    <span className="dl-card__label"><HiOutlineLocationMarker /> State</span>
+                    <span className="dl-card__value">{district?.state?.name || '—'}</span>
+                  </div>
+                  <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> Headquarters</span>
                     <span className="dl-card__value">{district.headquarters || '—'}</span>
                   </div>
@@ -351,7 +372,7 @@ const DistrictList = () => {
                         <HiOutlinePencil />
                         <span className="btn-text">Edit</span>
                       </button>
-                      <button className="del" onClick={(e) => handleDelete(e, district)} disabled={deleteLoading === district.id} title="Delete">
+                      <button className="del" onClick={(e) => handleDeleteClick(e, district)} disabled={deleteLoading === district.id} title="Delete">
                         <HiOutlineTrash />
                         <span className="btn-text">Delete</span>
                       </button>
@@ -412,7 +433,7 @@ const DistrictList = () => {
                           <button className="view-btn" onClick={() => navigate(`/geography/districts/${district.id}`)} title="View Details"><HiOutlineEye /></button>
                           <button className="nav-btn" onClick={() => navigate(`/geography/taluks?district_id=${district.id}`)} title="View Taluks"><HiOutlineLocationMarker /></button>
                           <button className="edit-btn" onClick={() => navigate(`/geography/districts/${district.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, district)} disabled={deleteLoading === district.id} title="Delete"><HiOutlineTrash /></button>
+                          <button className="del" onClick={(e) => handleDeleteClick(e, district)} disabled={deleteLoading === district.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -497,6 +518,20 @@ const DistrictList = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete District"
+        message="Are you sure you want to delete this district?"
+        itemName={districtToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading === districtToDelete?.id}
+      />
     </div>
   );
 };

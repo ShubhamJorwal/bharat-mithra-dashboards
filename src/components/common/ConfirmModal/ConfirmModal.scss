@@ -1,0 +1,325 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// Backdrop
+.bm-confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+// Modal
+.bm-confirm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-background);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+
+  // Close Button
+  &__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1;
+
+    svg {
+      font-size: 18px;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--color-border);
+      color: var(--color-text);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Icon
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin: 32px auto 20px;
+    border-radius: 50%;
+    animation: iconPulse 2s ease-in-out infinite;
+
+    svg {
+      font-size: 36px;
+    }
+
+    &--danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+      border: 2px solid rgba(239, 68, 68, 0.2);
+
+      svg {
+        color: #ef4444;
+      }
+    }
+
+    &--warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+      border: 2px solid rgba(245, 158, 11, 0.2);
+
+      svg {
+        color: #f59e0b;
+      }
+    }
+
+    &--info {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(29, 78, 216, 0.1));
+      border: 2px solid rgba(59, 130, 246, 0.2);
+
+      svg {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  // Content
+  &__content {
+    padding: 0 32px;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 12px;
+  }
+
+  &__message {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  &__item-name {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.04));
+    border-radius: 8px;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  &__warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 0 0;
+    padding: 8px 16px;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px dashed rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #dc2626;
+  }
+
+  // Actions
+  &__actions {
+    display: flex;
+    gap: 12px;
+    padding: 24px 32px 32px;
+    justify-content: center;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 120px;
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+      font-size: 18px;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &--cancel {
+      background: var(--color-background-secondary);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+
+      &:hover:not(:disabled) {
+        background: var(--color-border);
+        border-color: var(--color-border);
+      }
+    }
+
+    &--confirm {
+      border: none;
+      color: #fff;
+
+      &.bm-confirm-modal__btn--danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+      }
+
+      &.bm-confirm-modal__btn--warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+        }
+      }
+
+      &.bm-confirm-modal__btn--info {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+      }
+    }
+  }
+
+  // Spinner
+  &__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Dark mode
+body.dark-mode {
+  .bm-confirm-modal {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .bm-confirm-modal-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .bm-confirm-modal {
+    max-width: 100%;
+    margin: 20px;
+    border-radius: 12px;
+
+    &__icon {
+      width: 60px;
+      height: 60px;
+      margin: 24px auto 16px;
+
+      svg {
+        font-size: 28px;
+      }
+    }
+
+    &__content {
+      padding: 0 24px;
+    }
+
+    &__title {
+      font-size: 18px;
+    }
+
+    &__actions {
+      padding: 20px 24px 24px;
+      flex-direction: column-reverse;
+    }
+
+    &__btn {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+}

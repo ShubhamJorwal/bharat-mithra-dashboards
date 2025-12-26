@@ -27,6 +27,7 @@ import {
 import geographyApi from '../../../services/api/geography.api';
 import type { Village, State, District, Taluk, GramPanchayat } from '../../../types/api.types';
 import { PageHeader } from '../../../components/common/PageHeader';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import './VillageList.scss';
 
 const VillageList = () => {
@@ -42,6 +43,10 @@ const VillageList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [villageToDelete, setVillageToDelete] = useState<Village | null>(null);
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -242,13 +247,20 @@ const VillageList = () => {
     setPageInput('1');
   };
 
-  const handleDelete = async (e: React.MouseEvent, village: Village) => {
+  const handleDeleteClick = (e: React.MouseEvent, village: Village) => {
     e.stopPropagation();
-    if (!window.confirm(`Are you sure you want to delete "${village.name}"?`)) return;
+    setVillageToDelete(village);
+    setDeleteModalOpen(true);
+  };
 
-    setDeleteLoading(village.id);
+  const handleDeleteConfirm = async () => {
+    if (!villageToDelete) return;
+
+    setDeleteLoading(villageToDelete.id);
     try {
-      await geographyApi.deleteVillage(village.id);
+      await geographyApi.deleteVillage(villageToDelete.id);
+      setDeleteModalOpen(false);
+      setVillageToDelete(null);
       fetchVillages();
     } catch (err) {
       console.error('Failed to delete:', err);
@@ -256,6 +268,11 @@ const VillageList = () => {
     } finally {
       setDeleteLoading(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setVillageToDelete(null);
   };
 
   const formatNumber = (num?: number): string => {
@@ -436,9 +453,26 @@ const VillageList = () => {
                     <h4 className="vl-card__name">{village.name}</h4>
                     {village.name_hindi && <span className="vl-card__hindi">{village.name_hindi}</span>}
                   </div>
-                  <div className="vl-card__location">
-                    <span className="taluk"><HiOutlineLocationMarker /> {village.taluk_name}</span>
+                  
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> gram Panchayat</span>
+                    <span className="tl-card__value">{village?.gram_panchayat?.name || '—'}</span>
                   </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> Taluk</span>
+                    <span className="tl-card__value">{village?.taluk?.name || '—'}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
+                    <span className="tl-card__value">{village?.district?.name || '—'}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
+                    <span className="tl-card__value">{village?.state?.name || '—'}</span>
+                  </div>
+                  {/* <div className="vl-card__location">
+                    <span className="taluk"><HiOutlineLocationMarker /> {village.taluk_name}</span>
+                  </div> */}
                   <div className="vl-card__stats">
                     <div className="vl-card__stat">
                       <span>Population</span>
@@ -461,7 +495,7 @@ const VillageList = () => {
                         <HiOutlinePencil />
                         <span className="btn-text">Edit</span>
                       </button>
-                      <button className="del" onClick={(e) => handleDelete(e, village)} disabled={deleteLoading === village.id} title="Delete">
+                      <button className="del" onClick={(e) => handleDeleteClick(e, village)} disabled={deleteLoading === village.id} title="Delete">
                         <HiOutlineTrash />
                         <span className="btn-text">Delete</span>
                       </button>
@@ -515,7 +549,7 @@ const VillageList = () => {
                         <div className="vl-table__acts">
                           <button className="view-btn" onClick={() => navigate(`/geography/villages/${village.id}`)} title="View Details"><HiOutlineEye /></button>
                           <button className="edit-btn" onClick={() => navigate(`/geography/villages/${village.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, village)} disabled={deleteLoading === village.id} title="Delete"><HiOutlineTrash /></button>
+                          <button className="del" onClick={(e) => handleDeleteClick(e, village)} disabled={deleteLoading === village.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -566,6 +600,20 @@ const VillageList = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Village"
+        message="Are you sure you want to delete this village?"
+        itemName={villageToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading === villageToDelete?.id}
+      />
     </div>
   );
 };

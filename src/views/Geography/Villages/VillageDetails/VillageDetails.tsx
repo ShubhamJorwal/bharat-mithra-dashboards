@@ -14,11 +14,21 @@ import {
   HiOutlinePhone,
   HiOutlineUser,
   HiOutlineCheckCircle,
-  HiOutlineXCircle
+  HiOutlineXCircle,
+  HiOutlineUsers,
+  HiOutlineGlobeAlt,
+  HiOutlineInformationCircle,
+  HiOutlineChartBar,
+  HiOutlineArrowRight,
+  HiOutlineCalendar,
+  HiOutlineHashtag,
+  HiOutlineIdentification,
+  HiOutlineLightningBolt
 } from 'react-icons/hi';
 import geographyApi from '../../../../services/api/geography.api';
 import type { Village } from '../../../../types/api.types';
-import { PageHeader } from '../../../../components/common/PageHeader';
+import ConfirmModal from '../../../../components/common/ConfirmModal';
+import '../../_details-shared.scss';
 import './VillageDetails.scss';
 
 const VillageDetails = () => {
@@ -27,6 +37,8 @@ const VillageDetails = () => {
   const [village, setVillage] = useState<Village | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -52,35 +64,52 @@ const VillageDetails = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!village) return;
-    if (window.confirm(`Are you sure you want to delete ${village.name}? This action cannot be undone.`)) {
-      try {
-        await geographyApi.deleteVillage(village.id);
-        navigate('/geography/villages');
-      } catch (err) {
-        console.error('Failed to delete village:', err);
-        alert('Failed to delete village. Please try again.');
-      }
+    setDeleteLoading(true);
+    try {
+      await geographyApi.deleteVillage(village.id);
+      setDeleteModalOpen(false);
+      navigate('/geography/villages');
+    } catch (err) {
+      console.error('Failed to delete village:', err);
+      setError('Failed to delete village. Please try again.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+  };
+
   const formatNumber = (num: number | undefined): string => {
-    if (!num) return '-';
-    if (num >= 100000) {
-      return (num / 100000).toFixed(2) + ' Lakh';
-    } else if (num >= 1000) {
-      return num.toLocaleString('en-IN');
-    }
+    if (!num) return '—';
+    if (num >= 10000000) return (num / 10000000).toFixed(2) + ' Cr';
+    if (num >= 100000) return (num / 100000).toFixed(2) + ' Lakh';
+    if (num >= 1000) return num.toLocaleString('en-IN');
     return num.toString();
+  };
+
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return '—';
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   };
 
   if (loading) {
     return (
-      <div className="bm-village-details">
-        <div className="bm-loading-state">
-          <div className="bm-loading-spinner"></div>
-          <p>Loading village details...</p>
+      <div className="village-details">
+        <div className="details-loading">
+          <div className="details-loading__spinner"></div>
+          <span className="details-loading__text">Loading village details...</span>
         </div>
       </div>
     );
@@ -88,23 +117,18 @@ const VillageDetails = () => {
 
   if (error || !village) {
     return (
-      <div className="bm-village-details">
-        <PageHeader
-          icon={<HiOutlineHome />}
-          title="Village Details"
-          description="View village information"
-          actions={
+      <div className="village-details">
+        <div className="details-error">
+          <div className="details-error__icon">
+            <HiOutlineExclamationCircle />
+          </div>
+          <h3 className="details-error__title">Unable to Load Village</h3>
+          <p className="details-error__message">{error || 'Village not found'}</p>
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button className="bm-btn bm-btn-secondary" onClick={() => navigate('/geography/villages')}>
               <HiOutlineArrowLeft />
-              <span>Back</span>
+              <span>Go Back</span>
             </button>
-          }
-        />
-        <div className="bm-card">
-          <div className="bm-error-state">
-            <HiOutlineExclamationCircle className="bm-error-icon" />
-            <h3>Unable to Load Village</h3>
-            <p>{error || 'Village not found'}</p>
             <button className="bm-btn bm-btn-primary" onClick={() => id && fetchVillage(id)}>
               <HiOutlineRefresh />
               <span>Try Again</span>
@@ -131,182 +155,344 @@ const VillageDetails = () => {
   ];
 
   return (
-    <div className="bm-village-details">
-      <PageHeader
-        icon={<HiOutlineHome />}
-        title={village.name}
-        description={village.name_hindi || 'Village'}
-        actions={
-          <>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate('/geography/villages')}>
-              <HiOutlineArrowLeft />
-              <span>Back</span>
-            </button>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/geography/villages/${id}/edit`)}>
-              <HiOutlinePencil />
-              <span>Edit</span>
-            </button>
-            <button className="bm-btn bm-btn-danger" onClick={handleDelete}>
-              <HiOutlineTrash />
-              <span>Delete</span>
-            </button>
-          </>
-        }
-      />
+    <div className="village-details">
+      {/* Breadcrumb */}
+      <div className="details-breadcrumb">
+        <span className="details-breadcrumb__item" onClick={() => navigate('/geography/states')}>
+          <HiOutlineMap /> States
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts?state_id=${village.state_id}`)}>
+          {village.state_name}
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/districts/${village.district_id}`)}>
+          {village.district_name}
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/taluks/${village.taluk_id}`)}>
+          {village.taluk_name}
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item" onClick={() => navigate(`/geography/gram-panchayats/${village.gram_panchayat_id}`)}>
+          {village.gram_panchayat_name}
+        </span>
+        <HiOutlineArrowRight className="details-breadcrumb__separator" />
+        <span className="details-breadcrumb__item details-breadcrumb__item--current">
+          {village.name}
+        </span>
+      </div>
 
-      <div className="bm-details-grid">
-        {/* Basic Info Card */}
-        <div className="bm-card bm-info-card">
-          <div className="bm-card-header">
-            <h3>Basic Information</h3>
-          </div>
-          <div className="bm-info-grid">
-            <div className="bm-info-item">
-              <span className="bm-info-label">Village Code</span>
-              <span className="bm-info-value bm-code-badge">
-                {village.code}
+      {/* Hero Section */}
+      <div className="details-hero">
+        <div className="details-hero__content">
+          <div className="details-hero__main">
+            <div className="details-hero__badges">
+              <span className="details-hero__code">{village.code}</span>
+              <span className="details-hero__type">
+                <HiOutlineHome /> Village
               </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">State</span>
-              <span className="bm-info-value bm-state-badge" onClick={() => navigate(`/geography/states/${village.state_id}`)}>
-                <HiOutlineMap />
-                {village.state_name || '-'}
-              </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">District</span>
-              <span className="bm-info-value bm-district-badge" onClick={() => navigate(`/geography/districts/${village.district_id}`)}>
-                <HiOutlineOfficeBuilding />
-                {village.district_name || '-'}
-              </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Taluk</span>
-              <span className="bm-info-value bm-taluk-badge" onClick={() => navigate(`/geography/taluks/${village.taluk_id}`)}>
-                <HiOutlineLocationMarker />
-                {village.taluk_name || '-'}
-              </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Gram Panchayat</span>
-              <span className="bm-info-value bm-gp-badge" onClick={() => navigate(`/geography/gram-panchayats/${village.gram_panchayat_id}`)}>
-                <HiOutlineUserGroup />
-                {village.gram_panchayat_name || '-'}
-              </span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">PIN Code</span>
-              <span className="bm-info-value">{village.pin_code || '-'}</span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Census Code</span>
-              <span className="bm-info-value">{village.census_code || '-'}</span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">LGD Code</span>
-              <span className="bm-info-value">{village.lgd_code || '-'}</span>
-            </div>
-            <div className="bm-info-item">
-              <span className="bm-info-label">Status</span>
-              <span className={`bm-info-value bm-status-badge bm-status-badge--${village.is_active ? 'active' : 'inactive'}`}>
+              <span className={`details-hero__status details-hero__status--${village.is_active ? 'active' : 'inactive'}`}>
                 {village.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
+            <h1 className="details-hero__title">{village.name}</h1>
+            <p className="details-hero__subtitle">
+              {village.name_hindi ? `${village.name_hindi} • ` : ''}{village.gram_panchayat_name}, {village.taluk_name}
+            </p>
           </div>
-        </div>
-
-        {/* Village Head Card */}
-        <div className="bm-card bm-head-card">
-          <div className="bm-card-header">
-            <h3>Village Head Details</h3>
-          </div>
-          <div className="bm-head-grid">
-            <div className="bm-head-item">
-              <div className="bm-head-icon">
-                <HiOutlineUser />
-              </div>
-              <div className="bm-head-content">
-                <span className="bm-head-label">Village Head Name</span>
-                <span className="bm-head-value">{village.village_head_name || '-'}</span>
-              </div>
-            </div>
-            <div className="bm-head-item">
-              <div className="bm-head-icon">
-                <HiOutlinePhone />
-              </div>
-              <div className="bm-head-content">
-                <span className="bm-head-label">Contact Number</span>
-                <span className="bm-head-value">{village.village_head_mobile || '-'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Demographics Card */}
-        <div className="bm-card bm-demographics-card">
-          <div className="bm-card-header">
-            <h3>Demographics</h3>
-          </div>
-          <div className="bm-demographics-grid">
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Total Population</span>
-              <span className="bm-demographic-value">{formatNumber(village.population)}</span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Male Population</span>
-              <span className="bm-demographic-value">{formatNumber(village.male_population)}</span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Female Population</span>
-              <span className="bm-demographic-value">{formatNumber(village.female_population)}</span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Households</span>
-              <span className="bm-demographic-value">{formatNumber(village.households)}</span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Area (sq km)</span>
-              <span className="bm-demographic-value">
-                {village.area_sq_km ? village.area_sq_km.toLocaleString('en-IN') : '-'}
-              </span>
-            </div>
-            <div className="bm-demographic-item">
-              <span className="bm-demographic-label">Area (hectares)</span>
-              <span className="bm-demographic-value">
-                {village.area_hectares ? village.area_hectares.toLocaleString('en-IN') : '-'}
-              </span>
-            </div>
-            {village.latitude && village.longitude && (
-              <div className="bm-demographic-item bm-demographic-item--wide">
-                <span className="bm-demographic-label">Coordinates</span>
-                <span className="bm-demographic-value bm-coords">
-                  {village.latitude.toFixed(4)}, {village.longitude.toFixed(4)}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Amenities Card */}
-        <div className="bm-card bm-amenities-card">
-          <div className="bm-card-header">
-            <h3>Amenities</h3>
-          </div>
-          <div className="bm-amenities-grid">
-            {amenities.map((amenity) => (
-              <div key={amenity.key} className={`bm-amenity-item ${amenity.value ? 'bm-amenity-item--available' : 'bm-amenity-item--unavailable'}`}>
-                {amenity.value ? (
-                  <HiOutlineCheckCircle className="bm-amenity-icon bm-amenity-icon--yes" />
-                ) : (
-                  <HiOutlineXCircle className="bm-amenity-icon bm-amenity-icon--no" />
-                )}
-                <span className="bm-amenity-label">{amenity.label}</span>
-              </div>
-            ))}
+          <div className="details-hero__actions">
+            <button className="details-hero__btn details-hero__btn--back" onClick={() => navigate('/geography/villages')}>
+              <HiOutlineArrowLeft />
+              <span>Back</span>
+            </button>
+            <button className="details-hero__btn details-hero__btn--edit" onClick={() => navigate(`/geography/villages/${id}/edit`)}>
+              <HiOutlinePencil />
+              <span>Edit</span>
+            </button>
+            <button className="details-hero__btn details-hero__btn--delete" onClick={handleDeleteClick}>
+              <HiOutlineTrash />
+              <span>Delete</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Quick Stats */}
+      <div className="details-stats">
+        <div className="details-stat">
+          <div className="details-stat__icon details-stat__icon--population">
+            <HiOutlineUsers />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{formatNumber(village.population)}</span>
+            <span className="details-stat__label">Population</span>
+          </div>
+        </div>
+        <div className="details-stat">
+          <div className="details-stat__icon details-stat__icon--gps">
+            <HiOutlineHome />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{formatNumber(village.households)}</span>
+            <span className="details-stat__label">Households</span>
+          </div>
+        </div>
+        <div className="details-stat">
+          <div className="details-stat__icon details-stat__icon--area">
+            <HiOutlineGlobeAlt />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{village.area_sq_km ? village.area_sq_km.toLocaleString('en-IN') : '—'}</span>
+            <span className="details-stat__label">Area (sq km)</span>
+          </div>
+        </div>
+        <div className="details-stat">
+          <div className="details-stat__icon details-stat__icon--villages">
+            <HiOutlineLocationMarker />
+          </div>
+          <div className="details-stat__content">
+            <span className="details-stat__value">{village.pin_code || '—'}</span>
+            <span className="details-stat__label">PIN Code</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Grid */}
+      <div className="details-grid">
+        {/* Basic Information */}
+        <div className="details-card details-card--span-6 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineInformationCircle /> Basic Information
+            </h3>
+          </div>
+          <div className="details-card__body">
+            <div className="details-info">
+              <div className="details-info-item">
+                <span className="details-info-item__label">Village Code</span>
+                <span className="details-info-item__code">{village.code}</span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Census Code</span>
+                <span className="details-info-item__value">{village.census_code || <span className="details-info-item__value--empty">Not specified</span>}</span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">LGD Code</span>
+                <span className="details-info-item__value">{village.lgd_code || <span className="details-info-item__value--empty">Not specified</span>}</span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">State</span>
+                <span
+                  className="details-info-item__badge details-info-item__badge--orange"
+                  onClick={() => navigate(`/geography/states/${village.state_id}`)}
+                >
+                  <HiOutlineMap /> {village.state_name}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">District</span>
+                <span
+                  className="details-info-item__badge details-info-item__badge--blue"
+                  onClick={() => navigate(`/geography/districts/${village.district_id}`)}
+                >
+                  <HiOutlineOfficeBuilding /> {village.district_name}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Taluk</span>
+                <span
+                  className="details-info-item__badge details-info-item__badge--pink"
+                  onClick={() => navigate(`/geography/taluks/${village.taluk_id}`)}
+                >
+                  <HiOutlineLocationMarker /> {village.taluk_name}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Gram Panchayat</span>
+                <span
+                  className="details-info-item__badge details-info-item__badge--purple"
+                  onClick={() => navigate(`/geography/gram-panchayats/${village.gram_panchayat_id}`)}
+                >
+                  <HiOutlineUserGroup /> {village.gram_panchayat_name}
+                </span>
+              </div>
+              <div className="details-info-item">
+                <span className="details-info-item__label">Status</span>
+                <span className={`details-info-item__status details-info-item__status--${village.is_active ? 'active' : 'inactive'}`}>
+                  {village.is_active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Village Head Details */}
+        <div className="details-card details-card--span-6 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineIdentification /> Village Head Details
+            </h3>
+          </div>
+          <div className="details-card__body">
+            <div className="village-head">
+              <div className="village-head__item">
+                <div className="village-head__icon">
+                  <HiOutlineUser />
+                </div>
+                <div className="village-head__content">
+                  <span className="village-head__label">Village Head Name</span>
+                  <span className="village-head__value">{village.village_head_name || '—'}</span>
+                </div>
+              </div>
+              <div className="village-head__item">
+                <div className="village-head__icon">
+                  <HiOutlinePhone />
+                </div>
+                <div className="village-head__content">
+                  <span className="village-head__label">Contact Number</span>
+                  <span className="village-head__value">{village.village_head_mobile || '—'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Demographics */}
+        <div className="details-card details-card--span-12 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineChartBar /> Demographics
+            </h3>
+          </div>
+          <div className="details-card__body">
+            <div className="details-demographics">
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineUsers />
+                </div>
+                <span className="details-demographic__value">{formatNumber(village.population)}</span>
+                <span className="details-demographic__label">Total Population</span>
+              </div>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineUser />
+                </div>
+                <span className="details-demographic__value">{formatNumber(village.male_population)}</span>
+                <span className="details-demographic__label">Male Population</span>
+              </div>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineUser />
+                </div>
+                <span className="details-demographic__value">{formatNumber(village.female_population)}</span>
+                <span className="details-demographic__label">Female Population</span>
+              </div>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineHome />
+                </div>
+                <span className="details-demographic__value">{formatNumber(village.households)}</span>
+                <span className="details-demographic__label">Households</span>
+              </div>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineGlobeAlt />
+                </div>
+                <span className="details-demographic__value">{village.area_sq_km ? village.area_sq_km.toLocaleString('en-IN') : '—'}</span>
+                <span className="details-demographic__label">Area (sq km)</span>
+              </div>
+              <div className="details-demographic">
+                <div className="details-demographic__icon">
+                  <HiOutlineGlobeAlt />
+                </div>
+                <span className="details-demographic__value">{village.area_hectares ? village.area_hectares.toLocaleString('en-IN') : '—'}</span>
+                <span className="details-demographic__label">Area (hectares)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Amenities */}
+        <div className="details-card details-card--span-12 details-animate">
+          <div className="details-card__header">
+            <h3 className="details-card__title">
+              <HiOutlineLightningBolt /> Amenities & Facilities
+            </h3>
+          </div>
+          <div className="details-card__body">
+            <div className="village-amenities">
+              {amenities.map((amenity) => (
+                <div key={amenity.key} className={`village-amenity ${amenity.value ? 'village-amenity--available' : 'village-amenity--unavailable'}`}>
+                  {amenity.value ? (
+                    <HiOutlineCheckCircle className="village-amenity__icon village-amenity__icon--yes" />
+                  ) : (
+                    <HiOutlineXCircle className="village-amenity__icon village-amenity__icon--no" />
+                  )}
+                  <span className="village-amenity__label">{amenity.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Coordinates */}
+        {village.latitude && village.longitude && (
+          <div className="details-card details-card--span-12 details-animate">
+            <div className="details-card__header">
+              <h3 className="details-card__title">
+                <HiOutlineLocationMarker /> Location Coordinates
+              </h3>
+            </div>
+            <div className="details-card__body--compact">
+              <div className="village-coords">
+                <div className="village-coords__item">
+                  <span className="village-coords__label">Latitude</span>
+                  <span className="village-coords__value">{village.latitude.toFixed(6)}°</span>
+                </div>
+                <div className="village-coords__item">
+                  <span className="village-coords__label">Longitude</span>
+                  <span className="village-coords__value">{village.longitude.toFixed(6)}°</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Metadata */}
+        <div className="details-card details-card--span-12 details-animate">
+          <div className="details-card__body--compact">
+            <div className="details-meta">
+              <div className="details-meta__item">
+                <HiOutlineHashtag />
+                <span>ID: <strong>{village.id}</strong></span>
+              </div>
+              <div className="details-meta__item">
+                <HiOutlineCalendar />
+                <span>Created: <strong>{formatDate(village.created_at)}</strong></span>
+              </div>
+              <div className="details-meta__item">
+                <HiOutlineCalendar />
+                <span>Updated: <strong>{formatDate(village.updated_at)}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Village"
+        message="Are you sure you want to delete this village? This action cannot be undone."
+        itemName={village.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading}
+      />
     </div>
   );
 };

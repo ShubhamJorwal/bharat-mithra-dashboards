@@ -28,6 +28,7 @@ import {
 import geographyApi from '../../../services/api/geography.api';
 import type { Taluk, State, District } from '../../../types/api.types';
 import { PageHeader } from '../../../components/common/PageHeader';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import './TalukList.scss';
 
 const TalukList = () => {
@@ -41,6 +42,10 @@ const TalukList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [talukToDelete, setTalukToDelete] = useState<Taluk | null>(null);
 
   // Filter state - synced with URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -181,13 +186,20 @@ const TalukList = () => {
     setPageInput('1');
   };
 
-  const handleDelete = async (e: React.MouseEvent, taluk: Taluk) => {
+  const handleDeleteClick = (e: React.MouseEvent, taluk: Taluk) => {
     e.stopPropagation();
-    if (!window.confirm(`Are you sure you want to delete "${taluk.name}"?`)) return;
+    setTalukToDelete(taluk);
+    setDeleteModalOpen(true);
+  };
 
-    setDeleteLoading(taluk.id);
+  const handleDeleteConfirm = async () => {
+    if (!talukToDelete) return;
+
+    setDeleteLoading(talukToDelete.id);
     try {
-      await geographyApi.deleteTaluk(taluk.id);
+      await geographyApi.deleteTaluk(talukToDelete.id);
+      setDeleteModalOpen(false);
+      setTalukToDelete(null);
       fetchTaluks();
     } catch (err) {
       console.error('Failed to delete:', err);
@@ -195,6 +207,11 @@ const TalukList = () => {
     } finally {
       setDeleteLoading(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setTalukToDelete(null);
   };
 
   const formatNumber = (num: number): string => {
@@ -358,12 +375,20 @@ const TalukList = () => {
                     <h4 className="tl-card__name">{taluk.name}</h4>
                     {/* {taluk.name_hindi && <span className="tl-card__hindi">{taluk.name_hindi}</span>} */}
                   </div>
-                  <div className="tl-card__location">
+                  {/* <div className="tl-card__location">
                     <span className="state"><HiOutlineMap /> {taluk.state_name}</span>
-                  </div>
+                  </div> */}
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> Headquarters</span>
                     <span className="tl-card__value">{taluk.headquarters || '—'}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
+                    <span className="tl-card__value">{taluk?.district?.name || '—'}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
+                    <span className="tl-card__value">{taluk?.state?.name || '—'}</span>
                   </div>
                   <div className="tl-card__nums">
                     <div className="tl-card__num">
@@ -387,7 +412,7 @@ const TalukList = () => {
                         <HiOutlinePencil />
                         <span className="btn-text">Edit</span>
                       </button>
-                      <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete">
+                      <button className="del" onClick={(e) => handleDeleteClick(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete">
                         <HiOutlineTrash />
                         <span className="btn-text">Delete</span>
                       </button>
@@ -446,7 +471,7 @@ const TalukList = () => {
                           <button className="view-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}`)} title="View Details"><HiOutlineEye /></button>
                           <button className="nav-btn" onClick={() => navigate(`/geography/gram-panchayats?taluk_id=${taluk.id}`)} title="View GPs"><HiOutlineUserGroup /></button>
                           <button className="edit-btn" onClick={() => navigate(`/geography/taluks/${taluk.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete"><HiOutlineTrash /></button>
+                          <button className="del" onClick={(e) => handleDeleteClick(e, taluk)} disabled={deleteLoading === taluk.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -497,6 +522,20 @@ const TalukList = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Taluk"
+        message="Are you sure you want to delete this taluk?"
+        itemName={talukToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading === talukToDelete?.id}
+      />
     </div>
   );
 };

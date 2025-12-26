@@ -30,6 +30,7 @@ import {
 import geographyApi from '../../../services/api/geography.api';
 import type { GramPanchayat, State, District, Taluk } from '../../../types/api.types';
 import { PageHeader } from '../../../components/common/PageHeader';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import './GramPanchayatList.scss';
 
 const GramPanchayatList = () => {
@@ -44,6 +45,10 @@ const GramPanchayatList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [gpToDelete, setGpToDelete] = useState<GramPanchayat | null>(null);
 
   // Filter state - synced with URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -214,13 +219,20 @@ const GramPanchayatList = () => {
     setPageInput('1');
   };
 
-  const handleDelete = async (e: React.MouseEvent, gp: GramPanchayat) => {
+  const handleDeleteClick = (e: React.MouseEvent, gp: GramPanchayat) => {
     e.stopPropagation();
-    if (!window.confirm(`Are you sure you want to delete "${gp.name}"?`)) return;
+    setGpToDelete(gp);
+    setDeleteModalOpen(true);
+  };
 
-    setDeleteLoading(gp.id);
+  const handleDeleteConfirm = async () => {
+    if (!gpToDelete) return;
+
+    setDeleteLoading(gpToDelete.id);
     try {
-      await geographyApi.deleteGramPanchayat(gp.id);
+      await geographyApi.deleteGramPanchayat(gpToDelete.id);
+      setDeleteModalOpen(false);
+      setGpToDelete(null);
       fetchGramPanchayats();
     } catch (err) {
       console.error('Failed to delete:', err);
@@ -228,6 +240,11 @@ const GramPanchayatList = () => {
     } finally {
       setDeleteLoading(null);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setGpToDelete(null);
   };
 
   const formatNumber = (num?: number): string => {
@@ -400,10 +417,25 @@ const GramPanchayatList = () => {
                     <h4 className="gpl-card__name">{gp.name}</h4>
                     {gp.name_hindi && <span className="gpl-card__hindi">{gp.name_hindi}</span>}
                   </div>
-                  <div className="gpl-card__location">
+                  {/* <div className="gpl-card__location">
                     <span className="district"><HiOutlineOfficeBuilding /> {gp.district_name}</span>
                     <span className="state"><HiOutlineMap /> {gp.state_name}</span>
+                  </div> */}
+
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> Taluk</span>
+                    <span className="tl-card__value">{gp?.taluk?.name || '—'}</span>
                   </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
+                    <span className="tl-card__value">{gp?.district?.name || '—'}</span>
+                  </div>
+                  <div className="tl-card__row">
+                    <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
+                    <span className="tl-card__value">{gp?.state?.name || '—'}</span>
+                  </div>
+
+
                   {gp.sarpanch_name && (
                     <div className="gpl-card__sarpanch">
                       <HiOutlineUser />
@@ -418,7 +450,7 @@ const GramPanchayatList = () => {
                   )}
                   <div className="gpl-card__nums">
                     <div className="gpl-card__num">
-                      <HiOutlineHome />
+                      {/* <HiOutlineHome /> */}
                       <strong>{gp.total_villages || 0}</strong>
                       <span>Villages</span>
                     </div>
@@ -441,7 +473,7 @@ const GramPanchayatList = () => {
                         <HiOutlinePencil />
                         <span className="btn-text">Edit</span>
                       </button>
-                      <button className="del" onClick={(e) => handleDelete(e, gp)} disabled={deleteLoading === gp.id} title="Delete">
+                      <button className="del" onClick={(e) => handleDeleteClick(e, gp)} disabled={deleteLoading === gp.id} title="Delete">
                         <HiOutlineTrash />
                         <span className="btn-text">Delete</span>
                       </button>
@@ -504,7 +536,7 @@ const GramPanchayatList = () => {
                           <button className="view-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}`)} title="View Details"><HiOutlineEye /></button>
                           <button className="nav-btn" onClick={() => navigate(`/geography/villages?gram_panchayat_id=${gp.id}`)} title="View Villages"><HiOutlineHome /></button>
                           <button className="edit-btn" onClick={() => navigate(`/geography/gram-panchayats/${gp.id}/edit`)} title="Edit"><HiOutlinePencil /></button>
-                          <button className="del" onClick={(e) => handleDelete(e, gp)} disabled={deleteLoading === gp.id} title="Delete"><HiOutlineTrash /></button>
+                          <button className="del" onClick={(e) => handleDeleteClick(e, gp)} disabled={deleteLoading === gp.id} title="Delete"><HiOutlineTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -555,6 +587,20 @@ const GramPanchayatList = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Gram Panchayat"
+        message="Are you sure you want to delete this gram panchayat?"
+        itemName={gpToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading === gpToDelete?.id}
+      />
     </div>
   );
 };
