@@ -260,7 +260,7 @@ const ServiceEdit = () => {
         actions={
           <button
             className="bm-btn bm-btn-secondary"
-            onClick={() => navigate(`/services/${slug}`)}
+            onClick={() => navigate(`/services/${id}`)}
           >
             <HiOutlineArrowLeft />
             <span>Back</span>
@@ -569,7 +569,7 @@ const ServiceEdit = () => {
             <button
               type="button"
               className="bm-btn bm-btn-secondary"
-              onClick={() => navigate(`/services/${slug}`)}
+              onClick={() => navigate(`/services/${id}`)}
               disabled={saving}
             >
               Cancel

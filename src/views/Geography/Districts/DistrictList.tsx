@@ -20,9 +20,7 @@ import {
   HiOutlineChevronUp,
   HiOutlineChevronDown,
   HiOutlineSwitchVertical,
-  HiOutlineArrowRight,
-  HiOutlineGlobeAlt,
-  HiOutlineUsers
+  HiOutlineArrowRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { District, State } from '../../../types/api.types';
