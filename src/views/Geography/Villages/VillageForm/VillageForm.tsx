@@ -308,7 +308,7 @@ const VillageForm = () => {
                   value={formData.name_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="e.g., बोम्मसंद्र"
+                  placeholder="Enter name in Hindi"
                 />
               </div>
               <div className="bm-form-group">

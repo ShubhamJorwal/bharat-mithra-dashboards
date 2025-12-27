@@ -342,7 +342,7 @@ const DistrictList = () => {
                   </div>
                   <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="dl-card__value">{district?.state?.name || '—'}</span>
+                    <span className="dl-card__value">{district?.state_name || '—'}</span>
                   </div>
                   <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> Headquarters</span>

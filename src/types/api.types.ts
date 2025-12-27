@@ -56,6 +56,16 @@ export interface ServiceCategory {
   updated_at?: string;
 }
 
+// Category with Services (grouped response)
+export interface CategoryWithServices extends ServiceCategory {
+  services: Service[];
+}
+
+export interface GroupedServicesResponse {
+  categories: CategoryWithServices[];
+  total_services: number;
+}
+
 export interface CreateCategoryRequest {
   name: string;
   name_hindi?: string;

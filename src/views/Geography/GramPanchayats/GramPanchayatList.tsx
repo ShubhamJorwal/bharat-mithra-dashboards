@@ -24,8 +24,7 @@ import {
   HiOutlineChevronUp,
   HiOutlineChevronDown,
   HiOutlineSwitchVertical,
-  HiOutlineArrowRight,
-  HiOutlineMap
+  HiOutlineArrowRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { GramPanchayat, State, District, Taluk } from '../../../types/api.types';
@@ -424,15 +423,15 @@ const GramPanchayatList = () => {
 
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> Taluk</span>
-                    <span className="tl-card__value">{gp?.taluk?.name || '—'}</span>
+                    <span className="tl-card__value">{gp?.taluk_name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
-                    <span className="tl-card__value">{gp?.district?.name || '—'}</span>
+                    <span className="tl-card__value">{gp?.district_name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="tl-card__value">{gp?.state?.name || '—'}</span>
+                    <span className="tl-card__value">{gp?.state_name || '—'}</span>
                   </div>
 
 

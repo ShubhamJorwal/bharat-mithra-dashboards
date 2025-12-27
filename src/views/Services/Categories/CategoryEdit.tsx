@@ -328,7 +328,7 @@ const CategoryEdit = () => {
                   value={formData.name_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="श्रेणी का नाम दर्ज करें"
+                  placeholder="Enter category name in Hindi"
                 />
               </div>
               <div className="bm-form-group">

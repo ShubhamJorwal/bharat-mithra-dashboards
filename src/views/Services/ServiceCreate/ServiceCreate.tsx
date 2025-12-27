@@ -220,7 +220,7 @@ const ServiceCreate = () => {
                   value={formData.name_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="सेवा का नाम दर्ज करें"
+                  placeholder="Enter service name in Hindi"
                 />
               </div>
               <div className="bm-form-group">
@@ -282,7 +282,7 @@ const ServiceCreate = () => {
                   value={formData.description_hindi}
                   onChange={handleChange}
                   className="bm-textarea"
-                  placeholder="सेवा का विवरण दर्ज करें"
+                  placeholder="Enter description in Hindi"
                   rows={3}
                 />
               </div>
@@ -301,7 +301,7 @@ const ServiceCreate = () => {
                   value={formData.department_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="विभाग का नाम"
+                  placeholder="Enter department name in Hindi"
                 />
               </div>
               <div className="bm-form-group">

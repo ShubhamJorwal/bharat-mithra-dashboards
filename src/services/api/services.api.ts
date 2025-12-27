@@ -13,7 +13,8 @@ import type {
   UpdateCategoryRequest,
   CreateFAQRequest,
   UpdateFAQRequest,
-  CreateFormRequest
+  CreateFormRequest,
+  GroupedServicesResponse
 } from '../../types/api.types';
 
 const CATEGORIES_BASE = '/api/v1/categories';
@@ -85,6 +86,12 @@ export const servicesApi = {
   // Get paginated list of services
   getServices: async (params?: ServicesQueryParams): Promise<PaginatedResponse<Service>> => {
     const response = await axiosInstance.get(SERVICES_BASE, { params });
+    return response.data;
+  },
+
+  // Get services grouped by category
+  getServicesGrouped: async (): Promise<ApiResponse<GroupedServicesResponse>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/grouped`);
     return response.data;
   },
 

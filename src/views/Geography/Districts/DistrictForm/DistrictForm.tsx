@@ -220,7 +220,7 @@ const DistrictForm = () => {
                   value={formData.name_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="e.g., बेंगलुरु अर्बन"
+                  placeholder="Enter name in Hindi"
                 />
               </div>
               <div className="bm-form-group">

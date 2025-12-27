@@ -34,7 +34,7 @@ interface ServiceFormData {
 }
 
 const ServiceEdit = () => {
-  const { id: slug } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -79,9 +79,9 @@ const ServiceEdit = () => {
           setCategories([]);
         }
 
-        // Fetch service by slug
-        if (slug) {
-          const serviceRes = await servicesApi.getServiceBySlug(slug);
+        // Fetch service by ID
+        if (id) {
+          const serviceRes = await servicesApi.getServiceById(id);
           if (serviceRes.success && serviceRes.data) {
             const service = serviceRes.data;
             setServiceId(service.id);
@@ -107,7 +107,7 @@ const ServiceEdit = () => {
             });
           } else {
             setNotFound(true);
-            setError(`Service "${slug}" not found.`);
+            setError(`Service not found.`);
           }
         }
       } catch (err) {
@@ -119,7 +119,7 @@ const ServiceEdit = () => {
     };
 
     fetchData();
-  }, [slug]);
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -191,7 +191,7 @@ const ServiceEdit = () => {
 
       const response = await servicesApi.updateService(serviceId, updateData);
       if (response.success) {
-        navigate(`/services/${slug}`);
+        navigate(`/services/${id}`);
       } else {
         setSaveError(response.message || 'Failed to update service');
       }
@@ -239,7 +239,7 @@ const ServiceEdit = () => {
             <HiOutlineExclamationCircle />
           </div>
           <h3>Service not found</h3>
-          <p>The service "{slug}" does not exist or has been deleted.</p>
+          <p>The service does not exist or has been deleted.</p>
           <button
             className="bm-btn bm-btn-primary"
             onClick={() => navigate('/services')}
@@ -311,7 +311,7 @@ const ServiceEdit = () => {
                   value={formData.name_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="सेवा का नाम दर्ज करें"
+                  placeholder="Enter service name in Hindi"
                 />
               </div>
               <div className="bm-form-group">
@@ -369,7 +369,7 @@ const ServiceEdit = () => {
                   value={formData.description_hindi}
                   onChange={handleChange}
                   className="bm-textarea"
-                  placeholder="सेवा का विवरण दर्ज करें"
+                  placeholder="Enter description in Hindi"
                   rows={3}
                 />
               </div>
@@ -388,7 +388,7 @@ const ServiceEdit = () => {
                   value={formData.department_hindi}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="विभाग का नाम"
+                  placeholder="Enter department name in Hindi"
                 />
               </div>
               <div className="bm-form-group">
