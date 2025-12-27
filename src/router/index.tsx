@@ -20,7 +20,7 @@ import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit } from "../view
 import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Categories";
 
 // Applications Pages
-import { ApplicationList, ApplicationDetails } from "../views/Applications";
+import { ApplicationList, ApplicationDetails, ApplicationCreate } from "../views/Applications";
 
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
@@ -208,6 +208,10 @@ const routerConfig = [
       {
         path: "applications",
         element: <ApplicationList />,
+      },
+      {
+        path: "applications/new",
+        element: <ApplicationCreate />,
       },
       {
         path: "applications/:id",

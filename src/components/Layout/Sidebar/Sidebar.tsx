@@ -78,6 +78,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       badge: null,
       subItems: [
         { path: '/applications', label: 'All Applications' },
+        { path: '/applications/new', label: 'New Application' },
         { path: '/applications?status=pending', label: 'Pending' },
         { path: '/applications?status=approved', label: 'Approved' },
         { path: '/applications?status=rejected', label: 'Rejected' },
