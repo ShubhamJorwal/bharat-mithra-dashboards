@@ -268,6 +268,88 @@ export interface UpdateFAQRequest {
   sort_order?: number;
 }
 
+// Service Document Types - Required documents for each service
+export type ServiceDocumentType =
+  | 'identity'
+  | 'address'
+  | 'income'
+  | 'photo'
+  | 'certificate'
+  | 'medical'
+  | 'financial'
+  | 'education'
+  | 'business'
+  | 'property'
+  | 'other';
+
+export interface ServiceDocument {
+  id: string;
+  service_id: string;
+  document_name: string;
+  document_name_hindi?: string;
+  document_type: ServiceDocumentType;
+  description?: string;
+  description_hindi?: string;
+  is_mandatory: boolean;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceDocumentRequest {
+  service_id: string;
+  document_name: string;
+  document_name_hindi?: string;
+  document_type: ServiceDocumentType;
+  description?: string;
+  description_hindi?: string;
+  is_mandatory?: boolean;
+  sort_order?: number;
+}
+
+export interface UpdateServiceDocumentRequest {
+  document_name?: string;
+  document_name_hindi?: string;
+  document_type?: ServiceDocumentType;
+  description?: string;
+  description_hindi?: string;
+  is_mandatory?: boolean;
+  sort_order?: number;
+}
+
+// Service Workflow Types - Step-by-step status tracking
+export interface ServiceWorkflow {
+  id: string;
+  service_id: string;
+  step_number: number;
+  step_name: string;
+  step_name_hindi?: string;
+  step_description?: string;
+  step_description_hindi?: string;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceWorkflowRequest {
+  service_id: string;
+  step_number: number;
+  step_name: string;
+  step_name_hindi?: string;
+  step_description?: string;
+  step_description_hindi?: string;
+  sort_order?: number;
+}
+
+export interface UpdateServiceWorkflowRequest {
+  step_number?: number;
+  step_name?: string;
+  step_name_hindi?: string;
+  step_description?: string;
+  step_description_hindi?: string;
+  sort_order?: number;
+}
+
 // User Types - Complete 80+ fields from GENOME API
 export interface User {
   id: string;
@@ -510,6 +592,19 @@ export interface PaginationParams {
 export interface ServicesQueryParams extends PaginationParams {
   category_id?: string;
   search?: string;
+  q?: string;  // Alternative search parameter
+  is_popular?: boolean;
+  is_featured?: boolean;
+  is_free?: boolean;
+  is_active?: boolean;
+  include_inactive?: boolean;
+  min_fee?: number;
+  max_fee?: number;
+  department?: string;
+  ministry?: string;
+  min_rating?: number;
+  sort_by?: 'name' | 'created_at' | 'total_applications' | 'average_rating';
+  sort_order?: 1 | -1;  // 1 for ASC, -1 for DESC
 }
 
 export interface UsersQueryParams extends PaginationParams {
@@ -1600,6 +1695,8 @@ export interface ChecklistItem {
 // Service Complete Details - All information combined
 export interface ServiceCompleteDetails {
   service: Service;
+  documents: ServiceDocument[];
+  workflow: ServiceWorkflow[];
   pricing?: ServicePricing | null;
   caseworker_info?: ServiceCaseworkerInfo | null;
   checklists: ServiceChecklist[];

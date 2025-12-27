@@ -38,12 +38,14 @@ import type {
   ServiceChecklist,
   ServiceOfficeLocation,
   ServiceFAQ,
+  ServiceDocument,
+  ServiceWorkflow,
   State
 } from '../../../types/api.types';
 import ConfirmModal from '../../../components/common/ConfirmModal/ConfirmModal';
 import './ServiceDetails.scss';
 
-type TabType = 'overview' | 'pricing' | 'process' | 'offices' | 'faqs';
+type TabType = 'overview' | 'documents' | 'workflow' | 'pricing' | 'process' | 'offices' | 'faqs';
 
 const ServiceDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,6 +62,8 @@ const ServiceDetails = () => {
   const [checklists, setChecklists] = useState<ServiceChecklist[]>([]);
   const [offices, setOffices] = useState<ServiceOfficeLocation[]>([]);
   const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
+  const [documents, setDocuments] = useState<ServiceDocument[]>([]);
+  const [workflow, setWorkflow] = useState<ServiceWorkflow[]>([]);
 
   // Selected state for filtering
   const [selectedState, setSelectedState] = useState<string>('');
@@ -124,6 +128,24 @@ const ServiceDetails = () => {
             }
           } catch (e) {
             console.error('Failed to fetch pricing:', e);
+          }
+          // Fetch documents
+          try {
+            const docsRes = await servicesApi.getServiceDocuments(id);
+            if (docsRes.success && docsRes.data) {
+              setDocuments(docsRes.data);
+            }
+          } catch (e) {
+            console.error('Failed to fetch documents:', e);
+          }
+          // Fetch workflow
+          try {
+            const workflowRes = await servicesApi.getServiceWorkflow(id);
+            if (workflowRes.success && workflowRes.data) {
+              setWorkflow(workflowRes.data);
+            }
+          } catch (e) {
+            console.error('Failed to fetch workflow:', e);
           }
         } else {
           setError(response.message || 'Service not found');
@@ -367,6 +389,20 @@ const ServiceDetails = () => {
           Overview
         </button>
         <button
+          className={`svcd-tab ${activeTab === 'documents' ? 'active' : ''}`}
+          onClick={() => setActiveTab('documents')}
+        >
+          <HiOutlineDocumentText />
+          Documents ({documents.length})
+        </button>
+        <button
+          className={`svcd-tab ${activeTab === 'workflow' ? 'active' : ''}`}
+          onClick={() => setActiveTab('workflow')}
+        >
+          <HiOutlineClipboardList />
+          Workflow ({workflow.length})
+        </button>
+        <button
           className={`svcd-tab ${activeTab === 'pricing' ? 'active' : ''}`}
           onClick={() => setActiveTab('pricing')}
         >
@@ -576,6 +612,93 @@ const ServiceDetails = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Documents Tab */}
+        {activeTab === 'documents' && (
+          <div className="svcd-documents-tab">
+            {documents.length === 0 ? (
+              <div className="svcd-empty">
+                <HiOutlineDocumentText />
+                <p>No required documents defined for this service.</p>
+              </div>
+            ) : (
+              <>
+                <div className="svcd-documents-summary">
+                  <div className="svcd-doc-stat">
+                    <span className="svcd-doc-stat-value">{documents.filter(d => d.is_mandatory).length}</span>
+                    <span className="svcd-doc-stat-label">Mandatory</span>
+                  </div>
+                  <div className="svcd-doc-stat">
+                    <span className="svcd-doc-stat-value">{documents.filter(d => !d.is_mandatory).length}</span>
+                    <span className="svcd-doc-stat-label">Optional</span>
+                  </div>
+                </div>
+                <div className="svcd-documents-grid">
+                  {documents.sort((a, b) => a.sort_order - b.sort_order).map((doc) => (
+                    <div key={doc.id} className={`svcd-document-card ${doc.is_mandatory ? 'mandatory' : 'optional'}`}>
+                      <div className="svcd-document-header">
+                        <div className="svcd-document-icon">
+                          <HiOutlineDocumentText />
+                        </div>
+                        <div className="svcd-document-badges">
+                          <span className={`svcd-document-type svcd-document-type--${doc.document_type}`}>
+                            {doc.document_type.replace(/_/g, ' ')}
+                          </span>
+                          {doc.is_mandatory ? (
+                            <span className="svcd-document-required">Required</span>
+                          ) : (
+                            <span className="svcd-document-optional">Optional</span>
+                          )}
+                        </div>
+                      </div>
+                      <h4 className="svcd-document-name">{doc.document_name}</h4>
+                      {doc.document_name_hindi && (
+                        <p className="svcd-document-hindi">{doc.document_name_hindi}</p>
+                      )}
+                      {doc.description && (
+                        <p className="svcd-document-desc">{doc.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Workflow Tab */}
+        {activeTab === 'workflow' && (
+          <div className="svcd-workflow-tab">
+            {workflow.length === 0 ? (
+              <div className="svcd-empty">
+                <HiOutlineClipboardList />
+                <p>No workflow steps defined for this service.</p>
+              </div>
+            ) : (
+              <div className="svcd-workflow-timeline">
+                {workflow.sort((a, b) => a.step_number - b.step_number).map((step, index) => (
+                  <div key={step.id} className="svcd-workflow-step">
+                    <div className="svcd-workflow-line">
+                      <div className="svcd-workflow-circle">
+                        <span>{step.step_number}</span>
+                      </div>
+                      {index < workflow.length - 1 && <div className="svcd-workflow-connector"></div>}
+                    </div>
+                    <div className="svcd-workflow-content">
+                      <h4 className="svcd-workflow-title">{step.step_name}</h4>
+                      {step.step_name_hindi && (
+                        <p className="svcd-workflow-hindi">{step.step_name_hindi}</p>
+                      )}
+                      {step.step_description && (
+                        <p className="svcd-workflow-desc">{step.step_description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

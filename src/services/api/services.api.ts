@@ -6,6 +6,8 @@ import type {
   ServiceCategory,
   ServiceForm,
   ServiceFAQ,
+  ServiceDocument,
+  ServiceWorkflow,
   ServicesQueryParams,
   CreateServiceRequest,
   UpdateServiceRequest,
@@ -14,6 +16,10 @@ import type {
   CreateFAQRequest,
   UpdateFAQRequest,
   CreateFormRequest,
+  CreateServiceDocumentRequest,
+  UpdateServiceDocumentRequest,
+  CreateServiceWorkflowRequest,
+  UpdateServiceWorkflowRequest,
   GroupedServicesResponse,
   ServicePricing,
   ServiceCaseworkerInfo,
@@ -30,6 +36,8 @@ const CATEGORIES_BASE = '/api/v1/categories';
 const SERVICES_BASE = '/api/v1/services';
 const FORMS_BASE = '/api/v1/forms';
 const FAQS_BASE = '/api/v1/faqs';
+const DOCUMENTS_BASE = '/api/v1/documents';
+const WORKFLOWS_BASE = '/api/v1/workflows';
 
 export const servicesApi = {
   // ==================== CATEGORY ENDPOINTS ====================
@@ -307,6 +315,82 @@ export const servicesApi = {
   // Get service complete details by slug
   getServiceCompleteDetailsBySlug: async (slug: string, params?: ServicePricingQueryParams): Promise<ApiResponse<ServiceCompleteDetails>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/complete`, { params });
+    return response.data;
+  },
+
+  // ==================== DOCUMENT ENDPOINTS ====================
+
+  // Get documents for a service by ID
+  getServiceDocuments: async (serviceId: string): Promise<ApiResponse<ServiceDocument[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/documents`);
+    return response.data;
+  },
+
+  // Get documents for a service by slug
+  getServiceDocumentsBySlug: async (slug: string): Promise<ApiResponse<ServiceDocument[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/documents`);
+    return response.data;
+  },
+
+  // Create a new document
+  createDocument: async (data: CreateServiceDocumentRequest): Promise<ApiResponse<ServiceDocument>> => {
+    const response = await axiosInstance.post(DOCUMENTS_BASE, data);
+    return response.data;
+  },
+
+  // Get document by ID
+  getDocumentById: async (id: string): Promise<ApiResponse<ServiceDocument>> => {
+    const response = await axiosInstance.get(`${DOCUMENTS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update a document
+  updateDocument: async (id: string, data: UpdateServiceDocumentRequest): Promise<ApiResponse<ServiceDocument>> => {
+    const response = await axiosInstance.put(`${DOCUMENTS_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete a document
+  deleteDocument: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${DOCUMENTS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== WORKFLOW ENDPOINTS ====================
+
+  // Get workflow steps for a service by ID
+  getServiceWorkflow: async (serviceId: string): Promise<ApiResponse<ServiceWorkflow[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/workflow`);
+    return response.data;
+  },
+
+  // Get workflow steps for a service by slug
+  getServiceWorkflowBySlug: async (slug: string): Promise<ApiResponse<ServiceWorkflow[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/workflow`);
+    return response.data;
+  },
+
+  // Create a new workflow step
+  createWorkflowStep: async (data: CreateServiceWorkflowRequest): Promise<ApiResponse<ServiceWorkflow>> => {
+    const response = await axiosInstance.post(WORKFLOWS_BASE, data);
+    return response.data;
+  },
+
+  // Get workflow step by ID
+  getWorkflowStepById: async (id: string): Promise<ApiResponse<ServiceWorkflow>> => {
+    const response = await axiosInstance.get(`${WORKFLOWS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update a workflow step
+  updateWorkflowStep: async (id: string, data: UpdateServiceWorkflowRequest): Promise<ApiResponse<ServiceWorkflow>> => {
+    const response = await axiosInstance.put(`${WORKFLOWS_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete a workflow step
+  deleteWorkflowStep: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${WORKFLOWS_BASE}/${id}`);
     return response.data;
   }
 };

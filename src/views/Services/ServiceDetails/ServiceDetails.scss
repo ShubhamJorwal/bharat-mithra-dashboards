@@ -1194,6 +1194,236 @@
 }
 
 // ============================================
+// DOCUMENTS TAB
+// ============================================
+.svcd-documents-tab {
+  padding: 24px;
+}
+
+.svcd-documents-summary {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.svcd-doc-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  min-width: 100px;
+}
+
+.svcd-doc-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.svcd-doc-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.svcd-documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.svcd-document-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+
+  &.mandatory {
+    border-left: 3px solid #ef4444;
+  }
+
+  &.optional {
+    border-left: 3px solid #3b82f6;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.svcd-document-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.svcd-document-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 18px;
+    color: #3b82f6;
+  }
+}
+
+.svcd-document-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.svcd-document-type {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+
+  &--identity { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+  &--address { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &--income { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  &--photo { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+  &--certificate { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+  &--medical { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  &--financial { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+  &--education { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+  &--business { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+  &--property { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+}
+
+.svcd-document-required {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.svcd-document-optional {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.svcd-document-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px 0;
+}
+
+.svcd-document-hindi {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+.svcd-document-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+// ============================================
+// WORKFLOW TAB
+// ============================================
+.svcd-workflow-tab {
+  padding: 24px;
+}
+
+.svcd-workflow-timeline {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.svcd-workflow-step {
+  display: flex;
+  gap: 20px;
+}
+
+.svcd-workflow-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.svcd-workflow-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
+
+  span {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+  }
+}
+
+.svcd-workflow-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 30px;
+  background: linear-gradient(180deg, #3b82f6 0%, rgba(59, 130, 246, 0.3) 100%);
+  margin: 4px 0;
+}
+
+.svcd-workflow-content {
+  flex: 1;
+  padding-bottom: 24px;
+}
+
+.svcd-workflow-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px 0;
+}
+
+.svcd-workflow-hindi {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+.svcd-workflow-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ============================================
 // DARK MODE
 // ============================================
 body.dark-mode {
@@ -1208,5 +1438,13 @@ body.dark-mode {
   .svcd-document,
   .svcd-card {
     border-color: var(--color-border);
+  }
+
+  .svcd-document-card {
+    background: var(--color-background-secondary);
+  }
+
+  .svcd-doc-stat {
+    background: var(--color-background-secondary);
   }
 }
