@@ -96,13 +96,13 @@ export interface Service {
   slug: string;
   description: string;
   description_hindi?: string;
-  department: string;
-  department_hindi?: string;
+  department?: string;  // Nullable - defaults to 'General Services'
+  department_hindi?: string;  // Nullable - defaults to 'सामान्य सेवाएं'
   ministry?: string;
-  eligibility_criteria?: string;
+  eligibility_criteria?: string;  // Nullable - defaults to ''
   eligibility_criteria_hindi?: string;
   required_documents?: string[];
-  processing_time?: string;
+  processing_time?: string;  // Nullable - defaults to ''
   service_fee: number;
   platform_fee: number;
   total_fee: number;
@@ -115,8 +115,9 @@ export interface Service {
   is_featured: boolean;
   total_applications?: number;
   average_rating?: number;
-  available_states?: string[];
-  available_locations?: string;
+  available_states?: string[];  // Nullable - defaults to []
+  available_locations?: string;  // Nullable - defaults to ''
+  form_fields?: string | Record<string, unknown>;  // Nullable - defaults to ''
   sort_order?: number;
   created_at?: string;
   updated_at?: string;
@@ -129,7 +130,7 @@ export interface CreateServiceRequest {
   slug?: string;
   description: string;
   description_hindi?: string;
-  department: string;
+  department?: string;  // Now optional - defaults to 'General Services'
   department_hindi?: string;
   ministry?: string;
   eligibility_criteria?: string;
@@ -145,6 +146,7 @@ export interface CreateServiceRequest {
   is_featured?: boolean;
   available_states?: string[];
   available_locations?: string;
+  form_fields?: string | Record<string, unknown>;
   sort_order?: number;
 }
 
@@ -170,6 +172,7 @@ export interface UpdateServiceRequest {
   is_featured?: boolean;
   available_states?: string[];
   available_locations?: string;
+  form_fields?: string | Record<string, unknown>;
   sort_order?: number;
 }
 

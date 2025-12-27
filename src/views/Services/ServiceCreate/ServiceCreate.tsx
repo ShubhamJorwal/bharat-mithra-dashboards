@@ -131,7 +131,7 @@ const ServiceCreate = () => {
         name_hindi: formData.name_hindi || undefined,
         description: formData.description,
         description_hindi: formData.description_hindi || undefined,
-        department: formData.department,
+        department: formData.department || undefined,  // Optional - defaults on backend
         department_hindi: formData.department_hindi || undefined,
         ministry: formData.ministry || undefined,
         eligibility_criteria: formData.eligibility_criteria || undefined,
@@ -249,7 +249,7 @@ const ServiceCreate = () => {
                 </select>
               </div>
               <div className="bm-form-group">
-                <label className="bm-label" htmlFor="department">Department *</label>
+                <label className="bm-label" htmlFor="department">Department</label>
                 <input
                   type="text"
                   id="department"
@@ -257,8 +257,7 @@ const ServiceCreate = () => {
                   value={formData.department}
                   onChange={handleChange}
                   className="bm-input"
-                  placeholder="Enter department name"
-                  required
+                  placeholder="Enter department name (optional)"
                 />
               </div>
               <div className="bm-form-group bm-form-group--full">
