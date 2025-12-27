@@ -496,6 +496,7 @@ export interface PaginationParams {
 
 export interface ServicesQueryParams extends PaginationParams {
   category_id?: string;
+  search?: string;
 }
 
 export interface UsersQueryParams extends PaginationParams {

@@ -1,217 +1,357 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
+  HiOutlineArrowLeft,
   HiOutlinePencil,
   HiOutlineTrash,
-  HiOutlineCollection,
   HiOutlineDocumentText,
   HiOutlineCalendar,
   HiOutlineTag,
   HiOutlineClipboardList,
-  HiOutlineCube
+  HiOutlineCube,
+  HiOutlineCheck,
+  HiOutlineClock,
+  HiOutlineCurrencyRupee,
+  HiOutlineFolder,
+  HiOutlineStar,
+  HiOutlineFire,
+  HiOutlineExclamation,
+  HiOutlineExternalLink
 } from 'react-icons/hi';
-import { PageHeader } from '../../../components/common/PageHeader';
+import servicesApi from '../../../services/api/services.api';
+import type { Service, ServiceCategory } from '../../../types/api.types';
+import ConfirmModal from '../../../components/common/ConfirmModal/ConfirmModal';
 import './ServiceDetails.scss';
-
-interface ServiceDetails {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  status: 'active' | 'inactive' | 'draft';
-  applicationsCount: number;
-  createdAt: string;
-  updatedAt: string;
-  requirements: string[];
-  documents: string[];
-  processingTime: string;
-  fee: string;
-}
 
 const ServiceDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [service, setService] = useState<ServiceDetails | null>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    const fetchServiceDetails = async () => {
+    const fetchService = async () => {
+      if (!id) return;
       setLoading(true);
+      setError(null);
       try {
-        // Mock data - replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        setService({
-          id: id || '1',
-          name: 'Passport Application',
-          category: 'Identity',
-          description: 'Apply for new passport or renewal of existing passport. This service handles both fresh passport applications and renewals for Indian citizens.',
-          status: 'active',
-          applicationsCount: 156,
-          createdAt: '2024-01-10',
-          updatedAt: '2024-03-01',
-          requirements: [
-            'Indian citizenship',
-            'Valid address proof',
-            'Age above 18 years',
-            'No criminal record'
-          ],
-          documents: [
-            'Aadhaar Card',
-            'Birth Certificate',
-            'Address Proof',
-            'Passport Size Photos (2)'
-          ],
-          processingTime: '30-45 days',
-          fee: '₹1,500 - ₹2,000'
-        });
-      } catch (error) {
-        console.error('Failed to fetch service details:', error);
+        const response = await servicesApi.getServiceById(id);
+        if (response.success && response.data) {
+          setService(response.data);
+          // Fetch category if we have category_id
+          if (response.data.category_id) {
+            try {
+              const catRes = await servicesApi.getCategoryById(response.data.category_id);
+              if (catRes.success && catRes.data) {
+                setCategory(catRes.data);
+              }
+            } catch (e) {
+              console.error('Failed to fetch category:', e);
+            }
+          }
+        } else {
+          setError(response.message || 'Service not found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch service:', err);
+        setError('Failed to load service details');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchServiceDetails();
+    fetchService();
   }, [id]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'success';
-      case 'inactive': return 'danger';
-      default: return 'warning';
+  const handleDelete = async () => {
+    if (!id) return;
+    setDeleteLoading(true);
+    try {
+      const response = await servicesApi.deleteService(id);
+      if (response.success) {
+        navigate('/services');
+      } else {
+        setError(response.message || 'Failed to delete service');
+      }
+    } catch (err) {
+      console.error('Failed to delete service:', err);
+      setError('Failed to delete service');
+    } finally {
+      setDeleteLoading(false);
+      setDeleteOpen(false);
     }
+  };
+
+  const formatDate = (date: string | undefined) => {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   if (loading) {
     return (
-      <div className="bm-service-details">
-        <div className="bm-loading">Loading service details...</div>
+      <div className="svcd">
+        <div className="svcd-loading">
+          <div className="svcd-loading-spinner"></div>
+          <p>Loading service details...</p>
+        </div>
       </div>
     );
   }
 
-  if (!service) {
+  if (error || !service) {
     return (
-      <div className="bm-service-details">
-        <div className="bm-empty-state">Service not found</div>
+      <div className="svcd">
+        <div className="svcd-error">
+          <div className="svcd-error-icon">
+            <HiOutlineExclamation />
+          </div>
+          <h3>Service Not Found</h3>
+          <p>{error || 'The requested service could not be found.'}</p>
+          <button className="svcd-btn svcd-btn--primary" onClick={() => navigate('/services')}>
+            <HiOutlineArrowLeft />
+            <span>Back to Services</span>
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bm-service-details">
-      <PageHeader
-        icon={<HiOutlineCube />}
-        title="Service Details"
-        description="View and manage service information"
-        actions={
-          <>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/services/${id}/edit`)}>
-              <HiOutlinePencil />
-              <span>Edit</span>
-            </button>
-            <button className="bm-btn bm-btn-danger">
-              <HiOutlineTrash />
-              <span>Delete</span>
-            </button>
-          </>
-        }
-      />
+    <div className="svcd">
+      {/* Hero Section */}
+      <div className="svcd-hero">
+        <button className="svcd-back" onClick={() => navigate('/services')}>
+          <HiOutlineArrowLeft />
+        </button>
 
-      <div className="bm-details-grid">
-        <div className="bm-card bm-main-card">
-          <div className="bm-service-header">
-            <div className="bm-service-icon">
-              <HiOutlineCollection />
-            </div>
-            <div className="bm-service-info">
-              <h2 className="bm-service-name">{service.name}</h2>
-              <div className="bm-service-meta">
-                <span className={`bm-status-badge bm-status-badge--${getStatusColor(service.status)}`}>
-                  {service.status}
+        <div className="svcd-hero-content">
+          <div className="svcd-hero-icon">
+            <HiOutlineCube />
+          </div>
+          <div className="svcd-hero-text">
+            <div className="svcd-hero-badges">
+              {service.is_popular && (
+                <span className="svcd-badge svcd-badge--popular">
+                  <HiOutlineStar /> Popular
                 </span>
-                <span className="bm-service-category">{service.category}</span>
-              </div>
+              )}
+              {service.is_featured && (
+                <span className="svcd-badge svcd-badge--featured">
+                  <HiOutlineFire /> Featured
+                </span>
+              )}
+              <span className={`svcd-badge svcd-badge--status ${service.is_active ? 'active' : 'inactive'}`}>
+                {service.is_active ? 'Active' : 'Inactive'}
+              </span>
             </div>
+            <h1>{service.name}</h1>
+            {service.name_hindi && <p className="svcd-hero-hindi">{service.name_hindi}</p>}
+          </div>
+        </div>
+
+        <div className="svcd-hero-actions">
+          <button
+            className="svcd-btn svcd-btn--secondary"
+            onClick={() => navigate(`/services/${id}/edit`)}
+          >
+            <HiOutlinePencil />
+            <span>Edit</span>
+          </button>
+          <button
+            className="svcd-btn svcd-btn--danger"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <HiOutlineTrash />
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="svcd-stats">
+        <div className="svcd-stat">
+          <div className="svcd-stat-icon">
+            <HiOutlineFolder />
+          </div>
+          <div className="svcd-stat-content">
+            <span className="svcd-stat-value">{category?.name || 'Uncategorized'}</span>
+            <span className="svcd-stat-label">Category</span>
+          </div>
+        </div>
+        <div className="svcd-stat">
+          <div className="svcd-stat-icon">
+            <HiOutlineClock />
+          </div>
+          <div className="svcd-stat-content">
+            <span className="svcd-stat-value">{service.processing_time || '-'}</span>
+            <span className="svcd-stat-label">Processing Time</span>
+          </div>
+        </div>
+        <div className="svcd-stat">
+          <div className="svcd-stat-icon">
+            <HiOutlineCurrencyRupee />
+          </div>
+          <div className="svcd-stat-content">
+            <span className="svcd-stat-value">
+              {service.is_free_service ? 'Free' : `₹${service.total_fee || 0}`}
+            </span>
+            <span className="svcd-stat-label">Service Fee</span>
+          </div>
+        </div>
+        <div className="svcd-stat">
+          <div className="svcd-stat-icon">
+            <HiOutlineTag />
+          </div>
+          <div className="svcd-stat-content">
+            <span className="svcd-stat-value">#{service.sort_order || 0}</span>
+            <span className="svcd-stat-label">Sort Order</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="svcd-content">
+        <div className="svcd-main">
+          {/* Description */}
+          <div className="svcd-section">
+            <h2 className="svcd-section-title">Description</h2>
+            <p className="svcd-section-text">
+              {service.description || 'No description provided.'}
+            </p>
+            {service.description_hindi && (
+              <p className="svcd-section-text svcd-section-text--hindi">
+                {service.description_hindi}
+              </p>
+            )}
           </div>
 
-          <div className="bm-service-content">
-            <div className="bm-content-section">
-              <h3 className="bm-section-title">Description</h3>
-              <p className="bm-section-text">{service.description}</p>
-            </div>
-
-            <div className="bm-content-section">
-              <h3 className="bm-section-title">Requirements</h3>
-              <ul className="bm-requirements-list">
-                {service.requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
+          {/* Eligibility Criteria */}
+          {service.eligibility_criteria && (
+            <div className="svcd-section">
+              <h2 className="svcd-section-title">Eligibility Criteria</h2>
+              <div className="svcd-criteria">
+                {service.eligibility_criteria.split('\n').filter(Boolean).map((item, idx) => (
+                  <div key={idx} className="svcd-criteria-item">
+                    <HiOutlineCheck />
+                    <span>{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
+          )}
 
-            <div className="bm-content-section">
-              <h3 className="bm-section-title">Required Documents</h3>
-              <div className="bm-documents-list">
-                {service.documents.map((doc, index) => (
-                  <div key={index} className="bm-document-item">
+          {/* Required Documents */}
+          {service.required_documents && service.required_documents.length > 0 && (
+            <div className="svcd-section">
+              <h2 className="svcd-section-title">Required Documents</h2>
+              <div className="svcd-documents">
+                {service.required_documents.map((doc, idx) => (
+                  <div key={idx} className="svcd-document">
                     <HiOutlineDocumentText />
                     <span>{doc}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="bm-side-cards">
-          <div className="bm-card bm-info-card">
-            <div className="bm-card-header">
-              <h3 className="bm-card-title">Service Info</h3>
-            </div>
-            <div className="bm-info-list">
-              <div className="bm-info-item">
-                <HiOutlineClipboardList className="bm-info-icon" />
-                <div className="bm-info-content">
-                  <span className="bm-info-label">Applications</span>
-                  <span className="bm-info-value">{service.applicationsCount}</span>
-                </div>
+        {/* Sidebar */}
+        <div className="svcd-sidebar">
+          {/* Service Info Card */}
+          <div className="svcd-card">
+            <h3 className="svcd-card-title">
+              <HiOutlineClipboardList />
+              Service Information
+            </h3>
+            <div className="svcd-card-content">
+              <div className="svcd-info-row">
+                <span className="svcd-info-label">Slug</span>
+                <span className="svcd-info-value svcd-info-value--mono">{service.slug}</span>
               </div>
-              <div className="bm-info-item">
-                <HiOutlineCalendar className="bm-info-icon" />
-                <div className="bm-info-content">
-                  <span className="bm-info-label">Processing Time</span>
-                  <span className="bm-info-value">{service.processingTime}</span>
+              {service.department && (
+                <div className="svcd-info-row">
+                  <span className="svcd-info-label">Department</span>
+                  <span className="svcd-info-value">{service.department}</span>
                 </div>
-              </div>
-              <div className="bm-info-item">
-                <HiOutlineTag className="bm-info-icon" />
-                <div className="bm-info-content">
-                  <span className="bm-info-label">Fee</span>
-                  <span className="bm-info-value">{service.fee}</span>
+              )}
+              {service.ministry && (
+                <div className="svcd-info-row">
+                  <span className="svcd-info-label">Ministry</span>
+                  <span className="svcd-info-value">{service.ministry}</span>
                 </div>
-              </div>
+              )}
+              {!service.is_free_service && (
+                <>
+                  <div className="svcd-info-row">
+                    <span className="svcd-info-label">Service Fee</span>
+                    <span className="svcd-info-value">₹{service.service_fee || 0}</span>
+                  </div>
+                  <div className="svcd-info-row">
+                    <span className="svcd-info-label">Platform Fee</span>
+                    <span className="svcd-info-value">₹{service.platform_fee || 0}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          <div className="bm-card bm-dates-card">
-            <div className="bm-card-header">
-              <h3 className="bm-card-title">Dates</h3>
-            </div>
-            <div className="bm-dates-list">
-              <div className="bm-date-item">
-                <span className="bm-date-label">Created</span>
-                <span className="bm-date-value">{new Date(service.createdAt).toLocaleDateString()}</span>
+          {/* Links Card */}
+          {service.official_url && (
+            <div className="svcd-card">
+              <h3 className="svcd-card-title">
+                <HiOutlineExternalLink />
+                External Links
+              </h3>
+              <div className="svcd-card-content">
+                <a href={service.official_url} target="_blank" rel="noopener noreferrer" className="svcd-link">
+                  Official Website
+                </a>
               </div>
-              <div className="bm-date-item">
-                <span className="bm-date-label">Last Updated</span>
-                <span className="bm-date-value">{new Date(service.updatedAt).toLocaleDateString()}</span>
+            </div>
+          )}
+
+          {/* Dates Card */}
+          <div className="svcd-card">
+            <h3 className="svcd-card-title">
+              <HiOutlineCalendar />
+              Timeline
+            </h3>
+            <div className="svcd-card-content">
+              <div className="svcd-info-row">
+                <span className="svcd-info-label">Created</span>
+                <span className="svcd-info-value">{formatDate(service.created_at)}</span>
+              </div>
+              <div className="svcd-info-row">
+                <span className="svcd-info-label">Last Updated</span>
+                <span className="svcd-info-value">{formatDate(service.updated_at)}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation */}
+      <ConfirmModal
+        isOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Service"
+        message="Are you sure you want to delete this service?"
+        itemName={service.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deleteLoading}
+      />
     </div>
   );
 };
