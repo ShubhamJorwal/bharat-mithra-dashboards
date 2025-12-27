@@ -333,14 +333,14 @@ const DistrictList = () => {
                   <div className="dl-card__head">
                     <div className="dl-card__badges">
                       <span className="dl-card__code">{district.code}</span>
-                      <span className="dl-card__state">{district.state_name}</span>
+                      <span className="dl-card__state">{district.state?.name}</span>
                     </div>
                     <h4 className="dl-card__name">{district.name}</h4>
                     {/* {district.name_hindi && <span className="dl-card__hindi">{district.name_hindi}</span>} */}
                   </div>
                   <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="dl-card__value">{district?.state_name || '—'}</span>
+                    <span className="dl-card__value">{district?.state?.name || '—'}</span>
                   </div>
                   <div className="dl-card__row">
                     <span className="dl-card__label"><HiOutlineLocationMarker /> Headquarters</span>

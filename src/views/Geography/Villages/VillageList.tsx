@@ -456,19 +456,19 @@ const VillageList = () => {
                   
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> Gram Panchayat</span>
-                    <span className="tl-card__value">{village?.gram_panchayat_name || '—'}</span>
+                    <span className="tl-card__value">{village?.gram_panchayat?.name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> Taluk</span>
-                    <span className="tl-card__value">{village?.taluk_name || '—'}</span>
+                    <span className="tl-card__value">{village?.taluk?.name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
-                    <span className="tl-card__value">{village?.district_name || '—'}</span>
+                    <span className="tl-card__value">{village?.district?.name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="tl-card__value">{village?.state_name || '—'}</span>
+                    <span className="tl-card__value">{village?.state?.name || '—'}</span>
                   </div>
                   {/* <div className="vl-card__location">
                     <span className="taluk"><HiOutlineLocationMarker /> {village.taluk_name}</span>

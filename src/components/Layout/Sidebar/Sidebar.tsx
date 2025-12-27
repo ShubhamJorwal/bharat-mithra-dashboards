@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import {
   HiOutlineHome,
   HiOutlineDocumentText,
@@ -71,7 +71,19 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
         { path: '/services/categories', label: 'Categories' },
       ]
     },
-    { path: '/applications', icon: HiOutlineClipboardList, label: 'Applications', badge: null },
+    {
+      path: '/applications',
+      icon: HiOutlineClipboardList,
+      label: 'Applications',
+      badge: null,
+      subItems: [
+        { path: '/applications', label: 'All Applications' },
+        { path: '/applications?status=pending', label: 'Pending' },
+        { path: '/applications?status=approved', label: 'Approved' },
+        { path: '/applications?status=rejected', label: 'Rejected' },
+        { path: '/applications?status=completed', label: 'Completed' },
+      ]
+    },
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/calendar', icon: HiOutlineCalendar, label: 'Calendar', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
@@ -89,19 +101,35 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     { path: '/settings', icon: HiOutlineCog, label: 'Settings', badge: null },
   ];
 
+  // Helper to check if a sub-item path matches current location
+  const isSubItemActive = (subPath: string) => {
+    if (subPath.includes('?')) {
+      const [basePath, queryString] = subPath.split('?');
+      const params = new URLSearchParams(queryString);
+      const currentParams = new URLSearchParams(location.search);
+
+      if (location.pathname !== basePath) return false;
+
+      // Check if all params in subPath match current URL params
+      for (const [key, value] of params.entries()) {
+        if (currentParams.get(key) !== value) return false;
+      }
+      return true;
+    }
+    return location.pathname === subPath || location.pathname.startsWith(subPath + '/');
+  };
+
   // Auto-expand parent when visiting a sub-item
   useEffect(() => {
     mainNavItems.forEach(item => {
       if (item.subItems) {
-        const isSubActive = item.subItems.some(sub =>
-          location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
-        );
+        const isSubActive = item.subItems.some(sub => isSubItemActive(sub.path));
         if (isSubActive && !expandedItems.includes(item.path)) {
           setExpandedItems(prev => [...prev, item.path]);
         }
       }
     });
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isCollapsed) return;
@@ -149,10 +177,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   const renderNavItem = (item: NavItem) => {
     const hasSubItems = item.subItems && item.subItems.length > 0;
     const isExpanded = expandedItems.includes(item.path);
-    const isActive = location.pathname === item.path;
-    const isParentActive = hasSubItems && item.subItems?.some(sub =>
-      location.pathname === sub.path || location.pathname.startsWith(sub.path + '/')
-    );
+    const isParentActive = hasSubItems && item.subItems?.some(sub => isSubItemActive(sub.path));
 
     if (hasSubItems && !isCollapsed) {
       return (
@@ -172,16 +197,31 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
           </button>
           {isExpanded && (
             <div className="bm-nav-subitems">
-              {item.subItems?.map(sub => (
-                <NavLink
-                  key={sub.path}
-                  to={sub.path}
-                  end={sub.path === '/geography' || sub.path === '/services'}
-                  className={({ isActive }) => `bm-nav-subitem ${isActive ? 'active' : ''}`}
-                >
-                  <span className="bm-nav-label">{sub.label}</span>
-                </NavLink>
-              ))}
+              {item.subItems?.map(sub => {
+                const subIsActive = isSubItemActive(sub.path);
+                // Use Link for paths with query params, NavLink for regular paths
+                if (sub.path.includes('?')) {
+                  return (
+                    <Link
+                      key={sub.path}
+                      to={sub.path}
+                      className={`bm-nav-subitem ${subIsActive ? 'active' : ''}`}
+                    >
+                      <span className="bm-nav-label">{sub.label}</span>
+                    </Link>
+                  );
+                }
+                return (
+                  <NavLink
+                    key={sub.path}
+                    to={sub.path}
+                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/applications'}
+                    className={({ isActive: navIsActive }) => `bm-nav-subitem ${navIsActive ? 'active' : ''}`}
+                  >
+                    <span className="bm-nav-label">{sub.label}</span>
+                  </NavLink>
+                );
+              })}
             </div>
           )}
         </div>
@@ -192,7 +232,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       <NavLink
         key={item.path}
         to={item.path}
-        className={`bm-nav-item ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
+        className={({ isActive }) => `bm-nav-item ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
         title={isCollapsed ? item.label : undefined}
       >
         <span className="bm-nav-icon">

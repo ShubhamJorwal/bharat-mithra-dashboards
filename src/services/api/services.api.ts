@@ -14,7 +14,16 @@ import type {
   CreateFAQRequest,
   UpdateFAQRequest,
   CreateFormRequest,
-  GroupedServicesResponse
+  GroupedServicesResponse,
+  ServicePricing,
+  ServiceCaseworkerInfo,
+  ServiceChecklist,
+  ServiceOfficeLocation,
+  ServiceCompleteDetails,
+  ServicePricingQueryParams,
+  ServiceCaseworkerQueryParams,
+  ServiceChecklistQueryParams,
+  ServiceOfficeQueryParams
 } from '../../types/api.types';
 
 const CATEGORIES_BASE = '/api/v1/categories';
@@ -228,6 +237,76 @@ export const servicesApi = {
   // Delete a FAQ
   deleteFAQ: async (id: string): Promise<ApiResponse<null>> => {
     const response = await axiosInstance.delete(`${FAQS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== PRICING ENDPOINTS ====================
+
+  // Get pricing for a service in a specific state/district
+  getServicePricing: async (serviceId: string, params: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/pricing`, { params });
+    return response.data;
+  },
+
+  // Get all pricing entries for a service
+  getAllServicePricing: async (serviceId: string): Promise<ApiResponse<ServicePricing[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/pricing/all`);
+    return response.data;
+  },
+
+  // Get pricing by slug
+  getServicePricingBySlug: async (slug: string, params: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/pricing`, { params });
+    return response.data;
+  },
+
+  // Get all service pricing for a specific state
+  getStatePricing: async (stateCode: string): Promise<ApiResponse<ServicePricing[]>> => {
+    const response = await axiosInstance.get(`/api/v1/pricing/state/${stateCode}`);
+    return response.data;
+  },
+
+  // ==================== CASEWORKER INFO ENDPOINTS ====================
+
+  // Get caseworker information for a service
+  getCaseworkerInfo: async (serviceId: string, params: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/caseworker-info`, { params });
+    return response.data;
+  },
+
+  // Get caseworker information by slug
+  getCaseworkerInfoBySlug: async (slug: string, params: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/caseworker-info`, { params });
+    return response.data;
+  },
+
+  // ==================== CHECKLIST ENDPOINTS ====================
+
+  // Get checklists for a service
+  getServiceChecklists: async (serviceId: string, params?: ServiceChecklistQueryParams): Promise<ApiResponse<ServiceChecklist[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/checklists`, { params });
+    return response.data;
+  },
+
+  // ==================== OFFICE LOCATION ENDPOINTS ====================
+
+  // Get office locations for a service
+  getServiceOffices: async (serviceId: string, params?: ServiceOfficeQueryParams): Promise<ApiResponse<ServiceOfficeLocation[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/offices`, { params });
+    return response.data;
+  },
+
+  // ==================== COMPLETE DETAILS ENDPOINTS ====================
+
+  // Get service with all related information
+  getServiceCompleteDetails: async (serviceId: string, params?: ServicePricingQueryParams): Promise<ApiResponse<ServiceCompleteDetails>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/complete`, { params });
+    return response.data;
+  },
+
+  // Get service complete details by slug
+  getServiceCompleteDetailsBySlug: async (slug: string, params?: ServicePricingQueryParams): Promise<ApiResponse<ServiceCompleteDetails>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/complete`, { params });
     return response.data;
   }
 };

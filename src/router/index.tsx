@@ -19,6 +19,9 @@ import { UserList, UserDetails, UserCreate, UserEdit } from "../views/Users";
 import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit } from "../views/Services";
 import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Categories";
 
+// Applications Pages
+import { ApplicationList, ApplicationDetails } from "../views/Applications";
+
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
@@ -201,11 +204,16 @@ const routerConfig = [
         path: "geography/villages/:id/edit",
         element: <VillageForm />,
       },
-      // Other Routes (Placeholders)
+      // Applications Routes
       {
         path: "applications",
-        element: <Dashboard />, // Placeholder
+        element: <ApplicationList />,
       },
+      {
+        path: "applications/:id",
+        element: <ApplicationDetails />,
+      },
+      // Other Routes (Placeholders)
       {
         path: "documents",
         element: <Dashboard />, // Placeholder

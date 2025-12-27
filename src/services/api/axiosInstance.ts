@@ -30,10 +30,15 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
+    // Bypass auth redirect for development (set to true to disable redirect)
+    const bypassAuthRedirect = true;
+
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      if (!bypassAuthRedirect) {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login';
+      }
       return Promise.reject(error);
     }
 

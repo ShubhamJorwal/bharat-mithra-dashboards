@@ -383,11 +383,11 @@ const TalukList = () => {
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
-                    <span className="tl-card__value">{taluk?.district_name || '—'}</span>
+                    <span className="tl-card__value">{taluk?.district?.name || '—'}</span>
                   </div>
                   <div className="tl-card__row">
                     <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="tl-card__value">{taluk?.state_name || '—'}</span>
+                    <span className="tl-card__value">{taluk?.state?.name || '—'}</span>
                   </div>
                   <div className="tl-card__nums">
                     <div className="tl-card__num">
