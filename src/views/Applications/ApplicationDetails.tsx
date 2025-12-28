@@ -72,7 +72,7 @@ const getMockApplication = (id: string): Application => ({
   service_name: 'Birth Certificate',
   service_name_hindi: 'जन्म प्रमाण पत्र',
   service_processing_time: '7-15 Days',
-  applicant_id: 'user-001',
+  user_id: 'user-001',
   applicant_name: 'Rahul Kumar',
   applicant_mobile: '+91 98765 43210',
   applicant_email: 'rahul.kumar@email.com',
@@ -160,7 +160,7 @@ const MOCK_PAYMENTS: ApplicationPayment[] = [
     payment_method: 'UPI',
     payment_gateway: 'Razorpay',
     transaction_id: 'TXN123456789',
-    status: 'completed',
+    status: 'success',
     paid_at: '2024-12-20T10:34:00Z',
     created_at: '2024-12-20T10:33:00Z'
   }
@@ -514,8 +514,8 @@ const ApplicationDetails = () => {
     }
   };
 
-  // Refresh application data
-  const refreshData = async () => {
+  // Refresh application data - available for future use
+  const _refreshData = async () => {
     if (!id) return;
     try {
       const appRes = await applicationsApi.getApplicationById(id);
@@ -530,6 +530,7 @@ const ApplicationDetails = () => {
       console.error('Failed to refresh:', err);
     }
   };
+  void _refreshData; // Suppress unused warning
 
   const formatDate = (date: string | undefined | null) => {
     if (!date) return '-';

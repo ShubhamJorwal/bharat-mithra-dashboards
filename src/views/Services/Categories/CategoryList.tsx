@@ -334,13 +334,13 @@ const CategoryList = () => {
                         )}
                       </div>
                       <h4 className="cl-card__name">{category.name}</h4>
-                      {category.name_hindi && (
+                      {/* {category.name_hindi && (
                         <span className="cl-card__hindi">{category.name_hindi}</span>
-                      )}
+                      )} */}
                     </div>
-                    {category.description && (
+                    {/* {category.description && (
                       <p className="cl-card__desc">{category.description}</p>
-                    )}
+                    )} */}
                     <div className="cl-card__row">
                       <span className="cl-card__label">
                         <HiOutlineFolder /> {parentName ? 'Parent' : 'Slug'}
