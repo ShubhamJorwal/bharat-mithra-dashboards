@@ -2,14 +2,12 @@
 @use '../../../styles/mixins' as *;
 
 // ==============================================
-// NATIONAL DASHBOARD - Clean Design with Flag
+// NATIONAL DASHBOARD - Modern Redesign
 // ==============================================
 
-// Indian Flag Colors
-$saffron: #FF9933;
-$flag-white: #FFFFFF;
-$green: #138808;
-$navy: #000080;
+// Brand Colors
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$accent-gradient: linear-gradient(135deg, #FF9933 0%, #138808 100%);
 
 .nd {
   padding: 0;
@@ -99,79 +97,167 @@ $navy: #000080;
   }
 
   // ==============================================
-  // HERO SECTION
+  // HERO SECTION - Redesigned
   // ==============================================
   &-hero {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     background: var(--color-background);
     border: 1px solid var(--color-border-light);
-    border-radius: 16px;
-    padding: 28px 32px;
+    border-radius: 20px;
+    padding: 40px 32px 36px;
     margin-bottom: 24px;
     overflow: hidden;
 
-    &__content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
+    // Subtle background pattern
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 153, 51, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(19, 136, 8, 0.03) 0%, transparent 50%);
+      pointer-events: none;
     }
 
-    &__info {
-      flex: 1;
+    // Emblem container - centered, 50% width
+    &__emblem {
+      position: relative;
+      width: 50%;
+      max-width: 120px;
+      aspect-ratio: 1;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &__emblem-ring {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: $accent-gradient;
+      padding: 4px;
+      animation: nd-emblem-glow 3s ease-in-out infinite;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px dashed rgba(255, 153, 51, 0.3);
+        animation: nd-emblem-rotate 20s linear infinite;
+      }
+    }
+
+    &__emblem-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--color-background);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &__emblem-icon {
+      font-size: 48px;
+      color: #FF9933;
+      filter: drop-shadow(0 2px 8px rgba(255, 153, 51, 0.3));
+    }
+
+    &__emblem-decoration {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border-light);
+      opacity: 0.5;
+    }
+
+    // Text content
+    &__text {
+      position: relative;
+      z-index: 1;
     }
 
     &__badge {
       display: inline-block;
-      padding: 4px 12px;
-      background: var(--color-background-secondary);
-      border-radius: 4px;
-      font-size: 10px;
+      padding: 6px 16px;
+      background: $accent-gradient;
+      border-radius: 20px;
+      font-size: 11px;
       font-weight: 600;
-      color: var(--color-text-secondary);
+      color: #fff;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
       margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(255, 153, 51, 0.25);
     }
 
     &__title {
-      font-size: 36px;
+      font-size: 42px;
       font-weight: 700;
       color: var(--color-text);
       margin: 0;
-      letter-spacing: -0.5px;
+      letter-spacing: -1px;
       line-height: 1.1;
     }
 
-    &__subtitle {
-      display: block;
-      font-size: 16px;
+    &__tagline {
+      font-size: 14px;
       color: var(--color-text-secondary);
-      margin-top: 4px;
+      margin: 8px 0 0;
+      font-weight: 500;
     }
 
-    &__meta {
+    &__stats {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 16px;
-      font-size: 13px;
-      color: var(--color-text-secondary);
-
-      strong {
-        color: var(--color-text);
-        font-weight: 600;
-      }
+      justify-content: center;
+      gap: 24px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--color-border-light);
     }
 
-    &__divider {
-      color: var(--color-border);
+    &__stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    &__stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    &__stat-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--color-border);
     }
 
     &__refresh {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 16px;
+      right: 16px;
       width: 36px;
       height: 36px;
       display: flex;
@@ -179,10 +265,11 @@ $navy: #000080;
       justify-content: center;
       background: transparent;
       border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border-radius: 10px;
       color: var(--color-text-secondary);
       cursor: pointer;
       transition: all 0.2s;
+      z-index: 2;
 
       svg {
         font-size: 16px;
@@ -191,89 +278,168 @@ $navy: #000080;
       &:hover {
         border-color: var(--color-text);
         color: var(--color-text);
+        background: var(--color-background-secondary);
       }
     }
   }
 
   // ==============================================
-  // INDIAN FLAG
+  // CAROUSEL
   // ==============================================
-  &-flag {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-    flex-shrink: 0;
+  &-carousel {
+    position: relative;
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: 16px;
+    padding: 32px 60px;
+    overflow: hidden;
 
-    &__pole {
-      width: 4px;
-      height: 90px;
-      background: linear-gradient(180deg, #8B7355 0%, #6B5344 100%);
-      border-radius: 2px 0 0 2px;
-      box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.2);
+    &__track {
+      position: relative;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    &__container {
-      width: 90px;
-      height: 60px;
+    &__slide {
+      position: absolute;
+      width: 280px;
+      height: 160px;
+      background: var(--slide-gradient);
+      border-radius: 16px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      border-radius: 0 2px 2px 0;
-      overflow: hidden;
-      box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.1),
-        0 4px 16px rgba(0, 0, 0, 0.08);
-      animation: nd-flag-wave 3s ease-in-out infinite;
-      transform-origin: left center;
-    }
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.8) translateX(100%);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 
-    &__stripe {
-      flex: 1;
-
-      &--saffron {
-        background: $saffron;
+      &--active {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        pointer-events: auto;
+        z-index: 3;
       }
 
-      &--white {
-        background: $flag-white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      &--prev {
+        opacity: 0.4;
+        transform: scale(0.85) translateX(-120%);
+        z-index: 2;
       }
 
-      &--green {
-        background: $green;
+      &--next {
+        opacity: 0.4;
+        transform: scale(0.85) translateX(120%);
+        z-index: 2;
       }
     }
 
-    &__chakra {
-      width: 16px;
-      height: 16px;
-      border: 1.5px solid $navy;
-      border-radius: 50%;
-      position: relative;
-      animation: nd-chakra-spin 8s linear infinite;
+    &__slide-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      margin-bottom: 16px;
+
+      svg {
+        font-size: 24px;
+        color: #fff;
+      }
     }
 
-    &__chakra-center {
+    &__slide-content {
+      color: #fff;
+    }
+
+    &__slide-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    &__slide-subtitle {
+      font-size: 12px;
+      opacity: 0.85;
+      font-weight: 500;
+    }
+
+    &__slide-desc {
+      font-size: 13px;
+      margin: 8px 0 0;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    &__nav {
       position: absolute;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 3px;
-      height: 3px;
-      background: $navy;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
       border-radius: 50%;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 10;
+
+      svg {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: var(--color-text);
+        color: var(--color-background);
+        border-color: var(--color-text);
+      }
+
+      &--prev {
+        left: 12px;
+      }
+
+      &--next {
+        right: 12px;
+      }
     }
 
-    &__spoke {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0.8px;
-      height: 50%;
-      background: $navy;
-      transform-origin: center top;
-      margin-left: -0.4px;
+    &__dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    &__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-border);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0;
+
+      &:hover {
+        background: var(--color-text-secondary);
+      }
+
+      &--active {
+        width: 24px;
+        border-radius: 4px;
+        background: var(--color-text);
+      }
     }
   }
 
@@ -591,22 +757,16 @@ $navy: #000080;
   }
 }
 
-@keyframes nd-flag-wave {
+@keyframes nd-emblem-glow {
   0%, 100% {
-    transform: perspective(100px) rotateY(0deg) skewY(0deg);
-  }
-  25% {
-    transform: perspective(100px) rotateY(2deg) skewY(0.5deg);
+    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
   }
   50% {
-    transform: perspective(100px) rotateY(0deg) skewY(0deg);
-  }
-  75% {
-    transform: perspective(100px) rotateY(-1deg) skewY(-0.3deg);
+    box-shadow: 0 0 40px rgba(255, 153, 51, 0.4);
   }
 }
 
-@keyframes nd-chakra-spin {
+@keyframes nd-emblem-rotate {
   from {
     transform: rotate(0deg);
   }
@@ -638,6 +798,15 @@ $navy: #000080;
     &-zones {
       grid-template-columns: repeat(3, 1fr);
     }
+
+    &-carousel {
+      padding: 24px 50px;
+
+      &__slide {
+        width: 260px;
+        height: 150px;
+      }
+    }
   }
 }
 
@@ -651,14 +820,35 @@ $navy: #000080;
       grid-template-columns: repeat(2, 1fr);
     }
 
-    &-hero__content {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 24px;
+    &-hero {
+      padding: 32px 24px 28px;
+
+      &__emblem {
+        max-width: 100px;
+      }
+
+      &__emblem-icon {
+        font-size: 40px;
+      }
+
+      &__title {
+        font-size: 36px;
+      }
     }
 
-    &-flag {
-      align-self: flex-end;
+    &-carousel {
+      padding: 24px 45px;
+
+      &__slide {
+        width: 240px;
+        height: 140px;
+        padding: 20px;
+
+        &--prev,
+        &--next {
+          display: none;
+        }
+      }
     }
   }
 }
@@ -666,15 +856,107 @@ $navy: #000080;
 @media (max-width: 600px) {
   .nd {
     &-hero {
-      padding: 20px;
+      padding: 24px 20px 20px;
+
+      &__emblem {
+        max-width: 80px;
+        margin-bottom: 16px;
+      }
+
+      &__emblem-icon {
+        font-size: 32px;
+      }
 
       &__title {
         font-size: 28px;
       }
 
+      &__tagline {
+        font-size: 13px;
+      }
+
+      &__stats {
+        gap: 16px;
+        margin-top: 20px;
+        padding-top: 16px;
+      }
+
+      &__stat-value {
+        font-size: 20px;
+      }
+
       &__refresh {
-        top: 16px;
-        right: 16px;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    &-carousel {
+      padding: 20px 40px;
+
+      &__track {
+        height: 160px;
+      }
+
+      &__slide {
+        width: 220px;
+        height: 130px;
+        padding: 16px;
+      }
+
+      &__slide-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 12px;
+
+        svg {
+          font-size: 20px;
+        }
+      }
+
+      &__slide-title {
+        font-size: 16px;
+      }
+
+      &__slide-subtitle {
+        font-size: 11px;
+      }
+
+      &__slide-desc {
+        font-size: 12px;
+      }
+
+      &__nav {
+        width: 32px;
+        height: 32px;
+
+        svg {
+          font-size: 16px;
+        }
+
+        &--prev {
+          left: 4px;
+        }
+
+        &--next {
+          right: 4px;
+        }
+      }
+
+      &__dots {
+        margin-top: 16px;
+        gap: 6px;
+      }
+
+      &__dot {
+        width: 6px;
+        height: 6px;
+
+        &--active {
+          width: 18px;
+        }
       }
     }
 

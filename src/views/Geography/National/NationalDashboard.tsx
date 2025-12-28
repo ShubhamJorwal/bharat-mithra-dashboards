@@ -1,25 +1,121 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineRefresh,
   HiOutlineExclamationCircle,
   HiOutlineArrowRight,
   HiOutlineChevronRight,
+  HiOutlineChevronLeft,
   HiOutlineMap,
   HiOutlineOfficeBuilding,
   HiOutlineLocationMarker,
   HiOutlineUserGroup,
-  HiOutlineHome
+  HiOutlineHome,
+  HiOutlineGlobe,
+  HiOutlineDocumentText,
+  HiOutlineBriefcase,
+  HiOutlineLibrary,
+  HiOutlineShieldCheck,
+  HiOutlineCurrencyRupee,
+  HiOutlineAcademicCap,
+  HiOutlineHeart
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { NationalSummary } from '../../../types/api.types';
 import './NationalDashboard.scss';
+
+// Carousel items for showcasing government and private services
+const carouselItems = [
+  {
+    id: 1,
+    title: 'Digital India',
+    subtitle: 'Government Services Portal',
+    description: 'Access 1000+ government services online',
+    icon: HiOutlineGlobe,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    id: 2,
+    title: 'Aadhaar Services',
+    subtitle: 'Identity & Authentication',
+    description: 'Universal ID for 1.4 billion citizens',
+    icon: HiOutlineShieldCheck,
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+  },
+  {
+    id: 3,
+    title: 'Jan Dhan Yojana',
+    subtitle: 'Financial Inclusion',
+    description: 'Banking services for every citizen',
+    icon: HiOutlineCurrencyRupee,
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+  },
+  {
+    id: 4,
+    title: 'e-Governance',
+    subtitle: 'Document Services',
+    description: 'Birth certificates, licenses & more',
+    icon: HiOutlineDocumentText,
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+  },
+  {
+    id: 5,
+    title: 'Skill India',
+    subtitle: 'Education & Training',
+    description: 'Empowering youth with skills',
+    icon: HiOutlineAcademicCap,
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+  },
+  {
+    id: 6,
+    title: 'Ayushman Bharat',
+    subtitle: 'Healthcare Services',
+    description: 'Health coverage for 500M+ citizens',
+    icon: HiOutlineHeart,
+    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+  },
+  {
+    id: 7,
+    title: 'MSME Support',
+    subtitle: 'Business Services',
+    description: 'Supporting small businesses growth',
+    icon: HiOutlineBriefcase,
+    gradient: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)'
+  },
+  {
+    id: 8,
+    title: 'Public Libraries',
+    subtitle: 'Knowledge Resources',
+    description: 'Digital & physical resources',
+    icon: HiOutlineLibrary,
+    gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
+  }
+];
 
 const NationalDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<NationalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-advance carousel
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + carouselItems.length) % carouselItems.length);
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -107,35 +203,31 @@ const NationalDashboard = () => {
 
   return (
     <div className="nd">
-      {/* Hero Section with Flag */}
+      {/* Redesigned Hero Section */}
       <header className="nd-hero">
-        <div className="nd-hero__content">
-          <div className="nd-hero__info">
-            <div className="nd-hero__badge">National Database</div>
-            <h1 className="nd-hero__title">{data.country}</h1>
-            <span className="nd-hero__subtitle">{data.country_hindi}</span>
-            <div className="nd-hero__meta">
-              <span>Capital: <strong>{data.capital}</strong></span>
-              <span className="nd-hero__divider">|</span>
-              <span>Entities: <strong>{totalEntities}</strong></span>
+        <div className="nd-hero__emblem">
+          <div className="nd-hero__emblem-ring">
+            <div className="nd-hero__emblem-inner">
+              <HiOutlineGlobe className="nd-hero__emblem-icon" />
             </div>
           </div>
+          <div className="nd-hero__emblem-decoration"></div>
+        </div>
 
-          {/* Indian Flag */}
-          <div className="nd-flag">
-            <div className="nd-flag__container">
-              <div className="nd-flag__stripe nd-flag__stripe--saffron"></div>
-              <div className="nd-flag__stripe nd-flag__stripe--white">
-                <div className="nd-flag__chakra">
-                  <div className="nd-flag__chakra-center"></div>
-                  {[...Array(24)].map((_, i) => (
-                    <div key={i} className="nd-flag__spoke" style={{ transform: `rotate(${i * 15}deg)` }}></div>
-                  ))}
-                </div>
-              </div>
-              <div className="nd-flag__stripe nd-flag__stripe--green"></div>
+        <div className="nd-hero__text">
+          <div className="nd-hero__badge">Bharat Mithra</div>
+          <h1 className="nd-hero__title">{data.country}</h1>
+          <p className="nd-hero__tagline">Unified Digital Governance Platform</p>
+          <div className="nd-hero__stats">
+            <div className="nd-hero__stat">
+              <span className="nd-hero__stat-value">{totalEntities}</span>
+              <span className="nd-hero__stat-label">States & UTs</span>
             </div>
-            <div className="nd-flag__pole"></div>
+            <div className="nd-hero__stat-divider"></div>
+            <div className="nd-hero__stat">
+              <span className="nd-hero__stat-value">{data.capital}</span>
+              <span className="nd-hero__stat-label">Capital</span>
+            </div>
           </div>
         </div>
 
@@ -143,6 +235,60 @@ const NationalDashboard = () => {
           <HiOutlineRefresh />
         </button>
       </header>
+
+      {/* Services Carousel */}
+      <section className="nd-section">
+        <h2 className="nd-section__title">Government & Public Services</h2>
+        <div
+          className="nd-carousel"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <button className="nd-carousel__nav nd-carousel__nav--prev" onClick={prevSlide}>
+            <HiOutlineChevronLeft />
+          </button>
+
+          <div className="nd-carousel__track">
+            {carouselItems.map((item, index) => {
+              const IconComponent = item.icon;
+              const isActive = index === currentSlide;
+              const isPrev = index === (currentSlide - 1 + carouselItems.length) % carouselItems.length;
+              const isNext = index === (currentSlide + 1) % carouselItems.length;
+
+              return (
+                <div
+                  key={item.id}
+                  className={`nd-carousel__slide ${isActive ? 'nd-carousel__slide--active' : ''} ${isPrev ? 'nd-carousel__slide--prev' : ''} ${isNext ? 'nd-carousel__slide--next' : ''}`}
+                  style={{ '--slide-gradient': item.gradient } as React.CSSProperties}
+                >
+                  <div className="nd-carousel__slide-icon">
+                    <IconComponent />
+                  </div>
+                  <div className="nd-carousel__slide-content">
+                    <h3 className="nd-carousel__slide-title">{item.title}</h3>
+                    <span className="nd-carousel__slide-subtitle">{item.subtitle}</span>
+                    <p className="nd-carousel__slide-desc">{item.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <button className="nd-carousel__nav nd-carousel__nav--next" onClick={nextSlide}>
+            <HiOutlineChevronRight />
+          </button>
+
+          <div className="nd-carousel__dots">
+            {carouselItems.map((_, index) => (
+              <button
+                key={index}
+                className={`nd-carousel__dot ${index === currentSlide ? 'nd-carousel__dot--active' : ''}`}
+                onClick={() => setCurrentSlide(index)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Main Stats Grid */}
       <section className="nd-section">
