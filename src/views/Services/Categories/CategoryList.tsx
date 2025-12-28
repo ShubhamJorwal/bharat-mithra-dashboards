@@ -114,7 +114,6 @@ const CategoryList = () => {
       const query = searchQuery.toLowerCase();
       result = result.filter(cat =>
         cat.name.toLowerCase().includes(query) ||
-        cat.name_hindi?.toLowerCase().includes(query) ||
         cat.description?.toLowerCase().includes(query) ||
         cat.slug?.toLowerCase().includes(query)
       );
@@ -334,9 +333,6 @@ const CategoryList = () => {
                         )}
                       </div>
                       <h4 className="cl-card__name">{category.name}</h4>
-                      {/* {category.name_hindi && (
-                        <span className="cl-card__hindi">{category.name_hindi}</span>
-                      )} */}
                     </div>
                     {/* {category.description && (
                       <p className="cl-card__desc">{category.description}</p>
@@ -379,7 +375,6 @@ const CategoryList = () => {
                 <thead>
                   <tr>
                     <th>Category</th>
-                    <th>Hindi Name</th>
                     <th>Parent</th>
                     <th className="num">Order</th>
                     <th>Status</th>
@@ -408,9 +403,6 @@ const CategoryList = () => {
                               <span className="slug">{category.slug}</span>
                             </div>
                           </div>
-                        </td>
-                        <td>
-                          <span className="cl-table__hindi">{category.name_hindi || '—'}</span>
                         </td>
                         <td>
                           {parentName ? (

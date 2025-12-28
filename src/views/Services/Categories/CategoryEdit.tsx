@@ -16,7 +16,6 @@ import './CategoryEdit.scss';
 
 interface CategoryFormData {
   name: string;
-  name_hindi: string;
   slug: string;
   description: string;
   icon_url: string;
@@ -40,7 +39,6 @@ const CategoryEdit = () => {
   const [tempImageForEdit, setTempImageForEdit] = useState<string | null>(null);
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
-    name_hindi: '',
     slug: '',
     description: '',
     icon_url: '',
@@ -70,7 +68,6 @@ const CategoryEdit = () => {
             const category = categoryRes.data;
             setFormData({
               name: category.name || '',
-              name_hindi: category.name_hindi || '',
               slug: category.slug || '',
               description: category.description || '',
               icon_url: category.icon_url || '',
@@ -169,7 +166,6 @@ const CategoryEdit = () => {
     try {
       const updateData: UpdateCategoryRequest = {
         name: formData.name,
-        name_hindi: formData.name_hindi || undefined,
         slug: formData.slug || undefined,
         description: formData.description || undefined,
         icon_url: formData.icon_url || undefined,
@@ -337,7 +333,7 @@ const CategoryEdit = () => {
             <h3 className="bm-form-section-title">Basic Information</h3>
             <div className="bm-form-grid">
               <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name">Category Name (English) *</label>
+                <label className="bm-label" htmlFor="name">Category Name *</label>
                 <input
                   type="text"
                   id="name"
@@ -347,18 +343,6 @@ const CategoryEdit = () => {
                   className="bm-input"
                   placeholder="Enter category name"
                   required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name_hindi">Category Name (Hindi)</label>
-                <input
-                  type="text"
-                  id="name_hindi"
-                  name="name_hindi"
-                  value={formData.name_hindi}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter category name in Hindi"
                 />
               </div>
               <div className="bm-form-group">

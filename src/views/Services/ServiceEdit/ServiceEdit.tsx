@@ -14,12 +14,9 @@ import './ServiceEdit.scss';
 
 interface ServiceFormData {
   name: string;
-  name_hindi: string;
   category_id: string;
   description: string;
-  description_hindi: string;
   department: string;
-  department_hindi: string;
   ministry: string;
   eligibility_criteria: string;
   processing_time: string;
@@ -45,12 +42,9 @@ const ServiceEdit = () => {
   const [notFound, setNotFound] = useState(false);
   const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
-    name_hindi: '',
     category_id: '',
     description: '',
-    description_hindi: '',
     department: '',
-    department_hindi: '',
     ministry: '',
     eligibility_criteria: '',
     processing_time: '',
@@ -87,12 +81,9 @@ const ServiceEdit = () => {
             setServiceId(service.id);
             setFormData({
               name: service.name || '',
-              name_hindi: service.name_hindi || '',
               category_id: service.category_id || '',
               description: service.description || '',
-              description_hindi: service.description_hindi || '',
               department: service.department || '',
-              department_hindi: service.department_hindi || '',
               ministry: service.ministry || '',
               eligibility_criteria: service.eligibility_criteria || '',
               processing_time: service.processing_time || '',
@@ -171,11 +162,8 @@ const ServiceEdit = () => {
     try {
       const updateData: UpdateServiceRequest = {
         name: formData.name,
-        name_hindi: formData.name_hindi || undefined,
         description: formData.description,
-        description_hindi: formData.description_hindi || undefined,
-        department: formData.department || undefined,  // Optional - defaults on backend
-        department_hindi: formData.department_hindi || undefined,
+        department: formData.department || undefined,
         ministry: formData.ministry || undefined,
         eligibility_criteria: formData.eligibility_criteria || undefined,
         processing_time: formData.processing_time || undefined,
@@ -303,18 +291,6 @@ const ServiceEdit = () => {
                 />
               </div>
               <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name_hindi">Service Name (Hindi)</label>
-                <input
-                  type="text"
-                  id="name_hindi"
-                  name="name_hindi"
-                  value={formData.name_hindi}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter service name in Hindi"
-                />
-              </div>
-              <div className="bm-form-group">
                 <label className="bm-label" htmlFor="category_id">Category *</label>
                 <select
                   id="category_id"
@@ -348,7 +324,7 @@ const ServiceEdit = () => {
                 />
               </div>
               <div className="bm-form-group bm-form-group--full">
-                <label className="bm-label" htmlFor="description">Description (English) *</label>
+                <label className="bm-label" htmlFor="description">Description *</label>
                 <textarea
                   id="description"
                   name="description"
@@ -360,36 +336,12 @@ const ServiceEdit = () => {
                   required
                 />
               </div>
-              <div className="bm-form-group bm-form-group--full">
-                <label className="bm-label" htmlFor="description_hindi">Description (Hindi)</label>
-                <textarea
-                  id="description_hindi"
-                  name="description_hindi"
-                  value={formData.description_hindi}
-                  onChange={handleChange}
-                  className="bm-textarea"
-                  placeholder="Enter description in Hindi"
-                  rows={3}
-                />
               </div>
-            </div>
           </div>
 
           <div className="bm-form-section">
             <h3 className="bm-form-section-title">Service Details</h3>
             <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="department_hindi">Department (Hindi)</label>
-                <input
-                  type="text"
-                  id="department_hindi"
-                  name="department_hindi"
-                  value={formData.department_hindi}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter department name in Hindi"
-                />
-              </div>
               <div className="bm-form-group">
                 <label className="bm-label" htmlFor="ministry">Ministry</label>
                 <input

@@ -10,7 +10,10 @@
 .svcd {
   min-height: 100%;
   display: flex;
+  border: 1px dashed var(--color-border);
   flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 // ============================================
@@ -92,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 28px;
+  padding: 10px 15px;
   background: linear-gradient(135deg,
     rgba(59, 130, 246, 0.06) 0%,
     rgba(99, 102, 241, 0.04) 50%,
@@ -596,7 +599,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 12px 16px;
+  padding: 12px 10px;
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
@@ -606,8 +609,10 @@
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 
   svg { font-size: 16px; }
+  border-right: 1px dashed var(--color-border);
 
   &:hover:not(:disabled) {
     color: var(--color-text);
@@ -1426,6 +1431,355 @@
 // ============================================
 // DARK MODE
 // ============================================
+// ============================================
+// CHECKLISTS TAB
+// ============================================
+.svcd-checklists-tab {
+  padding: 24px;
+}
+
+// ============================================
+// CONTACTS TAB
+// ============================================
+.svcd-contacts-tab {
+  padding: 24px;
+}
+
+.svcd-contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.svcd-contact-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.svcd-contact-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.svcd-contact-type {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+
+  &--helpdesk { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+  &--support { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &--grievance { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  &--nodal_officer { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+}
+
+.svcd-contact-primary {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.svcd-contact-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px 0;
+}
+
+.svcd-contact-designation {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 2px 0;
+}
+
+.svcd-contact-dept {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0 0 10px 0;
+}
+
+.svcd-contact-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+
+  svg {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
+
+  &:last-child { margin-bottom: 0; }
+}
+
+// ============================================
+// AVAILABILITY TAB
+// ============================================
+.svcd-availability-tab {
+  padding: 24px;
+}
+
+.svcd-availability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.svcd-availability-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+
+  &.available {
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  &.unavailable {
+    border-color: rgba(239, 68, 68, 0.3);
+    opacity: 0.7;
+  }
+}
+
+.svcd-availability-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 10px;
+
+  svg {
+    font-size: 18px;
+    color: #3b82f6;
+  }
+}
+
+.svcd-availability-status {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &--available {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  &--coming_soon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  &--unavailable {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  &--restricted {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+  }
+}
+
+.svcd-availability-local {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 10px 0 0 0;
+}
+
+.svcd-availability-date {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0 0;
+}
+
+// ============================================
+// ELIGIBILITY TAB
+// ============================================
+.svcd-eligibility-tab {
+  padding: 24px;
+}
+
+.svcd-eligibility-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+}
+
+.svcd-eligibility-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.svcd-eligibility-type {
+  margin-bottom: 10px;
+}
+
+.svcd-eligibility-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &--age { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+  &--income { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  &--residence { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &--gender { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+  &--occupation { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+  &--education { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+  &--custom { background: rgba(107, 114, 128, 0.1); color: #6b7280; }
+}
+
+.svcd-eligibility-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.svcd-eligibility-operator {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--color-background-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.svcd-eligibility-value {
+  font-weight: 600;
+}
+
+.svcd-eligibility-error {
+  font-size: 12px;
+  color: #ef4444;
+  margin: 8px 0 0 0;
+  font-style: italic;
+}
+
+// ============================================
+// STATUSES TAB
+// ============================================
+.svcd-statuses-tab {
+  padding: 24px;
+}
+
+.svcd-statuses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+}
+
+.svcd-status-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.svcd-status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.svcd-status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.svcd-status-final {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.svcd-status-success {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.svcd-status-code {
+  display: block;
+  font-size: 12px;
+  font-family: 'SF Mono', Monaco, monospace;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.svcd-status-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ============================================
+// WORKFLOW SLA
+// ============================================
+.svcd-workflow-sla {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.1);
+  font-size: 11px;
+  font-weight: 600;
+  color: #f59e0b;
+
+  svg {
+    font-size: 12px;
+  }
+}
+
+// ============================================
+// DARK MODE
+// ============================================
 body.dark-mode {
   .svcd-hero {
     background: linear-gradient(135deg,
@@ -1445,6 +1799,13 @@ body.dark-mode {
   }
 
   .svcd-doc-stat {
+    background: var(--color-background-secondary);
+  }
+
+  .svcd-contact-card,
+  .svcd-availability-card,
+  .svcd-eligibility-card,
+  .svcd-status-card {
     background: var(--color-background-secondary);
   }
 }
