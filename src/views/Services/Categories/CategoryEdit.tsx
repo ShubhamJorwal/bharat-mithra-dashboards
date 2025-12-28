@@ -5,11 +5,13 @@ import {
   HiOutlineExclamationCircle,
   HiOutlinePhotograph,
   HiOutlineX,
-  HiOutlinePencilAlt
+  HiOutlinePencilAlt,
+  HiOutlinePencil
 } from 'react-icons/hi';
 import servicesApi from '../../../services/api/services.api';
 import type { ServiceCategory, UpdateCategoryRequest } from '../../../types/api.types';
 import { PageHeader } from '../../../components/common/PageHeader';
+import { ImageEditor } from '../../../components/common/ImageEditor';
 import './CategoryEdit.scss';
 
 interface CategoryFormData {
@@ -34,6 +36,8 @@ const CategoryEdit = () => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [tempImageForEdit, setTempImageForEdit] = useState<string | null>(null);
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     name_hindi: '',
@@ -109,8 +113,8 @@ const CategoryEdit = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        setSaveError('Image size must be less than 2MB');
+      if (file.size > 5 * 1024 * 1024) {
+        setSaveError('Image size must be less than 5MB');
         return;
       }
 
@@ -119,12 +123,27 @@ const CategoryEdit = () => {
         return;
       }
 
+      // Create preview and open editor
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setFormData(prev => ({ ...prev, icon_url: reader.result as string }));
+        const imageData = reader.result as string;
+        setTempImageForEdit(imageData);
+        setIsEditorOpen(true);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditorSave = (editedImageData: string) => {
+    setImagePreview(editedImageData);
+    setFormData(prev => ({ ...prev, icon_url: editedImageData }));
+    setTempImageForEdit(null);
+  };
+
+  const handleEditExistingImage = () => {
+    if (imagePreview) {
+      setTempImageForEdit(imagePreview);
+      setIsEditorOpen(true);
     }
   };
 
@@ -270,19 +289,30 @@ const CategoryEdit = () => {
               {imagePreview ? (
                 <div className="bm-image-preview">
                   <img src={imagePreview} alt="Category icon preview" />
-                  <button
-                    type="button"
-                    className="bm-remove-image"
-                    onClick={handleRemoveImage}
-                  >
-                    <HiOutlineX />
-                  </button>
+                  <div className="bm-image-actions">
+                    <button
+                      type="button"
+                      className="bm-edit-image"
+                      onClick={handleEditExistingImage}
+                      title="Edit image"
+                    >
+                      <HiOutlinePencil />
+                    </button>
+                    <button
+                      type="button"
+                      className="bm-remove-image"
+                      onClick={handleRemoveImage}
+                      title="Remove image"
+                    >
+                      <HiOutlineX />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <label htmlFor="icon-upload" className="bm-upload-placeholder">
                   <HiOutlinePhotograph />
                   <span>Click to upload icon</span>
-                  <small>PNG, JPG up to 2MB</small>
+                  <small>PNG, JPG up to 5MB (will be optimized)</small>
                 </label>
               )}
             </div>
@@ -420,6 +450,22 @@ const CategoryEdit = () => {
           </div>
         </form>
       </div>
+
+      {/* Image Editor Modal */}
+      {tempImageForEdit && (
+        <ImageEditor
+          isOpen={isEditorOpen}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setTempImageForEdit(null);
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          }}
+          onSave={handleEditorSave}
+          imageSource={tempImageForEdit}
+        />
+      )}
     </div>
   );
 };

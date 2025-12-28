@@ -135,10 +135,16 @@
     object-fit: cover;
   }
 
-  .bm-remove-image {
+  .bm-image-actions {
     position: absolute;
     top: 8px;
     right: 8px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .bm-edit-image,
+  .bm-remove-image {
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -149,12 +155,20 @@
     @include flex-center;
     transition: background 0.15s ease;
 
+    svg {
+      font-size: 14px;
+    }
+  }
+
+  .bm-edit-image {
+    &:hover {
+      background: rgba(59, 130, 246, 0.9);
+    }
+  }
+
+  .bm-remove-image {
     &:hover {
       background: rgba(220, 38, 38, 0.9);
-    }
-
-    svg {
-      font-size: 16px;
     }
   }
 }
