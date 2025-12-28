@@ -489,22 +489,34 @@ const ServiceDetails = () => {
               {checklists.length > 0 && (
                 <div className="svcd-section">
                   <h2 className="svcd-section-title">Checklists</h2>
-                  {checklists.map((checklist) => (
-                    <div key={checklist.id} className="svcd-checklist">
-                      <h4 className="svcd-checklist-title">{checklist.title}</h4>
-                      <div className="svcd-checklist-items">
-                        {checklist.items.map((item, idx) => (
-                          <div key={idx} className="svcd-checklist-item">
-                            <span className="svcd-checklist-number">{item.item_number}</span>
-                            <span className="svcd-checklist-text">
-                              {item.text}
-                              {item.is_mandatory && <span className="svcd-mandatory">*</span>}
-                            </span>
-                          </div>
-                        ))}
+                  {/* Group checklists by type */}
+                  {(() => {
+                    const groupedChecklists = checklists.reduce((acc, item) => {
+                      const type = item.checklist_type || 'general';
+                      if (!acc[type]) acc[type] = [];
+                      acc[type].push(item);
+                      return acc;
+                    }, {} as Record<string, typeof checklists>);
+
+                    return Object.entries(groupedChecklists).map(([type, items]) => (
+                      <div key={type} className="svcd-checklist">
+                        <h4 className="svcd-checklist-title">
+                          {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </h4>
+                        <div className="svcd-checklist-items">
+                          {items.sort((a, b) => a.item_order - b.item_order).map((item) => (
+                            <div key={item.id} className="svcd-checklist-item">
+                              <span className="svcd-checklist-number">{item.item_order}</span>
+                              <span className="svcd-checklist-text">
+                                {item.item_text}
+                                {item.is_mandatory && <span className="svcd-mandatory">*</span>}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               )}
             </div>
@@ -727,7 +739,7 @@ const ServiceDetails = () => {
                     </div>
                     <div className="svcd-pricing-body">
                       <div className="svcd-pricing-total">
-                        {formatCurrency(pricing.total_fee)}
+                        {formatCurrency(pricing.total_fee ?? (pricing.service_fee + pricing.platform_fee + pricing.government_fee))}
                       </div>
                       <div className="svcd-pricing-breakdown">
                         <div className="svcd-pricing-row">
@@ -742,7 +754,7 @@ const ServiceDetails = () => {
                           <span>Platform Fee</span>
                           <span>{formatCurrency(pricing.platform_fee)}</span>
                         </div>
-                        {pricing.gst_amount > 0 && (
+                        {pricing.gst_amount && pricing.gst_amount > 0 && (
                           <div className="svcd-pricing-row">
                             <span>GST ({pricing.gst_percentage}%)</span>
                             <span>{formatCurrency(pricing.gst_amount)}</span>

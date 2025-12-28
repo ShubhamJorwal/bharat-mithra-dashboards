@@ -23,13 +23,37 @@ import type {
   GroupedServicesResponse,
   ServicePricing,
   ServiceCaseworkerInfo,
+  ServiceCaseworkerInfoFull,
   ServiceChecklist,
   ServiceOfficeLocation,
   ServiceCompleteDetails,
   ServicePricingQueryParams,
   ServiceCaseworkerQueryParams,
   ServiceChecklistQueryParams,
-  ServiceOfficeQueryParams
+  ServiceOfficeQueryParams,
+  // New imports for extended functionality
+  CreateServicePricingRequest,
+  UpdateServicePricingRequest,
+  CreateServiceCaseworkerInfoRequest,
+  UpdateServiceCaseworkerInfoRequest,
+  CreateServiceChecklistRequest,
+  UpdateServiceChecklistRequest,
+  CreateServiceOfficeLocationRequest,
+  UpdateServiceOfficeLocationRequest,
+  ServiceStateAvailability,
+  ServiceStateAvailabilityQueryParams,
+  CreateServiceStateAvailabilityRequest,
+  UpdateServiceStateAvailabilityRequest,
+  ServiceContactPerson,
+  ServiceContactQueryParams,
+  CreateServiceContactPersonRequest,
+  UpdateServiceContactPersonRequest,
+  ServiceEligibility,
+  CreateServiceEligibilityRequest,
+  UpdateServiceEligibilityRequest,
+  ServiceStatusMapping,
+  CreateServiceStatusMappingRequest,
+  UpdateServiceStatusMappingRequest
 } from '../../types/api.types';
 
 const CATEGORIES_BASE = '/api/v1/categories';
@@ -38,6 +62,14 @@ const FORMS_BASE = '/api/v1/forms';
 const FAQS_BASE = '/api/v1/faqs';
 const DOCUMENTS_BASE = '/api/v1/documents';
 const WORKFLOWS_BASE = '/api/v1/workflows';
+const PRICING_BASE = '/api/v1/pricing';
+const CASEWORKER_INFO_BASE = '/api/v1/caseworker-info';
+const CHECKLISTS_BASE = '/api/v1/checklists';
+const OFFICES_BASE = '/api/v1/offices';
+const AVAILABILITY_BASE = '/api/v1/availability';
+const CONTACTS_BASE = '/api/v1/contacts';
+const ELIGIBILITY_BASE = '/api/v1/eligibility';
+const STATUSES_BASE = '/api/v1/statuses';
 
 export const servicesApi = {
   // ==================== CATEGORY ENDPOINTS ====================
@@ -251,7 +283,7 @@ export const servicesApi = {
   // ==================== PRICING ENDPOINTS ====================
 
   // Get pricing for a service in a specific state/district
-  getServicePricing: async (serviceId: string, params: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
+  getServicePricing: async (serviceId: string, params?: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/pricing`, { params });
     return response.data;
   },
@@ -263,28 +295,82 @@ export const servicesApi = {
   },
 
   // Get pricing by slug
-  getServicePricingBySlug: async (slug: string, params: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
+  getServicePricingBySlug: async (slug: string, params?: ServicePricingQueryParams): Promise<ApiResponse<ServicePricing>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/pricing`, { params });
     return response.data;
   },
 
   // Get all service pricing for a specific state
   getStatePricing: async (stateCode: string): Promise<ApiResponse<ServicePricing[]>> => {
-    const response = await axiosInstance.get(`/api/v1/pricing/state/${stateCode}`);
+    const response = await axiosInstance.get(`${PRICING_BASE}/state/${stateCode}`);
+    return response.data;
+  },
+
+  // Create pricing (Admin)
+  createPricing: async (data: CreateServicePricingRequest): Promise<ApiResponse<ServicePricing>> => {
+    const response = await axiosInstance.post(PRICING_BASE, data);
+    return response.data;
+  },
+
+  // Get pricing by ID
+  getPricingById: async (id: string): Promise<ApiResponse<ServicePricing>> => {
+    const response = await axiosInstance.get(`${PRICING_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update pricing (Admin)
+  updatePricing: async (id: string, data: UpdateServicePricingRequest): Promise<ApiResponse<ServicePricing>> => {
+    const response = await axiosInstance.put(`${PRICING_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete pricing (Admin)
+  deletePricing: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${PRICING_BASE}/${id}`);
     return response.data;
   },
 
   // ==================== CASEWORKER INFO ENDPOINTS ====================
 
   // Get caseworker information for a service
-  getCaseworkerInfo: async (serviceId: string, params: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
+  getCaseworkerInfo: async (serviceId: string, params?: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/caseworker-info`, { params });
     return response.data;
   },
 
   // Get caseworker information by slug
-  getCaseworkerInfoBySlug: async (slug: string, params: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
+  getCaseworkerInfoBySlug: async (slug: string, params?: ServiceCaseworkerQueryParams): Promise<ApiResponse<ServiceCaseworkerInfo>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/caseworker-info`, { params });
+    return response.data;
+  },
+
+  // Get all caseworker info entries for a service
+  getAllCaseworkerInfo: async (serviceId: string): Promise<ApiResponse<ServiceCaseworkerInfoFull[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/caseworker-info/all`);
+    return response.data;
+  },
+
+  // Create caseworker info (Admin)
+  createCaseworkerInfo: async (data: CreateServiceCaseworkerInfoRequest): Promise<ApiResponse<ServiceCaseworkerInfoFull>> => {
+    const response = await axiosInstance.post(CASEWORKER_INFO_BASE, data);
+    return response.data;
+  },
+
+  // Get caseworker info by ID
+  getCaseworkerInfoById: async (id: string): Promise<ApiResponse<ServiceCaseworkerInfoFull>> => {
+    const response = await axiosInstance.get(`${CASEWORKER_INFO_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update caseworker info (Admin)
+  updateCaseworkerInfo: async (id: string, data: UpdateServiceCaseworkerInfoRequest): Promise<ApiResponse<ServiceCaseworkerInfoFull>> => {
+    const response = await axiosInstance.put(`${CASEWORKER_INFO_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete caseworker info (Admin)
+  deleteCaseworkerInfo: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${CASEWORKER_INFO_BASE}/${id}`);
     return response.data;
   },
 
@@ -296,11 +382,77 @@ export const servicesApi = {
     return response.data;
   },
 
+  // Get checklists by service slug
+  getServiceChecklistsBySlug: async (slug: string, params?: ServiceChecklistQueryParams): Promise<ApiResponse<ServiceChecklist[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/checklists`, { params });
+    return response.data;
+  },
+
+  // Create checklist item (Admin)
+  createChecklist: async (data: CreateServiceChecklistRequest): Promise<ApiResponse<ServiceChecklist>> => {
+    const response = await axiosInstance.post(CHECKLISTS_BASE, data);
+    return response.data;
+  },
+
+  // Get checklist by ID
+  getChecklistById: async (id: string): Promise<ApiResponse<ServiceChecklist>> => {
+    const response = await axiosInstance.get(`${CHECKLISTS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update checklist item (Admin)
+  updateChecklist: async (id: string, data: UpdateServiceChecklistRequest): Promise<ApiResponse<ServiceChecklist>> => {
+    const response = await axiosInstance.put(`${CHECKLISTS_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete checklist item (Admin)
+  deleteChecklist: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${CHECKLISTS_BASE}/${id}`);
+    return response.data;
+  },
+
   // ==================== OFFICE LOCATION ENDPOINTS ====================
 
   // Get office locations for a service
   getServiceOffices: async (serviceId: string, params?: ServiceOfficeQueryParams): Promise<ApiResponse<ServiceOfficeLocation[]>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/offices`, { params });
+    return response.data;
+  },
+
+  // Get office locations by service slug
+  getServiceOfficesBySlug: async (slug: string, params?: ServiceOfficeQueryParams): Promise<ApiResponse<ServiceOfficeLocation[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/offices`, { params });
+    return response.data;
+  },
+
+  // Get nearby offices (requires lat/lng)
+  getNearbyOffices: async (params: ServiceOfficeQueryParams): Promise<ApiResponse<ServiceOfficeLocation[]>> => {
+    const response = await axiosInstance.get(`${OFFICES_BASE}/nearby`, { params });
+    return response.data;
+  },
+
+  // Create office location (Admin)
+  createOffice: async (data: CreateServiceOfficeLocationRequest): Promise<ApiResponse<ServiceOfficeLocation>> => {
+    const response = await axiosInstance.post(OFFICES_BASE, data);
+    return response.data;
+  },
+
+  // Get office by ID
+  getOfficeById: async (id: string): Promise<ApiResponse<ServiceOfficeLocation>> => {
+    const response = await axiosInstance.get(`${OFFICES_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update office location (Admin)
+  updateOffice: async (id: string, data: UpdateServiceOfficeLocationRequest): Promise<ApiResponse<ServiceOfficeLocation>> => {
+    const response = await axiosInstance.put(`${OFFICES_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete office location (Admin)
+  deleteOffice: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${OFFICES_BASE}/${id}`);
     return response.data;
   },
 
@@ -391,6 +543,164 @@ export const servicesApi = {
   // Delete a workflow step
   deleteWorkflowStep: async (id: string): Promise<ApiResponse<null>> => {
     const response = await axiosInstance.delete(`${WORKFLOWS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== STATE AVAILABILITY ENDPOINTS ====================
+
+  // Get state availability for a service
+  getServiceAvailability: async (serviceId: string, params?: ServiceStateAvailabilityQueryParams): Promise<ApiResponse<ServiceStateAvailability[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/availability`, { params });
+    return response.data;
+  },
+
+  // Get specific state availability
+  getServiceStateAvailability: async (serviceId: string, stateCode: string): Promise<ApiResponse<ServiceStateAvailability>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/availability/${stateCode}`);
+    return response.data;
+  },
+
+  // Get availability by service slug
+  getServiceAvailabilityBySlug: async (slug: string, params?: ServiceStateAvailabilityQueryParams): Promise<ApiResponse<ServiceStateAvailability[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/availability`, { params });
+    return response.data;
+  },
+
+  // Create state availability (Admin)
+  createAvailability: async (data: CreateServiceStateAvailabilityRequest): Promise<ApiResponse<ServiceStateAvailability>> => {
+    const response = await axiosInstance.post(AVAILABILITY_BASE, data);
+    return response.data;
+  },
+
+  // Get availability by ID
+  getAvailabilityById: async (id: string): Promise<ApiResponse<ServiceStateAvailability>> => {
+    const response = await axiosInstance.get(`${AVAILABILITY_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update state availability (Admin)
+  updateAvailability: async (id: string, data: UpdateServiceStateAvailabilityRequest): Promise<ApiResponse<ServiceStateAvailability>> => {
+    const response = await axiosInstance.put(`${AVAILABILITY_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete state availability (Admin)
+  deleteAvailability: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${AVAILABILITY_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== CONTACT PERSONS ENDPOINTS ====================
+
+  // Get contact persons for a service
+  getServiceContacts: async (serviceId: string, params?: ServiceContactQueryParams): Promise<ApiResponse<ServiceContactPerson[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/contacts`, { params });
+    return response.data;
+  },
+
+  // Get contact persons by service slug
+  getServiceContactsBySlug: async (slug: string, params?: ServiceContactQueryParams): Promise<ApiResponse<ServiceContactPerson[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/contacts`, { params });
+    return response.data;
+  },
+
+  // Create contact person (Admin)
+  createContact: async (data: CreateServiceContactPersonRequest): Promise<ApiResponse<ServiceContactPerson>> => {
+    const response = await axiosInstance.post(CONTACTS_BASE, data);
+    return response.data;
+  },
+
+  // Get contact by ID
+  getContactById: async (id: string): Promise<ApiResponse<ServiceContactPerson>> => {
+    const response = await axiosInstance.get(`${CONTACTS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update contact person (Admin)
+  updateContact: async (id: string, data: UpdateServiceContactPersonRequest): Promise<ApiResponse<ServiceContactPerson>> => {
+    const response = await axiosInstance.put(`${CONTACTS_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete contact person (Admin)
+  deleteContact: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${CONTACTS_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== ELIGIBILITY RULES ENDPOINTS ====================
+
+  // Get eligibility rules for a service
+  getServiceEligibility: async (serviceId: string): Promise<ApiResponse<ServiceEligibility[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/eligibility`);
+    return response.data;
+  },
+
+  // Get eligibility rules by service slug
+  getServiceEligibilityBySlug: async (slug: string): Promise<ApiResponse<ServiceEligibility[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/eligibility`);
+    return response.data;
+  },
+
+  // Create eligibility rule (Admin)
+  createEligibility: async (data: CreateServiceEligibilityRequest): Promise<ApiResponse<ServiceEligibility>> => {
+    const response = await axiosInstance.post(ELIGIBILITY_BASE, data);
+    return response.data;
+  },
+
+  // Get eligibility rule by ID
+  getEligibilityById: async (id: string): Promise<ApiResponse<ServiceEligibility>> => {
+    const response = await axiosInstance.get(`${ELIGIBILITY_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update eligibility rule (Admin)
+  updateEligibility: async (id: string, data: UpdateServiceEligibilityRequest): Promise<ApiResponse<ServiceEligibility>> => {
+    const response = await axiosInstance.put(`${ELIGIBILITY_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete eligibility rule (Admin)
+  deleteEligibility: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${ELIGIBILITY_BASE}/${id}`);
+    return response.data;
+  },
+
+  // ==================== STATUS MAPPING ENDPOINTS ====================
+
+  // Get status mapping for a service
+  getServiceStatuses: async (serviceId: string): Promise<ApiResponse<ServiceStatusMapping[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/statuses`);
+    return response.data;
+  },
+
+  // Get status mapping by service slug
+  getServiceStatusesBySlug: async (slug: string): Promise<ApiResponse<ServiceStatusMapping[]>> => {
+    const response = await axiosInstance.get(`${SERVICES_BASE}/slug/${slug}/statuses`);
+    return response.data;
+  },
+
+  // Create status mapping (Admin)
+  createStatus: async (data: CreateServiceStatusMappingRequest): Promise<ApiResponse<ServiceStatusMapping>> => {
+    const response = await axiosInstance.post(STATUSES_BASE, data);
+    return response.data;
+  },
+
+  // Get status mapping by ID
+  getStatusById: async (id: string): Promise<ApiResponse<ServiceStatusMapping>> => {
+    const response = await axiosInstance.get(`${STATUSES_BASE}/${id}`);
+    return response.data;
+  },
+
+  // Update status mapping (Admin)
+  updateStatus: async (id: string, data: UpdateServiceStatusMappingRequest): Promise<ApiResponse<ServiceStatusMapping>> => {
+    const response = await axiosInstance.put(`${STATUSES_BASE}/${id}`, data);
+    return response.data;
+  },
+
+  // Delete status mapping (Admin)
+  deleteStatus: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await axiosInstance.delete(`${STATUSES_BASE}/${id}`);
     return response.data;
   }
 };

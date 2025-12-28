@@ -1,0 +1,1177 @@
+================================================================================
+BHARAT MITRA - SERVICES MODULE COMPLETE REFERENCE
+================================================================================
+Last Updated: 2024-12-28
+Version: 1.1.0
+
+This document contains the complete technical reference for the Services Module
+including all database schemas, API endpoints, data statistics, and implementation
+details for the Bharat Mitra platform.
+
+================================================================================
+SECTION 1: DATABASE STATISTICS (CURRENT STATE)
+================================================================================
+
++----------------------------+--------+
+| Table                      | Count  |
++----------------------------+--------+
+| services                   | 755    |
+| service_categories         | 18     |
+| service_documents          | 2,884  |
+| service_workflow           | 3,168  |
+| service_pricing            | 27,345 |
+| service_faqs               | 134    |
+| service_caseworker_info    | 13     |
+| service_forms              | 1      |
+| service_checklists         | 0      |
+| service_contact_persons    | 0      |
+| service_eligibility        | 0      |
+| service_office_locations   | 0      |
+| service_state_availability | 0      |
+| service_status_mapping     | 0      |
++----------------------------+--------+
+
+Data Coverage:
+- Services with documents: 752/755 (99.6%)
+- Services with workflows: 752/755 (99.6%)
+- Services with FAQs: 69/755 (9.1%) - NEEDS IMPROVEMENT
+- Services with caseworker info: 13/755 (1.7%) - NEEDS IMPROVEMENT
+- States/UTs covered in pricing: 36
+
+================================================================================
+SECTION 2: CONSOLIDATED CATEGORIES (18 TOTAL)
+================================================================================
+
+1. Financial Services (106 services)
+   - Banking, loans, insurance, investments, money transfer
+   - Merged from: Banking & Financial Services, Loan Services, Mudra Loan,
+     Insurance Services, Investment & Advisory, DMT Money Transfer
+
+2. Education (98 services)
+   - Higher education, school, scholarships, competitive exams, skill development
+   - Merged from: Education, Higher Education, School Education, Scholarships,
+     Competitive Exams
+
+3. Welfare & Schemes (82 services)
+   - Pensions, disability, employment, agriculture, housing, subsidies
+   - Merged from: Social Welfare, Pension Schemes, Women & Child Welfare,
+     Disability Services, Housing Schemes, Subsidy Schemes, Employment Schemes,
+     Agriculture Schemes, Skill Development
+
+4. Transport & RTO (69 services)
+   - Vehicle registration, driving license, rail, air, metro, bus
+   - Merged from: RTO Services, Bus Services, Metro Services, Railway Services,
+     Flight Booking, Air Travel, IRCTC & Train Services
+
+5. Business & Legal (67 services)
+   - Company registration, licenses, legal, court services, FSSAI
+   - Merged from: Business, Company Registration, Trade License, Import Export,
+     Licenses, Food & FSSAI, Legal Services, Court & Judicial Services, Court Services
+
+6. Identity & Documents (63 services)
+   - Aadhaar, PAN, passport, voter ID, affidavits, notary
+   - Merged from: Identity Documents, Affidavits, Notary Services
+
+7. Property & Land (47 services)
+   - Registration, records, mutation, building permissions, tax
+   - Merged from: Property & Land, Property Registration, Land Records,
+     Mutation & Transfer, Building Permissions, Property Tax
+
+8. Government Services (46 services)
+   - Certificates, schemes, Seva Sindhu, Nadakacheri
+   - Merged from: Government Services, Government Schemes, Seva Sindhu,
+     Nadakacheri Services
+
+9. Healthcare & Medical (45 services)
+   - Hospitals, health cards, medical certificates, family welfare
+   - Merged from: Healthcare, Healthcare Services, Hospital Services,
+     Medical Certificates, Health Cards & Insurance, Family Welfare
+
+10. Utility Services (41 services)
+    - Electricity, water, gas, sewerage, sanitation
+    - Merged from: Electricity Services, Water Services, Gas Services,
+      Sewerage Services, Sanitation Services
+
+11. Telecom & Bills (29 services)
+    - Mobile, broadband, DTH, recharges, bill payments
+    - Merged from: Mobile Services, Landline & Broadband, DTH & Cable TV,
+      Telecom Services, Recharges & Bill Payments
+
+12. Municipal & Civic (18 services)
+    - Complaints, grievances, civic services
+    - Merged from: Civic Services, Municipal Services, Public Grievances,
+      Consumer Complaints
+
+13. Tax Services (10 services)
+    - GST, income tax, property tax registration
+
+14. Agreements (8 services)
+    - Legal agreements and contracts
+
+15. Intellectual Property (8 services)
+    - Trademark, patent, copyright, design registration
+
+16. Passport & Visa Services (7 services)
+    - Passport, visa, travel documents
+
+17. Earth Mover Services (6 services)
+    - Construction equipment rental (bulldozer, crane, JCB, etc.)
+
+18. Solar Services (5 services)
+    - Solar installation, subsidies, PM Surya Ghar Yojana
+
+================================================================================
+SECTION 3: DATABASE SCHEMA - ALL TABLES
+================================================================================
+
+------------------------------------------------------------------------------
+TABLE: service_categories
+------------------------------------------------------------------------------
+CREATE TABLE service_categories (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name                VARCHAR(100) NOT NULL,
+    name_hindi          VARCHAR(100) NOT NULL,
+    slug                VARCHAR(100) UNIQUE NOT NULL,
+    description         TEXT,
+    icon_url            TEXT,
+    parent_id           UUID REFERENCES service_categories(id),
+    sort_order          INTEGER DEFAULT 0,
+    is_active           BOOLEAN DEFAULT true,
+    created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    -- Additional fields
+    category_type       VARCHAR(50),       -- 'government', 'private', 'semi-government'
+    department          VARCHAR(200),
+    department_hindi    VARCHAR(200),
+    ministry            VARCHAR(200),
+    ministry_hindi      VARCHAR(200),
+    banner_url          VARCHAR(500),
+    color_code          VARCHAR(10),       -- Hex color for UI
+    priority_score      INTEGER DEFAULT 0,
+    is_featured         BOOLEAN DEFAULT false,
+    service_count       INTEGER DEFAULT 0  -- Cached count of services
+);
+
+------------------------------------------------------------------------------
+TABLE: services
+------------------------------------------------------------------------------
+CREATE TABLE services (
+    id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category_id               UUID NOT NULL REFERENCES service_categories(id),
+    name                      VARCHAR(200) NOT NULL,
+    name_hindi                VARCHAR(200) NOT NULL,
+    slug                      VARCHAR(200) UNIQUE NOT NULL,
+    description               TEXT NOT NULL,
+    description_hindi         TEXT NOT NULL,
+
+    -- Department & Ministry
+    department                VARCHAR(200),
+    department_hindi          VARCHAR(200),
+    ministry                  VARCHAR(200),
+
+    -- Eligibility & Requirements
+    eligibility_criteria      TEXT,
+    required_documents        TEXT[],           -- Array of document names
+
+    -- Fees & Timing
+    processing_time           VARCHAR(100),
+    service_fee               NUMERIC(10,2) DEFAULT 0,
+    platform_fee              NUMERIC(10,2) DEFAULT 0,
+    total_fee                 NUMERIC(10,2) DEFAULT 0,
+    is_free_service           BOOLEAN DEFAULT false,
+
+    -- Media
+    icon_url                  TEXT,
+    banner_url                TEXT,
+    official_url              TEXT,
+
+    -- Status & Visibility
+    is_active                 BOOLEAN DEFAULT true,
+    is_popular                BOOLEAN DEFAULT false,
+    is_featured               BOOLEAN DEFAULT false,
+    total_applications        BIGINT DEFAULT 0,
+    average_rating            NUMERIC(2,1) DEFAULT 0,
+
+    -- Location
+    available_states          TEXT[],           -- Array of state codes or ['ALL']
+    available_locations       TEXT,
+
+    -- Timestamps
+    sort_order                INTEGER DEFAULT 0,
+    created_at                TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at                TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at                TIMESTAMP WITH TIME ZONE,
+
+    -- Extended fields
+    form_fields               TEXT,             -- Legacy field for form JSON
+
+    -- Service Classification
+    service_type              VARCHAR(50),      -- 'certificate', 'license', 'registration', 'application', 'payment'
+    service_mode              VARCHAR(50),      -- 'online', 'offline', 'both'
+    service_level             VARCHAR(50),      -- 'central', 'state', 'district', 'municipal'
+
+    -- Issuing Authority
+    issuing_authority         VARCHAR(200),
+    issuing_authority_hindi   VARCHAR(200),
+
+    -- Validity & Renewal
+    validity_period           VARCHAR(100),     -- '10 years', 'Lifetime', '1 year'
+    renewal_required          BOOLEAN DEFAULT false,
+    renewal_period            VARCHAR(100),
+
+    -- Eligibility Criteria
+    age_limit_min             INTEGER,
+    age_limit_max             INTEGER,
+    gender_specific           VARCHAR(20),      -- 'male', 'female', 'all'
+    income_limit_max          NUMERIC(12,2),
+    caste_categories          TEXT[],           -- ['general', 'obc', 'sc', 'st']
+
+    -- Document Requirements
+    is_aadhar_required        BOOLEAN DEFAULT false,
+    is_pan_required           BOOLEAN DEFAULT false,
+    is_mobile_verified        BOOLEAN DEFAULT false,
+    is_email_required         BOOLEAN DEFAULT false,
+    is_photo_required         BOOLEAN DEFAULT false,
+    is_signature_required     BOOLEAN DEFAULT false,
+    is_biometric_required     BOOLEAN DEFAULT false,
+
+    -- Application Process
+    application_mode          VARCHAR(50),      -- 'online', 'offline', 'both'
+    payment_modes             TEXT[],           -- ['online', 'challan', 'cash', 'dd']
+    delivery_mode             VARCHAR(50),      -- 'download', 'post', 'collect'
+    delivery_address_required BOOLEAN DEFAULT false,
+
+    -- Tracking & Support
+    tracking_available        BOOLEAN DEFAULT true,
+    grievance_url             VARCHAR(500),
+    helpline_number           VARCHAR(20),
+    whatsapp_number           VARCHAR(20),
+    email_support             VARCHAR(100),
+    working_hours             VARCHAR(100),
+    holidays_applicable       BOOLEAN DEFAULT true,
+
+    -- Application Limits
+    max_applications_per_user INTEGER,
+    cooldown_days             INTEGER,          -- Days between re-applications
+
+    -- Approval Process
+    auto_approval             BOOLEAN DEFAULT false,
+    verification_required     BOOLEAN DEFAULT true,
+    physical_verification     BOOLEAN DEFAULT false,
+    appointment_required      BOOLEAN DEFAULT false,
+    slot_booking_available    BOOLEAN DEFAULT false,
+
+    -- File Upload
+    document_upload_limit     INTEGER DEFAULT 10,
+    max_file_size_mb          INTEGER DEFAULT 5,
+    allowed_file_types        TEXT[],           -- ['pdf', 'jpg', 'png']
+
+    -- Extra Data
+    extra_fields              JSONB,            -- Flexible JSON for additional data
+
+    -- SEO
+    seo_title                 VARCHAR(200),
+    seo_description           VARCHAR(500),
+    seo_keywords              TEXT[],
+
+    -- Priority & Relations
+    priority_score            INTEGER DEFAULT 0,
+    parent_service_id         UUID REFERENCES services(id),
+    prerequisite_services     UUID[],           -- Services that must be completed first
+    related_services          UUID[]            -- Related/similar services
+);
+
+------------------------------------------------------------------------------
+TABLE: service_documents
+------------------------------------------------------------------------------
+CREATE TABLE service_documents (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id          UUID NOT NULL REFERENCES services(id),
+    document_name       VARCHAR(200) NOT NULL,
+    document_name_hindi VARCHAR(200),
+    document_type       VARCHAR(50) NOT NULL,  -- 'identity', 'address', 'photo', 'income', 'educational', 'property', 'medical', 'other'
+    is_mandatory        BOOLEAN DEFAULT true,
+    description         TEXT,
+    description_hindi   TEXT,
+    sample_url          VARCHAR(500),          -- Sample document URL
+    accepted_formats    TEXT[],                -- ['pdf', 'jpg', 'png']
+    max_size_mb         INTEGER DEFAULT 5,
+    min_size_kb         INTEGER DEFAULT 10,
+    state_specific      CHAR(2),               -- If document is state-specific
+    sort_order          INTEGER DEFAULT 0,
+    is_active           BOOLEAN DEFAULT true,
+    created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+Document Types:
+- identity: Aadhaar, PAN, Voter ID, Passport, Driving License
+- address: Utility bills, Rent agreement, Bank statement, Ration card
+- photo: Passport size photographs
+- income: Salary slips, ITR, Income certificate
+- educational: Marksheets, Degree, TC, Migration certificate
+- property: Sale deed, Property documents, Khata
+- medical: Medical certificates, Disability certificate
+- financial: Bank statements, Cheque, Passbook
+- legal: Affidavits, Court orders, FIR
+- supporting: Any other supporting documents
+
+------------------------------------------------------------------------------
+TABLE: service_workflow
+------------------------------------------------------------------------------
+CREATE TABLE service_workflow (
+    id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id             UUID NOT NULL REFERENCES services(id),
+    step_number            INTEGER NOT NULL,
+    step_name              VARCHAR(200) NOT NULL,
+    step_name_hindi        VARCHAR(200),
+    step_description       TEXT,
+    step_description_hindi TEXT,
+    step_type              VARCHAR(50),          -- 'submission', 'verification', 'approval', 'payment', 'dispatch'
+    assigned_role          VARCHAR(100),         -- Role responsible for this step
+    sla_hours              INTEGER,              -- Expected completion time in hours
+    is_optional            BOOLEAN DEFAULT false,
+    can_reject             BOOLEAN DEFAULT true,
+    can_send_back          BOOLEAN DEFAULT true,
+    notify_applicant       BOOLEAN DEFAULT true,
+    notify_email           BOOLEAN DEFAULT true,
+    notify_sms             BOOLEAN DEFAULT true,
+    sort_order             INTEGER DEFAULT 0,
+    is_active              BOOLEAN DEFAULT true,
+    created_at             TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_faqs
+------------------------------------------------------------------------------
+CREATE TABLE service_faqs (
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id     UUID NOT NULL REFERENCES services(id),
+    question       TEXT NOT NULL,
+    question_hindi TEXT,
+    answer         TEXT NOT NULL,
+    answer_hindi   TEXT,
+    sort_order     INTEGER DEFAULT 0,
+    is_active      BOOLEAN DEFAULT true,
+    created_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_pricing
+------------------------------------------------------------------------------
+CREATE TABLE service_pricing (
+    id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id              UUID NOT NULL REFERENCES services(id),
+    state_code              CHAR(2),              -- NULL for default pricing
+    district_code           VARCHAR(10),          -- For district-specific pricing
+    service_fee             NUMERIC(10,2) NOT NULL DEFAULT 0,
+    platform_fee            NUMERIC(10,2) NOT NULL DEFAULT 0,
+    government_fee          NUMERIC(10,2) DEFAULT 0,
+    convenience_fee         NUMERIC(10,2) DEFAULT 0,
+    gst_percentage          NUMERIC(4,2) DEFAULT 18,
+    processing_time         VARCHAR(100),
+    express_available       BOOLEAN DEFAULT false,
+    express_fee             NUMERIC(10,2) DEFAULT 0,
+    express_processing_time VARCHAR(100),
+    valid_from              DATE DEFAULT CURRENT_DATE,
+    valid_to                DATE,
+    is_active               BOOLEAN DEFAULT true,
+    created_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+State Codes (36 total):
+AN, AP, AR, AS, BR, CG, CH, DD, DL, GA, GJ, HP, HR, JH, JK, KA, KL, LA, LD, MH,
+ML, MN, MP, MZ, NL, OD, PB, PY, RJ, SK, TG, TN, TR, UK, UP, WB
+
+------------------------------------------------------------------------------
+TABLE: service_forms
+------------------------------------------------------------------------------
+CREATE TABLE service_forms (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id  UUID NOT NULL REFERENCES services(id),
+    version     INTEGER NOT NULL DEFAULT 1,
+    form_schema JSONB NOT NULL,                   -- Complete form definition
+    is_active   BOOLEAN DEFAULT true,
+    created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+Form Schema Structure:
+{
+  "title": "Form Title",
+  "title_hindi": "फॉर्म शीर्षक",
+  "description": "Form description",
+  "sections": [
+    {
+      "id": "section_id",
+      "title": "Section Title",
+      "title_hindi": "अनुभाग शीर्षक",
+      "sort_order": 1,
+      "fields": [
+        {
+          "id": "field_id",
+          "name": "field_name",
+          "label": "Field Label",
+          "label_hindi": "फील्ड लेबल",
+          "type": "text|number|email|phone|date|select|radio|checkbox|textarea|file",
+          "placeholder": "Enter value",
+          "required": true,
+          "sort_order": 1,
+          "validation": {
+            "min_length": 2,
+            "max_length": 100,
+            "pattern": "^[a-zA-Z ]+$",
+            "pattern_msg": "Validation error message"
+          },
+          "options": [                            // For select/radio/checkbox
+            {"value": "option1", "label": "Option 1", "label_hindi": "विकल्प 1"}
+          ],
+          "conditional": {                        // Show field based on another field
+            "field": "other_field_id",
+            "operator": "equals",
+            "value": "some_value"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+------------------------------------------------------------------------------
+TABLE: service_checklists
+------------------------------------------------------------------------------
+CREATE TABLE service_checklists (
+    id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id             UUID NOT NULL REFERENCES services(id),
+    state_code             CHAR(2),              -- For state-specific checklists
+    checklist_type         VARCHAR(50),          -- 'pre_application', 'during_application', 'post_application'
+    item_order             INTEGER NOT NULL,
+    item_text              VARCHAR(500) NOT NULL,
+    item_text_hindi        VARCHAR(500),
+    item_description       TEXT,
+    item_description_hindi TEXT,
+    is_mandatory           BOOLEAN DEFAULT true,
+    is_active              BOOLEAN DEFAULT true,
+    created_at             TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+Checklist Types:
+- pre_application: Things to do/verify before starting application
+- during_application: Steps during the application process
+- post_application: Things to do after application submission
+
+------------------------------------------------------------------------------
+TABLE: service_caseworker_info
+------------------------------------------------------------------------------
+CREATE TABLE service_caseworker_info (
+    id                                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id                           UUID NOT NULL REFERENCES services(id),
+    state_code                           CHAR(2),
+
+    -- Application Portal
+    application_portal_url               VARCHAR(500),
+    application_portal_name              VARCHAR(200),
+    application_portal_name_hindi        VARCHAR(200),
+
+    -- Offline Office
+    offline_office_name                  VARCHAR(200),
+    offline_office_name_hindi            VARCHAR(200),
+    offline_office_address               TEXT,
+    offline_office_address_hindi         TEXT,
+    office_timings                       VARCHAR(100),
+    office_contact_number                VARCHAR(50),
+    office_email                         VARCHAR(100),
+
+    -- Step-by-Step Guide (5 steps max)
+    step_1_title                         VARCHAR(200),
+    step_1_title_hindi                   VARCHAR(200),
+    step_1_description                   TEXT,
+    step_1_description_hindi             TEXT,
+    step_2_title                         VARCHAR(200),
+    step_2_title_hindi                   VARCHAR(200),
+    step_2_description                   TEXT,
+    step_2_description_hindi             TEXT,
+    step_3_title                         VARCHAR(200),
+    step_3_title_hindi                   VARCHAR(200),
+    step_3_description                   TEXT,
+    step_3_description_hindi             TEXT,
+    step_4_title                         VARCHAR(200),
+    step_4_title_hindi                   VARCHAR(200),
+    step_4_description                   TEXT,
+    step_4_description_hindi             TEXT,
+    step_5_title                         VARCHAR(200),
+    step_5_title_hindi                   VARCHAR(200),
+    step_5_description                   TEXT,
+    step_5_description_hindi             TEXT,
+
+    -- Form Submission
+    form_submission_mode                 VARCHAR(50),   -- 'online', 'offline', 'both'
+    form_submission_portal               VARCHAR(500),
+    form_submission_office               VARCHAR(200),
+    form_submission_office_hindi         VARCHAR(200),
+    form_submission_address              TEXT,
+    form_submission_address_hindi        TEXT,
+    form_download_url                    VARCHAR(500),
+    form_instructions                    TEXT,
+    form_instructions_hindi              TEXT,
+
+    -- Document Submission
+    document_submission_mode             VARCHAR(50),   -- 'upload', 'physical', 'both'
+    document_verification_required       BOOLEAN DEFAULT true,
+    document_verification_office         VARCHAR(200),
+    document_verification_office_hindi   VARCHAR(200),
+    document_attestation_required        BOOLEAN DEFAULT false,
+    attestation_authority                VARCHAR(200),
+    attestation_authority_hindi          VARCHAR(200),
+
+    -- Payment
+    payment_mode                         VARCHAR(100),  -- 'online', 'challan', 'cash', 'dd'
+    payment_portal_url                   VARCHAR(500),
+    payment_office                       VARCHAR(200),
+    payment_office_hindi                 VARCHAR(200),
+    challan_download_url                 VARCHAR(500),
+    bank_name                            VARCHAR(100),
+    bank_branch                          VARCHAR(200),
+    bank_account_number                  VARCHAR(50),
+    bank_ifsc                            VARCHAR(20),
+    treasury_code                        VARCHAR(50),
+    head_of_account                      VARCHAR(100),
+
+    -- Tracking
+    acknowledgment_type                  VARCHAR(50),   -- 'online', 'sms', 'email', 'physical'
+    tracking_portal_url                  VARCHAR(500),
+    tracking_method                      TEXT,
+    tracking_method_hindi                TEXT,
+
+    -- Certificate/Document Collection
+    next_step_after_approval             TEXT,
+    next_step_after_approval_hindi       TEXT,
+    certificate_collection_mode          VARCHAR(50),   -- 'download', 'post', 'collect'
+    certificate_collection_office        VARCHAR(200),
+    certificate_collection_office_hindi  VARCHAR(200),
+    certificate_collection_address       TEXT,
+    certificate_collection_address_hindi TEXT,
+    digital_certificate_download_url     VARCHAR(500),
+    physical_certificate_delivery_days   INTEGER,
+
+    -- Rejection & Appeal
+    rejection_appeal_process             TEXT,
+    rejection_appeal_process_hindi       TEXT,
+    appeal_authority                     VARCHAR(200),
+    appeal_authority_hindi               VARCHAR(200),
+    appeal_office                        VARCHAR(200),
+    appeal_office_hindi                  VARCHAR(200),
+    appeal_time_limit_days               INTEGER,
+    resubmission_allowed                 BOOLEAN DEFAULT true,
+    resubmission_time_limit_days         INTEGER,
+
+    -- Helpdesk
+    helpdesk_number                      VARCHAR(50),
+    helpdesk_email                       VARCHAR(100),
+    helpdesk_timings                     VARCHAR(100),
+    whatsapp_support                     VARCHAR(50),
+    chatbot_url                          VARCHAR(500),
+    faq_url                              VARCHAR(500),
+    grievance_portal_url                 VARCHAR(500),
+
+    -- Tips & Notes
+    special_notes                        TEXT,
+    special_notes_hindi                  TEXT,
+    common_mistakes                      TEXT,
+    common_mistakes_hindi                TEXT,
+    tips_for_faster_processing           TEXT,
+    tips_for_faster_processing_hindi     TEXT,
+
+    -- Legal References
+    govt_order_number                    VARCHAR(100),
+    govt_order_date                      DATE,
+    reference_act                        VARCHAR(200),
+    reference_rules                      VARCHAR(200),
+    official_gazette_link                VARCHAR(500),
+
+    is_active                            BOOLEAN DEFAULT true,
+    created_at                           TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at                           TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_contact_persons
+------------------------------------------------------------------------------
+CREATE TABLE service_contact_persons (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id         UUID NOT NULL REFERENCES services(id),
+    state_code         CHAR(2),
+    district_code      VARCHAR(10),
+    contact_type       VARCHAR(50),            -- 'nodal_officer', 'helpdesk', 'grievance', 'technical'
+    name               VARCHAR(200),
+    name_hindi         VARCHAR(200),
+    designation        VARCHAR(200),
+    designation_hindi  VARCHAR(200),
+    department         VARCHAR(200),
+    department_hindi   VARCHAR(200),
+    phone              VARCHAR(20),
+    alternate_phone    VARCHAR(20),
+    email              VARCHAR(100),
+    office_address     TEXT,
+    office_address_hindi TEXT,
+    availability_hours VARCHAR(100),
+    response_time      VARCHAR(50),            -- 'Same day', '24-48 hours'
+    is_primary         BOOLEAN DEFAULT false,
+    is_active          BOOLEAN DEFAULT true,
+    created_at         TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_eligibility
+------------------------------------------------------------------------------
+CREATE TABLE service_eligibility (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id         UUID NOT NULL REFERENCES services(id),
+    rule_type          VARCHAR(50),            -- 'age', 'income', 'gender', 'caste', 'state', 'occupation'
+    rule_operator      VARCHAR(20),            -- 'equals', 'not_equals', 'greater_than', 'less_than', 'in', 'not_in'
+    rule_value         TEXT,                   -- Value to compare
+    error_message      VARCHAR(500),
+    error_message_hindi VARCHAR(500),
+    sort_order         INTEGER DEFAULT 0,
+    is_active          BOOLEAN DEFAULT true,
+    created_at         TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+Example Rules:
+- {rule_type: 'age', rule_operator: 'greater_than', rule_value: '18'}
+- {rule_type: 'income', rule_operator: 'less_than', rule_value: '250000'}
+- {rule_type: 'gender', rule_operator: 'equals', rule_value: 'female'}
+- {rule_type: 'caste', rule_operator: 'in', rule_value: '["sc","st","obc"]'}
+
+------------------------------------------------------------------------------
+TABLE: service_office_locations
+------------------------------------------------------------------------------
+CREATE TABLE service_office_locations (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id            UUID NOT NULL REFERENCES services(id),
+    state_code            CHAR(2),
+    district_code         VARCHAR(10),
+    office_type           VARCHAR(50),          -- 'head_office', 'district_office', 'taluk_office', 'service_center', 'common_service_center'
+    office_name           VARCHAR(200),
+    office_name_hindi     VARCHAR(200),
+    address_line1         VARCHAR(200),
+    address_line1_hindi   VARCHAR(200),
+    address_line2         VARCHAR(200),
+    address_line2_hindi   VARCHAR(200),
+    city                  VARCHAR(100),
+    pincode               VARCHAR(10),
+    landmark              VARCHAR(200),
+    landmark_hindi        VARCHAR(200),
+    latitude              NUMERIC(10,8),
+    longitude             NUMERIC(11,8),
+    google_maps_link      VARCHAR(500),
+    contact_person        VARCHAR(200),
+    contact_person_hindi  VARCHAR(200),
+    contact_designation   VARCHAR(200),
+    phone_number          VARCHAR(20),
+    alternate_phone       VARCHAR(20),
+    email                 VARCHAR(100),
+    working_days          VARCHAR(100),         -- 'Monday to Friday', 'Monday to Saturday'
+    office_hours          VARCHAR(100),         -- '9:00 AM - 5:00 PM'
+    lunch_break           VARCHAR(50),          -- '1:00 PM - 2:00 PM'
+    holidays              TEXT,                 -- JSON or comma-separated
+    token_system          BOOLEAN DEFAULT false,
+    appointment_required  BOOLEAN DEFAULT false,
+    appointment_portal_url VARCHAR(500),
+    accessibility_features TEXT[],              -- ['wheelchair_ramp', 'elevator', 'braille']
+    is_active             BOOLEAN DEFAULT true,
+    created_at            TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_state_availability
+------------------------------------------------------------------------------
+CREATE TABLE service_state_availability (
+    id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id              UUID NOT NULL REFERENCES services(id),
+    state_code              CHAR(2) NOT NULL,
+    is_available            BOOLEAN DEFAULT true,
+    availability_status     VARCHAR(50),        -- 'available', 'coming_soon', 'suspended', 'discontinued'
+    launch_date             DATE,
+    suspension_reason       TEXT,
+    alternative_service_id  UUID REFERENCES services(id),
+    local_service_name      VARCHAR(200),       -- State-specific name
+    local_service_name_hindi VARCHAR(200),
+    local_department        VARCHAR(200),       -- State-specific department
+    local_department_hindi  VARCHAR(200),
+    state_portal_url        VARCHAR(500),
+    state_helpline          VARCHAR(50),
+    created_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+------------------------------------------------------------------------------
+TABLE: service_status_mapping
+------------------------------------------------------------------------------
+CREATE TABLE service_status_mapping (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    service_id         UUID NOT NULL REFERENCES services(id),
+    status_code        VARCHAR(50),            -- 'submitted', 'under_review', 'approved', 'rejected', etc.
+    status_name        VARCHAR(100),
+    status_name_hindi  VARCHAR(100),
+    status_description TEXT,
+    status_color       VARCHAR(10),            -- Hex color code
+    status_icon        VARCHAR(50),            -- Icon name
+    sort_order         INTEGER DEFAULT 0,
+    is_final           BOOLEAN DEFAULT false,  -- Terminal state
+    is_success         BOOLEAN DEFAULT false,  -- Successful completion
+    notify_applicant   BOOLEAN DEFAULT true,
+    created_at         TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+Common Status Codes:
+- draft: Application saved but not submitted
+- submitted: Application submitted
+- payment_pending: Awaiting payment
+- under_review: Being reviewed by officer
+- document_pending: Additional documents required
+- document_verification: Documents being verified
+- field_verification: Physical verification in progress
+- approved: Application approved
+- rejected: Application rejected
+- processing: Certificate/document being processed
+- dispatched: Sent via post
+- completed: Delivered/Available for download
+- cancelled: Cancelled by user
+- expired: Application expired
+
+================================================================================
+SECTION 4: API ENDPOINTS
+================================================================================
+
+Base URL: /api/v1
+
+------------------------------------------------------------------------------
+CATEGORIES
+------------------------------------------------------------------------------
+GET    /categories                    - List all categories (paginated)
+GET    /categories/:id                - Get category by ID
+GET    /categories/slug/:slug         - Get category by slug
+GET    /categories/:id/subcategories  - Get subcategories
+GET    /categories/:id/services       - Get services in category
+POST   /categories                    - Create category (Admin)
+PUT    /categories/:id                - Update category (Admin)
+DELETE /categories/:id                - Delete category (Admin)
+
+------------------------------------------------------------------------------
+SERVICES
+------------------------------------------------------------------------------
+GET    /services                      - List all services (paginated)
+GET    /services/:id                  - Get service by ID
+GET    /services/slug/:slug           - Get service by slug
+GET    /services/:id/complete         - Get complete service details with all related data
+GET    /services/slug/:slug/complete  - Get complete service details by slug
+GET    /services/grouped              - Get services grouped by category
+GET    /services/popular              - Get popular services
+GET    /services/featured             - Get featured services
+GET    /services/search               - Search services
+POST   /services                      - Create service (Admin)
+PUT    /services/:id                  - Update service (Admin)
+DELETE /services/:id                  - Delete service (Admin)
+
+Query Parameters for GET /services:
+- page: int (default: 1)
+- per_page: int (default: 20, max: 100)
+- search: string
+- category_id: uuid
+- is_popular: bool
+- is_featured: bool
+- state: string (state code)
+- min_fee: float
+- max_fee: float
+- service_type: string
+- service_mode: string
+
+------------------------------------------------------------------------------
+SERVICE DOCUMENTS
+------------------------------------------------------------------------------
+GET    /services/:id/documents        - Get documents for a service
+GET    /services/slug/:slug/documents - Get documents by service slug
+POST   /services/:id/documents        - Add document (Admin)
+PUT    /documents/:id                 - Update document (Admin)
+DELETE /documents/:id                 - Delete document (Admin)
+
+------------------------------------------------------------------------------
+SERVICE WORKFLOW
+------------------------------------------------------------------------------
+GET    /services/:id/workflow         - Get workflow steps for a service
+GET    /services/slug/:slug/workflow  - Get workflow by service slug
+POST   /services/:id/workflow         - Add workflow step (Admin)
+PUT    /workflow/:id                  - Update workflow step (Admin)
+DELETE /workflow/:id                  - Delete workflow step (Admin)
+
+------------------------------------------------------------------------------
+SERVICE FAQs
+------------------------------------------------------------------------------
+GET    /services/:id/faqs             - Get FAQs for a service
+GET    /services/slug/:slug/faqs      - Get FAQs by service slug
+POST   /faqs                          - Create FAQ (Admin)
+PUT    /faqs/:id                      - Update FAQ (Admin)
+DELETE /faqs/:id                      - Delete FAQ (Admin)
+
+------------------------------------------------------------------------------
+SERVICE PRICING
+------------------------------------------------------------------------------
+GET    /services/:id/pricing          - Get pricing for a service
+GET    /services/:id/pricing/all      - Get all state-wise pricing
+GET    /pricing/state/:state_code     - Get all services pricing for a state
+POST   /pricing                       - Create pricing (Admin)
+PUT    /pricing/:id                   - Update pricing (Admin)
+DELETE /pricing/:id                   - Delete pricing (Admin)
+
+Query Parameters:
+- state_code: string
+- district_code: string
+
+------------------------------------------------------------------------------
+SERVICE FORMS
+------------------------------------------------------------------------------
+GET    /services/:id/form             - Get active form for a service
+GET    /services/:id/form-versions    - Get all form versions
+POST   /forms                         - Create form (Admin)
+PUT    /forms/:id                     - Update form (Admin)
+DELETE /forms/:id                     - Delete form (Admin)
+
+------------------------------------------------------------------------------
+SERVICE CHECKLISTS
+------------------------------------------------------------------------------
+GET    /services/:id/checklists       - Get checklists for a service
+POST   /checklists                    - Create checklist item (Admin)
+PUT    /checklists/:id                - Update checklist item (Admin)
+DELETE /checklists/:id                - Delete checklist item (Admin)
+
+Query Parameters:
+- state_code: string
+- type: string (pre_application, during_application, post_application)
+
+------------------------------------------------------------------------------
+CASEWORKER INFO
+------------------------------------------------------------------------------
+GET    /services/:id/caseworker-info       - Get caseworker info
+GET    /services/slug/:slug/caseworker-info - Get caseworker info by slug
+POST   /caseworker-info                    - Create caseworker info (Admin)
+PUT    /caseworker-info/:id                - Update caseworker info (Admin)
+DELETE /caseworker-info/:id                - Delete caseworker info (Admin)
+
+Query Parameters:
+- state_code: string
+
+------------------------------------------------------------------------------
+CONTACT PERSONS
+------------------------------------------------------------------------------
+GET    /services/:id/contacts         - Get contact persons for a service
+POST   /contacts                      - Create contact (Admin)
+PUT    /contacts/:id                  - Update contact (Admin)
+DELETE /contacts/:id                  - Delete contact (Admin)
+
+Query Parameters:
+- state_code: string
+- district_code: string
+- contact_type: string
+
+------------------------------------------------------------------------------
+OFFICE LOCATIONS
+------------------------------------------------------------------------------
+GET    /services/:id/offices          - Get office locations for a service
+GET    /offices/nearby                - Get nearby offices (requires lat/lng)
+POST   /offices                       - Create office (Admin)
+PUT    /offices/:id                   - Update office (Admin)
+DELETE /offices/:id                   - Delete office (Admin)
+
+Query Parameters:
+- state_code: string
+- district_code: string
+- office_type: string
+- lat: float
+- lng: float
+- radius_km: float (default: 10)
+
+------------------------------------------------------------------------------
+STATE AVAILABILITY
+------------------------------------------------------------------------------
+GET    /services/:id/availability     - Get state availability for a service
+GET    /services/:id/availability/:state_code - Get specific state availability
+POST   /availability                  - Create availability (Admin)
+PUT    /availability/:id              - Update availability (Admin)
+DELETE /availability/:id              - Delete availability (Admin)
+
+------------------------------------------------------------------------------
+STATUS MAPPING
+------------------------------------------------------------------------------
+GET    /services/:id/statuses         - Get status mapping for a service
+POST   /statuses                      - Create status (Admin)
+PUT    /statuses/:id                  - Update status (Admin)
+DELETE /statuses/:id                  - Delete status (Admin)
+
+------------------------------------------------------------------------------
+ELIGIBILITY RULES
+------------------------------------------------------------------------------
+GET    /services/:id/eligibility      - Get eligibility rules for a service
+POST   /eligibility                   - Create eligibility rule (Admin)
+PUT    /eligibility/:id               - Update eligibility rule (Admin)
+DELETE /eligibility/:id               - Delete eligibility rule (Admin)
+
+================================================================================
+SECTION 5: COMPLETE SERVICE RESPONSE (AGGREGATED)
+================================================================================
+
+GET /services/:id/complete or /services/slug/:slug/complete
+
+This endpoint returns all related data for a service in a single response.
+
+{
+  "success": true,
+  "message": "Service details retrieved",
+  "data": {
+    // Basic Service Info
+    "id": "uuid",
+    "name": "Aadhaar New Enrollment - Adult",
+    "name_hindi": "आधार नया नामांकन - वयस्क",
+    "slug": "aadhaar-new-adult",
+    "description": "Apply for a new Aadhaar card...",
+    "description_hindi": "नया आधार कार्ड के लिए आवेदन करें...",
+    "department": "UIDAI",
+    "department_hindi": "यूआईडीएआई",
+    "ministry": "Ministry of Electronics and IT",
+
+    // Category
+    "category": {
+      "id": "uuid",
+      "name": "Identity & Documents",
+      "slug": "identity-documents-main"
+    },
+
+    // Fees & Timing
+    "service_fee": 50.00,
+    "platform_fee": 49.00,
+    "total_fee": 99.00,
+    "processing_time": "7-15 days",
+
+    // Classification
+    "service_type": "registration",
+    "service_mode": "offline",
+    "service_level": "central",
+    "issuing_authority": "UIDAI",
+
+    // Eligibility
+    "eligibility_criteria": "Must be an Indian resident",
+    "age_limit_min": 0,
+    "age_limit_max": null,
+    "gender_specific": "all",
+    "income_limit_max": null,
+
+    // Requirements
+    "is_aadhar_required": false,
+    "is_photo_required": true,
+    "is_biometric_required": true,
+
+    // Application Process
+    "application_mode": "offline",
+    "appointment_required": true,
+    "tracking_available": true,
+
+    // Support
+    "helpline_number": "1947",
+    "official_url": "https://uidai.gov.in",
+
+    // Related Data
+    "documents": [
+      {
+        "id": "uuid",
+        "document_name": "Proof of Identity",
+        "document_type": "identity",
+        "is_mandatory": true,
+        "description": "Passport, Voter ID, or PAN Card"
+      }
+    ],
+
+    "workflow": [
+      {
+        "step_number": 1,
+        "step_name": "Book Appointment",
+        "step_description": "Book appointment at Aadhaar center"
+      }
+    ],
+
+    "faqs": [
+      {
+        "question": "What documents are required?",
+        "answer": "You need one proof of identity and one proof of address."
+      }
+    ],
+
+    "pricing": {
+      "state_code": "KA",
+      "service_fee": 50.00,
+      "platform_fee": 49.00,
+      "government_fee": 0.00,
+      "gst_percentage": 18.00,
+      "express_available": false
+    },
+
+    "caseworker_info": {
+      "application_portal_url": "https://appointments.uidai.gov.in",
+      "step_1_title": "Book Appointment",
+      "step_1_description": "Visit UIDAI portal...",
+      "helpdesk_number": "1947",
+      "helpdesk_email": "help@uidai.gov.in"
+    },
+
+    "checklists": {
+      "pre_application": [
+        "Ensure you have valid ID proof",
+        "Keep proof of address ready"
+      ],
+      "during_application": [],
+      "post_application": []
+    },
+
+    "offices": [
+      {
+        "office_type": "service_center",
+        "office_name": "Aadhaar Seva Kendra",
+        "address": "MG Road, Bangalore",
+        "phone": "080-12345678"
+      }
+    ],
+
+    "availability": {
+      "state_code": "KA",
+      "is_available": true,
+      "availability_status": "available"
+    },
+
+    "eligibility_rules": [],
+
+    "status_mapping": [
+      {"status_code": "submitted", "status_name": "Submitted"},
+      {"status_code": "processing", "status_name": "Processing"},
+      {"status_code": "completed", "status_name": "Completed"}
+    ],
+
+    "related_services": []
+  }
+}
+
+================================================================================
+SECTION 6: IMPLEMENTATION NOTES
+================================================================================
+
+1. DATA GAPS TO FILL:
+   - service_faqs: Only 134 FAQs for 755 services (need ~5-10 FAQs per service)
+   - service_caseworker_info: Only 13 entries (need for all 755 services)
+   - service_checklists: 0 entries (need for all services)
+   - service_contact_persons: 0 entries (at least for government services)
+   - service_office_locations: 0 entries (need for offline services)
+   - service_state_availability: 0 entries (need for state-specific services)
+   - service_status_mapping: 0 entries (need for tracking)
+   - service_eligibility: 0 entries (need for services with criteria)
+
+2. API FEATURES TO IMPLEMENT:
+   - Bulk operations (bulk create/update)
+   - Export to CSV/Excel
+   - Import from CSV/Excel
+   - Versioning for services
+   - Audit logging for changes
+   - Caching layer (Redis recommended)
+   - Full-text search with Elasticsearch
+   - Nearby office search using PostGIS
+
+3. FRONTEND CONSIDERATIONS:
+   - Lazy loading for large lists
+   - Infinite scroll or pagination
+   - Debounced search
+   - Offline capability (PWA)
+   - Multi-language support (Hindi translations)
+   - Responsive design for mobile
+
+4. SECURITY:
+   - Rate limiting (100 req/min default)
+   - API key authentication for partners
+   - JWT for admin operations
+   - Input validation and sanitization
+   - SQL injection prevention
+   - XSS prevention
+
+5. PERFORMANCE:
+   - Database indexes on frequently queried columns
+   - Connection pooling
+   - Query optimization
+   - Response caching
+   - CDN for static assets (icons, banners)
+
+================================================================================
+SECTION 7: MIGRATION FILES CREATED (052-070)
+================================================================================
+
+052_identity_affidavit_services.sql     - Identity and affidavit services
+053_agriculture_building_services.sql    - Agriculture and building services
+053_rto_services_complete.sql           - RTO services (full data)
+054_education_services_complete.sql      - Education services (full data)
+054_passport_company_court_services.sql  - Passport, company, court services
+055_financial_services_complete.sql      - Financial services (full data)
+055_utility_transport_services.sql       - Utility and transport services
+056_government_certificates_complete.sql - Government certificates
+057_electricity_land_property_services.sql - Electricity, land, property
+058_pension_welfare_employment_services.sql - Pension, welfare, employment
+059_health_housing_subsidy_welfare_services.sql - Health, housing, welfare
+060_remaining_major_services.sql        - Exams, medical, tax, passport
+061_utility_telecom_services.sql        - Utility and telecom
+062_legal_municipal_services.sql        - Legal and municipal
+063_travel_transport_healthcare.sql     - Travel, transport, healthcare
+064_business_registration_services.sql  - Business registration
+065_remaining_services.sql              - IPR, disability, property, solar
+066_final_remaining_services.sql        - Final batch of services
+067_missing_workflows.sql               - Workflows for Aadhaar, passport, etc.
+068_state_wise_pricing.sql              - State-wise pricing for all services
+069_consolidate_categories.sql          - Category consolidation (failed)
+070_consolidate_categories_fixed.sql    - Category consolidation (success)
+
+================================================================================
+SECTION 8: QUICK REFERENCE
+================================================================================
+
+DATABASE CONNECTION:
+- Host: genome-db.cfk4qay2qq27.ap-south-1.rds.amazonaws.com
+- Database: genome_db
+- User: genome
+
+GITHUB REPOSITORY:
+- https://github.com/ShubhamJorwal/bharat-mithra-backend-go
+
+STATE CODES (36):
+AN (Andaman & Nicobar), AP (Andhra Pradesh), AR (Arunachal Pradesh),
+AS (Assam), BR (Bihar), CG (Chhattisgarh), CH (Chandigarh),
+DD (Daman & Diu), DL (Delhi), GA (Goa), GJ (Gujarat),
+HP (Himachal Pradesh), HR (Haryana), JH (Jharkhand), JK (J&K),
+KA (Karnataka), KL (Kerala), LA (Ladakh), LD (Lakshadweep),
+MH (Maharashtra), ML (Meghalaya), MN (Manipur), MP (Madhya Pradesh),
+MZ (Mizoram), NL (Nagaland), OD (Odisha), PB (Punjab),
+PY (Puducherry), RJ (Rajasthan), SK (Sikkim), TG (Telangana),
+TN (Tamil Nadu), TR (Tripura), UK (Uttarakhand), UP (Uttar Pradesh),
+WB (West Bengal)
+
+DOCUMENT TYPES:
+identity, address, photo, income, educational, property, medical, financial, legal, supporting
+
+CHECKLIST TYPES:
+pre_application, during_application, post_application
+
+SERVICE TYPES:
+certificate, license, registration, application, payment
+
+SERVICE MODES:
+online, offline, both
+
+SERVICE LEVELS:
+central, state, district, municipal
+
+================================================================================
+END OF DOCUMENT
+================================================================================

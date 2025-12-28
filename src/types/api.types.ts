@@ -40,7 +40,7 @@ export interface ApiError {
   };
 }
 
-// Service Category Types
+// Service Category Types - Complete fields from GENOME API
 export interface ServiceCategory {
   id: string;
   name: string;
@@ -54,6 +54,17 @@ export interface ServiceCategory {
   is_active: boolean;
   created_at: string;
   updated_at?: string;
+  // Extended fields
+  category_type?: 'government' | 'private' | 'semi-government';
+  department?: string;
+  department_hindi?: string;
+  ministry?: string;
+  ministry_hindi?: string;
+  banner_url?: string;
+  color_code?: string;
+  priority_score?: number;
+  is_featured?: boolean;
+  service_count?: number;
 }
 
 // Category with Services (grouped response)
@@ -71,9 +82,20 @@ export interface CreateCategoryRequest {
   name_hindi?: string;
   slug?: string;
   description?: string;
+  description_hindi?: string;
   icon_url?: string;
   parent_id?: string | null;
   sort_order?: number;
+  // Extended fields
+  category_type?: 'government' | 'private' | 'semi-government';
+  department?: string;
+  department_hindi?: string;
+  ministry?: string;
+  ministry_hindi?: string;
+  banner_url?: string;
+  color_code?: string;
+  priority_score?: number;
+  is_featured?: boolean;
 }
 
 export interface UpdateCategoryRequest {
@@ -81,10 +103,21 @@ export interface UpdateCategoryRequest {
   name_hindi?: string;
   slug?: string;
   description?: string;
+  description_hindi?: string;
   icon_url?: string;
   parent_id?: string | null;
   is_active?: boolean;
   sort_order?: number;
+  // Extended fields
+  category_type?: 'government' | 'private' | 'semi-government';
+  department?: string;
+  department_hindi?: string;
+  ministry?: string;
+  ministry_hindi?: string;
+  banner_url?: string;
+  color_code?: string;
+  priority_score?: number;
+  is_featured?: boolean;
 }
 
 // Service Types - Complete fields from GENOME API
@@ -96,31 +129,124 @@ export interface Service {
   slug: string;
   description: string;
   description_hindi?: string;
-  department?: string;  // Nullable - defaults to 'General Services'
-  department_hindi?: string;  // Nullable - defaults to 'सामान्य सेवाएं'
+
+  // Department & Ministry
+  department?: string;
+  department_hindi?: string;
   ministry?: string;
-  eligibility_criteria?: string;  // Nullable - defaults to ''
+  ministry_hindi?: string;
+
+  // Eligibility & Requirements
+  eligibility_criteria?: string;
   eligibility_criteria_hindi?: string;
   required_documents?: string[];
-  processing_time?: string;  // Nullable - defaults to ''
+
+  // Fees & Timing
+  processing_time?: string;
   service_fee: number;
   platform_fee: number;
   total_fee: number;
   is_free_service: boolean;
+
+  // Media
   icon_url?: string;
   banner_url?: string;
   official_url?: string;
+
+  // Status & Visibility
   is_active?: boolean;
   is_popular: boolean;
   is_featured: boolean;
   total_applications?: number;
   average_rating?: number;
-  available_states?: string[];  // Nullable - defaults to []
-  available_locations?: string;  // Nullable - defaults to ''
-  form_fields?: string | Record<string, unknown>;  // Nullable - defaults to ''
+
+  // Location
+  available_states?: string[];
+  available_locations?: string;
+
+  // Timestamps & Sorting
   sort_order?: number;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string;
+
+  // Legacy field for form JSON
+  form_fields?: string | Record<string, unknown>;
+
+  // Service Classification
+  service_type?: 'certificate' | 'license' | 'registration' | 'application' | 'payment';
+  service_mode?: 'online' | 'offline' | 'both';
+  service_level?: 'central' | 'state' | 'district' | 'municipal';
+
+  // Issuing Authority
+  issuing_authority?: string;
+  issuing_authority_hindi?: string;
+
+  // Validity & Renewal
+  validity_period?: string;
+  renewal_required?: boolean;
+  renewal_period?: string;
+
+  // Eligibility Criteria - Detailed
+  age_limit_min?: number;
+  age_limit_max?: number;
+  gender_specific?: 'male' | 'female' | 'all';
+  income_limit_max?: number;
+  caste_categories?: string[];
+
+  // Document Requirements
+  is_aadhar_required?: boolean;
+  is_pan_required?: boolean;
+  is_mobile_verified?: boolean;
+  is_email_required?: boolean;
+  is_photo_required?: boolean;
+  is_signature_required?: boolean;
+  is_biometric_required?: boolean;
+
+  // Application Process
+  application_mode?: 'online' | 'offline' | 'both';
+  payment_modes?: string[];
+  delivery_mode?: 'download' | 'post' | 'collect';
+  delivery_address_required?: boolean;
+
+  // Tracking & Support
+  tracking_available?: boolean;
+  grievance_url?: string;
+  helpline_number?: string;
+  whatsapp_number?: string;
+  email_support?: string;
+  working_hours?: string;
+  holidays_applicable?: boolean;
+
+  // Application Limits
+  max_applications_per_user?: number;
+  cooldown_days?: number;
+
+  // Approval Process
+  auto_approval?: boolean;
+  verification_required?: boolean;
+  physical_verification?: boolean;
+  appointment_required?: boolean;
+  slot_booking_available?: boolean;
+
+  // File Upload
+  document_upload_limit?: number;
+  max_file_size_mb?: number;
+  allowed_file_types?: string[];
+
+  // Extra Data
+  extra_fields?: Record<string, unknown>;
+
+  // SEO
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string[];
+
+  // Priority & Relations
+  priority_score?: number;
+  parent_service_id?: string;
+  prerequisite_services?: string[];
+  related_services?: string[];
 }
 
 export interface CreateServiceRequest {
@@ -130,50 +256,233 @@ export interface CreateServiceRequest {
   slug?: string;
   description: string;
   description_hindi?: string;
-  department?: string;  // Now optional - defaults to 'General Services'
+
+  // Department & Ministry
+  department?: string;
   department_hindi?: string;
   ministry?: string;
+  ministry_hindi?: string;
+
+  // Eligibility & Requirements
   eligibility_criteria?: string;
+  eligibility_criteria_hindi?: string;
   required_documents?: string[];
+
+  // Fees & Timing
   processing_time?: string;
   service_fee?: number;
   platform_fee?: number;
   is_free_service?: boolean;
+
+  // Media
   icon_url?: string;
   banner_url?: string;
   official_url?: string;
+
+  // Status & Visibility
   is_popular?: boolean;
   is_featured?: boolean;
+
+  // Location
   available_states?: string[];
   available_locations?: string;
+
+  // Legacy field
   form_fields?: string | Record<string, unknown>;
   sort_order?: number;
+
+  // Service Classification
+  service_type?: 'certificate' | 'license' | 'registration' | 'application' | 'payment';
+  service_mode?: 'online' | 'offline' | 'both';
+  service_level?: 'central' | 'state' | 'district' | 'municipal';
+
+  // Issuing Authority
+  issuing_authority?: string;
+  issuing_authority_hindi?: string;
+
+  // Validity & Renewal
+  validity_period?: string;
+  renewal_required?: boolean;
+  renewal_period?: string;
+
+  // Eligibility Criteria - Detailed
+  age_limit_min?: number;
+  age_limit_max?: number;
+  gender_specific?: 'male' | 'female' | 'all';
+  income_limit_max?: number;
+  caste_categories?: string[];
+
+  // Document Requirements
+  is_aadhar_required?: boolean;
+  is_pan_required?: boolean;
+  is_mobile_verified?: boolean;
+  is_email_required?: boolean;
+  is_photo_required?: boolean;
+  is_signature_required?: boolean;
+  is_biometric_required?: boolean;
+
+  // Application Process
+  application_mode?: 'online' | 'offline' | 'both';
+  payment_modes?: string[];
+  delivery_mode?: 'download' | 'post' | 'collect';
+  delivery_address_required?: boolean;
+
+  // Tracking & Support
+  tracking_available?: boolean;
+  grievance_url?: string;
+  helpline_number?: string;
+  whatsapp_number?: string;
+  email_support?: string;
+  working_hours?: string;
+  holidays_applicable?: boolean;
+
+  // Application Limits
+  max_applications_per_user?: number;
+  cooldown_days?: number;
+
+  // Approval Process
+  auto_approval?: boolean;
+  verification_required?: boolean;
+  physical_verification?: boolean;
+  appointment_required?: boolean;
+  slot_booking_available?: boolean;
+
+  // File Upload
+  document_upload_limit?: number;
+  max_file_size_mb?: number;
+  allowed_file_types?: string[];
+
+  // Extra Data
+  extra_fields?: Record<string, unknown>;
+
+  // SEO
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string[];
+
+  // Priority & Relations
+  priority_score?: number;
+  parent_service_id?: string;
+  prerequisite_services?: string[];
+  related_services?: string[];
 }
 
 export interface UpdateServiceRequest {
   name?: string;
   name_hindi?: string;
+  slug?: string;
   description?: string;
   description_hindi?: string;
+
+  // Department & Ministry
   department?: string;
   department_hindi?: string;
   ministry?: string;
+  ministry_hindi?: string;
+
+  // Eligibility & Requirements
   eligibility_criteria?: string;
+  eligibility_criteria_hindi?: string;
   required_documents?: string[];
+
+  // Fees & Timing
   processing_time?: string;
   service_fee?: number;
   platform_fee?: number;
   is_free_service?: boolean;
+
+  // Media
   icon_url?: string;
   banner_url?: string;
   official_url?: string;
+
+  // Status & Visibility
   is_active?: boolean;
   is_popular?: boolean;
   is_featured?: boolean;
+
+  // Location
   available_states?: string[];
   available_locations?: string;
+
+  // Legacy field
   form_fields?: string | Record<string, unknown>;
   sort_order?: number;
+
+  // Service Classification
+  service_type?: 'certificate' | 'license' | 'registration' | 'application' | 'payment';
+  service_mode?: 'online' | 'offline' | 'both';
+  service_level?: 'central' | 'state' | 'district' | 'municipal';
+
+  // Issuing Authority
+  issuing_authority?: string;
+  issuing_authority_hindi?: string;
+
+  // Validity & Renewal
+  validity_period?: string;
+  renewal_required?: boolean;
+  renewal_period?: string;
+
+  // Eligibility Criteria - Detailed
+  age_limit_min?: number;
+  age_limit_max?: number;
+  gender_specific?: 'male' | 'female' | 'all';
+  income_limit_max?: number;
+  caste_categories?: string[];
+
+  // Document Requirements
+  is_aadhar_required?: boolean;
+  is_pan_required?: boolean;
+  is_mobile_verified?: boolean;
+  is_email_required?: boolean;
+  is_photo_required?: boolean;
+  is_signature_required?: boolean;
+  is_biometric_required?: boolean;
+
+  // Application Process
+  application_mode?: 'online' | 'offline' | 'both';
+  payment_modes?: string[];
+  delivery_mode?: 'download' | 'post' | 'collect';
+  delivery_address_required?: boolean;
+
+  // Tracking & Support
+  tracking_available?: boolean;
+  grievance_url?: string;
+  helpline_number?: string;
+  whatsapp_number?: string;
+  email_support?: string;
+  working_hours?: string;
+  holidays_applicable?: boolean;
+
+  // Application Limits
+  max_applications_per_user?: number;
+  cooldown_days?: number;
+
+  // Approval Process
+  auto_approval?: boolean;
+  verification_required?: boolean;
+  physical_verification?: boolean;
+  appointment_required?: boolean;
+  slot_booking_available?: boolean;
+
+  // File Upload
+  document_upload_limit?: number;
+  max_file_size_mb?: number;
+  allowed_file_types?: string[];
+
+  // Extra Data
+  extra_fields?: Record<string, unknown>;
+
+  // SEO
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string[];
+
+  // Priority & Relations
+  priority_score?: number;
+  parent_service_id?: string;
+  prerequisite_services?: string[];
+  related_services?: string[];
 }
 
 // Service Form Types - Complete from GENOME API
@@ -278,8 +587,11 @@ export type ServiceDocumentType =
   | 'medical'
   | 'financial'
   | 'education'
+  | 'educational'
   | 'business'
   | 'property'
+  | 'legal'
+  | 'supporting'
   | 'other';
 
 export interface ServiceDocument {
@@ -292,6 +604,13 @@ export interface ServiceDocument {
   description_hindi?: string;
   is_mandatory: boolean;
   sort_order: number;
+  // Extended fields
+  sample_url?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  state_specific?: string;
+  is_active?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -305,6 +624,12 @@ export interface CreateServiceDocumentRequest {
   description_hindi?: string;
   is_mandatory?: boolean;
   sort_order?: number;
+  // Extended fields
+  sample_url?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  state_specific?: string;
 }
 
 export interface UpdateServiceDocumentRequest {
@@ -315,9 +640,18 @@ export interface UpdateServiceDocumentRequest {
   description_hindi?: string;
   is_mandatory?: boolean;
   sort_order?: number;
+  // Extended fields
+  sample_url?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  state_specific?: string;
+  is_active?: boolean;
 }
 
 // Service Workflow Types - Step-by-step status tracking
+export type WorkflowStepType = 'submission' | 'verification' | 'approval' | 'payment' | 'dispatch' | 'other';
+
 export interface ServiceWorkflow {
   id: string;
   service_id: string;
@@ -327,6 +661,17 @@ export interface ServiceWorkflow {
   step_description?: string;
   step_description_hindi?: string;
   sort_order: number;
+  // Extended fields
+  step_type?: WorkflowStepType;
+  assigned_role?: string;
+  sla_hours?: number;
+  is_optional?: boolean;
+  can_reject?: boolean;
+  can_send_back?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
+  is_active?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -339,6 +684,16 @@ export interface CreateServiceWorkflowRequest {
   step_description?: string;
   step_description_hindi?: string;
   sort_order?: number;
+  // Extended fields
+  step_type?: WorkflowStepType;
+  assigned_role?: string;
+  sla_hours?: number;
+  is_optional?: boolean;
+  can_reject?: boolean;
+  can_send_back?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
 }
 
 export interface UpdateServiceWorkflowRequest {
@@ -348,6 +703,17 @@ export interface UpdateServiceWorkflowRequest {
   step_description?: string;
   step_description_hindi?: string;
   sort_order?: number;
+  // Extended fields
+  step_type?: WorkflowStepType;
+  assigned_role?: string;
+  sla_hours?: number;
+  is_optional?: boolean;
+  can_reject?: boolean;
+  can_send_back?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
+  is_active?: boolean;
 }
 
 // User Types - Complete 80+ fields from GENOME API
@@ -1522,26 +1888,63 @@ export interface TrackApplicationResponse {
 export interface ServicePricing {
   id: string;
   service_id: string;
-  state_code: string;
+  state_code?: string | null;
   state_name?: string;
   district_code?: string | null;
   district_name?: string | null;
   service_fee: number;
   platform_fee: number;
   government_fee: number;
+  convenience_fee?: number;
   gst_percentage: number;
-  gst_amount: number;
-  total_fee: number;
+  gst_amount?: number;
+  total_fee?: number;
+  processing_time?: string;
   express_available: boolean;
   express_fee?: number | null;
   express_processing_time?: string | null;
   discount_percentage?: number | null;
   discount_amount?: number | null;
-  effective_from?: string | null;
-  effective_to?: string | null;
+  valid_from?: string | null;
+  valid_to?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at?: string;
+}
+
+// Create/Update Pricing Requests
+export interface CreateServicePricingRequest {
+  service_id: string;
+  state_code?: string;
+  district_code?: string;
+  service_fee: number;
+  platform_fee: number;
+  government_fee?: number;
+  convenience_fee?: number;
+  gst_percentage?: number;
+  processing_time?: string;
+  express_available?: boolean;
+  express_fee?: number;
+  express_processing_time?: string;
+  valid_from?: string;
+  valid_to?: string;
+}
+
+export interface UpdateServicePricingRequest {
+  state_code?: string;
+  district_code?: string;
+  service_fee?: number;
+  platform_fee?: number;
+  government_fee?: number;
+  convenience_fee?: number;
+  gst_percentage?: number;
+  processing_time?: string;
+  express_available?: boolean;
+  express_fee?: number;
+  express_processing_time?: string;
+  valid_from?: string;
+  valid_to?: string;
+  is_active?: boolean;
 }
 
 // Caseworker Portal Info
@@ -1633,51 +2036,181 @@ export interface ServiceStateAvailability {
   state_code: string;
   state_name?: string;
   is_available: boolean;
+  availability_status?: 'available' | 'coming_soon' | 'suspended' | 'discontinued';
   launch_date?: string | null;
-  coming_soon: boolean;
+  coming_soon?: boolean;
+  suspension_reason?: string | null;
   unavailability_reason?: string | null;
   alternative_service_id?: string | null;
   alternative_service_name?: string | null;
+  local_service_name?: string;
+  local_service_name_hindi?: string;
+  local_department?: string;
+  local_department_hindi?: string;
+  state_portal_url?: string;
+  state_helpline?: string;
   created_at: string;
   updated_at?: string;
 }
 
-// Service Office Location
+// Create/Update State Availability Requests
+export interface CreateServiceStateAvailabilityRequest {
+  service_id: string;
+  state_code: string;
+  is_available?: boolean;
+  availability_status?: 'available' | 'coming_soon' | 'suspended' | 'discontinued';
+  launch_date?: string;
+  suspension_reason?: string;
+  alternative_service_id?: string;
+  local_service_name?: string;
+  local_service_name_hindi?: string;
+  local_department?: string;
+  local_department_hindi?: string;
+  state_portal_url?: string;
+  state_helpline?: string;
+}
+
+export interface UpdateServiceStateAvailabilityRequest {
+  is_available?: boolean;
+  availability_status?: 'available' | 'coming_soon' | 'suspended' | 'discontinued';
+  launch_date?: string;
+  suspension_reason?: string;
+  alternative_service_id?: string;
+  local_service_name?: string;
+  local_service_name_hindi?: string;
+  local_department?: string;
+  local_department_hindi?: string;
+  state_portal_url?: string;
+  state_helpline?: string;
+}
+
+// Service Office Location Types
+export type ServiceOfficeType = 'head_office' | 'regional_office' | 'district_office' | 'taluk_office' | 'service_center' | 'common_service_center';
+
 export interface ServiceOfficeLocation {
   id: string;
   service_id: string;
-  state_code: string;
+  state_code?: string;
   state_name?: string;
   district_code?: string | null;
   district_name?: string | null;
-  office_type: 'head_office' | 'regional_office' | 'district_office' | 'taluk_office' | 'service_center';
+  office_type: ServiceOfficeType;
   office_name: string;
+  office_name_hindi?: string;
   address_line1: string;
+  address_line1_hindi?: string;
   address_line2?: string | null;
+  address_line2_hindi?: string;
   city: string;
   pincode: string;
+  landmark?: string;
+  landmark_hindi?: string;
   phone?: string | null;
+  alternate_phone?: string;
   email?: string | null;
   working_hours?: string | null;
   working_days?: string | null;
+  lunch_break?: string;
+  holidays?: string;
   latitude?: number | null;
   longitude?: number | null;
+  google_maps_link?: string;
+  contact_person?: string;
+  contact_person_hindi?: string;
+  contact_designation?: string;
+  token_system?: boolean;
+  appointment_required?: boolean;
+  appointment_portal_url?: string;
+  accessibility_features?: string[];
   is_active: boolean;
   created_at: string;
   updated_at?: string;
 }
 
-// Service Checklist
+// Create/Update Office Location Requests
+export interface CreateServiceOfficeLocationRequest {
+  service_id: string;
+  state_code?: string;
+  district_code?: string;
+  office_type: ServiceOfficeType;
+  office_name: string;
+  office_name_hindi?: string;
+  address_line1: string;
+  address_line1_hindi?: string;
+  address_line2?: string;
+  address_line2_hindi?: string;
+  city: string;
+  pincode: string;
+  landmark?: string;
+  landmark_hindi?: string;
+  phone?: string;
+  alternate_phone?: string;
+  email?: string;
+  working_hours?: string;
+  working_days?: string;
+  lunch_break?: string;
+  holidays?: string;
+  latitude?: number;
+  longitude?: number;
+  google_maps_link?: string;
+  contact_person?: string;
+  contact_person_hindi?: string;
+  contact_designation?: string;
+  token_system?: boolean;
+  appointment_required?: boolean;
+  appointment_portal_url?: string;
+  accessibility_features?: string[];
+}
+
+export interface UpdateServiceOfficeLocationRequest {
+  state_code?: string;
+  district_code?: string;
+  office_type?: ServiceOfficeType;
+  office_name?: string;
+  office_name_hindi?: string;
+  address_line1?: string;
+  address_line1_hindi?: string;
+  address_line2?: string;
+  address_line2_hindi?: string;
+  city?: string;
+  pincode?: string;
+  landmark?: string;
+  landmark_hindi?: string;
+  phone?: string;
+  alternate_phone?: string;
+  email?: string;
+  working_hours?: string;
+  working_days?: string;
+  lunch_break?: string;
+  holidays?: string;
+  latitude?: number;
+  longitude?: number;
+  google_maps_link?: string;
+  contact_person?: string;
+  contact_person_hindi?: string;
+  contact_designation?: string;
+  token_system?: boolean;
+  appointment_required?: boolean;
+  appointment_portal_url?: string;
+  accessibility_features?: string[];
+  is_active?: boolean;
+}
+
+// Service Checklist Types
+export type ServiceChecklistType = 'pre_application' | 'during_application' | 'post_application' | 'documents' | 'eligibility';
+
 export interface ServiceChecklist {
   id: string;
   service_id: string;
   state_code?: string | null;
   state_name?: string | null;
-  checklist_type: 'pre_application' | 'documents' | 'eligibility' | 'post_application';
-  title: string;
-  title_hindi?: string;
-  items: ChecklistItem[];
-  sort_order: number;
+  checklist_type: ServiceChecklistType;
+  item_order: number;
+  item_text: string;
+  item_text_hindi?: string;
+  item_description?: string;
+  item_description_hindi?: string;
+  is_mandatory: boolean;
   is_active: boolean;
   created_at: string;
   updated_at?: string;
@@ -1690,6 +2223,31 @@ export interface ChecklistItem {
   is_mandatory: boolean;
   help_text?: string;
   document_type?: string;
+}
+
+// Create/Update Checklist Requests
+export interface CreateServiceChecklistRequest {
+  service_id: string;
+  state_code?: string;
+  checklist_type: ServiceChecklistType;
+  item_order: number;
+  item_text: string;
+  item_text_hindi?: string;
+  item_description?: string;
+  item_description_hindi?: string;
+  is_mandatory?: boolean;
+}
+
+export interface UpdateServiceChecklistRequest {
+  state_code?: string;
+  checklist_type?: ServiceChecklistType;
+  item_order?: number;
+  item_text?: string;
+  item_text_hindi?: string;
+  item_description?: string;
+  item_description_hindi?: string;
+  is_mandatory?: boolean;
+  is_active?: boolean;
 }
 
 // Service Complete Details - All information combined
@@ -1726,5 +2284,382 @@ export interface ServiceChecklistQueryParams {
 export interface ServiceOfficeQueryParams {
   state_code?: string;
   district_code?: string;
-  office_type?: 'head_office' | 'regional_office' | 'district_office' | 'taluk_office' | 'service_center';
+  office_type?: ServiceOfficeType;
+  lat?: number;
+  lng?: number;
+  radius_km?: number;
+}
+
+// ==================== SERVICE CONTACT PERSONS ====================
+
+export type ServiceContactType = 'nodal_officer' | 'helpdesk' | 'grievance' | 'technical' | 'other';
+
+export interface ServiceContactPerson {
+  id: string;
+  service_id: string;
+  state_code?: string;
+  state_name?: string;
+  district_code?: string;
+  district_name?: string;
+  contact_type: ServiceContactType;
+  name: string;
+  name_hindi?: string;
+  designation?: string;
+  designation_hindi?: string;
+  department?: string;
+  department_hindi?: string;
+  phone?: string;
+  alternate_phone?: string;
+  email?: string;
+  office_address?: string;
+  office_address_hindi?: string;
+  availability_hours?: string;
+  response_time?: string;
+  is_primary: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceContactPersonRequest {
+  service_id: string;
+  state_code?: string;
+  district_code?: string;
+  contact_type: ServiceContactType;
+  name: string;
+  name_hindi?: string;
+  designation?: string;
+  designation_hindi?: string;
+  department?: string;
+  department_hindi?: string;
+  phone?: string;
+  alternate_phone?: string;
+  email?: string;
+  office_address?: string;
+  office_address_hindi?: string;
+  availability_hours?: string;
+  response_time?: string;
+  is_primary?: boolean;
+}
+
+export interface UpdateServiceContactPersonRequest {
+  state_code?: string;
+  district_code?: string;
+  contact_type?: ServiceContactType;
+  name?: string;
+  name_hindi?: string;
+  designation?: string;
+  designation_hindi?: string;
+  department?: string;
+  department_hindi?: string;
+  phone?: string;
+  alternate_phone?: string;
+  email?: string;
+  office_address?: string;
+  office_address_hindi?: string;
+  availability_hours?: string;
+  response_time?: string;
+  is_primary?: boolean;
+  is_active?: boolean;
+}
+
+export interface ServiceContactQueryParams {
+  state_code?: string;
+  district_code?: string;
+  contact_type?: ServiceContactType;
+}
+
+// ==================== SERVICE ELIGIBILITY RULES ====================
+
+export type EligibilityRuleType = 'age' | 'income' | 'gender' | 'caste' | 'state' | 'occupation' | 'education' | 'other';
+export type EligibilityRuleOperator = 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'greater_than_or_equals' | 'less_than_or_equals' | 'in' | 'not_in' | 'between';
+
+export interface ServiceEligibility {
+  id: string;
+  service_id: string;
+  rule_type: EligibilityRuleType;
+  rule_operator: EligibilityRuleOperator;
+  rule_value: string;
+  error_message?: string;
+  error_message_hindi?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceEligibilityRequest {
+  service_id: string;
+  rule_type: EligibilityRuleType;
+  rule_operator: EligibilityRuleOperator;
+  rule_value: string;
+  error_message?: string;
+  error_message_hindi?: string;
+  sort_order?: number;
+}
+
+export interface UpdateServiceEligibilityRequest {
+  rule_type?: EligibilityRuleType;
+  rule_operator?: EligibilityRuleOperator;
+  rule_value?: string;
+  error_message?: string;
+  error_message_hindi?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// ==================== SERVICE STATUS MAPPING ====================
+
+export interface ServiceStatusMapping {
+  id: string;
+  service_id: string;
+  status_code: string;
+  status_name: string;
+  status_name_hindi?: string;
+  status_description?: string;
+  status_description_hindi?: string;
+  status_color?: string;
+  status_icon?: string;
+  sort_order: number;
+  is_final: boolean;
+  is_success: boolean;
+  notify_applicant: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceStatusMappingRequest {
+  service_id: string;
+  status_code: string;
+  status_name: string;
+  status_name_hindi?: string;
+  status_description?: string;
+  status_description_hindi?: string;
+  status_color?: string;
+  status_icon?: string;
+  sort_order?: number;
+  is_final?: boolean;
+  is_success?: boolean;
+  notify_applicant?: boolean;
+}
+
+export interface UpdateServiceStatusMappingRequest {
+  status_code?: string;
+  status_name?: string;
+  status_name_hindi?: string;
+  status_description?: string;
+  status_description_hindi?: string;
+  status_color?: string;
+  status_icon?: string;
+  sort_order?: number;
+  is_final?: boolean;
+  is_success?: boolean;
+  notify_applicant?: boolean;
+}
+
+// ==================== EXTENDED CASEWORKER INFO ====================
+
+// Full Caseworker Info from database (not the nested version)
+export interface ServiceCaseworkerInfoFull {
+  id: string;
+  service_id: string;
+  state_code?: string;
+  state_name?: string;
+
+  // Application Portal
+  application_portal_url?: string;
+  application_portal_name?: string;
+  application_portal_name_hindi?: string;
+
+  // Offline Office
+  offline_office_name?: string;
+  offline_office_name_hindi?: string;
+  offline_office_address?: string;
+  offline_office_address_hindi?: string;
+  office_timings?: string;
+  office_contact_number?: string;
+  office_email?: string;
+
+  // Step-by-Step Guide (5 steps max)
+  step_1_title?: string;
+  step_1_title_hindi?: string;
+  step_1_description?: string;
+  step_1_description_hindi?: string;
+  step_2_title?: string;
+  step_2_title_hindi?: string;
+  step_2_description?: string;
+  step_2_description_hindi?: string;
+  step_3_title?: string;
+  step_3_title_hindi?: string;
+  step_3_description?: string;
+  step_3_description_hindi?: string;
+  step_4_title?: string;
+  step_4_title_hindi?: string;
+  step_4_description?: string;
+  step_4_description_hindi?: string;
+  step_5_title?: string;
+  step_5_title_hindi?: string;
+  step_5_description?: string;
+  step_5_description_hindi?: string;
+
+  // Form Submission
+  form_submission_mode?: 'online' | 'offline' | 'both';
+  form_submission_portal?: string;
+  form_submission_office?: string;
+  form_submission_office_hindi?: string;
+  form_submission_address?: string;
+  form_submission_address_hindi?: string;
+  form_download_url?: string;
+  form_instructions?: string;
+  form_instructions_hindi?: string;
+
+  // Document Submission
+  document_submission_mode?: 'upload' | 'physical' | 'both';
+  document_verification_required?: boolean;
+  document_verification_office?: string;
+  document_verification_office_hindi?: string;
+  document_attestation_required?: boolean;
+  attestation_authority?: string;
+  attestation_authority_hindi?: string;
+
+  // Payment
+  payment_mode?: string;
+  payment_portal_url?: string;
+  payment_office?: string;
+  payment_office_hindi?: string;
+  challan_download_url?: string;
+  bank_name?: string;
+  bank_branch?: string;
+  bank_account_number?: string;
+  bank_ifsc?: string;
+  treasury_code?: string;
+  head_of_account?: string;
+
+  // Tracking
+  acknowledgment_type?: 'online' | 'sms' | 'email' | 'physical';
+  tracking_portal_url?: string;
+  tracking_method?: string;
+  tracking_method_hindi?: string;
+
+  // Certificate/Document Collection
+  next_step_after_approval?: string;
+  next_step_after_approval_hindi?: string;
+  certificate_collection_mode?: 'download' | 'post' | 'collect';
+  certificate_collection_office?: string;
+  certificate_collection_office_hindi?: string;
+  certificate_collection_address?: string;
+  certificate_collection_address_hindi?: string;
+  digital_certificate_download_url?: string;
+  physical_certificate_delivery_days?: number;
+
+  // Rejection & Appeal
+  rejection_appeal_process?: string;
+  rejection_appeal_process_hindi?: string;
+  appeal_authority?: string;
+  appeal_authority_hindi?: string;
+  appeal_office?: string;
+  appeal_office_hindi?: string;
+  appeal_time_limit_days?: number;
+  resubmission_allowed?: boolean;
+  resubmission_time_limit_days?: number;
+
+  // Helpdesk
+  helpdesk_number?: string;
+  helpdesk_email?: string;
+  helpdesk_timings?: string;
+  whatsapp_support?: string;
+  chatbot_url?: string;
+  faq_url?: string;
+  grievance_portal_url?: string;
+
+  // Tips & Notes
+  special_notes?: string;
+  special_notes_hindi?: string;
+  common_mistakes?: string;
+  common_mistakes_hindi?: string;
+  tips_for_faster_processing?: string;
+  tips_for_faster_processing_hindi?: string;
+
+  // Legal References
+  govt_order_number?: string;
+  govt_order_date?: string;
+  reference_act?: string;
+  reference_rules?: string;
+  official_gazette_link?: string;
+
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateServiceCaseworkerInfoRequest {
+  service_id: string;
+  state_code?: string;
+  application_portal_url?: string;
+  application_portal_name?: string;
+  application_portal_name_hindi?: string;
+  offline_office_name?: string;
+  offline_office_name_hindi?: string;
+  offline_office_address?: string;
+  offline_office_address_hindi?: string;
+  office_timings?: string;
+  office_contact_number?: string;
+  office_email?: string;
+  step_1_title?: string;
+  step_1_title_hindi?: string;
+  step_1_description?: string;
+  step_1_description_hindi?: string;
+  step_2_title?: string;
+  step_2_title_hindi?: string;
+  step_2_description?: string;
+  step_2_description_hindi?: string;
+  step_3_title?: string;
+  step_3_title_hindi?: string;
+  step_3_description?: string;
+  step_3_description_hindi?: string;
+  step_4_title?: string;
+  step_4_title_hindi?: string;
+  step_4_description?: string;
+  step_4_description_hindi?: string;
+  step_5_title?: string;
+  step_5_title_hindi?: string;
+  step_5_description?: string;
+  step_5_description_hindi?: string;
+  form_submission_mode?: 'online' | 'offline' | 'both';
+  form_submission_portal?: string;
+  form_download_url?: string;
+  document_submission_mode?: 'upload' | 'physical' | 'both';
+  document_verification_required?: boolean;
+  payment_mode?: string;
+  payment_portal_url?: string;
+  challan_download_url?: string;
+  tracking_portal_url?: string;
+  certificate_collection_mode?: 'download' | 'post' | 'collect';
+  helpdesk_number?: string;
+  helpdesk_email?: string;
+  helpdesk_timings?: string;
+  whatsapp_support?: string;
+  grievance_portal_url?: string;
+  special_notes?: string;
+  special_notes_hindi?: string;
+  tips_for_faster_processing?: string;
+  tips_for_faster_processing_hindi?: string;
+}
+
+export interface UpdateServiceCaseworkerInfoRequest extends Partial<CreateServiceCaseworkerInfoRequest> {
+  is_active?: boolean;
+}
+
+// ==================== SERVICE AVAILABILITY QUERY PARAMS ====================
+
+export interface ServiceStateAvailabilityQueryParams {
+  state_code?: string;
+}
+
+// ==================== EXTENDED SERVICE COMPLETE DETAILS ====================
+
+export interface ServiceCompleteDetailsExtended extends ServiceCompleteDetails {
+  contacts?: ServiceContactPerson[];
+  eligibility_rules?: ServiceEligibility[];
+  status_mapping?: ServiceStatusMapping[];
 }
