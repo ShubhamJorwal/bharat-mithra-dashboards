@@ -224,11 +224,19 @@ const ApplicationDetails = () => {
           if (historyRes.status === 'fulfilled' && historyRes.value.success) {
             setHistory(historyRes.value.data || []);
           }
-          // Workflow data - ensure data is an array before using array methods
+          // Workflow data - API returns { steps: [], summary: {} } or array directly
           if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
-            const steps = Array.isArray(workflowRes.value.data) ? workflowRes.value.data : [];
+            const workflowData = workflowRes.value.data;
+            // Handle both nested structure { steps: [...] } and direct array
+            const steps = Array.isArray(workflowData)
+              ? workflowData
+              : (workflowData as { steps?: ApplicationWorkflowProgress[] })?.steps || [];
             setWorkflowSteps(steps);
-            setTotalWorkflowSteps(steps.length);
+            // Use summary total_steps if available, otherwise use array length
+            const summary = !Array.isArray(workflowData)
+              ? (workflowData as { summary?: { total_steps: number } })?.summary
+              : null;
+            setTotalWorkflowSteps(summary?.total_steps || steps.length);
             const activeStep = steps.find(s => s.step_status === 'in_progress');
             setCurrentWorkflowStep(activeStep?.step_number || 1);
           }
@@ -463,9 +471,17 @@ const ApplicationDetails = () => {
       ]);
 
       if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
-        const steps = Array.isArray(workflowRes.value.data) ? workflowRes.value.data : [];
+        const workflowData = workflowRes.value.data;
+        // Handle both nested structure { steps: [...] } and direct array
+        const steps = Array.isArray(workflowData)
+          ? workflowData
+          : (workflowData as { steps?: ApplicationWorkflowProgress[] })?.steps || [];
         setWorkflowSteps(steps);
-        setTotalWorkflowSteps(steps.length);
+        // Use summary total_steps if available, otherwise use array length
+        const summary = !Array.isArray(workflowData)
+          ? (workflowData as { summary?: { total_steps: number } })?.summary
+          : null;
+        setTotalWorkflowSteps(summary?.total_steps || steps.length);
         const activeStep = steps.find(s => s.step_status === 'in_progress');
         setCurrentWorkflowStep(activeStep?.step_number || 1);
       }
