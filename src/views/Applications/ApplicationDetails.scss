@@ -952,8 +952,44 @@
 }
 
 // ============================================
+// WORKFLOW TAB
+// ============================================
+.apd-workflow {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  min-height: 400px;
+}
+
+.apd-workflow-main {
+  min-width: 0;
+}
+
+.apd-workflow-sidebar {
+  min-width: 0;
+}
+
+// ============================================
+// REQUIRED DOCS TAB
+// ============================================
+.apd-required-docs {
+  min-height: 300px;
+}
+
+// ============================================
 // RESPONSIVE
 // ============================================
+@media (max-width: 1024px) {
+  .apd-workflow {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .apd-workflow-sidebar {
+    order: -1;
+  }
+}
+
 @media (max-width: 768px) {
   .apd-hero {
     flex-direction: column;

@@ -13,7 +13,21 @@ import type {
   CreateApplicationRequest,
   UpdateApplicationRequest,
   ApplicationStatus,
-  TrackApplicationResponse
+  TrackApplicationResponse,
+  // V2 Workflow Types
+  ApplicationFullResponse,
+  ApplicationRequiredDocument,
+  ApplicationWorkflowProgress,
+  ApplicationEligibilityCheck,
+  DocumentStatusSummary,
+  CreateApplicationV2Request,
+  CreateApplicationV2Response,
+  UploadRequiredDocumentRequest,
+  UploadRequiredDocumentResponse,
+  VerifyDocumentRequest,
+  WorkflowAdvanceRequest,
+  WorkflowAdvanceResponse,
+  CurrentWorkflowStepResponse
 } from '../../types/api.types';
 
 const APPLICATIONS_BASE = '/api/v1/applications';
@@ -276,6 +290,103 @@ export const applicationsApi = {
   // Track application (public - no auth required)
   trackApplication: async (applicationNumber: string): Promise<ApiResponse<TrackApplicationResponse>> => {
     const response = await axiosInstance.get(`/api/v1/track/${applicationNumber}`);
+    return response.data;
+  },
+
+  // ==================== V2 WORKFLOW SYSTEM ====================
+
+  // Create application with service integration (V2)
+  createApplicationV2: async (data: CreateApplicationV2Request): Promise<ApiResponse<CreateApplicationV2Response>> => {
+    const response = await axiosInstance.post(`${APPLICATIONS_BASE}/v2`, data);
+    return response.data;
+  },
+
+  // Get full application details with workflow data
+  getApplicationFull: async (id: string): Promise<ApiResponse<ApplicationFullResponse>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/full`);
+    return response.data;
+  },
+
+  // ==================== REQUIRED DOCUMENTS ====================
+
+  // Get required documents for an application
+  getRequiredDocuments: async (id: string): Promise<ApiResponse<ApplicationRequiredDocument[]>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/required-documents`);
+    return response.data;
+  },
+
+  // Get document status summary
+  getDocumentStatus: async (id: string): Promise<ApiResponse<DocumentStatusSummary>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/required-documents/status`);
+    return response.data;
+  },
+
+  // Upload document for a required document
+  uploadRequiredDocument: async (
+    applicationId: string,
+    documentId: string,
+    data: UploadRequiredDocumentRequest
+  ): Promise<ApiResponse<UploadRequiredDocumentResponse>> => {
+    const response = await axiosInstance.post(
+      `${APPLICATIONS_BASE}/${applicationId}/required-documents/${documentId}/upload`,
+      data
+    );
+    return response.data;
+  },
+
+  // Verify or reject a required document
+  verifyRequiredDocument: async (
+    applicationId: string,
+    documentId: string,
+    data: VerifyDocumentRequest
+  ): Promise<ApiResponse<ApplicationRequiredDocument>> => {
+    const response = await axiosInstance.post(
+      `${APPLICATIONS_BASE}/${applicationId}/required-documents/${documentId}/verify`,
+      data
+    );
+    return response.data;
+  },
+
+  // ==================== WORKFLOW PROGRESS ====================
+
+  // Get all workflow steps for an application
+  getWorkflowProgress: async (id: string): Promise<ApiResponse<ApplicationWorkflowProgress[]>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/workflow`);
+    return response.data;
+  },
+
+  // Get current active workflow step
+  getCurrentWorkflowStep: async (id: string): Promise<ApiResponse<CurrentWorkflowStepResponse>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/workflow/current`);
+    return response.data;
+  },
+
+  // Start the workflow (begins step 1)
+  startWorkflow: async (id: string): Promise<ApiResponse<{ current_step: number; total_steps: number }>> => {
+    const response = await axiosInstance.post(`${APPLICATIONS_BASE}/${id}/workflow/start`);
+    return response.data;
+  },
+
+  // Advance to the next workflow step
+  advanceWorkflow: async (
+    id: string,
+    data: WorkflowAdvanceRequest
+  ): Promise<ApiResponse<WorkflowAdvanceResponse>> => {
+    const response = await axiosInstance.post(`${APPLICATIONS_BASE}/${id}/workflow/advance`, data);
+    return response.data;
+  },
+
+  // ==================== ELIGIBILITY CHECKS ====================
+
+  // Get eligibility check results
+  getEligibilityChecks: async (id: string): Promise<ApiResponse<ApplicationEligibilityCheck[]>> => {
+    const response = await axiosInstance.get(`${APPLICATIONS_BASE}/${id}/eligibility`);
+    return response.data;
+  },
+
+  // Re-run eligibility checks
+  runEligibilityChecks: async (id: string): Promise<ApiResponse<ApplicationEligibilityCheck[]>> => {
+    const response = await axiosInstance.post(`${APPLICATIONS_BASE}/${id}/eligibility/check`);
     return response.data;
   }
 };

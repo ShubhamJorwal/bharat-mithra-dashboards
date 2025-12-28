@@ -23,7 +23,8 @@ import {
   HiOutlineTrash,
   HiOutlineBan,
   HiOutlinePause,
-  HiOutlinePlay
+  HiOutlinePlay,
+  HiOutlineViewBoards
 } from 'react-icons/hi';
 import applicationsApi from '../../services/api/applications.api';
 import type {
@@ -33,9 +34,14 @@ import type {
   ApplicationPayment,
   ApplicationStatusHistory,
   ApplicationStatus,
-  PaymentStatus
+  PaymentStatus,
+  ApplicationWorkflowProgress,
+  ApplicationRequiredDocument,
+  ApplicationEligibilityCheck,
+  DocumentStatusSummary
 } from '../../types/api.types';
 import ConfirmModal from '../../components/common/ConfirmModal/ConfirmModal';
+import { WorkflowProgress, RequiredDocuments, EligibilityChecks } from '../../components/Applications';
 import './ApplicationDetails.scss';
 
 // Status configuration
@@ -189,6 +195,159 @@ const MOCK_HISTORY: ApplicationStatusHistory[] = [
   }
 ];
 
+const MOCK_WORKFLOW_STEPS: ApplicationWorkflowProgress[] = [
+  {
+    id: 'wf-001',
+    application_id: 'app-001',
+    step_number: 1,
+    step_name: 'Document Collection',
+    step_name_hindi: 'दस्तावेज़ संग्रहण',
+    step_type: 'manual',
+    step_status: 'completed',
+    sla_hours: 24,
+    completed_at: '2024-12-20T14:30:00Z',
+    created_at: '2024-12-20T10:35:00Z',
+    updated_at: '2024-12-20T14:30:00Z'
+  },
+  {
+    id: 'wf-002',
+    application_id: 'app-001',
+    step_number: 2,
+    step_name: 'Document Verification',
+    step_name_hindi: 'दस्तावेज़ सत्यापन',
+    step_type: 'verification',
+    step_status: 'in_progress',
+    sla_hours: 48,
+    sla_deadline: '2024-12-23T14:30:00Z',
+    started_at: '2024-12-20T14:30:00Z',
+    created_at: '2024-12-20T10:35:00Z',
+    updated_at: '2024-12-21T09:00:00Z'
+  },
+  {
+    id: 'wf-003',
+    application_id: 'app-001',
+    step_number: 3,
+    step_name: 'Government Processing',
+    step_name_hindi: 'सरकारी प्रसंस्करण',
+    step_type: 'automatic',
+    step_status: 'pending',
+    sla_hours: 72,
+    created_at: '2024-12-20T10:35:00Z',
+    updated_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'wf-004',
+    application_id: 'app-001',
+    step_number: 4,
+    step_name: 'Final Approval',
+    step_name_hindi: 'अंतिम स्वीकृति',
+    step_type: 'approval',
+    step_status: 'pending',
+    sla_hours: 24,
+    created_at: '2024-12-20T10:35:00Z',
+    updated_at: '2024-12-20T10:35:00Z'
+  }
+];
+
+const MOCK_REQUIRED_DOCS: ApplicationRequiredDocument[] = [
+  {
+    id: 'rdoc-001',
+    application_id: 'app-001',
+    document_name: 'Aadhaar Card',
+    document_name_hindi: 'आधार कार्ड',
+    description: 'Government issued Aadhaar card (front and back)',
+    is_mandatory: true,
+    status: 'verified',
+    file_url: '#',
+    uploaded_at: '2024-12-20T11:00:00Z',
+    verified_at: '2024-12-20T14:00:00Z',
+    verified_by: 'admin-001',
+    created_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'rdoc-002',
+    application_id: 'app-001',
+    document_name: 'Address Proof',
+    document_name_hindi: 'पता प्रमाण',
+    description: 'Electricity bill, water bill, or bank statement',
+    is_mandatory: true,
+    status: 'uploaded',
+    file_url: '#',
+    uploaded_at: '2024-12-20T11:15:00Z',
+    created_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'rdoc-003',
+    application_id: 'app-001',
+    document_name: 'Passport Photo',
+    document_name_hindi: 'पासपोर्ट फोटो',
+    description: 'Recent passport size photograph with white background',
+    is_mandatory: true,
+    status: 'pending',
+    created_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'rdoc-004',
+    application_id: 'app-001',
+    document_name: 'Birth Certificate (if available)',
+    document_name_hindi: 'जन्म प्रमाण पत्र',
+    description: 'Original birth certificate for age verification',
+    is_mandatory: false,
+    status: 'pending',
+    created_at: '2024-12-20T10:35:00Z'
+  }
+];
+
+const MOCK_ELIGIBILITY_CHECKS: ApplicationEligibilityCheck[] = [
+  {
+    id: 'ec-001',
+    application_id: 'app-001',
+    rule_name: 'Age Verification',
+    rule_name_hindi: 'आयु सत्यापन',
+    rule_type: 'comparison',
+    rule_operator: 'gte',
+    rule_value: '18',
+    actual_value: '34',
+    check_result: true,
+    created_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'ec-002',
+    application_id: 'app-001',
+    rule_name: 'State Residency',
+    rule_name_hindi: 'राज्य निवास',
+    rule_type: 'match',
+    rule_value: 'KA',
+    actual_value: 'KA',
+    check_result: true,
+    created_at: '2024-12-20T10:35:00Z'
+  },
+  {
+    id: 'ec-003',
+    application_id: 'app-001',
+    rule_name: 'Document Completeness',
+    rule_name_hindi: 'दस्तावेज़ पूर्णता',
+    rule_type: 'percentage',
+    rule_operator: 'gte',
+    rule_value: '75',
+    actual_value: '50',
+    check_result: false,
+    error_message: 'Please upload the remaining required documents',
+    error_message_hindi: 'कृपया शेष आवश्यक दस्तावेज़ अपलोड करें',
+    created_at: '2024-12-20T10:35:00Z'
+  }
+];
+
+const MOCK_DOC_STATUS_SUMMARY: DocumentStatusSummary = {
+  total: 4,
+  pending: 2,
+  uploaded: 1,
+  verified: 1,
+  rejected: 0,
+  mandatory_total: 3,
+  mandatory_completed: 2
+};
+
 // Get available actions based on status
 const getAvailableActions = (status: ApplicationStatus) => {
   const actions: { key: string; label: string; icon: React.ReactNode; color?: string }[] = [];
@@ -247,10 +406,19 @@ const ApplicationDetails = () => {
   const [payments, setPayments] = useState<ApplicationPayment[]>([]);
   const [history, setHistory] = useState<ApplicationStatusHistory[]>([]);
 
+  // Workflow states
+  const [workflowSteps, setWorkflowSteps] = useState<ApplicationWorkflowProgress[]>([]);
+  const [requiredDocs, setRequiredDocs] = useState<ApplicationRequiredDocument[]>([]);
+  const [eligibilityChecks, setEligibilityChecks] = useState<ApplicationEligibilityCheck[]>([]);
+  const [docStatusSummary, setDocStatusSummary] = useState<DocumentStatusSummary | undefined>();
+  const [currentWorkflowStep, setCurrentWorkflowStep] = useState<number>(1);
+  const [totalWorkflowSteps, setTotalWorkflowSteps] = useState<number>(1);
+  const [eligibilityPassed, setEligibilityPassed] = useState<boolean>(true);
+
   // UI states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'details' | 'documents' | 'notes' | 'payments' | 'history'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'workflow' | 'required-docs' | 'documents' | 'notes' | 'payments' | 'history'>('details');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -297,11 +465,15 @@ const ApplicationDetails = () => {
           setApplication(response.data);
 
           // Fetch related data in parallel
-          const [docsRes, notesRes, paymentsRes, historyRes] = await Promise.allSettled([
+          const [docsRes, notesRes, paymentsRes, historyRes, workflowRes, reqDocsRes, docStatusRes, eligibilityRes] = await Promise.allSettled([
             applicationsApi.getApplicationDocuments(id),
             applicationsApi.getApplicationNotes(id),
             applicationsApi.getApplicationPayments(id),
-            applicationsApi.getApplicationHistory(id)
+            applicationsApi.getApplicationHistory(id),
+            applicationsApi.getWorkflowProgress(id),
+            applicationsApi.getRequiredDocuments(id),
+            applicationsApi.getDocumentStatus(id),
+            applicationsApi.getEligibilityChecks(id)
           ]);
 
           if (docsRes.status === 'fulfilled' && docsRes.value.success) {
@@ -316,6 +488,25 @@ const ApplicationDetails = () => {
           if (historyRes.status === 'fulfilled' && historyRes.value.success) {
             setHistory(historyRes.value.data || []);
           }
+          // Workflow data
+          if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
+            const steps = workflowRes.value.data || [];
+            setWorkflowSteps(steps);
+            setTotalWorkflowSteps(steps.length);
+            const activeStep = steps.find(s => s.step_status === 'in_progress');
+            setCurrentWorkflowStep(activeStep?.step_number || 1);
+          }
+          if (reqDocsRes.status === 'fulfilled' && reqDocsRes.value.success) {
+            setRequiredDocs(reqDocsRes.value.data || []);
+          }
+          if (docStatusRes.status === 'fulfilled' && docStatusRes.value.success) {
+            setDocStatusSummary(docStatusRes.value.data);
+          }
+          if (eligibilityRes.status === 'fulfilled' && eligibilityRes.value.success) {
+            const checks = eligibilityRes.value.data || [];
+            setEligibilityChecks(checks);
+            setEligibilityPassed(checks.every(c => c.check_result));
+          }
         } else {
           setError(response.message || 'Application not found');
         }
@@ -328,6 +519,15 @@ const ApplicationDetails = () => {
         setNotes(MOCK_NOTES);
         setPayments(MOCK_PAYMENTS);
         setHistory(MOCK_HISTORY);
+        // Set mock workflow data
+        setWorkflowSteps(MOCK_WORKFLOW_STEPS);
+        setTotalWorkflowSteps(MOCK_WORKFLOW_STEPS.length);
+        const activeStep = MOCK_WORKFLOW_STEPS.find(s => s.step_status === 'in_progress');
+        setCurrentWorkflowStep(activeStep?.step_number || 1);
+        setRequiredDocs(MOCK_REQUIRED_DOCS);
+        setDocStatusSummary(MOCK_DOC_STATUS_SUMMARY);
+        setEligibilityChecks(MOCK_ELIGIBILITY_CHECKS);
+        setEligibilityPassed(MOCK_ELIGIBILITY_CHECKS.every(c => c.check_result));
         setError(null); // Clear error since we have mock data
       } finally {
         setLoading(false);
@@ -514,8 +714,8 @@ const ApplicationDetails = () => {
     }
   };
 
-  // Refresh application data - available for future use
-  const _refreshData = async () => {
+  // Refresh application data
+  const refreshData = async () => {
     if (!id) return;
     try {
       const appRes = await applicationsApi.getApplicationById(id);
@@ -530,7 +730,54 @@ const ApplicationDetails = () => {
       console.error('Failed to refresh:', err);
     }
   };
-  void _refreshData; // Suppress unused warning
+
+  // Refresh workflow data
+  const refreshWorkflowData = async () => {
+    if (!id) return;
+    try {
+      const [workflowRes, eligibilityRes] = await Promise.allSettled([
+        applicationsApi.getWorkflowProgress(id),
+        applicationsApi.getEligibilityChecks(id)
+      ]);
+
+      if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
+        const steps = workflowRes.value.data || [];
+        setWorkflowSteps(steps);
+        setTotalWorkflowSteps(steps.length);
+        const activeStep = steps.find(s => s.step_status === 'in_progress');
+        setCurrentWorkflowStep(activeStep?.step_number || 1);
+      }
+      if (eligibilityRes.status === 'fulfilled' && eligibilityRes.value.success) {
+        const checks = eligibilityRes.value.data || [];
+        setEligibilityChecks(checks);
+        setEligibilityPassed(checks.every(c => c.check_result));
+      }
+      // Also refresh main application data
+      await refreshData();
+    } catch (err) {
+      console.error('Failed to refresh workflow:', err);
+    }
+  };
+
+  // Refresh documents data
+  const refreshDocumentsData = async () => {
+    if (!id) return;
+    try {
+      const [reqDocsRes, docStatusRes] = await Promise.allSettled([
+        applicationsApi.getRequiredDocuments(id),
+        applicationsApi.getDocumentStatus(id)
+      ]);
+
+      if (reqDocsRes.status === 'fulfilled' && reqDocsRes.value.success) {
+        setRequiredDocs(reqDocsRes.value.data || []);
+      }
+      if (docStatusRes.status === 'fulfilled' && docStatusRes.value.success) {
+        setDocStatusSummary(docStatusRes.value.data);
+      }
+    } catch (err) {
+      console.error('Failed to refresh documents:', err);
+    }
+  };
 
   const formatDate = (date: string | undefined | null) => {
     if (!date) return '-';
@@ -713,6 +960,18 @@ const ApplicationDetails = () => {
           onClick={() => setActiveTab('details')}
         >
           <HiOutlineUser /> Details
+        </button>
+        <button
+          className={`apd-tab ${activeTab === 'workflow' ? 'active' : ''}`}
+          onClick={() => setActiveTab('workflow')}
+        >
+          <HiOutlineViewBoards /> Workflow ({currentWorkflowStep}/{totalWorkflowSteps})
+        </button>
+        <button
+          className={`apd-tab ${activeTab === 'required-docs' ? 'active' : ''}`}
+          onClick={() => setActiveTab('required-docs')}
+        >
+          <HiOutlineDocumentText /> Required Docs ({requiredDocs.length})
         </button>
         <button
           className={`apd-tab ${activeTab === 'documents' ? 'active' : ''}`}
@@ -938,6 +1197,48 @@ const ApplicationDetails = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'workflow' && (
+          <div className="apd-workflow">
+            <div className="apd-workflow-main">
+              <WorkflowProgress
+                applicationId={id!}
+                workflowSteps={workflowSteps}
+                currentStep={currentWorkflowStep}
+                totalSteps={totalWorkflowSteps}
+                canManage={true}
+                onRefresh={refreshWorkflowData}
+              />
+            </div>
+            <div className="apd-workflow-sidebar">
+              <EligibilityChecks
+                eligibilityChecks={eligibilityChecks}
+                passed={eligibilityPassed}
+                onRecheck={async () => {
+                  try {
+                    await applicationsApi.runEligibilityChecks(id!);
+                    await refreshWorkflowData();
+                  } catch (err) {
+                    console.error('Failed to run eligibility checks:', err);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'required-docs' && (
+          <div className="apd-required-docs">
+            <RequiredDocuments
+              applicationId={id!}
+              documents={requiredDocs}
+              statusSummary={docStatusSummary}
+              canUpload={true}
+              canVerify={true}
+              onRefresh={refreshDocumentsData}
+            />
           </div>
         )}
 

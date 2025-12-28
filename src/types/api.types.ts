@@ -650,7 +650,7 @@ export interface UpdateServiceDocumentRequest {
 }
 
 // Service Workflow Types - Step-by-step status tracking
-export type WorkflowStepType = 'submission' | 'verification' | 'approval' | 'payment' | 'dispatch' | 'other';
+export type WorkflowStepType = 'submission' | 'verification' | 'approval' | 'payment' | 'dispatch' | 'manual' | 'automatic' | 'other';
 
 export interface ServiceWorkflow {
   id: string;
@@ -2662,4 +2662,272 @@ export interface ServiceCompleteDetailsExtended extends ServiceCompleteDetails {
   contacts?: ServiceContactPerson[];
   eligibility_rules?: ServiceEligibility[];
   status_mapping?: ServiceStatusMapping[];
+}
+
+// ==================== APPLICATION WORKFLOW SYSTEM TYPES ====================
+
+// Workflow Step Status
+export type WorkflowStepStatus = 'pending' | 'in_progress' | 'completed' | 'skipped';
+
+// Required Document Status
+export type RequiredDocumentStatus = 'pending' | 'uploaded' | 'verified' | 'rejected';
+
+// Workflow Progress - Tracks each step of an application's workflow
+export interface ApplicationWorkflowProgress {
+  id: string;
+  application_id: string;
+  workflow_step_id?: string;
+  step_number: number;
+  step_name: string;
+  step_name_hindi?: string;
+  step_description?: string;
+  step_type: WorkflowStepType;
+  assigned_role?: string;
+  step_status: WorkflowStepStatus;
+  started_at?: string;
+  completed_at?: string;
+  completed_by?: string;
+  completed_by_name?: string;
+  remarks?: string;
+  sla_hours?: number;
+  sla_deadline?: string;
+  sla_breached?: boolean;
+  can_reject?: boolean;
+  can_send_back?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
+  sort_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Required Document - Documents needed for an application
+export interface ApplicationRequiredDocument {
+  id: string;
+  application_id: string;
+  service_document_id?: string;
+  document_name: string;
+  document_name_hindi?: string;
+  document_type?: string;
+  is_mandatory: boolean;
+  description?: string;
+  sample_url?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  status: RequiredDocumentStatus;
+  file_url?: string;
+  uploaded_at?: string;
+  uploaded_document_id?: string;
+  uploaded_document?: ApplicationDocument;
+  verified_by?: string;
+  verified_at?: string;
+  rejection_reason?: string;
+  sort_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Eligibility Check Result
+export interface ApplicationEligibilityCheck {
+  id: string;
+  application_id: string;
+  service_eligibility_id?: string;
+  rule_name?: string;
+  rule_name_hindi?: string;
+  rule_type: string;
+  rule_operator?: string;
+  rule_value: string;
+  actual_value?: string;
+  applicant_value?: string;
+  check_result: boolean;
+  error_message?: string;
+  error_message_hindi?: string;
+  checked_at?: string;
+  created_at?: string;
+}
+
+// Document Status Summary
+export interface DocumentStatusSummary {
+  complete?: boolean;
+  total?: number;
+  total_required?: number;
+  total_mandatory?: number;
+  mandatory_total?: number;
+  mandatory_completed?: number;
+  uploaded: number;
+  verified: number;
+  rejected: number;
+  pending: number;
+  missing_mandatory?: string[];
+}
+
+// Workflow Summary
+export interface WorkflowSummary {
+  current_step: number;
+  total_steps: number;
+  workflow_started_at?: string;
+  workflow_completed_at?: string;
+  current_step_details?: ApplicationWorkflowProgress;
+}
+
+// Service Pricing for Application
+export interface ApplicationServicePricing {
+  government_fee: number;
+  convenience_fee: number;
+  gst_percentage: number;
+  gst_amount: number;
+  total_fee: number;
+  processing_time?: string;
+  express_available?: boolean;
+  express_fee?: number;
+}
+
+// Full Application Response (V2 - with workflow data)
+export interface ApplicationFullResponse {
+  id: string;
+  application_number: string;
+  status: ApplicationStatus;
+  payment_status: PaymentStatus;
+  service_id: string;
+  service_name: string;
+  service_name_hindi?: string;
+
+  // Applicant info
+  applicant_name: string;
+  applicant_mobile: string;
+  applicant_email?: string;
+
+  // Workflow tracking
+  current_workflow_step: number;
+  total_workflow_steps: number;
+  workflow_started_at?: string;
+  workflow_completed_at?: string;
+  documents_complete: boolean;
+  eligibility_checked: boolean;
+  eligibility_passed: boolean;
+
+  // Related data
+  required_documents: ApplicationRequiredDocument[];
+  uploaded_documents: ApplicationDocument[];
+  workflow_progress: ApplicationWorkflowProgress[];
+  current_step?: ApplicationWorkflowProgress;
+  eligibility_checks: ApplicationEligibilityCheck[];
+  status_history: ApplicationStatusHistory[];
+  payments: ApplicationPayment[];
+  notes: ApplicationNote[];
+
+  // Document summary
+  total_required_docs: number;
+  uploaded_docs_count: number;
+  verified_docs_count: number;
+  mandatory_docs_complete: boolean;
+
+  // Pricing
+  service_pricing?: ApplicationServicePricing;
+  service_fee: number;
+  platform_fee: number;
+  gst_amount?: number;
+  total_fee: number;
+  amount_paid?: number;
+
+  // Timestamps
+  submitted_at?: string;
+  created_at: string;
+  updated_at?: string;
+  estimated_completion_date?: string;
+}
+
+// Create Application V2 Request (Service-Driven)
+// Document to be uploaded with application creation
+export interface ApplicationDocumentInput {
+  document_type?: string;
+  document_name?: string;
+  file_url: string;
+  document_number?: string;
+}
+
+export interface CreateApplicationV2Request {
+  service_id: string;
+  state_code: string;
+  applicant_name: string;
+  applicant_mobile: string;
+  applicant_email?: string;
+  form_data?: Record<string, unknown>;
+  documents?: ApplicationDocumentInput[];
+  auto_submit?: boolean;
+}
+
+// Create Application V2 Response
+export interface CreateApplicationV2Response {
+  application: {
+    id: string;
+    application_number: string;
+    status: ApplicationStatus;
+    service_fee: number;
+    platform_fee: number;
+    gst_amount: number;
+    total_fee: number;
+    current_workflow_step: number;
+    total_workflow_steps: number;
+  };
+  required_documents: ApplicationRequiredDocument[];
+  workflow_steps: Pick<ApplicationWorkflowProgress, 'step_number' | 'step_name' | 'step_status'>[];
+  pricing: ApplicationServicePricing;
+  eligibility_passed: boolean;
+  eligibility_checks: ApplicationEligibilityCheck[];
+}
+
+// Upload Document Request
+export interface UploadRequiredDocumentRequest {
+  file_url: string;
+  document_number?: string;
+  original_filename?: string;
+  file_type?: string;
+  file_size_bytes?: number;
+}
+
+// Upload Document Response
+export interface UploadRequiredDocumentResponse {
+  required_document: ApplicationRequiredDocument;
+  uploaded_document: ApplicationDocument;
+  all_mandatory_complete: boolean;
+}
+
+// Verify Document Request
+export interface VerifyDocumentRequest {
+  verified: boolean;
+  rejection_reason?: string;
+}
+
+// Workflow Advance Request
+export interface WorkflowAdvanceRequest {
+  remarks?: string;
+  skip_step?: boolean;
+  send_back?: boolean;
+  send_back_to?: number;
+  reject_reason?: string;
+}
+
+// Workflow Advance Response
+export interface WorkflowAdvanceResponse {
+  previous_step: number;
+  current_step: number;
+  total_steps: number;
+  workflow_completed: boolean;
+}
+
+// Current Workflow Step Response
+export interface CurrentWorkflowStepResponse {
+  step_number: number;
+  step_name: string;
+  step_name_hindi?: string;
+  step_status: WorkflowStepStatus;
+  step_type: WorkflowStepType;
+  assigned_role?: string;
+  sla_hours?: number;
+  sla_deadline?: string;
+  can_reject?: boolean;
+  can_send_back?: boolean;
 }
