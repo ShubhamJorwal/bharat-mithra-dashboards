@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   HiOutlineArrowLeft,
   HiOutlineDocumentText,
@@ -70,284 +70,6 @@ const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: strin
   refunded: { label: 'Refunded', color: '#6b7280', bgColor: 'rgba(107, 114, 128, 0.1)' }
 };
 
-// Mock data for development when API is unavailable
-const getMockApplication = (id: string): Application => ({
-  id,
-  application_number: 'BM-2024-001234',
-  service_id: 'svc-001',
-  service_name: 'Birth Certificate',
-  service_name_hindi: 'जन्म प्रमाण पत्र',
-  service_processing_time: '7-15 Days',
-  user_id: 'user-001',
-  applicant_name: 'Rahul Kumar',
-  applicant_mobile: '+91 98765 43210',
-  applicant_email: 'rahul.kumar@email.com',
-  applicant_father_name: 'Suresh Kumar',
-  applicant_mother_name: 'Kamla Devi',
-  applicant_dob: '1990-05-15',
-  applicant_gender: 'Male',
-  applicant_religion: 'Hindu',
-  applicant_caste_category: 'General',
-  applicant_occupation: 'Software Engineer',
-  applicant_annual_income: 800000,
-  applicant_marital_status: 'Married',
-  applicant_aadhaar_last4: '4321',
-  applicant_pan_number: 'ABCDE1234F',
-  applicant_voter_id: 'XYZ1234567',
-  doc_address_line1: '123, Main Street',
-  doc_address_line2: 'Near City Mall',
-  doc_address_landmark: 'Opposite Park',
-  doc_address_village: 'Sector 15',
-  doc_address_taluk: 'Central',
-  doc_address_district: 'Bangalore Urban',
-  doc_address_state_code: 'KA',
-  doc_address_state_name: 'Karnataka',
-  doc_address_pincode: '560001',
-  is_address_same_as_document: true,
-  status: 'under_review',
-  payment_status: 'completed',
-  service_fee: 100,
-  platform_fee: 50,
-  total_fee: 150,
-  amount_paid: 150,
-  payment_method: 'UPI',
-  is_urgent: false,
-  is_agent_assisted: false,
-  created_at: '2024-12-20T10:30:00Z',
-  updated_at: '2024-12-21T14:00:00Z',
-  submitted_at: '2024-12-20T10:35:00Z',
-  estimated_completion_date: '2025-01-05T00:00:00Z'
-});
-
-const MOCK_DOCUMENTS: ApplicationDocument[] = [
-  {
-    id: 'doc-001',
-    application_id: 'app-001',
-    document_type: 'ID Proof',
-    document_name: 'Aadhaar Card',
-    document_number: 'XXXX-XXXX-4321',
-    file_url: '#',
-    verification_status: 'verified',
-    is_required: true,
-    sort_order: 1,
-    created_at: '2024-12-20T10:32:00Z'
-  },
-  {
-    id: 'doc-002',
-    application_id: 'app-001',
-    document_type: 'Address Proof',
-    document_name: 'Electricity Bill',
-    file_url: '#',
-    verification_status: 'pending',
-    is_required: true,
-    sort_order: 2,
-    created_at: '2024-12-20T10:33:00Z'
-  }
-];
-
-const MOCK_NOTES: ApplicationNote[] = [
-  {
-    id: 'note-001',
-    application_id: 'app-001',
-    note: 'Application received and documents are being verified.',
-    note_type: 'internal',
-    is_private: false,
-    created_by: 'admin-001',
-    created_by_name: 'Admin User',
-    created_at: '2024-12-20T11:00:00Z'
-  }
-];
-
-const MOCK_PAYMENTS: ApplicationPayment[] = [
-  {
-    id: 'pay-001',
-    application_id: 'app-001',
-    amount: 150,
-    payment_method: 'UPI',
-    payment_gateway: 'Razorpay',
-    transaction_id: 'TXN123456789',
-    status: 'success',
-    paid_at: '2024-12-20T10:34:00Z',
-    created_at: '2024-12-20T10:33:00Z'
-  }
-];
-
-const MOCK_HISTORY: ApplicationStatusHistory[] = [
-  {
-    id: 'hist-001',
-    application_id: 'app-001',
-    from_status: 'submitted',
-    to_status: 'under_review',
-    remarks: 'Application moved to review queue',
-    changed_by: 'admin-001',
-    changed_by_name: 'Admin User',
-    created_at: '2024-12-21T09:00:00Z'
-  },
-  {
-    id: 'hist-002',
-    application_id: 'app-001',
-    from_status: 'draft',
-    to_status: 'submitted',
-    remarks: 'Application submitted successfully',
-    changed_by: 'user-001',
-    changed_by_name: 'Rahul Kumar',
-    created_at: '2024-12-20T10:35:00Z'
-  }
-];
-
-const MOCK_WORKFLOW_STEPS: ApplicationWorkflowProgress[] = [
-  {
-    id: 'wf-001',
-    application_id: 'app-001',
-    step_number: 1,
-    step_name: 'Document Collection',
-    step_name_hindi: 'दस्तावेज़ संग्रहण',
-    step_type: 'manual',
-    step_status: 'completed',
-    sla_hours: 24,
-    completed_at: '2024-12-20T14:30:00Z',
-    created_at: '2024-12-20T10:35:00Z',
-    updated_at: '2024-12-20T14:30:00Z'
-  },
-  {
-    id: 'wf-002',
-    application_id: 'app-001',
-    step_number: 2,
-    step_name: 'Document Verification',
-    step_name_hindi: 'दस्तावेज़ सत्यापन',
-    step_type: 'verification',
-    step_status: 'in_progress',
-    sla_hours: 48,
-    sla_deadline: '2024-12-23T14:30:00Z',
-    started_at: '2024-12-20T14:30:00Z',
-    created_at: '2024-12-20T10:35:00Z',
-    updated_at: '2024-12-21T09:00:00Z'
-  },
-  {
-    id: 'wf-003',
-    application_id: 'app-001',
-    step_number: 3,
-    step_name: 'Government Processing',
-    step_name_hindi: 'सरकारी प्रसंस्करण',
-    step_type: 'automatic',
-    step_status: 'pending',
-    sla_hours: 72,
-    created_at: '2024-12-20T10:35:00Z',
-    updated_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'wf-004',
-    application_id: 'app-001',
-    step_number: 4,
-    step_name: 'Final Approval',
-    step_name_hindi: 'अंतिम स्वीकृति',
-    step_type: 'approval',
-    step_status: 'pending',
-    sla_hours: 24,
-    created_at: '2024-12-20T10:35:00Z',
-    updated_at: '2024-12-20T10:35:00Z'
-  }
-];
-
-const MOCK_REQUIRED_DOCS: ApplicationRequiredDocument[] = [
-  {
-    id: 'rdoc-001',
-    application_id: 'app-001',
-    document_name: 'Aadhaar Card',
-    document_name_hindi: 'आधार कार्ड',
-    description: 'Government issued Aadhaar card (front and back)',
-    is_mandatory: true,
-    status: 'verified',
-    file_url: '#',
-    uploaded_at: '2024-12-20T11:00:00Z',
-    verified_at: '2024-12-20T14:00:00Z',
-    verified_by: 'admin-001',
-    created_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'rdoc-002',
-    application_id: 'app-001',
-    document_name: 'Address Proof',
-    document_name_hindi: 'पता प्रमाण',
-    description: 'Electricity bill, water bill, or bank statement',
-    is_mandatory: true,
-    status: 'uploaded',
-    file_url: '#',
-    uploaded_at: '2024-12-20T11:15:00Z',
-    created_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'rdoc-003',
-    application_id: 'app-001',
-    document_name: 'Passport Photo',
-    document_name_hindi: 'पासपोर्ट फोटो',
-    description: 'Recent passport size photograph with white background',
-    is_mandatory: true,
-    status: 'pending',
-    created_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'rdoc-004',
-    application_id: 'app-001',
-    document_name: 'Birth Certificate (if available)',
-    document_name_hindi: 'जन्म प्रमाण पत्र',
-    description: 'Original birth certificate for age verification',
-    is_mandatory: false,
-    status: 'pending',
-    created_at: '2024-12-20T10:35:00Z'
-  }
-];
-
-const MOCK_ELIGIBILITY_CHECKS: ApplicationEligibilityCheck[] = [
-  {
-    id: 'ec-001',
-    application_id: 'app-001',
-    rule_name: 'Age Verification',
-    rule_name_hindi: 'आयु सत्यापन',
-    rule_type: 'comparison',
-    rule_operator: 'gte',
-    rule_value: '18',
-    actual_value: '34',
-    check_result: true,
-    created_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'ec-002',
-    application_id: 'app-001',
-    rule_name: 'State Residency',
-    rule_name_hindi: 'राज्य निवास',
-    rule_type: 'match',
-    rule_value: 'KA',
-    actual_value: 'KA',
-    check_result: true,
-    created_at: '2024-12-20T10:35:00Z'
-  },
-  {
-    id: 'ec-003',
-    application_id: 'app-001',
-    rule_name: 'Document Completeness',
-    rule_name_hindi: 'दस्तावेज़ पूर्णता',
-    rule_type: 'percentage',
-    rule_operator: 'gte',
-    rule_value: '75',
-    actual_value: '50',
-    check_result: false,
-    error_message: 'Please upload the remaining required documents',
-    error_message_hindi: 'कृपया शेष आवश्यक दस्तावेज़ अपलोड करें',
-    created_at: '2024-12-20T10:35:00Z'
-  }
-];
-
-const MOCK_DOC_STATUS_SUMMARY: DocumentStatusSummary = {
-  total: 4,
-  pending: 2,
-  uploaded: 1,
-  verified: 1,
-  rejected: 0,
-  mandatory_total: 3,
-  mandatory_completed: 2
-};
-
 // Get available actions based on status
 const getAvailableActions = (status: ApplicationStatus) => {
   const actions: { key: string; label: string; icon: React.ReactNode; color?: string }[] = [];
@@ -395,9 +117,15 @@ const getAvailableActions = (status: ApplicationStatus) => {
   return actions;
 };
 
+// Valid tab types
+type TabType = 'details' | 'workflow' | 'required-docs' | 'documents' | 'notes' | 'payments' | 'history';
+
+const VALID_TABS: TabType[] = ['details', 'workflow', 'required-docs', 'documents', 'notes', 'payments', 'history'];
+
 const ApplicationDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Data states
   const [application, setApplication] = useState<Application | null>(null);
@@ -453,6 +181,14 @@ const ApplicationDetails = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Read tab from URL params and set active tab
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && VALID_TABS.includes(tabParam as TabType)) {
+      setActiveTab(tabParam as TabType);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return;
@@ -488,47 +224,33 @@ const ApplicationDetails = () => {
           if (historyRes.status === 'fulfilled' && historyRes.value.success) {
             setHistory(historyRes.value.data || []);
           }
-          // Workflow data
+          // Workflow data - ensure data is an array before using array methods
           if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
-            const steps = workflowRes.value.data || [];
+            const steps = Array.isArray(workflowRes.value.data) ? workflowRes.value.data : [];
             setWorkflowSteps(steps);
             setTotalWorkflowSteps(steps.length);
             const activeStep = steps.find(s => s.step_status === 'in_progress');
             setCurrentWorkflowStep(activeStep?.step_number || 1);
           }
           if (reqDocsRes.status === 'fulfilled' && reqDocsRes.value.success) {
-            setRequiredDocs(reqDocsRes.value.data || []);
+            const reqDocsData = Array.isArray(reqDocsRes.value.data) ? reqDocsRes.value.data : [];
+            setRequiredDocs(reqDocsData);
           }
           if (docStatusRes.status === 'fulfilled' && docStatusRes.value.success) {
             setDocStatusSummary(docStatusRes.value.data);
           }
           if (eligibilityRes.status === 'fulfilled' && eligibilityRes.value.success) {
-            const checks = eligibilityRes.value.data || [];
+            const checks = Array.isArray(eligibilityRes.value.data) ? eligibilityRes.value.data : [];
             setEligibilityChecks(checks);
-            setEligibilityPassed(checks.every(c => c.check_result));
+            setEligibilityPassed(checks.length === 0 || checks.every(c => c.check_result));
           }
         } else {
           setError(response.message || 'Application not found');
         }
       } catch (err) {
         console.error('Failed to fetch application:', err);
-        // Use mock data when API fails (development mode)
-        console.log('Using mock data for development...');
-        setApplication(getMockApplication(id));
-        setDocuments(MOCK_DOCUMENTS);
-        setNotes(MOCK_NOTES);
-        setPayments(MOCK_PAYMENTS);
-        setHistory(MOCK_HISTORY);
-        // Set mock workflow data
-        setWorkflowSteps(MOCK_WORKFLOW_STEPS);
-        setTotalWorkflowSteps(MOCK_WORKFLOW_STEPS.length);
-        const activeStep = MOCK_WORKFLOW_STEPS.find(s => s.step_status === 'in_progress');
-        setCurrentWorkflowStep(activeStep?.step_number || 1);
-        setRequiredDocs(MOCK_REQUIRED_DOCS);
-        setDocStatusSummary(MOCK_DOC_STATUS_SUMMARY);
-        setEligibilityChecks(MOCK_ELIGIBILITY_CHECKS);
-        setEligibilityPassed(MOCK_ELIGIBILITY_CHECKS.every(c => c.check_result));
-        setError(null); // Clear error since we have mock data
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load application. Please try again.';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -741,16 +463,16 @@ const ApplicationDetails = () => {
       ]);
 
       if (workflowRes.status === 'fulfilled' && workflowRes.value.success) {
-        const steps = workflowRes.value.data || [];
+        const steps = Array.isArray(workflowRes.value.data) ? workflowRes.value.data : [];
         setWorkflowSteps(steps);
         setTotalWorkflowSteps(steps.length);
         const activeStep = steps.find(s => s.step_status === 'in_progress');
         setCurrentWorkflowStep(activeStep?.step_number || 1);
       }
       if (eligibilityRes.status === 'fulfilled' && eligibilityRes.value.success) {
-        const checks = eligibilityRes.value.data || [];
+        const checks = Array.isArray(eligibilityRes.value.data) ? eligibilityRes.value.data : [];
         setEligibilityChecks(checks);
-        setEligibilityPassed(checks.every(c => c.check_result));
+        setEligibilityPassed(checks.length === 0 || checks.every(c => c.check_result));
       }
       // Also refresh main application data
       await refreshData();
@@ -769,7 +491,8 @@ const ApplicationDetails = () => {
       ]);
 
       if (reqDocsRes.status === 'fulfilled' && reqDocsRes.value.success) {
-        setRequiredDocs(reqDocsRes.value.data || []);
+        const reqDocsData = Array.isArray(reqDocsRes.value.data) ? reqDocsRes.value.data : [];
+        setRequiredDocs(reqDocsData);
       }
       if (docStatusRes.status === 'fulfilled' && docStatusRes.value.success) {
         setDocStatusSummary(docStatusRes.value.data);
@@ -839,6 +562,23 @@ const ApplicationDetails = () => {
   const statusConfig = getStatusConfig(application.status);
   const paymentConfig = getPaymentStatusConfig(application.payment_status);
 
+  // Helper to get value from application or form_data
+  const getFormDataValue = <T,>(key: string, fallback?: T): T | undefined => {
+    const formData = application.form_data as Record<string, unknown> | undefined;
+    if (formData && key in formData) {
+      return formData[key] as T;
+    }
+    return fallback;
+  };
+
+  // Check if urgent from form_data or application level
+  const isUrgentApplication = getFormDataValue<boolean>('is_urgent') || application.is_urgent;
+
+  // Calculate urgent fee (difference between total and service + platform fees)
+  const urgentFee = isUrgentApplication && application.total_fee && application.service_fee !== undefined
+    ? application.total_fee - (application.service_fee || 0) - (application.platform_fee || 0)
+    : 0;
+
   return (
     <div className="apd">
       {/* Hero Section */}
@@ -865,7 +605,7 @@ const ApplicationDetails = () => {
               >
                 {paymentConfig.label}
               </span>
-              {application.is_urgent && (
+              {isUrgentApplication && (
                 <span className="apd-badge apd-badge--urgent">
                   <HiOutlineFlag /> Urgent
                 </span>
@@ -873,6 +613,11 @@ const ApplicationDetails = () => {
             </div>
             <h1>{application.application_number}</h1>
             <p className="apd-hero-service">{application.service_name}</p>
+            {application.status_remarks && (
+              <p className="apd-hero-remarks">
+                <HiOutlineExclamation /> {application.status_remarks}
+              </p>
+            )}
           </div>
         </div>
 
@@ -947,7 +692,12 @@ const ApplicationDetails = () => {
             <HiOutlineClock />
           </div>
           <div className="apd-stat-content">
-            <span className="apd-stat-value">{application.service_processing_time || '-'}</span>
+            <span className="apd-stat-value">
+              {application.service_processing_time
+                || getFormDataValue<string>('processing_time')
+                || getFormDataValue<string>('service_processing_time')
+                || 'As per service SLA'}
+            </span>
             <span className="apd-stat-label">Processing Time</span>
           </div>
         </div>
@@ -1023,39 +773,39 @@ const ApplicationDetails = () => {
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Father's Name</span>
-                  <span className="apd-field-value">{application.applicant_father_name || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_father_name || getFormDataValue<string>('applicant_father_name') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Mother's Name</span>
-                  <span className="apd-field-value">{application.applicant_mother_name || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_mother_name || getFormDataValue<string>('applicant_mother_name') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Date of Birth</span>
-                  <span className="apd-field-value">{application.applicant_dob || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_dob || getFormDataValue<string>('applicant_dob') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Gender</span>
-                  <span className="apd-field-value">{application.applicant_gender || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_gender || getFormDataValue<string>('applicant_gender') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Religion</span>
-                  <span className="apd-field-value">{application.applicant_religion || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_religion || getFormDataValue<string>('applicant_religion') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Caste Category</span>
-                  <span className="apd-field-value">{application.applicant_caste_category || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_caste_category || getFormDataValue<string>('applicant_caste_category') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Occupation</span>
-                  <span className="apd-field-value">{application.applicant_occupation || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_occupation || getFormDataValue<string>('applicant_occupation') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Annual Income</span>
-                  <span className="apd-field-value">{formatCurrency(application.applicant_annual_income)}</span>
+                  <span className="apd-field-value">{formatCurrency(application.applicant_annual_income ?? getFormDataValue<number>('applicant_annual_income'))}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Marital Status</span>
-                  <span className="apd-field-value">{application.applicant_marital_status || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_marital_status || getFormDataValue<string>('applicant_marital_status') || '-'}</span>
                 </div>
               </div>
             </div>
@@ -1068,19 +818,19 @@ const ApplicationDetails = () => {
               <div className="apd-grid">
                 <div className="apd-field">
                   <span className="apd-field-label">Aadhaar (Last 4)</span>
-                  <span className="apd-field-value">{application.applicant_aadhaar_last4 ? `XXXX-XXXX-${application.applicant_aadhaar_last4}` : '-'}</span>
+                  <span className="apd-field-value">{(application.applicant_aadhaar_last4 || getFormDataValue<string>('applicant_aadhaar_last4')) ? `XXXX-XXXX-${application.applicant_aadhaar_last4 || getFormDataValue<string>('applicant_aadhaar_last4')}` : '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">PAN Number</span>
-                  <span className="apd-field-value">{application.applicant_pan_number || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_pan_number || getFormDataValue<string>('applicant_pan_number') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Voter ID</span>
-                  <span className="apd-field-value">{application.applicant_voter_id || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_voter_id || getFormDataValue<string>('applicant_voter_id') || '-'}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Driving License</span>
-                  <span className="apd-field-value">{application.applicant_driving_license || '-'}</span>
+                  <span className="apd-field-value">{application.applicant_driving_license || getFormDataValue<string>('applicant_driving_license') || '-'}</span>
                 </div>
               </div>
             </div>
@@ -1095,22 +845,22 @@ const ApplicationDetails = () => {
                   <span className="apd-field-label">Address</span>
                   <span className="apd-field-value">
                     {[
-                      application.doc_address_line1,
-                      application.doc_address_line2,
-                      application.doc_address_landmark,
-                      application.doc_address_village,
-                      application.doc_address_taluk,
-                      application.doc_address_district,
-                      application.doc_address_state_name,
-                      application.doc_address_pincode
+                      application.doc_address_line1 || getFormDataValue<string>('doc_address_line1'),
+                      application.doc_address_line2 || getFormDataValue<string>('doc_address_line2'),
+                      application.doc_address_landmark || getFormDataValue<string>('doc_address_landmark'),
+                      application.doc_address_village || getFormDataValue<string>('doc_address_village'),
+                      application.doc_address_taluk || getFormDataValue<string>('doc_address_taluk'),
+                      application.doc_address_district || getFormDataValue<string>('doc_address_district'),
+                      application.doc_address_state_name || getFormDataValue<string>('doc_address_state_name'),
+                      application.doc_address_pincode || getFormDataValue<string>('doc_address_pincode')
                     ].filter(Boolean).join(', ') || '-'}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Current Address */}
-            {!application.is_address_same_as_document && application.curr_address_line1 && (
+            {/* Current Address - show only if address is different from document address */}
+            {!(application.is_address_same_as_document || getFormDataValue<boolean>('is_address_same_as_document')) && (application.curr_address_line1 || getFormDataValue<string>('curr_address_line1')) && (
               <div className="apd-section">
                 <h2 className="apd-section-title">
                   <HiOutlineLocationMarker /> Current Address
@@ -1120,14 +870,14 @@ const ApplicationDetails = () => {
                     <span className="apd-field-label">Address</span>
                     <span className="apd-field-value">
                       {[
-                        application.curr_address_line1,
-                        application.curr_address_line2,
-                        application.curr_address_landmark,
-                        application.curr_address_village,
-                        application.curr_address_taluk,
-                        application.curr_address_district,
-                        application.curr_address_state_name,
-                        application.curr_address_pincode
+                        application.curr_address_line1 || getFormDataValue<string>('curr_address_line1'),
+                        application.curr_address_line2 || getFormDataValue<string>('curr_address_line2'),
+                        application.curr_address_landmark || getFormDataValue<string>('curr_address_landmark'),
+                        application.curr_address_village || getFormDataValue<string>('curr_address_village'),
+                        application.curr_address_taluk || getFormDataValue<string>('curr_address_taluk'),
+                        application.curr_address_district || getFormDataValue<string>('curr_address_district'),
+                        application.curr_address_state_name || getFormDataValue<string>('curr_address_state_name'),
+                        application.curr_address_pincode || getFormDataValue<string>('curr_address_pincode')
                       ].filter(Boolean).join(', ') || '-'}
                     </span>
                   </div>
@@ -1149,6 +899,12 @@ const ApplicationDetails = () => {
                   <span className="apd-field-label">Platform Fee</span>
                   <span className="apd-field-value">{formatCurrency(application.platform_fee)}</span>
                 </div>
+                {isUrgentApplication && urgentFee > 0 && (
+                  <div className="apd-field">
+                    <span className="apd-field-label">Urgent Processing Fee</span>
+                    <span className="apd-field-value apd-field-value--urgent">{formatCurrency(urgentFee)}</span>
+                  </div>
+                )}
                 <div className="apd-field">
                   <span className="apd-field-label">Total Fee</span>
                   <span className="apd-field-value apd-field-value--highlight">{formatCurrency(application.total_fee)}</span>
@@ -1156,6 +912,10 @@ const ApplicationDetails = () => {
                 <div className="apd-field">
                   <span className="apd-field-label">Amount Paid</span>
                   <span className="apd-field-value">{formatCurrency(application.amount_paid)}</span>
+                </div>
+                <div className="apd-field">
+                  <span className="apd-field-label">Amount Due</span>
+                  <span className="apd-field-value">{formatCurrency(application.amount_due)}</span>
                 </div>
                 <div className="apd-field">
                   <span className="apd-field-label">Payment Status</span>
@@ -1280,6 +1040,52 @@ const ApplicationDetails = () => {
 
         {activeTab === 'notes' && (
           <div className="apd-notes">
+            {/* Add Note Form */}
+            <div className="apd-notes-add">
+              <h4><HiOutlineChatAlt /> Add Note</h4>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const noteInput = form.elements.namedItem('note') as HTMLTextAreaElement;
+                const noteTypeSelect = form.elements.namedItem('noteType') as HTMLSelectElement;
+                if (noteInput.value.trim() && id) {
+                  try {
+                    await applicationsApi.addApplicationNote(
+                      id,
+                      noteInput.value.trim(),
+                      noteTypeSelect.value as 'internal' | 'public' | 'action_required',
+                      true
+                    );
+                    noteInput.value = '';
+                    // Refresh notes
+                    const notesRes = await applicationsApi.getApplicationNotes(id);
+                    if (notesRes.success) {
+                      setNotes(notesRes.data || []);
+                    }
+                  } catch (err) {
+                    console.error('Failed to add note:', err);
+                  }
+                }
+              }}>
+                <div className="apd-notes-add-row">
+                  <select name="noteType" className="apd-notes-add-select">
+                    <option value="internal">Internal Note</option>
+                    <option value="public">Public Note</option>
+                    <option value="action_required">Action Required</option>
+                  </select>
+                </div>
+                <textarea
+                  name="note"
+                  placeholder="Enter note here..."
+                  rows={3}
+                  className="apd-notes-add-textarea"
+                />
+                <button type="submit" className="apd-btn apd-btn--primary apd-btn--sm">
+                  Add Note
+                </button>
+              </form>
+            </div>
+
             {notes.length > 0 ? (
               <div className="apd-note-list">
                 {notes.map((note) => (
@@ -1296,7 +1102,8 @@ const ApplicationDetails = () => {
             ) : (
               <div className="apd-empty">
                 <HiOutlineChatAlt />
-                <p>No notes added</p>
+                <p>No notes added yet</p>
+                <span className="apd-empty-hint">Use the form above to add the first note</span>
               </div>
             )}
           </div>
@@ -1304,8 +1111,36 @@ const ApplicationDetails = () => {
 
         {activeTab === 'payments' && (
           <div className="apd-payments">
+            {/* Payment Summary */}
+            <div className="apd-payments-summary">
+              <div className="apd-payments-summary-item">
+                <span className="apd-payments-summary-label">Total Fee</span>
+                <span className="apd-payments-summary-value">{formatCurrency(application.total_fee)}</span>
+              </div>
+              <div className="apd-payments-summary-item">
+                <span className="apd-payments-summary-label">Amount Paid</span>
+                <span className="apd-payments-summary-value apd-payments-summary-value--success">{formatCurrency(application.amount_paid || 0)}</span>
+              </div>
+              <div className="apd-payments-summary-item">
+                <span className="apd-payments-summary-label">Amount Due</span>
+                <span className={`apd-payments-summary-value ${(application.amount_due || 0) > 0 ? 'apd-payments-summary-value--danger' : ''}`}>
+                  {formatCurrency(application.amount_due || 0)}
+                </span>
+              </div>
+              <div className="apd-payments-summary-item">
+                <span className="apd-payments-summary-label">Payment Status</span>
+                <span
+                  className="apd-field-badge"
+                  style={{ color: paymentConfig.color, background: paymentConfig.bgColor }}
+                >
+                  {paymentConfig.label}
+                </span>
+              </div>
+            </div>
+
             {payments.length > 0 ? (
               <div className="apd-payment-list">
+                <h4 className="apd-payment-list-title">Payment History</h4>
                 {payments.map((payment) => (
                   <div key={payment.id} className="apd-payment-item">
                     <div className="apd-payment-icon">
@@ -1313,10 +1148,13 @@ const ApplicationDetails = () => {
                     </div>
                     <div className="apd-payment-info">
                       <h4>{formatCurrency(payment.amount)}</h4>
-                      <p>{payment.payment_method} via {payment.payment_gateway}</p>
+                      <p>{payment.payment_method || 'N/A'} {payment.payment_gateway ? `via ${payment.payment_gateway}` : ''}</p>
+                      {payment.transaction_id && (
+                        <span className="apd-payment-txn">Txn: {payment.transaction_id}</span>
+                      )}
                     </div>
                     <div className={`apd-payment-status apd-payment-status--${payment.status}`}>
-                      {payment.status}
+                      {payment.status === 'success' ? 'Paid' : payment.status}
                     </div>
                     <span className="apd-payment-date">{formatDate(payment.paid_at || payment.created_at)}</span>
                   </div>
@@ -1325,7 +1163,12 @@ const ApplicationDetails = () => {
             ) : (
               <div className="apd-empty">
                 <HiOutlineCash />
-                <p>No payments recorded</p>
+                <p>No payment transactions recorded</p>
+                <span className="apd-empty-hint">
+                  {application.payment_status === 'completed'
+                    ? 'Payment was processed but transaction details are not available'
+                    : 'Payment transactions will appear here once processed'}
+                </span>
               </div>
             )}
           </div>

@@ -2840,23 +2840,138 @@ export interface ApplicationFullResponse {
 }
 
 // Create Application V2 Request (Service-Driven)
+// Single file in a document
+export interface ApplicationDocumentFile {
+  file_url: string;
+  original_filename?: string;
+  file_type?: string;
+  file_size_bytes?: number;
+  page_number?: number;
+}
+
 // Document to be uploaded with application creation
 export interface ApplicationDocumentInput {
   document_type?: string;
   document_name?: string;
-  file_url: string;
+  file_url?: string; // For single file
+  files?: ApplicationDocumentFile[]; // For multiple files (e.g., front/back of Aadhaar)
   document_number?: string;
+  file_type?: string;
+  file_size_bytes?: number;
+  issue_date?: string;
+  expiry_date?: string;
+  issuing_authority?: string;
 }
 
 export interface CreateApplicationV2Request {
+  // Required
   service_id: string;
-  state_code: string;
-  applicant_name: string;
-  applicant_mobile: string;
+
+  // Applicant Personal Info (at root level)
+  applicant_name?: string;
+  applicant_mobile?: string;
   applicant_email?: string;
+  applicant_father_name?: string;
+  applicant_mother_name?: string;
+  applicant_spouse_name?: string;
+  applicant_dob?: string;
+  applicant_gender?: string;
+  applicant_religion?: string;
+  applicant_caste?: string;
+  applicant_caste_category?: string;
+  applicant_nationality?: string;
+  applicant_marital_status?: string;
+  applicant_occupation?: string;
+  applicant_qualification?: string;
+  applicant_annual_income?: number;
+
+  // Identity Documents
+  applicant_aadhaar_last4?: string;
+  applicant_pan_number?: string;
+  applicant_voter_id?: string;
+  applicant_passport_number?: string;
+  applicant_driving_license?: string;
+  applicant_photo_url?: string;
+  applicant_signature_url?: string;
+
+  // Legacy Address (Simple)
+  applicant_address?: string;
+  applicant_village?: string;
+  applicant_block?: string;
+  applicant_district?: string;
+  applicant_state_code?: string;
+  applicant_pincode?: string;
+
+  // Document Address (Permanent/Aadhaar)
+  doc_address_line1?: string;
+  doc_address_line2?: string;
+  doc_address_landmark?: string;
+  doc_address_village?: string;
+  doc_address_block?: string;
+  doc_address_taluk?: string;
+  doc_address_district?: string;
+  doc_address_state_code?: string;
+  doc_address_state_name?: string;
+  doc_address_pincode?: string;
+  doc_address_country?: string;
+  doc_address_type?: string;
+
+  // Current Address (Present)
+  curr_address_line1?: string;
+  curr_address_line2?: string;
+  curr_address_landmark?: string;
+  curr_address_village?: string;
+  curr_address_block?: string;
+  curr_address_taluk?: string;
+  curr_address_district?: string;
+  curr_address_state_code?: string;
+  curr_address_state_name?: string;
+  curr_address_pincode?: string;
+  curr_address_country?: string;
+  curr_address_duration_years?: number;
+  is_address_same_as_document?: boolean;
+
+  // Alternate Contact
+  alt_contact_name?: string;
+  alt_contact_mobile?: string;
+  alt_contact_relation?: string;
+  alt_contact_email?: string;
+
+  // Bank Details (for DBT)
+  bank_account_name?: string;
+  bank_account_number?: string;
+  bank_ifsc_code?: string;
+  bank_name?: string;
+  bank_branch?: string;
+
+  // Agent Info
+  agent_id?: string;
+  agent_name?: string;
+  agent_mobile?: string;
+  agent_center?: string;
+
+  // Source & Device
+  source?: string;
+  device_type?: string;
+  app_version?: string;
+
+  // Priority
+  is_urgent?: boolean;
+  urgency_reason?: string;
+
+  // Flexible Data
   form_data?: Record<string, unknown>;
+  extra_data?: Record<string, unknown>;
+  remarks?: string;
+
+  // Documents
   documents?: ApplicationDocumentInput[];
+
+  // Auto Submit
   auto_submit?: boolean;
+
+  // Legacy - keeping for backward compatibility
+  state_code?: string;
 }
 
 // Create Application V2 Response

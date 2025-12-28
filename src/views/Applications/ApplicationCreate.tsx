@@ -459,63 +459,64 @@ const ApplicationCreate = () => {
         }
       }
 
-      // Check if we should use V2 API (when documents are provided)
-      if (documentsForApi.length > 0 || formData.doc_address_state_code) {
-        // Use V2 API with documents
-        const v2Request: CreateApplicationV2Request = {
-          service_id: formData.service_id!,
-          state_code: formData.doc_address_state_code || '',
-          applicant_name: formData.applicant_name || '',
-          applicant_mobile: formData.applicant_mobile || '',
-          applicant_email: formData.applicant_email,
-          documents: documentsForApi.length > 0 ? documentsForApi : undefined,
-          form_data: {
-            // Include all applicant details in form_data
-            applicant_father_name: formData.applicant_father_name,
-            applicant_mother_name: formData.applicant_mother_name,
-            applicant_dob: formData.applicant_dob,
-            applicant_gender: formData.applicant_gender,
-            applicant_religion: formData.applicant_religion,
-            applicant_caste_category: formData.applicant_caste_category,
-            applicant_marital_status: formData.applicant_marital_status,
-            applicant_occupation: formData.applicant_occupation,
-            applicant_annual_income: formData.applicant_annual_income,
-            applicant_aadhaar_last4: formData.applicant_aadhaar_last4,
-            applicant_pan_number: formData.applicant_pan_number,
-            // Address details
-            doc_address_line1: formData.doc_address_line1,
-            doc_address_line2: formData.doc_address_line2,
-            doc_address_landmark: formData.doc_address_landmark,
-            doc_address_village: formData.doc_address_village,
-            doc_address_taluk: formData.doc_address_taluk,
-            doc_address_district: formData.doc_address_district,
-            doc_address_pincode: formData.doc_address_pincode,
-            is_address_same_as_document: formData.is_address_same_as_document,
-            is_urgent: formData.is_urgent
-          },
-          auto_submit: false
-        };
+      // Use V2 API with all fields at root level (as per new API structure)
+      const v2Request: CreateApplicationV2Request = {
+        // Required
+        service_id: formData.service_id!,
 
-        const response = await applicationsApi.createApplicationV2(v2Request);
-        if (response.success && response.data) {
-          setSuccess(true);
-          setTimeout(() => {
-            navigate(`/applications/${response.data.application.id}`);
-          }, 2000);
-        } else {
-          setError(response.message || 'Failed to create application');
-        }
+        // Applicant Personal Info (at root level)
+        applicant_name: formData.applicant_name || '',
+        applicant_mobile: formData.applicant_mobile || '',
+        applicant_email: formData.applicant_email || undefined,
+        applicant_father_name: formData.applicant_father_name || undefined,
+        applicant_mother_name: formData.applicant_mother_name || undefined,
+        applicant_dob: formData.applicant_dob || undefined,
+        applicant_gender: formData.applicant_gender || undefined,
+        applicant_religion: formData.applicant_religion || undefined,
+        applicant_caste_category: formData.applicant_caste_category || undefined,
+        applicant_marital_status: formData.applicant_marital_status || undefined,
+        applicant_occupation: formData.applicant_occupation || undefined,
+        applicant_annual_income: formData.applicant_annual_income,
+
+        // Identity Documents
+        applicant_aadhaar_last4: formData.applicant_aadhaar_last4 || undefined,
+        applicant_pan_number: formData.applicant_pan_number || undefined,
+
+        // Document Address (at root level)
+        doc_address_line1: formData.doc_address_line1 || undefined,
+        doc_address_line2: formData.doc_address_line2 || undefined,
+        doc_address_landmark: formData.doc_address_landmark || undefined,
+        doc_address_village: formData.doc_address_village || undefined,
+        doc_address_taluk: formData.doc_address_taluk || undefined,
+        doc_address_district: formData.doc_address_district || undefined,
+        doc_address_state_code: formData.doc_address_state_code || undefined,
+        doc_address_pincode: formData.doc_address_pincode || undefined,
+
+        // Address same as document flag
+        is_address_same_as_document: formData.is_address_same_as_document,
+
+        // Priority
+        is_urgent: formData.is_urgent,
+
+        // Source & Device
+        source: 'web',
+        device_type: 'desktop',
+
+        // Documents
+        documents: documentsForApi.length > 0 ? documentsForApi : undefined,
+
+        // Auto Submit
+        auto_submit: false
+      };
+
+      const response = await applicationsApi.createApplicationV2(v2Request);
+      if (response.success && response.data) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate(`/applications/${response.data.application.id}`);
+        }, 2000);
       } else {
-        // Fallback to original API for backward compatibility
-        const response = await applicationsApi.createApplication(formData as CreateApplicationRequest);
-        if (response.success && response.data) {
-          setSuccess(true);
-          setTimeout(() => {
-            navigate(`/applications/${response.data.id}`);
-          }, 2000);
-        } else {
-          setError(response.message || 'Failed to create application');
-        }
+        setError(response.message || 'Failed to create application');
       }
     } catch (err: unknown) {
       console.error('Failed to create application:', err);

@@ -152,6 +152,24 @@ const WorkflowProgress = ({
 
   const progressPercentage = getProgressPercentage();
 
+  // If no workflow steps, show empty state
+  if (!workflowSteps || workflowSteps.length === 0) {
+    return (
+      <div className="wfp">
+        <div className="wfp-empty">
+          <HiOutlineClock className="wfp-empty-icon" />
+          <h3>No Workflow Defined</h3>
+          <p>This service doesn't have a workflow configured yet, or the workflow hasn't been initialized for this application.</p>
+          {onRefresh && (
+            <button className="wfp-empty-refresh" onClick={onRefresh}>
+              <HiOutlineRefresh /> Refresh
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="wfp">
       {/* Progress Header */}
