@@ -226,6 +226,10 @@ const WorkflowProgress = ({
     );
   }
 
+  // Check if any step is active
+  const hasActiveStep = workflowSteps.some(s => s.step_status === 'in_progress');
+  const canStartWorkflow = canManage && (workflowStatus === 'not_started' || (!hasActiveStep && workflowStatus !== 'completed'));
+
   return (
     <div className="wfp">
       {/* Progress Header */}
@@ -243,6 +247,17 @@ const WorkflowProgress = ({
           <p>Step {currentStep} of {totalSteps}</p>
         </div>
         <div className="wfp-header-actions">
+          {/* Start Workflow button in header when workflow not started */}
+          {canStartWorkflow && (
+            <button
+              className="wfp-start-btn"
+              onClick={handleStartWorkflow}
+              disabled={startingWorkflow}
+            >
+              <HiOutlineLightningBolt />
+              {startingWorkflow ? 'Starting...' : 'Start Workflow'}
+            </button>
+          )}
           <div className="wfp-progress-bar">
             <div className="wfp-progress-bar-fill" style={{ width: `${progressPercentage}%` }}></div>
           </div>
@@ -254,6 +269,13 @@ const WorkflowProgress = ({
           )}
         </div>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div className="wfp-error">
+          <HiOutlineExclamation /> {error}
+        </div>
+      )}
 
       {/* Timeline */}
       <div className="wfp-timeline">
