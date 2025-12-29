@@ -984,6 +984,7 @@ const ApplicationDetails = () => {
                 workflowSteps={workflowSteps}
                 currentStep={currentWorkflowStep}
                 totalSteps={totalWorkflowSteps}
+                workflowStatus={application.workflow_status || 'not_started'}
                 canManage={true}
                 onRefresh={refreshWorkflowData}
               />

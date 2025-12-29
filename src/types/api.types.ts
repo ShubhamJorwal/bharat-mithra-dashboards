@@ -1617,6 +1617,15 @@ export interface Application {
   certificate_issued_at?: string | null;
   output_data?: Record<string, unknown> | null;
 
+  // Workflow tracking
+  workflow_status?: ApplicationWorkflowStatus;
+  current_workflow_step?: number;
+  total_workflow_steps?: number;
+  workflow_started_at?: string | null;
+  workflow_completed_at?: string | null;
+  last_workflow_update?: string | null;
+  workflow_data?: Record<string, unknown> | null;
+
   // SLA & Timeline
   estimated_completion_date?: string | null;
   actual_completion_date?: string | null;
@@ -2668,6 +2677,9 @@ export interface ServiceCompleteDetailsExtended extends ServiceCompleteDetails {
 
 // Workflow Step Status
 export type WorkflowStepStatus = 'pending' | 'in_progress' | 'completed' | 'skipped';
+
+// Application Workflow Status
+export type ApplicationWorkflowStatus = 'not_started' | 'in_progress' | 'completed' | 'on_hold' | 'cancelled';
 
 // Required Document Status
 export type RequiredDocumentStatus = 'pending' | 'uploaded' | 'verified' | 'rejected';

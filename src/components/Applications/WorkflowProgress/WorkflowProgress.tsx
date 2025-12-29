@@ -7,12 +7,16 @@ import {
   HiOutlineArrowRight,
   HiOutlineRewind,
   HiOutlineXCircle,
-  HiOutlineRefresh
+  HiOutlineRefresh,
+  HiOutlineLightningBolt,
+  HiOutlinePause,
+  HiOutlineBan
 } from 'react-icons/hi';
 import type {
   ApplicationWorkflowProgress,
   WorkflowStepStatus,
-  WorkflowAdvanceRequest
+  WorkflowAdvanceRequest,
+  ApplicationWorkflowStatus
 } from '../../../types/api.types';
 import applicationsApi from '../../../services/api/applications.api';
 import './WorkflowProgress.scss';
@@ -22,6 +26,7 @@ interface WorkflowProgressProps {
   workflowSteps: ApplicationWorkflowProgress[];
   currentStep: number;
   totalSteps: number;
+  workflowStatus?: ApplicationWorkflowStatus;
   canManage?: boolean;
   onRefresh?: () => void;
 }
@@ -40,11 +45,20 @@ const STEP_TYPE_LABELS: Record<string, string> = {
   approval: 'Approval'
 };
 
+const WORKFLOW_STATUS_CONFIG: Record<ApplicationWorkflowStatus, { label: string; icon: React.ReactNode; color: string; bgColor: string }> = {
+  not_started: { label: 'Not Started', icon: <HiOutlineClock />, color: '#6b7280', bgColor: 'rgba(107, 114, 128, 0.1)' },
+  in_progress: { label: 'In Progress', icon: <HiOutlinePlay />, color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
+  completed: { label: 'Completed', icon: <HiOutlineCheckCircle />, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)' },
+  on_hold: { label: 'On Hold', icon: <HiOutlinePause />, color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)' },
+  cancelled: { label: 'Cancelled', icon: <HiOutlineBan />, color: '#ef4444', bgColor: 'rgba(239, 68, 68, 0.1)' }
+};
+
 const WorkflowProgress = ({
   applicationId,
   workflowSteps,
   currentStep,
   totalSteps,
+  workflowStatus = 'not_started',
   canManage = false,
   onRefresh
 }: WorkflowProgressProps) => {
@@ -56,6 +70,7 @@ const WorkflowProgress = ({
   const [actionRemarks, setActionRemarks] = useState('');
   const [sendBackTo, setSendBackTo] = useState<number>(1);
   const [actionLoading, setActionLoading] = useState(false);
+  const [startingWorkflow, setStartingWorkflow] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const formatDate = (date: string | undefined) => {
@@ -150,21 +165,62 @@ const WorkflowProgress = ({
     }
   };
 
-  const progressPercentage = getProgressPercentage();
+  const handleStartWorkflow = async () => {
+    setStartingWorkflow(true);
+    setError(null);
 
-  // If no workflow steps, show empty state
+    try {
+      const response = await applicationsApi.startWorkflow(applicationId);
+      if (response.success) {
+        onRefresh?.();
+      } else {
+        setError(response.message || 'Failed to start workflow');
+      }
+    } catch (err) {
+      console.error('Failed to start workflow:', err);
+      setError('Failed to start workflow');
+    } finally {
+      setStartingWorkflow(false);
+    }
+  };
+
+  const progressPercentage = getProgressPercentage();
+  const statusConfig = WORKFLOW_STATUS_CONFIG[workflowStatus];
+
+  // If no workflow steps, show empty state with Start Workflow option
   if (!workflowSteps || workflowSteps.length === 0) {
     return (
       <div className="wfp">
         <div className="wfp-empty">
           <HiOutlineClock className="wfp-empty-icon" />
-          <h3>No Workflow Defined</h3>
-          <p>This service doesn't have a workflow configured yet, or the workflow hasn't been initialized for this application.</p>
-          {onRefresh && (
-            <button className="wfp-empty-refresh" onClick={onRefresh}>
-              <HiOutlineRefresh /> Refresh
-            </button>
+          <h3>{workflowStatus === 'not_started' ? 'Workflow Not Started' : 'No Workflow Defined'}</h3>
+          <p>
+            {workflowStatus === 'not_started'
+              ? 'The workflow for this application has not been started yet. Start the workflow to begin processing.'
+              : "This service doesn't have a workflow configured yet, or the workflow hasn't been initialized for this application."}
+          </p>
+          {error && (
+            <div className="wfp-empty-error">
+              <HiOutlineExclamation /> {error}
+            </div>
           )}
+          <div className="wfp-empty-actions">
+            {canManage && workflowStatus === 'not_started' && (
+              <button
+                className="wfp-empty-start"
+                onClick={handleStartWorkflow}
+                disabled={startingWorkflow}
+              >
+                <HiOutlineLightningBolt />
+                {startingWorkflow ? 'Starting...' : 'Start Workflow'}
+              </button>
+            )}
+            {onRefresh && (
+              <button className="wfp-empty-refresh" onClick={onRefresh}>
+                <HiOutlineRefresh /> Refresh
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -175,7 +231,15 @@ const WorkflowProgress = ({
       {/* Progress Header */}
       <div className="wfp-header">
         <div className="wfp-header-info">
-          <h3>Workflow Progress</h3>
+          <div className="wfp-header-title">
+            <h3>Workflow Progress</h3>
+            <span
+              className="wfp-status-badge"
+              style={{ color: statusConfig.color, background: statusConfig.bgColor }}
+            >
+              {statusConfig.icon} {statusConfig.label}
+            </span>
+          </div>
           <p>Step {currentStep} of {totalSteps}</p>
         </div>
         <div className="wfp-header-actions">
@@ -194,7 +258,7 @@ const WorkflowProgress = ({
       {/* Timeline */}
       <div className="wfp-timeline">
         {workflowSteps.map((step, index) => {
-          const statusConfig = STEP_STATUS_CONFIG[step.step_status];
+          const stepStatusConfig = STEP_STATUS_CONFIG[step.step_status];
           const isActive = step.step_status === 'in_progress';
           const isCompleted = step.step_status === 'completed';
           const isPending = step.step_status === 'pending';
@@ -213,12 +277,12 @@ const WorkflowProgress = ({
               <div
                 className="wfp-step-icon"
                 style={{
-                  backgroundColor: isActive ? statusConfig.color : isCompleted ? statusConfig.color : undefined,
-                  borderColor: statusConfig.color,
-                  color: isActive || isCompleted ? '#fff' : statusConfig.color
+                  backgroundColor: isActive ? stepStatusConfig.color : isCompleted ? stepStatusConfig.color : undefined,
+                  borderColor: stepStatusConfig.color,
+                  color: isActive || isCompleted ? '#fff' : stepStatusConfig.color
                 }}
               >
-                {statusConfig.icon}
+                {stepStatusConfig.icon}
               </div>
 
               {/* Step Content */}
@@ -233,9 +297,9 @@ const WorkflowProgress = ({
                 <div className="wfp-step-meta">
                   <span
                     className="wfp-step-status"
-                    style={{ color: statusConfig.color }}
+                    style={{ color: stepStatusConfig.color }}
                   >
-                    {statusConfig.label}
+                    {stepStatusConfig.label}
                   </span>
                   <span className="wfp-step-type">
                     {STEP_TYPE_LABELS[step.step_type] || step.step_type}
