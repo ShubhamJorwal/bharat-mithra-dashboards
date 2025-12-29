@@ -22,6 +22,12 @@ import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Ca
 // Applications Pages
 import { ApplicationList, ApplicationDetails, ApplicationCreate } from "../views/Applications";
 
+// Reports Page
+import { Reports } from "../views/Reports";
+
+// Staff Pages
+import { StaffList } from "../views/Staff";
+
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
@@ -228,7 +234,12 @@ const routerConfig = [
       },
       {
         path: "reports",
-        element: <Dashboard />, // Placeholder
+        element: <Reports />,
+      },
+      // Staff Routes
+      {
+        path: "staff",
+        element: <StaffList />,
       },
       {
         path: "notifications",
