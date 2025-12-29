@@ -7,7 +7,6 @@ import {
   HiOutlineSupport,
   HiOutlineArrowRight,
   HiOutlineUsers,
-  HiOutlineCollection,
   HiOutlineClipboardList,
   HiOutlineCheckCircle,
   HiOutlineTrendingUp,

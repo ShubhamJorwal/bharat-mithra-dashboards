@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineChartBar,
   HiOutlineDocumentDownload,
@@ -12,10 +11,8 @@ import {
   HiOutlineCurrencyRupee,
   HiOutlineGlobe,
   HiOutlineRefresh,
-  HiOutlineTable,
   HiOutlinePresentationChartBar,
-  HiOutlineDocumentText,
-  HiOutlinePrinter
+  HiOutlineDocumentText
 } from 'react-icons/hi';
 import { PageHeader } from '../../components/common/PageHeader';
 import './Reports.scss';
@@ -47,7 +44,6 @@ interface ReportData {
 }
 
 const Reports = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [selectedCategory, setSelectedCategory] = useState('all');

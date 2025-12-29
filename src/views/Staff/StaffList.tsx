@@ -8,15 +8,12 @@ import {
   HiOutlineSearch,
   HiOutlineFilter,
   HiOutlineDotsVertical,
-  HiOutlineShieldCheck,
   HiOutlineUserGroup,
   HiOutlineMail,
-  HiOutlinePhone,
   HiOutlineOfficeBuilding,
   HiOutlineBadgeCheck,
   HiOutlineClipboardList,
   HiOutlineClock,
-  HiOutlineTrendingUp,
   HiOutlineLocationMarker
 } from 'react-icons/hi';
 import { PageHeader } from '../../components/common/PageHeader';
