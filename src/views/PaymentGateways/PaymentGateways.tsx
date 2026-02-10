@@ -142,7 +142,7 @@ const PaymentGateways = () => {
 
   // Bank form
   const [bankForm, setBankForm] = useState({
-    bankName: '', accountHolder: '', accountNumber: '', ifscCode: '', branchName: '', accountType: 'current' as const,
+    bankName: '', accountHolder: '', accountNumber: '', ifscCode: '', branchName: '', accountType: 'current' as 'current' | 'savings',
   });
   const [bankScreenshot, setBankScreenshot] = useState<string>('');
   const bankFileRef = useRef<HTMLInputElement>(null);

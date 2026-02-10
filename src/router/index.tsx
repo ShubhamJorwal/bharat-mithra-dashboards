@@ -25,6 +25,9 @@ import { ApplicationList, ApplicationDetails, ApplicationCreate } from "../views
 // Reports Page
 import { Reports } from "../views/Reports";
 
+// Calendar Page
+import { Calendar } from "../views/Calendar";
+
 // Statements Pages
 import { WalletStatements } from "../views/Statements";
 
@@ -255,7 +258,7 @@ const routerConfig = [
       },
       {
         path: "calendar",
-        element: <Dashboard />, // Placeholder
+        element: <Calendar />,
       },
       {
         path: "reports",

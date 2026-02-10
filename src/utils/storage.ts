@@ -97,4 +97,7 @@ export const STORAGE_KEYS = {
   SIDEBAR_COLLAPSED: 'sidebarCollapsed',
   SIDEBAR_WIDTH: 'sidebarWidth',
   LANGUAGE: 'language',
+  CALENDAR_EVENTS: 'bm-calendar-events',
+  GENERATED_REPORTS: 'bm-generated-reports',
+  SCHEDULED_REPORTS: 'bm-scheduled-reports',
 } as const;

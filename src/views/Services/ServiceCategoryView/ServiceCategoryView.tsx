@@ -7,7 +7,6 @@ import {
   HiOutlineSparkles,
   HiOutlineCube,
   HiOutlineChevronRight,
-  HiOutlineCurrencyRupee,
   HiOutlineX,
   HiOutlineCheck,
   HiOutlineUpload,
@@ -49,19 +48,13 @@ const ServiceCategoryView = () => {
   const activeServices = category.services.filter(s => s.isActive);
   const newServices = activeServices.filter(s => s.isNew);
   const popularServices = activeServices.filter(s => s.isPopular);
-  const regularServices = activeServices.filter(s => !s.isNew && !s.isPopular);
 
   // Filter by search
-  const filterServices = (services: ServiceItem[]) => {
-    if (!searchQuery.trim()) return services;
+  const allFiltered = useMemo(() => {
+    if (!searchQuery.trim()) return activeServices;
     const q = searchQuery.toLowerCase();
-    return services.filter(s => s.name.toLowerCase().includes(q));
-  };
-
-  const filteredNew = filterServices(newServices);
-  const filteredPopular = filterServices(popularServices);
-  const filteredRegular = filterServices(regularServices);
-  const allFiltered = filterServices(activeServices);
+    return activeServices.filter(s => s.name.toLowerCase().includes(q));
+  }, [activeServices, searchQuery]);
 
   const totalActive = activeServices.length;
   const totalFilteredCount = allFiltered.length;
@@ -300,59 +293,29 @@ const ServiceCategoryView = () => {
 
       {/* Content */}
       <div className="scv-content">
-        {/* New Services */}
-        {filteredNew.length > 0 && (
-          <div className="scv-section">
-            <h3 className="scv-section__title">
-              <HiOutlineSparkles /> New Services
-              <span className="scv-section__count">{filteredNew.length}</span>
-            </h3>
-            <div className="scv-grid">
-              {filteredNew.map(service => (
-                <ServiceCard key={service.id} service={service} color={category.color} isNew onClick={() => openServiceForm(service)} />
-              ))}
-            </div>
+        <div className="scv-content-card">
+          <div className="scv-grid">
+            {allFiltered.map(service => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                color={category.color}
+                isNew={service.isNew}
+                isPopular={service.isPopular}
+                onClick={() => openServiceForm(service)}
+              />
+            ))}
           </div>
-        )}
 
-        {/* Popular Services */}
-        {filteredPopular.length > 0 && (
-          <div className="scv-section">
-            <h3 className="scv-section__title">
-              <HiOutlineStar /> Popular Services
-              <span className="scv-section__count">{filteredPopular.length}</span>
-            </h3>
-            <div className="scv-grid">
-              {filteredPopular.map(service => (
-                <ServiceCard key={service.id} service={service} color={category.color} isPopular onClick={() => openServiceForm(service)} />
-              ))}
+          {/* Empty search */}
+          {searchQuery.trim() && totalFilteredCount === 0 && (
+            <div className="scv-empty">
+              <HiOutlineSearch />
+              <h4>No services found</h4>
+              <p>Try adjusting your search in {category.name}</p>
             </div>
-          </div>
-        )}
-
-        {/* Other Services */}
-        {filteredRegular.length > 0 && (
-          <div className="scv-section">
-            <h3 className="scv-section__title">
-              <HiOutlineCube /> {(filteredNew.length > 0 || filteredPopular.length > 0) ? 'Other Services' : 'All Services'}
-              <span className="scv-section__count">{filteredRegular.length}</span>
-            </h3>
-            <div className="scv-grid">
-              {filteredRegular.map(service => (
-                <ServiceCard key={service.id} service={service} color={category.color} onClick={() => openServiceForm(service)} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty search */}
-        {searchQuery.trim() && totalFilteredCount === 0 && (
-          <div className="scv-empty">
-            <HiOutlineSearch />
-            <h4>No services found</h4>
-            <p>Try adjusting your search in {category.name}</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Service Form Modal */}
@@ -520,33 +483,21 @@ interface ServiceCardProps {
   onClick?: () => void;
 }
 
-const ServiceCard = ({ service, isNew, isPopular, onClick }: ServiceCardProps) => {
+const ServiceCard = ({ service, isNew, onClick }: ServiceCardProps) => {
   return (
-    <div
-      className={`scv-card ${isNew ? 'scv-card--new' : ''} ${isPopular ? 'scv-card--popular' : ''}`}
-      onClick={onClick}
-    >
-      <div className="scv-card__icon" style={{ background: `linear-gradient(135deg, ${service.color}20, ${service.color}08)` }}>
+    <div className="scv-card" onClick={onClick}>
+      <div className="scv-card__circle" style={{ background: `linear-gradient(145deg, ${service.color}, ${service.color}cc)` }}>
         <span className="scv-card__emoji">{service.icon}</span>
       </div>
-      <h4 className="scv-card__name">{service.name}</h4>
-      <div className="scv-card__meta">
-        {service.fee !== undefined && (
-          <span className="scv-card__fee">
-            <HiOutlineCurrencyRupee />
-            {service.fee === 0 ? 'Free' : `${service.fee}`}
-          </span>
-        )}
-        {service.commission !== undefined && service.commission > 0 && (
-          <span className="scv-card__commission">
-            +₹{service.commission}
-          </span>
-        )}
-      </div>
-      <div className="scv-card__badges">
-        {isNew && <span className="scv-badge scv-badge--new">NEW</span>}
-        {isPopular && <span className="scv-badge scv-badge--popular"><HiOutlineStar /> Popular</span>}
-        {service.isOnline && <span className="scv-badge scv-badge--online">ONLINE</span>}
+      <div className="scv-card__label">
+        <span className="scv-card__name">{service.name}</span>
+        <div className="scv-card__badges">
+          {isNew && <span className="scv-badge scv-badge--new">NEW</span>}
+          {service.isOnline && <span className="scv-badge scv-badge--online">ONLINE</span>}
+          {service.fee !== undefined && service.fee > 0 && (
+            <span className="scv-card__price">₹{service.fee}</span>
+          )}
+        </div>
       </div>
     </div>
   );

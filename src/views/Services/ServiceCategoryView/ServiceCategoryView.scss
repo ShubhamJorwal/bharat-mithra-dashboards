@@ -218,40 +218,15 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 10px 20px 0;
+  padding: 4px 10px 24px 0;
   @include custom-scrollbar;
 }
 
-// ============================================
-// SECTION
-// ============================================
-.scv-section {
-  margin-bottom: 28px;
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 14px;
-
-    svg {
-      font-size: 17px;
-      color: var(--color-primary);
-    }
-  }
-
-  &__count {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    background: rgba(59, 130, 246, 0.1);
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 4px;
-  }
+.scv-content-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: 24px;
 }
 
 // ============================================
@@ -259,137 +234,103 @@
 // ============================================
 .scv-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 20px 16px;
 }
 
 .scv-card {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 20px 14px 14px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-lg;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  padding: 8px 4px;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
+    .scv-card__circle {
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
 
-    .scv-card__emoji {
-      transform: scale(1.2);
+    .scv-card__name {
+      color: var(--color-primary);
     }
   }
 
-  &--new {
-    border-color: rgba(16, 185, 129, 0.2);
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-
-    &:hover {
-      border-color: rgba(16, 185, 129, 0.4);
-    }
-  }
-
-  &--popular {
-    border-color: rgba(245, 158, 11, 0.2);
-    background: linear-gradient(180deg, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
-
-    &:hover {
-      border-color: rgba(245, 158, 11, 0.4);
-    }
-  }
-
-  &__icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+  &__circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
   }
 
   &__emoji {
-    font-size: 28px;
-    transition: transform 0.3s ease;
+    font-size: 34px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
   }
 
   &__name {
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 6px;
+    color: var(--color-primary);
     line-height: 1.3;
-    min-height: 34px;
-    display: flex;
-    align-items: center;
-  }
-
-  &__meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-
-  &__fee {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--color-text);
-
-    svg {
-      font-size: 12px;
-    }
-  }
-
-  &__commission {
-    font-size: 11px;
-    font-weight: 500;
-    color: #059669;
-    background: rgba(16, 185, 129, 0.1);
-    padding: 2px 6px;
-    border-radius: 8px;
+    transition: color 0.2s ease;
+    max-width: 130px;
+    word-wrap: break-word;
   }
 
   &__badges {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-bottom: 4px;
-    min-height: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  &__status {
-    margin-top: 4px;
+  &__price {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 10px;
   }
 }
 
 // ============================================
-// BADGES & STATUS
+// BADGES
 // ============================================
 .scv-badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 7px;
-  font-size: 9px;
-  font-weight: 700;
-  border-radius: 20px;
+  gap: 2px;
+  padding: 1px 6px;
+  font-size: 8px;
+  font-weight: 800;
+  border-radius: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 
   &--new {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
-    color: #059669;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: #ef4444;
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 8px;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.4);
   }
 
   &--popular {
@@ -398,29 +339,8 @@
     border: 1px solid rgba(245, 158, 11, 0.2);
 
     svg {
-      font-size: 9px;
+      font-size: 8px;
     }
-  }
-}
-
-.scv-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-
-  &--active {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.04));
-    color: #059669;
-  }
-
-  &--inactive {
-    background: linear-gradient(135deg, rgba(107, 114, 128, 0.12), rgba(107, 114, 128, 0.04));
-    color: #6b7280;
   }
 }
 
@@ -512,12 +432,21 @@
 }
 
 // ============================================
-// ONLINE BADGE (on cards)
+// ONLINE/OFFLINE BADGE (on cards)
 // ============================================
 .scv-badge--online {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
-  color: #2563eb;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: #16a34a;
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 8px;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
+}
+
+.scv-badge--offline {
+  background: #64748b;
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 8px;
 }
 
 // ============================================
@@ -1145,20 +1074,19 @@
 // ============================================
 body.dark-mode {
   .scv-card {
+    &:hover .scv-card__circle {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    &__price {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .scv-content-card {
     background: var(--color-background-secondary);
     border-color: rgba(255, 255, 255, 0.06);
-
-    &:hover {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    &--new {
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, var(--color-background-secondary) 50%);
-    }
-
-    &--popular {
-      background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--color-background-secondary) 50%);
-    }
   }
 
   .scv-header__back {
@@ -1241,25 +1169,22 @@ body.dark-mode {
   }
 
   .scv-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 14px 10px;
   }
 
   .scv-card {
-    padding: 14px 10px 10px;
-
-    &__icon {
-      width: 46px;
-      height: 46px;
+    &__circle {
+      width: 66px;
+      height: 66px;
     }
 
     &__emoji {
-      font-size: 24px;
+      font-size: 28px;
     }
 
     &__name {
       font-size: 12px;
-      min-height: 30px;
     }
   }
 
@@ -1316,7 +1241,8 @@ body.dark-mode {
 
 @media (max-width: 480px) {
   .scv-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 8px;
   }
 
   .scv-header__icon {
