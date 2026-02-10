@@ -1,0 +1,1335 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// ============================================
+// SERVICE CATEGORY VIEW - Individual Category Page
+// ============================================
+
+.scv {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 58px);
+  min-height: 500px;
+  overflow-x: hidden;
+}
+
+// ============================================
+// BREADCRUMB
+// ============================================
+.scv-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  svg {
+    font-size: 10px;
+    opacity: 0.5;
+  }
+
+  span {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+}
+
+// ============================================
+// HEADER
+// ============================================
+.scv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  flex-shrink: 0;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+  }
+
+  &__back {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 18px;
+    }
+
+    &:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    span {
+      font-size: 28px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  &__hindi {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 4px 0 0;
+  }
+
+  &__right {
+    flex-shrink: 0;
+  }
+}
+
+.scv-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-full;
+  min-width: 240px;
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  svg {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--color-text);
+    &::placeholder { color: var(--color-text-secondary); }
+    &:focus { outline: none; }
+  }
+}
+
+// ============================================
+// STATS
+// ============================================
+.scv-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+  border-top: 1px dashed var(--color-border);
+  border-bottom: 1px dashed var(--color-border);
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.scv-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+
+  svg {
+    font-size: 16px;
+    color: var(--color-primary);
+  }
+
+  strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  &--search {
+    margin-left: auto;
+    color: var(--color-primary);
+
+    svg {
+      color: var(--color-primary);
+    }
+  }
+}
+
+// ============================================
+// CONTENT
+// ============================================
+.scv-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 10px 20px 0;
+  @include custom-scrollbar;
+}
+
+// ============================================
+// SECTION
+// ============================================
+.scv-section {
+  margin-bottom: 28px;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 14px;
+
+    svg {
+      font-size: 17px;
+      color: var(--color-primary);
+    }
+  }
+
+  &__count {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+}
+
+// ============================================
+// SERVICE CARDS GRID
+// ============================================
+.scv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 12px;
+}
+
+.scv-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 14px 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+
+    .scv-card__emoji {
+      transform: scale(1.2);
+    }
+  }
+
+  &--new {
+    border-color: rgba(16, 185, 129, 0.2);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+
+    &:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+  }
+
+  &--popular {
+    border-color: rgba(245, 158, 11, 0.2);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+
+    &:hover {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+  }
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  &__emoji {
+    font-size: 28px;
+    transition: transform 0.3s ease;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 6px;
+    line-height: 1.3;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  &__fee {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text);
+
+    svg {
+      font-size: 12px;
+    }
+  }
+
+  &__commission {
+    font-size: 11px;
+    font-weight: 500;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+
+  &__badges {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    min-height: 20px;
+  }
+
+  &__status {
+    margin-top: 4px;
+  }
+}
+
+// ============================================
+// BADGES & STATUS
+// ============================================
+.scv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--new {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  &--popular {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+
+    svg {
+      font-size: 9px;
+    }
+  }
+}
+
+.scv-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  &--active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.04));
+    color: #059669;
+  }
+
+  &--inactive {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.12), rgba(107, 114, 128, 0.04));
+    color: #6b7280;
+  }
+}
+
+// ============================================
+// NOT FOUND
+// ============================================
+.scv-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+
+  > svg {
+    font-size: 48px;
+    color: var(--color-text-secondary);
+    opacity: 0.4;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0 0 20px;
+  }
+}
+
+.scv-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+.scv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 24px;
+  text-align: center;
+
+  > svg {
+    font-size: 42px;
+    color: var(--color-text-secondary);
+    opacity: 0.4;
+    margin-bottom: 14px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+}
+
+// ============================================
+// ONLINE BADGE (on cards)
+// ============================================
+.scv-badge--online {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+// ============================================
+// MODAL OVERLAY & CONTAINER
+// ============================================
+.scv-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  animation: scvFadeIn 0.2s ease;
+}
+
+@keyframes scvFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scvSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scv-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  background: var(--color-background);
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scvSlideUp 0.25s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__emoji {
+    font-size: 32px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__category {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+  }
+
+  &__header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  &__meta-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__fee-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  &__comm-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 20px;
+  }
+
+  &__online-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(34, 197, 94, 0.3);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px;
+    @include custom-scrollbar;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+
+    &--outline {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+
+      &:hover {
+        background: var(--color-background-secondary);
+        border-color: var(--color-text-secondary);
+        color: var(--color-text);
+      }
+    }
+
+    &--primary {
+      background: var(--color-primary);
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    svg {
+      font-size: 15px;
+    }
+  }
+
+  // Success state
+  &__success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  &__success-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    svg {
+      font-size: 28px;
+      color: #059669;
+    }
+  }
+
+  &__success h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 8px;
+  }
+
+  &__success p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0 0 24px;
+    max-width: 360px;
+    line-height: 1.5;
+  }
+
+  &__success-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+// ============================================
+// FORM FIELDS
+// ============================================
+.scv-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.scv-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.scv-form__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.scv-form__required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.scv-form__input,
+.scv-form__select {
+  height: 38px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.scv-form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 5l3 3 3-3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.scv-form__textarea {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  resize: vertical;
+  min-height: 72px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.scv-form__upload {
+  width: 100%;
+}
+
+.scv-form__upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-background);
+  border: 1.5px dashed var(--color-border);
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+
+  svg {
+    font-size: 16px;
+    color: var(--color-primary);
+  }
+
+  &:hover {
+    border-color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.04);
+    color: var(--color-primary);
+  }
+}
+
+.scv-form__file-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: $radius-md;
+  font-size: 12px;
+  color: var(--color-text);
+
+  svg {
+    font-size: 16px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  button {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+
+    svg {
+      font-size: 12px;
+      color: #ef4444;
+    }
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+.scv-form__no-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-text-secondary);
+
+  svg {
+    font-size: 36px;
+    opacity: 0.3;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 13px;
+    margin: 0;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+}
+
+// ============================================
+// ACTIVATION BANNER
+// ============================================
+.scv-activation-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.04));
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: $radius-lg;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(245, 158, 11, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 20px;
+      color: #d97706;
+    }
+  }
+
+  &__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 14px;
+      font-weight: 700;
+      color: #d97706;
+    }
+
+    span {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__btn {
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+  }
+}
+
+// ============================================
+// ACTIVATION MODAL CONTENT
+// ============================================
+.scv-activation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 10px;
+
+  &__heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 6px;
+  }
+
+  &__subtext {
+    font-size: 15px;
+    color: var(--color-text);
+    margin: 0 0 4px;
+    font-weight: 500;
+  }
+
+  &__highlight {
+    font-weight: 800;
+    color: var(--color-primary);
+  }
+
+  &__price {
+    font-size: 32px;
+    font-weight: 800;
+    color: #dc2626;
+    margin: 16px 0 20px;
+    letter-spacing: 1px;
+  }
+
+  &__features-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+    padding: 6px 24px;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+    border-radius: $radius-md;
+    background: rgba(245, 158, 11, 0.05);
+  }
+
+  &__features {
+    list-style: disc;
+    text-align: left;
+    padding-left: 24px;
+    margin: 0;
+
+    li {
+      font-size: 14px;
+      color: var(--color-text);
+      line-height: 1.8;
+      font-weight: 500;
+    }
+  }
+}
+
+.scv-modal__btn--pay {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f172a, #020617) !important;
+  }
+}
+
+// ============================================
+// SPINNER
+// ============================================
+.scv-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: scvSpin 0.6s linear infinite;
+}
+
+@keyframes scvSpin {
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// DARK MODE
+// ============================================
+body.dark-mode {
+  .scv-card {
+    background: var(--color-background-secondary);
+    border-color: rgba(255, 255, 255, 0.06);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    &--new {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, var(--color-background-secondary) 50%);
+    }
+
+    &--popular {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--color-background-secondary) 50%);
+    }
+  }
+
+  .scv-header__back {
+    background: var(--color-background-secondary);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .scv-search {
+    background: var(--color-background-secondary);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .scv-modal {
+    background: var(--color-background-secondary);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .scv-modal__footer {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .scv-form__input,
+  .scv-form__select,
+  .scv-form__textarea {
+    background: var(--color-background);
+    border-color: rgba(255, 255, 255, 0.08);
+
+    &:focus {
+      border-color: var(--color-primary);
+    }
+  }
+
+  .scv-form__upload-btn {
+    background: var(--color-background);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .scv-form__file-preview {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.15);
+  }
+
+  .scv-modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .scv-activation-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.04));
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+
+  .scv-activation__features-title {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+@media (max-width: 768px) {
+  .scv-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    &__left {
+      flex-wrap: wrap;
+    }
+  }
+
+  .scv-search {
+    min-width: 100%;
+  }
+
+  .scv-stats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .scv-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+
+  .scv-card {
+    padding: 14px 10px 10px;
+
+    &__icon {
+      width: 46px;
+      height: 46px;
+    }
+
+    &__emoji {
+      font-size: 24px;
+    }
+
+    &__name {
+      font-size: 12px;
+      min-height: 30px;
+    }
+  }
+
+  .scv-activation-banner {
+    flex-wrap: wrap;
+    gap: 10px;
+
+    &__btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .scv-modal-overlay {
+    padding: 12px;
+  }
+
+  .scv-modal {
+    max-height: 90vh;
+  }
+
+  .scv-modal__header {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+  }
+
+  .scv-modal__emoji {
+    font-size: 26px;
+  }
+
+  .scv-modal__title {
+    font-size: 15px;
+  }
+
+  .scv-modal__meta-badges {
+    display: none;
+  }
+
+  .scv-modal__body {
+    padding: 16px;
+  }
+
+  .scv-form__grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .scv-modal__footer {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scv-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .scv-header__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+
+    span {
+      font-size: 22px;
+    }
+  }
+
+  .scv-header__title {
+    font-size: 18px;
+  }
+}

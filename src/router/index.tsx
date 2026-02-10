@@ -16,7 +16,7 @@ import RequestCode from "../views/Auth/RequestCode/RequestCode";
 import { UserList, UserDetails, UserCreate, UserEdit } from "../views/Users";
 
 // Services Pages
-import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit } from "../views/Services";
+import { ServiceList, ServiceDetails, ServiceCreate, ServiceEdit, ServicePortal, ServiceCategoryView } from "../views/Services";
 import { CategoryList, CategoryCreate, CategoryEdit } from "../views/Services/Categories";
 
 // Applications Pages
@@ -24,6 +24,12 @@ import { ApplicationList, ApplicationDetails, ApplicationCreate } from "../views
 
 // Reports Page
 import { Reports } from "../views/Reports";
+
+// Statements Pages
+import { WalletStatements } from "../views/Statements";
+
+// Payment Gateways Pages
+import { PaymentGateways } from "../views/PaymentGateways";
 
 // Staff Pages
 import { StaffList } from "../views/Staff";
@@ -89,6 +95,15 @@ const routerConfig = [
       {
         path: "users/:id/edit",
         element: <UserEdit />,
+      },
+      // Services Portal Routes
+      {
+        path: "services/portal",
+        element: <ServicePortal />,
+      },
+      {
+        path: "services/portal/:slug",
+        element: <ServiceCategoryView />,
       },
       // Services Routes
       {
@@ -222,6 +237,16 @@ const routerConfig = [
       {
         path: "applications/:id",
         element: <ApplicationDetails />,
+      },
+      // Statements Routes
+      {
+        path: "statements/wallet",
+        element: <WalletStatements />,
+      },
+      // Payment Gateways
+      {
+        path: "payment-gateways",
+        element: <PaymentGateways />,
       },
       // Other Routes (Placeholders)
       {

@@ -16,7 +16,9 @@ import {
   HiOutlineChevronRight,
   HiOutlineChevronDown,
   HiOutlineCog,
-  HiOutlineGlobe
+  HiOutlineGlobe,
+  HiOutlineCash,
+  HiOutlineCreditCard,
 } from 'react-icons/hi';
 import './Sidebar.scss';
 
@@ -67,8 +69,22 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       label: 'Services',
       badge: null,
       subItems: [
+        { path: '/services/portal', label: 'Services Portal' },
         { path: '/services', label: 'All Services' },
         { path: '/services/categories', label: 'Categories' },
+        { path: '/services/portal/government-schemes', label: 'Govt Schemes' },
+        { path: '/services/portal/print-services', label: 'Print Services' },
+        { path: '/services/portal/pvc-delivery', label: 'PVC Delivery' },
+        { path: '/services/portal/pvc-maker', label: 'PVC Maker' },
+        { path: '/services/portal/pan-services', label: 'PAN Services' },
+        { path: '/services/portal/payment-services', label: 'Payment Services' },
+        { path: '/services/portal/msme-services', label: 'MSME Services' },
+        { path: '/services/portal/open-savings-account', label: 'Open Savings A/C' },
+        { path: '/services/portal/bbps', label: 'BBPS' },
+        { path: '/services/portal/e-governance', label: 'E-Governance' },
+        { path: '/services/portal/govt-job-alerts', label: 'Govt Job Alerts' },
+        { path: '/services/portal/insurance', label: 'Insurance' },
+        { path: '/services/portal/travel-booking', label: 'Travel & Booking' },
       ]
     },
     {
@@ -88,6 +104,16 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/calendar', icon: HiOutlineCalendar, label: 'Calendar', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
+    {
+      path: '/statements',
+      icon: HiOutlineCash,
+      label: 'Statements',
+      badge: null,
+      subItems: [
+        { path: '/statements/wallet', label: 'Wallet' },
+      ]
+    },
+    { path: '/payment-gateways', icon: HiOutlineCreditCard, label: 'Payment Gateways', badge: null },
   ];
 
   const secondaryNavItems: NavItem[] = [
@@ -217,7 +243,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
                   <NavLink
                     key={sub.path}
                     to={sub.path}
-                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/applications'}
+                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/services/portal' || sub.path === '/applications' || sub.path === '/statements/wallet'}
                     className={({ isActive: navIsActive }) => `bm-nav-subitem ${navIsActive ? 'active' : ''}`}
                   >
                     <span className="bm-nav-label">{sub.label}</span>
@@ -273,12 +299,16 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
             {secondaryNavItems.map(renderNavItem)}
           </div>
         </div>
+
+        <div className="bm-nav-section">
+          {!isCollapsed && <span className="bm-nav-section-title">Support</span>}
+          <div className="bm-nav-list">
+            {bottomNavItems.map(renderNavItem)}
+          </div>
+        </div>
       </nav>
 
       <div className="bm-sidebar-footer">
-        <div className="bm-nav-list">
-          {bottomNavItems.map(renderNavItem)}
-        </div>
         <div className="bm-collapse-section">
           <button
             className="bm-collapse-btn"

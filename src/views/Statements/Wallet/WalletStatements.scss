@@ -1,0 +1,740 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use '../../Geography/geography-shared' as *;
+
+// Use geography shared mixins for table, footer, pagination
+@include geo-table-wrap('wst');
+@include geo-table('wst', #3b82f6);
+@include geo-table-acts('wst');
+@include geo-footer('wst');
+@include geo-pagination('wst');
+@include geo-search('wst');
+@include geo-filters('wst');
+@include geo-empty('wst');
+
+// Layout
+.wst {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 58px);
+  min-height: 500px;
+  overflow-x: hidden;
+}
+
+// Stats Cards
+.wst-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.wst-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light);
+  border-radius: $radius-lg;
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 22px;
+      color: #fff;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  &__value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  &--balance .wst-stat__icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  }
+
+  &--pending .wst-stat__icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  &--credit .wst-stat__icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  &--debit .wst-stat__icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+}
+
+// Toolbar
+.wst-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+// Tabs
+.wst-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.wst-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    font-size: 16px;
+  }
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &--active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  &__count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: $radius-full;
+    min-width: 20px;
+    text-align: center;
+  }
+}
+
+// Buttons
+.wst-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  svg {
+    font-size: 16px;
+  }
+
+  &--add {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--refresh {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    padding: 7px 10px;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &--approve {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+  }
+
+  &--reject {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+  }
+
+  &--hold {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &--delete {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: #ef4444;
+    }
+  }
+
+  &--cancel {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+}
+
+// Scrollable content area
+.wst-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  @include custom-scrollbar;
+}
+
+// Table overrides
+.wst-table {
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+
+    > svg {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 4px;
+      font-size: 14px;
+      opacity: 0.5;
+    }
+
+    &:hover > svg {
+      opacity: 1;
+      color: var(--color-primary);
+    }
+  }
+
+  &__empty {
+    text-align: center !important;
+    padding: 48px 20px !important;
+
+    svg {
+      font-size: 40px;
+      color: var(--color-text-secondary);
+      opacity: 0.3;
+      display: block;
+      margin: 0 auto 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+  }
+}
+
+// Transaction ID
+.wst-txn-id {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+// Agent cell
+.wst-agent {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  small {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Category badge
+.wst-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: $radius-full;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  &--wallet_request { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+  &--top_up { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &--service_fee { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+  &--commission { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+  &--refund { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  &--withdrawal { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+}
+
+// Amount display
+.wst-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+  svg {
+    font-size: 14px;
+  }
+
+  &--credit {
+    color: #10b981;
+  }
+
+  &--debit {
+    color: #ef4444;
+  }
+
+  &--request {
+    color: #f59e0b;
+  }
+}
+
+// Payment method
+.wst-payment {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+// Status badge
+.wst-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: $radius-full;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  svg {
+    font-size: 13px;
+  }
+
+  &--pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  &--approved {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  &--completed {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  &--rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  &--failed {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+  }
+
+  &--hold {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+  }
+}
+
+// Date cell
+.wst-date {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  span {
+    font-size: 13px;
+    color: var(--color-text);
+  }
+
+  small {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Backdrop
+.wst-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999;
+}
+
+// Modal
+.wst-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 480px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-xl;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--color-background-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+      }
+
+      svg {
+        font-size: 18px;
+      }
+    }
+  }
+
+  &__body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+    @include custom-scrollbar;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-border-light);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  &__value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    svg {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__action-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      background: var(--color-background-secondary);
+      color: var(--color-text);
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+
+      &::placeholder {
+        color: var(--color-text-secondary);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  &__action-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  &__footer-actions {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--color-border-light);
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+// Form groups (for add modal)
+.wst-form-group {
+  margin-bottom: 14px;
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input, select {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 13px;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+    }
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+}
+
+// Dark mode
+body.dark-mode {
+  .wst-stat {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border);
+  }
+
+  .wst-toolbar {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .wst-tab {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border);
+  }
+
+  .wst-table tbody tr.row-alt {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .wst-payment {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .wst-modal {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border);
+  }
+
+  .wst-form-group {
+    input, select {
+      background: var(--color-background);
+    }
+  }
+
+  .wst-btn--refresh {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border);
+  }
+
+  .wst-search {
+    background: var(--color-background-secondary);
+  }
+}
+
+// Responsive
+@media (max-width: 1024px) {
+  .wst-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wst-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__actions {
+      justify-content: space-between;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .wst-stats {
+    grid-template-columns: 1fr;
+    padding: 8px 12px;
+  }
+
+  .wst-toolbar__actions {
+    flex-wrap: wrap;
+  }
+
+  .wst-search {
+    min-width: 100%;
+  }
+
+  .wst-table__acts {
+    opacity: 1;
+  }
+
+  .wst-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
