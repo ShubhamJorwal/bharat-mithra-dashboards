@@ -100,4 +100,8 @@ export const STORAGE_KEYS = {
   CALENDAR_EVENTS: 'bm-calendar-events',
   GENERATED_REPORTS: 'bm-generated-reports',
   SCHEDULED_REPORTS: 'bm-scheduled-reports',
+  DOCUMENTS: 'bm-documents',
+  STAFF_MEMBERS: 'bm-staff-members',
+  NOTIFICATION_SETTINGS: 'bm-notification-settings',
+  PRIVACY_SETTINGS: 'bm-privacy-settings',
 } as const;

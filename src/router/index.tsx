@@ -37,6 +37,15 @@ import { PaymentGateways } from "../views/PaymentGateways";
 // Staff Pages
 import { StaffList } from "../views/Staff";
 
+// Documents Page
+import { Documents } from "../views/Documents";
+
+// Shortcuts Page
+import { Shortcuts } from "../views/Shortcuts";
+
+// Settings Page
+import { Settings } from "../views/Settings";
+
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
@@ -251,10 +260,10 @@ const routerConfig = [
         path: "payment-gateways",
         element: <PaymentGateways />,
       },
-      // Other Routes (Placeholders)
+      // Documents
       {
         path: "documents",
-        element: <Dashboard />, // Placeholder
+        element: <Documents />,
       },
       {
         path: "calendar",
@@ -279,7 +288,7 @@ const routerConfig = [
       },
       {
         path: "shortcuts",
-        element: <Dashboard />, // Placeholder
+        element: <Shortcuts />,
       },
       {
         path: "help",
@@ -287,7 +296,7 @@ const routerConfig = [
       },
       {
         path: "settings",
-        element: <Dashboard />, // Placeholder
+        element: <Settings />,
       },
     ],
   },
