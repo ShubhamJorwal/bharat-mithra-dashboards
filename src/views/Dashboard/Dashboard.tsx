@@ -31,6 +31,14 @@ import {
   HiOutlineStatusOnline,
   HiOutlineChat,
   HiOutlineInformationCircle,
+  HiOutlineStar,
+  HiOutlineFolder,
+  HiOutlineExclamationCircle,
+  HiOutlineBell,
+  HiOutlineOfficeBuilding,
+  HiOutlineEye,
+  HiOutlineMap,
+  HiOutlineSpeakerphone,
 } from 'react-icons/hi';
 import './Dashboard.scss';
 
@@ -111,6 +119,69 @@ interface LoginHistoryItem {
   network: string;
 }
 
+interface RevenueMonth {
+  month: string;
+  revenue: number;
+  target: number;
+}
+
+interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  applicationsHandled: number;
+  avgProcessingTime: string;
+  rating: number;
+  status: 'online' | 'offline' | 'busy';
+}
+
+interface UpcomingEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  type: 'meeting' | 'deadline' | 'training' | 'maintenance';
+  priority: 'high' | 'medium' | 'low';
+}
+
+interface RecentDocument {
+  id: string;
+  name: string;
+  type: string;
+  uploadedBy: string;
+  date: string;
+  size: string;
+}
+
+interface PendingApproval {
+  id: string;
+  title: string;
+  applicant: string;
+  type: string;
+  submittedDate: string;
+  urgency: 'urgent' | 'normal' | 'low';
+  amount?: string;
+}
+
+interface TopDistrict {
+  name: string;
+  state: string;
+  applications: number;
+  revenue: number;
+  growth: number;
+  rank: number;
+}
+
+interface Announcement {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: 'update' | 'alert' | 'info' | 'achievement';
+  isNew: boolean;
+}
+
 // ─── Component ─────────────────────────────────────────────
 
 const Dashboard = () => {
@@ -129,6 +200,13 @@ const Dashboard = () => {
   const [paymentOverview, setPaymentOverview] = useState<PaymentOverview[]>([]);
   const [pipeline, setPipeline] = useState<PipelineStage[]>([]);
   const [loginHistory, setLoginHistory] = useState<LoginHistoryItem[]>([]);
+  const [revenueData, setRevenueData] = useState<RevenueMonth[]>([]);
+  const [staffLeaderboard, setStaffLeaderboard] = useState<StaffMember[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
+  const [recentDocuments, setRecentDocuments] = useState<RecentDocument[]>([]);
+  const [pendingApprovals, setPendingApprovals] = useState<PendingApproval[]>([]);
+  const [topDistricts, setTopDistricts] = useState<TopDistrict[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(true);
 
@@ -170,7 +248,6 @@ const Dashboard = () => {
           { state: 'Uttar Pradesh', stateCode: 'UP', applications: 8456, completed: 7654, revenue: 2536800, successRate: 90.5 },
         ]);
 
-        // Document / Print Services Overview
         setDocumentServices([
           { name: 'Caste Certificate', todayCount: 12, allTimeCount: 28456, status: 'active' },
           { name: 'Income Certificate', todayCount: 8, allTimeCount: 21342, status: 'active' },
@@ -184,7 +261,6 @@ const Dashboard = () => {
           { name: 'Voter ID Card', todayCount: 0, allTimeCount: 3456, status: 'low' },
         ]);
 
-        // Digital / Online Services Overview
         setDigitalServices([
           { name: 'Instant PAN', todayCount: 15, allTimeCount: 32456, status: 'active' },
           { name: 'PAN Correction', todayCount: 3, allTimeCount: 8765, status: 'moderate' },
@@ -198,7 +274,6 @@ const Dashboard = () => {
           { name: 'TDS Return', todayCount: 0, allTimeCount: 2345, status: 'inactive' },
         ]);
 
-        // Payment / Business Overview
         setPaymentOverview([
           {
             id: '1', name: 'Service Fees Collected', icon: 'fees',
@@ -221,7 +296,6 @@ const Dashboard = () => {
           },
         ]);
 
-        // Application Pipeline
         setPipeline([
           { label: 'Draft', count: 456, color: '#94a3b8' },
           { label: 'Submitted', count: 1234, color: '#3b82f6' },
@@ -231,7 +305,6 @@ const Dashboard = () => {
           { label: 'Completed', count: 74521, color: '#059669' },
         ]);
 
-        // Login History
         setLoginHistory([
           { id: '1', dateTime: '10-Feb-2026 07:07:54', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '104.23.175.195', network: '175.195' },
           { id: '2', dateTime: '10-Feb-2026 07:06:12', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '172.71.81.131', network: '81.131' },
@@ -243,6 +316,75 @@ const Dashboard = () => {
           { id: '8', dateTime: '03-Feb-2026 11:05:08', deviceOS: 'Windows 10', browser: 'Chrome 109.0.0.0', location: 'Hyderabad', ip: '172.70.92.222', network: '92.222' },
           { id: '9', dateTime: '02-Feb-2026 11:47:38', deviceOS: 'Windows 8.1', browser: 'Firefox 115.0', location: 'Chennai', ip: '172.71.210.161', network: '210.161' },
           { id: '10', dateTime: '31-Jan-2026 03:37:51', deviceOS: 'Linux', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '104.23.168.37', network: '168.37' },
+        ]);
+
+        // Revenue Analytics (monthly)
+        setRevenueData([
+          { month: 'Jul', revenue: 28500000, target: 30000000 },
+          { month: 'Aug', revenue: 32100000, target: 31000000 },
+          { month: 'Sep', revenue: 29800000, target: 32000000 },
+          { month: 'Oct', revenue: 35600000, target: 33000000 },
+          { month: 'Nov', revenue: 38200000, target: 35000000 },
+          { month: 'Dec', revenue: 33400000, target: 36000000 },
+          { month: 'Jan', revenue: 40100000, target: 38000000 },
+          { month: 'Feb', revenue: 42800000, target: 40000000 },
+        ]);
+
+        // Staff Leaderboard
+        setStaffLeaderboard([
+          { id: '1', name: 'Rajesh Verma', role: 'Senior Clerk', department: 'Revenue', applicationsHandled: 1245, avgProcessingTime: '1.8 days', rating: 4.9, status: 'online' },
+          { id: '2', name: 'Sunita Devi', role: 'District Officer', department: 'Land Records', applicationsHandled: 1102, avgProcessingTime: '2.1 days', rating: 4.8, status: 'online' },
+          { id: '3', name: 'Arvind Kumar', role: 'Tehsildar', department: 'Civil Services', applicationsHandled: 987, avgProcessingTime: '2.4 days', rating: 4.7, status: 'busy' },
+          { id: '4', name: 'Meena Sharma', role: 'Assistant', department: 'Certificates', applicationsHandled: 876, avgProcessingTime: '1.6 days', rating: 4.6, status: 'online' },
+          { id: '5', name: 'Pankaj Singh', role: 'Inspector', department: 'Verification', applicationsHandled: 823, avgProcessingTime: '3.1 days', rating: 4.5, status: 'offline' },
+        ]);
+
+        // Upcoming Events
+        setUpcomingEvents([
+          { id: '1', title: 'District Collectors Meeting', date: '12 Feb', time: '10:00 AM', type: 'meeting', priority: 'high' },
+          { id: '2', title: 'Q4 Report Submission Deadline', date: '15 Feb', time: '5:00 PM', type: 'deadline', priority: 'high' },
+          { id: '3', title: 'Staff Training - New Portal', date: '18 Feb', time: '2:00 PM', type: 'training', priority: 'medium' },
+          { id: '4', title: 'System Maintenance Window', date: '20 Feb', time: '11:00 PM', type: 'maintenance', priority: 'medium' },
+          { id: '5', title: 'Budget Review Meeting', date: '22 Feb', time: '11:00 AM', type: 'meeting', priority: 'low' },
+        ]);
+
+        // Recent Documents
+        setRecentDocuments([
+          { id: '1', name: 'Revenue Report Q4 2025.pdf', type: 'pdf', uploadedBy: 'Admin', date: '10 Feb 2026', size: '2.4 MB' },
+          { id: '2', name: 'Staff Performance Metrics.xlsx', type: 'spreadsheet', uploadedBy: 'HR Dept', date: '09 Feb 2026', size: '1.1 MB' },
+          { id: '3', name: 'Citizen Feedback Analysis.pdf', type: 'pdf', uploadedBy: 'Quality Team', date: '08 Feb 2026', size: '3.7 MB' },
+          { id: '4', name: 'Infrastructure Upgrade Plan.docx', type: 'document', uploadedBy: 'IT Dept', date: '07 Feb 2026', size: '856 KB' },
+          { id: '5', name: 'District Boundary Maps.png', type: 'image', uploadedBy: 'Geo Team', date: '06 Feb 2026', size: '5.2 MB' },
+        ]);
+
+        // Pending Approvals
+        setPendingApprovals([
+          { id: '1', title: 'OBC Certificate Request', applicant: 'Ramesh Yadav', type: 'Certificate', submittedDate: '10 Feb', urgency: 'urgent', amount: '₹ 300' },
+          { id: '2', title: 'GST Registration', applicant: 'Sundar Enterprises', type: 'Business', submittedDate: '09 Feb', urgency: 'urgent', amount: '₹ 1,500' },
+          { id: '3', title: 'Land Mutation Request', applicant: 'Anil Gupta', type: 'Land Record', submittedDate: '08 Feb', urgency: 'normal', amount: '₹ 500' },
+          { id: '4', title: 'Building Plan Approval', applicant: 'Sharma Constructions', type: 'Property', submittedDate: '07 Feb', urgency: 'normal', amount: '₹ 5,000' },
+          { id: '5', title: 'Water Connection', applicant: 'Priya Nagar Society', type: 'Utility', submittedDate: '06 Feb', urgency: 'low', amount: '₹ 800' },
+          { id: '6', title: 'Shop License Renewal', applicant: 'Kiran General Store', type: 'License', submittedDate: '05 Feb', urgency: 'low', amount: '₹ 1,200' },
+        ]);
+
+        // Top Districts
+        setTopDistricts([
+          { name: 'Pune', state: 'Maharashtra', applications: 4567, revenue: 1370100, growth: 14.2, rank: 1 },
+          { name: 'Bengaluru Urban', state: 'Karnataka', applications: 4234, revenue: 1270200, growth: 12.8, rank: 2 },
+          { name: 'Ahmedabad', state: 'Gujarat', applications: 3987, revenue: 1196100, growth: 11.5, rank: 3 },
+          { name: 'Chennai', state: 'Tamil Nadu', applications: 3654, revenue: 1096200, growth: 9.3, rank: 4 },
+          { name: 'Lucknow', state: 'Uttar Pradesh', applications: 3421, revenue: 1026300, growth: 7.8, rank: 5 },
+          { name: 'Jaipur', state: 'Rajasthan', applications: 3198, revenue: 959400, growth: 10.1, rank: 6 },
+          { name: 'Hyderabad', state: 'Telangana', applications: 3045, revenue: 913500, growth: 13.6, rank: 7 },
+          { name: 'Mumbai', state: 'Maharashtra', applications: 2987, revenue: 896100, growth: 6.4, rank: 8 },
+        ]);
+
+        // Announcements
+        setAnnouncements([
+          { id: '1', title: 'New Digital Signature Service Launched', description: 'DSC service is now available for all citizens across 28 states.', date: '10 Feb 2026', type: 'update', isNew: true },
+          { id: '2', title: 'System Maintenance Scheduled', description: 'Planned maintenance on Feb 20, 11 PM - 3 AM. Services may be unavailable.', date: '09 Feb 2026', type: 'alert', isNew: true },
+          { id: '3', title: '85,000+ Applications Milestone', description: 'We have crossed 85,000 total processed applications. Great teamwork!', date: '08 Feb 2026', type: 'achievement', isNew: false },
+          { id: '4', title: 'Updated Data Privacy Guidelines', description: 'New privacy guidelines effective from March 1, 2026. Please review.', date: '06 Feb 2026', type: 'info', isNew: false },
         ]);
 
       } catch (error) {
@@ -282,6 +424,46 @@ const Dashboard = () => {
       rejected: 'danger', in_progress: 'info',
     };
     return map[status] || 'default';
+  };
+
+  const getEventColor = (type: string) => {
+    const map: Record<string, string> = {
+      meeting: '#3b82f6', deadline: '#ef4444', training: '#8b5cf6', maintenance: '#f59e0b',
+    };
+    return map[type] || '#6b7280';
+  };
+
+  const getAnnouncementIcon = (type: string) => {
+    switch (type) {
+      case 'update': return <HiOutlineLightningBolt />;
+      case 'alert': return <HiOutlineExclamationCircle />;
+      case 'achievement': return <HiOutlineStar />;
+      case 'info': return <HiOutlineInformationCircle />;
+      default: return <HiOutlineBell />;
+    }
+  };
+
+  const getAnnouncementColor = (type: string) => {
+    const map: Record<string, string> = {
+      update: '#3b82f6', alert: '#ef4444', achievement: '#f59e0b', info: '#6366f1',
+    };
+    return map[type] || '#6b7280';
+  };
+
+  const getDocIcon = (type: string) => {
+    switch (type) {
+      case 'pdf': return <HiOutlineDocumentText />;
+      case 'spreadsheet': return <HiOutlineChartBar />;
+      case 'image': return <HiOutlineEye />;
+      default: return <HiOutlineFolder />;
+    }
+  };
+
+  const getDocColor = (type: string) => {
+    const map: Record<string, string> = {
+      pdf: '#ef4444', spreadsheet: '#22c55e', document: '#3b82f6', image: '#8b5cf6',
+    };
+    return map[type] || '#6b7280';
   };
 
   // ─── Primary Stat Cards Config ─────────────────────────────
@@ -354,6 +536,7 @@ const Dashboard = () => {
   }
 
   const totalPipeline = pipeline.reduce((sum, s) => sum + s.count, 0);
+  const maxRevenue = Math.max(...revenueData.map(r => Math.max(r.revenue, r.target)));
 
   // ─── Render ────────────────────────────────────────────────
 
@@ -395,9 +578,30 @@ const Dashboard = () => {
         </div>
       </header>
 
+      {/* ─── Announcements Ticker ─────────────────────────────── */}
+      <div className="bm-announcements-ticker">
+        <div className="bm-announcements-label">
+          <HiOutlineSpeakerphone />
+          <span>Updates</span>
+        </div>
+        <div className="bm-announcements-scroll">
+          {announcements.map((a) => (
+            <div key={a.id} className="bm-announcement-item" style={{ '--ann-color': getAnnouncementColor(a.type) } as React.CSSProperties}>
+              <span className="bm-announcement-icon" style={{ color: getAnnouncementColor(a.type) }}>
+                {getAnnouncementIcon(a.type)}
+              </span>
+              <span className="bm-announcement-text">
+                <strong>{a.title}</strong> — {a.description}
+              </span>
+              {a.isNew && <span className="bm-announcement-new">NEW</span>}
+              <span className="bm-announcement-date">{a.date}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ─── Wallet + Stats Row ─────────────────────────────── */}
       <div className="bm-wallet-stats-row">
-        {/* Wallet Summary Card */}
         <div className="bm-wallet-summary-card">
           <div className="bm-wallet-summary-header">
             <div className="bm-wallet-summary-icon">
@@ -419,7 +623,6 @@ const Dashboard = () => {
           <button className="bm-wallet-add-btn">+ Add Money</button>
         </div>
 
-        {/* Existing Stat Cards */}
         {primaryStats.map((stat, index) => (
           <div key={index} className={`bm-stat-card bm-stat-card--${stat.color}`} style={{ background: stat.gradient }}>
             <div className="bm-stat-header">
@@ -506,9 +709,68 @@ const Dashboard = () => {
         </div>
       </section>
 
+      {/* ─── Revenue Analytics ────────────────────────────────── */}
+      <section className="bm-card bm-revenue-card">
+        <div className="bm-card-header">
+          <h2 className="bm-card-title">Revenue Analytics (8 Months)</h2>
+          <div className="bm-revenue-legend">
+            <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: 'var(--color-primary)' }}></span> Revenue</span>
+            <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: '#94a3b8' }}></span> Target</span>
+          </div>
+        </div>
+        <div className="bm-revenue-chart">
+          <div className="bm-revenue-y-axis">
+            <span>₹4.5Cr</span>
+            <span>₹3.0Cr</span>
+            <span>₹1.5Cr</span>
+            <span>₹0</span>
+          </div>
+          <div className="bm-revenue-bars">
+            {revenueData.map((item, idx) => (
+              <div key={idx} className="bm-revenue-bar-group">
+                <div className="bm-revenue-bar-container">
+                  <div
+                    className="bm-revenue-bar bm-revenue-bar--actual"
+                    style={{ height: `${(item.revenue / maxRevenue) * 100}%` }}
+                    title={formatCurrency(item.revenue)}
+                  >
+                    <span className="bm-revenue-bar-tooltip">{formatCurrency(item.revenue)}</span>
+                  </div>
+                  <div
+                    className="bm-revenue-bar bm-revenue-bar--target"
+                    style={{ height: `${(item.target / maxRevenue) * 100}%` }}
+                    title={`Target: ${formatCurrency(item.target)}`}
+                  ></div>
+                </div>
+                <span className="bm-revenue-bar-label">{item.month}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bm-revenue-summary">
+          <div className="bm-revenue-summary-item">
+            <span className="bm-revenue-summary-label">Total Revenue (8 months)</span>
+            <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0))}</span>
+          </div>
+          <div className="bm-revenue-summary-item">
+            <span className="bm-revenue-summary-label">Average Monthly</span>
+            <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.length)}</span>
+          </div>
+          <div className="bm-revenue-summary-item">
+            <span className="bm-revenue-summary-label">Best Month</span>
+            <span className="bm-revenue-summary-value success">{formatCurrency(Math.max(...revenueData.map(r => r.revenue)))}</span>
+          </div>
+          <div className="bm-revenue-summary-item">
+            <span className="bm-revenue-summary-label">Target Achievement</span>
+            <span className="bm-revenue-summary-value success">
+              {((revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.reduce((s, r) => s + r.target, 0)) * 100).toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Service Overview Tables ────────────────────────── */}
       <div className="bm-overview-row">
-        {/* Document Services */}
         <section className="bm-card">
           <div className="bm-card-header">
             <h2 className="bm-card-title">Document Services Overview</h2>
@@ -532,7 +794,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Digital Services */}
         <section className="bm-card">
           <div className="bm-card-header">
             <h2 className="bm-card-title">Digital Services Overview</h2>
@@ -586,6 +847,69 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
+
+      {/* ─── Pending Approvals + Upcoming Events Row ─────────── */}
+      <div className="bm-overview-row">
+        {/* Pending Approvals */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Pending Approvals</h2>
+            <span className="bm-badge-count">{pendingApprovals.length}</span>
+          </div>
+          <div className="bm-approvals-list">
+            {pendingApprovals.map((item) => (
+              <div key={item.id} className="bm-approval-item">
+                <div className="bm-approval-left">
+                  <div className={`bm-approval-urgency bm-approval-urgency--${item.urgency}`}>
+                    <HiOutlineExclamationCircle />
+                  </div>
+                  <div className="bm-approval-info">
+                    <span className="bm-approval-title">{item.title}</span>
+                    <span className="bm-approval-meta">
+                      <span>{item.applicant}</span>
+                      <span className="bm-approval-type">{item.type}</span>
+                    </span>
+                  </div>
+                </div>
+                <div className="bm-approval-right">
+                  {item.amount && <span className="bm-approval-amount">{item.amount}</span>}
+                  <span className="bm-approval-date">{item.submittedDate}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="bm-card-footer">
+            <button className="bm-link-btn" onClick={() => navigate('/applications')}>View all pending <HiOutlineArrowSmRight /></button>
+          </div>
+        </section>
+
+        {/* Upcoming Events */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Upcoming Events</h2>
+            <button className="bm-link-btn" onClick={() => navigate('/calendar')}>Calendar <HiOutlineArrowSmRight /></button>
+          </div>
+          <div className="bm-events-list">
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="bm-event-item">
+                <div className="bm-event-date-badge" style={{ background: `${getEventColor(event.type)}12`, color: getEventColor(event.type) }}>
+                  <span className="bm-event-day">{event.date.split(' ')[0]}</span>
+                  <span className="bm-event-month">{event.date.split(' ')[1]}</span>
+                </div>
+                <div className="bm-event-info">
+                  <span className="bm-event-title">{event.title}</span>
+                  <span className="bm-event-meta">
+                    <HiOutlineClock />
+                    <span>{event.time}</span>
+                    <span className={`bm-event-priority bm-event-priority--${event.priority}`}>{event.priority}</span>
+                  </span>
+                </div>
+                <div className="bm-event-type-dot" style={{ background: getEventColor(event.type) }}></div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* ─── Main Content Grid ──────────────────────────────── */}
       <div className="bm-content-main">
@@ -741,6 +1065,125 @@ const Dashboard = () => {
           </section>
         </div>
       </div>
+
+      {/* ─── Staff Leaderboard + Recent Documents Row ─────────── */}
+      <div className="bm-overview-row">
+        {/* Staff Performance Leaderboard */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Staff Performance Leaderboard</h2>
+            <button className="bm-link-btn" onClick={() => navigate('/staff')}>View all <HiOutlineArrowSmRight /></button>
+          </div>
+          <div className="bm-leaderboard">
+            {staffLeaderboard.map((staff, idx) => (
+              <div key={staff.id} className="bm-leaderboard-item">
+                <div className="bm-leaderboard-rank">
+                  {idx < 3 ? (
+                    <span className={`bm-leaderboard-medal bm-leaderboard-medal--${idx + 1}`}>
+                      {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                    </span>
+                  ) : (
+                    <span className="bm-leaderboard-num">#{idx + 1}</span>
+                  )}
+                </div>
+                <div className="bm-leaderboard-avatar">
+                  {staff.name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div className="bm-leaderboard-info">
+                  <span className="bm-leaderboard-name">
+                    {staff.name}
+                    <span className={`bm-staff-status-dot bm-staff-status-dot--${staff.status}`}></span>
+                  </span>
+                  <span className="bm-leaderboard-role">{staff.role} · {staff.department}</span>
+                </div>
+                <div className="bm-leaderboard-stats">
+                  <div className="bm-leaderboard-stat">
+                    <span className="bm-leaderboard-stat-value">{staff.applicationsHandled.toLocaleString('en-IN')}</span>
+                    <span className="bm-leaderboard-stat-label">Handled</span>
+                  </div>
+                  <div className="bm-leaderboard-stat">
+                    <span className="bm-leaderboard-stat-value">{staff.avgProcessingTime}</span>
+                    <span className="bm-leaderboard-stat-label">Avg Time</span>
+                  </div>
+                  <div className="bm-leaderboard-stat">
+                    <span className="bm-leaderboard-stat-value bm-leaderboard-rating">
+                      <HiOutlineStar /> {staff.rating}
+                    </span>
+                    <span className="bm-leaderboard-stat-label">Rating</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Recent Documents */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Recent Documents</h2>
+            <button className="bm-link-btn" onClick={() => navigate('/documents')}>View all <HiOutlineArrowSmRight /></button>
+          </div>
+          <div className="bm-recent-docs">
+            {recentDocuments.map((doc) => (
+              <div key={doc.id} className="bm-doc-item">
+                <div className="bm-doc-icon" style={{ color: getDocColor(doc.type), background: `${getDocColor(doc.type)}12` }}>
+                  {getDocIcon(doc.type)}
+                </div>
+                <div className="bm-doc-info">
+                  <span className="bm-doc-name">{doc.name}</span>
+                  <span className="bm-doc-meta">{doc.uploadedBy} · {doc.date}</span>
+                </div>
+                <span className="bm-doc-size">{doc.size}</span>
+              </div>
+            ))}
+          </div>
+          <div className="bm-card-footer">
+            <button className="bm-link-btn" onClick={() => navigate('/documents')}>
+              <HiOutlineCloudUpload /> Upload document
+            </button>
+          </div>
+        </section>
+      </div>
+
+      {/* ─── Top Districts ────────────────────────────────────── */}
+      <section className="bm-card">
+        <div className="bm-card-header">
+          <h2 className="bm-card-title">Top Performing Districts</h2>
+          <button className="bm-link-btn" onClick={() => navigate('/geography')}>
+            <HiOutlineMap /> View Geography <HiOutlineArrowSmRight />
+          </button>
+        </div>
+        <div className="bm-districts-grid">
+          {topDistricts.map((district) => (
+            <div key={district.name} className="bm-district-card">
+              <div className="bm-district-rank-badge">#{district.rank}</div>
+              <div className="bm-district-header">
+                <div className="bm-district-icon">
+                  <HiOutlineOfficeBuilding />
+                </div>
+                <div>
+                  <span className="bm-district-name">{district.name}</span>
+                  <span className="bm-district-state">{district.state}</span>
+                </div>
+              </div>
+              <div className="bm-district-stats">
+                <div className="bm-district-stat">
+                  <span className="bm-district-stat-label">Applications</span>
+                  <span className="bm-district-stat-value">{district.applications.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="bm-district-stat">
+                  <span className="bm-district-stat-label">Revenue</span>
+                  <span className="bm-district-stat-value">{formatCurrency(district.revenue)}</span>
+                </div>
+              </div>
+              <div className="bm-district-growth">
+                <HiOutlineTrendingUp />
+                <span>+{district.growth}% growth</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* ─── Login History ──────────────────────────────────── */}
       <section className="bm-card bm-login-history-card">
