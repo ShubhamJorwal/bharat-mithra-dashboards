@@ -34,6 +34,9 @@ import { WalletStatements } from "../views/Statements";
 // Payment Gateways Pages
 import { PaymentGateways } from "../views/PaymentGateways";
 
+// Finance Page
+import { Finance } from "../views/Finance";
+
 // Staff Pages
 import { StaffList } from "../views/Staff";
 
@@ -45,6 +48,12 @@ import { Shortcuts } from "../views/Shortcuts";
 
 // Settings Page
 import { Settings } from "../views/Settings";
+
+// Telecaller Page
+import { Telecaller } from "../views/Telecaller";
+
+// Support Dashboard Page
+import { SupportDashboard } from "../views/SupportDashboard";
 
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
@@ -260,6 +269,11 @@ const routerConfig = [
         path: "payment-gateways",
         element: <PaymentGateways />,
       },
+      // Finance
+      {
+        path: "finance",
+        element: <Finance />,
+      },
       // Documents
       {
         path: "documents",
@@ -277,6 +291,16 @@ const routerConfig = [
       {
         path: "staff",
         element: <StaffList />,
+      },
+      // Telecaller
+      {
+        path: "telecaller",
+        element: <Telecaller />,
+      },
+      // Support Dashboard
+      {
+        path: "support",
+        element: <SupportDashboard />,
       },
       {
         path: "notifications",

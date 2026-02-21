@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineDocumentText,
@@ -39,6 +39,15 @@ import {
   HiOutlineEye,
   HiOutlineMap,
   HiOutlineSpeakerphone,
+  HiOutlineUserGroup,
+  HiOutlineBadgeCheck,
+  HiOutlineChartPie,
+  HiOutlineViewGrid,
+  HiOutlineFingerPrint,
+  HiOutlineDatabase,
+  HiOutlineServer,
+  HiOutlineWifi,
+  HiOutlinePaperAirplane,
 } from 'react-icons/hi';
 import './Dashboard.scss';
 
@@ -182,6 +191,30 @@ interface Announcement {
   isNew: boolean;
 }
 
+interface GrievanceData {
+  category: string;
+  total: number;
+  resolved: number;
+  pending: number;
+  color: string;
+}
+
+interface CitizenFeedback {
+  id: string;
+  name: string;
+  service: string;
+  rating: number;
+  comment: string;
+  date: string;
+  sentiment: 'positive' | 'neutral' | 'negative';
+}
+
+interface HourlyTraffic {
+  hour: string;
+  visitors: number;
+  applications: number;
+}
+
 // ─── Component ─────────────────────────────────────────────
 
 const Dashboard = () => {
@@ -207,8 +240,13 @@ const Dashboard = () => {
   const [pendingApprovals, setPendingApprovals] = useState<PendingApproval[]>([]);
   const [topDistricts, setTopDistricts] = useState<TopDistrict[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [grievances, setGrievances] = useState<GrievanceData[]>([]);
+  const [citizenFeedback, setCitizenFeedback] = useState<CitizenFeedback[]>([]);
+  const [hourlyTraffic, setHourlyTraffic] = useState<HourlyTraffic[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(true);
+  const [activeOverviewTab, setActiveOverviewTab] = useState<'document' | 'digital'>('document');
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -230,6 +268,8 @@ const Dashboard = () => {
           { id: '4', title: 'Birth Certificate', status: 'in_progress', date: '2 hours ago', type: 'application', applicant: 'Sneha Reddy' },
           { id: '5', title: 'Marriage Certificate', status: 'rejected', date: '3 hours ago', type: 'application', applicant: 'Vikram Singh' },
           { id: '6', title: 'Land Record Update', status: 'pending', date: '4 hours ago', type: 'application', applicant: 'Meera Joshi' },
+          { id: '7', title: 'PAN Card Application', status: 'approved', date: '5 hours ago', type: 'application', applicant: 'Suresh Patil' },
+          { id: '8', title: 'GST Registration', status: 'in_progress', date: '6 hours ago', type: 'application', applicant: 'Deepak Enterprises' },
         ]);
 
         setTopServices([
@@ -238,6 +278,7 @@ const Dashboard = () => {
           { id: '3', name: 'Domicile Certificate', applications: 15678, revenue: 4703400, trend: 5.6 },
           { id: '4', name: 'Birth Certificate', applications: 12456, revenue: 3736800, trend: -2.1 },
           { id: '5', name: 'Marriage Certificate', applications: 7890, revenue: 2367000, trend: 15.3 },
+          { id: '6', name: 'Instant PAN', applications: 32456, revenue: 9736800, trend: 22.1 },
         ]);
 
         setStatePerformance([
@@ -278,12 +319,18 @@ const Dashboard = () => {
           {
             id: '1', name: 'Service Fees Collected', icon: 'fees',
             amount: 4285600, color: '#3b82f6',
-            subStats: [{ label: 'Commission Earned', value: '₹ 42,856' }],
+            subStats: [
+              { label: 'Commission Earned', value: '₹ 42,856' },
+              { label: 'Transactions', value: '1,284' },
+            ],
           },
           {
             id: '2', name: 'Online Payments', icon: 'online',
             amount: 3256000, color: '#10b981',
-            subStats: [{ label: 'Gateway Charges', value: '₹ 6,512' }],
+            subStats: [
+              { label: 'Gateway Charges', value: '₹ 6,512' },
+              { label: 'Success Rate', value: '98.2%' },
+            ],
           },
           {
             id: '3', name: 'Money Transfer', icon: 'transfer',
@@ -292,6 +339,14 @@ const Dashboard = () => {
               { label: 'Pending', value: '₹ 25,000' },
               { label: 'Failed', value: '₹ 5,000' },
               { label: 'Refund', value: '₹ 2,500' },
+            ],
+          },
+          {
+            id: '4', name: 'Stamp Duty & Fees', icon: 'stamp',
+            amount: 876500, color: '#8b5cf6',
+            subStats: [
+              { label: 'Processed', value: '342' },
+              { label: 'Avg Amount', value: '₹ 2,562' },
             ],
           },
         ]);
@@ -306,19 +361,16 @@ const Dashboard = () => {
         ]);
 
         setLoginHistory([
-          { id: '1', dateTime: '10-Feb-2026 07:07:54', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '104.23.175.195', network: '175.195' },
-          { id: '2', dateTime: '10-Feb-2026 07:06:12', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '172.71.81.131', network: '81.131' },
-          { id: '3', dateTime: '10-Feb-2026 04:40:09', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '172.69.166.71', network: '166.71' },
-          { id: '4', dateTime: '09-Feb-2026 02:41:18', deviceOS: 'Windows 10', browser: 'Chrome 109.0.0.0', location: 'Mumbai', ip: '104.23.170.99', network: '170.99' },
-          { id: '5', dateTime: '09-Feb-2026 01:59:12', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '172.71.182.66', network: '182.66' },
-          { id: '6', dateTime: '06-Feb-2026 05:39:19', deviceOS: 'Windows 10', browser: 'Chrome 109.0.0.0', location: 'Delhi', ip: '172.71.95.82', network: '95.82' },
-          { id: '7', dateTime: '05-Feb-2026 12:28:24', deviceOS: 'Windows 10', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '104.23.166.153', network: '166.153' },
-          { id: '8', dateTime: '03-Feb-2026 11:05:08', deviceOS: 'Windows 10', browser: 'Chrome 109.0.0.0', location: 'Hyderabad', ip: '172.70.92.222', network: '92.222' },
-          { id: '9', dateTime: '02-Feb-2026 11:47:38', deviceOS: 'Windows 8.1', browser: 'Firefox 115.0', location: 'Chennai', ip: '172.71.210.161', network: '210.161' },
-          { id: '10', dateTime: '31-Jan-2026 03:37:51', deviceOS: 'Linux', browser: 'Chrome 144.0.0.0', location: 'Bengaluru', ip: '104.23.168.37', network: '168.37' },
+          { id: '1', dateTime: '21-Feb-2026 09:12:34', deviceOS: 'Windows 11', browser: 'Chrome 145.0.0.0', location: 'Bengaluru', ip: '104.23.175.195', network: '175.195' },
+          { id: '2', dateTime: '21-Feb-2026 07:06:12', deviceOS: 'Windows 11', browser: 'Chrome 145.0.0.0', location: 'Bengaluru', ip: '172.71.81.131', network: '81.131' },
+          { id: '3', dateTime: '20-Feb-2026 18:40:09', deviceOS: 'macOS 15.3', browser: 'Safari 19.0', location: 'Mumbai', ip: '172.69.166.71', network: '166.71' },
+          { id: '4', dateTime: '20-Feb-2026 14:41:18', deviceOS: 'Windows 10', browser: 'Edge 131.0.0.0', location: 'Delhi', ip: '104.23.170.99', network: '170.99' },
+          { id: '5', dateTime: '19-Feb-2026 11:59:12', deviceOS: 'Android 15', browser: 'Chrome Mobile', location: 'Hyderabad', ip: '172.71.182.66', network: '182.66' },
+          { id: '6', dateTime: '19-Feb-2026 05:39:19', deviceOS: 'Windows 11', browser: 'Chrome 145.0.0.0', location: 'Chennai', ip: '172.71.95.82', network: '95.82' },
+          { id: '7', dateTime: '18-Feb-2026 12:28:24', deviceOS: 'iOS 19.1', browser: 'Safari Mobile', location: 'Pune', ip: '104.23.166.153', network: '166.153' },
+          { id: '8', dateTime: '17-Feb-2026 11:05:08', deviceOS: 'Windows 10', browser: 'Firefox 134.0', location: 'Jaipur', ip: '172.70.92.222', network: '92.222' },
         ]);
 
-        // Revenue Analytics (monthly)
         setRevenueData([
           { month: 'Jul', revenue: 28500000, target: 30000000 },
           { month: 'Aug', revenue: 32100000, target: 31000000 },
@@ -330,7 +382,6 @@ const Dashboard = () => {
           { month: 'Feb', revenue: 42800000, target: 40000000 },
         ]);
 
-        // Staff Leaderboard
         setStaffLeaderboard([
           { id: '1', name: 'Rajesh Verma', role: 'Senior Clerk', department: 'Revenue', applicationsHandled: 1245, avgProcessingTime: '1.8 days', rating: 4.9, status: 'online' },
           { id: '2', name: 'Sunita Devi', role: 'District Officer', department: 'Land Records', applicationsHandled: 1102, avgProcessingTime: '2.1 days', rating: 4.8, status: 'online' },
@@ -339,35 +390,31 @@ const Dashboard = () => {
           { id: '5', name: 'Pankaj Singh', role: 'Inspector', department: 'Verification', applicationsHandled: 823, avgProcessingTime: '3.1 days', rating: 4.5, status: 'offline' },
         ]);
 
-        // Upcoming Events
         setUpcomingEvents([
-          { id: '1', title: 'District Collectors Meeting', date: '12 Feb', time: '10:00 AM', type: 'meeting', priority: 'high' },
-          { id: '2', title: 'Q4 Report Submission Deadline', date: '15 Feb', time: '5:00 PM', type: 'deadline', priority: 'high' },
-          { id: '3', title: 'Staff Training - New Portal', date: '18 Feb', time: '2:00 PM', type: 'training', priority: 'medium' },
-          { id: '4', title: 'System Maintenance Window', date: '20 Feb', time: '11:00 PM', type: 'maintenance', priority: 'medium' },
-          { id: '5', title: 'Budget Review Meeting', date: '22 Feb', time: '11:00 AM', type: 'meeting', priority: 'low' },
+          { id: '1', title: 'District Collectors Meeting', date: '22 Feb', time: '10:00 AM', type: 'meeting', priority: 'high' },
+          { id: '2', title: 'Q4 Report Submission Deadline', date: '25 Feb', time: '5:00 PM', type: 'deadline', priority: 'high' },
+          { id: '3', title: 'Staff Training - New Portal', date: '28 Feb', time: '2:00 PM', type: 'training', priority: 'medium' },
+          { id: '4', title: 'System Maintenance Window', date: '01 Mar', time: '11:00 PM', type: 'maintenance', priority: 'medium' },
+          { id: '5', title: 'Budget Review Meeting', date: '03 Mar', time: '11:00 AM', type: 'meeting', priority: 'low' },
         ]);
 
-        // Recent Documents
         setRecentDocuments([
-          { id: '1', name: 'Revenue Report Q4 2025.pdf', type: 'pdf', uploadedBy: 'Admin', date: '10 Feb 2026', size: '2.4 MB' },
-          { id: '2', name: 'Staff Performance Metrics.xlsx', type: 'spreadsheet', uploadedBy: 'HR Dept', date: '09 Feb 2026', size: '1.1 MB' },
-          { id: '3', name: 'Citizen Feedback Analysis.pdf', type: 'pdf', uploadedBy: 'Quality Team', date: '08 Feb 2026', size: '3.7 MB' },
-          { id: '4', name: 'Infrastructure Upgrade Plan.docx', type: 'document', uploadedBy: 'IT Dept', date: '07 Feb 2026', size: '856 KB' },
-          { id: '5', name: 'District Boundary Maps.png', type: 'image', uploadedBy: 'Geo Team', date: '06 Feb 2026', size: '5.2 MB' },
+          { id: '1', name: 'Revenue Report Q4 2025.pdf', type: 'pdf', uploadedBy: 'Admin', date: '21 Feb 2026', size: '2.4 MB' },
+          { id: '2', name: 'Staff Performance Metrics.xlsx', type: 'spreadsheet', uploadedBy: 'HR Dept', date: '20 Feb 2026', size: '1.1 MB' },
+          { id: '3', name: 'Citizen Feedback Analysis.pdf', type: 'pdf', uploadedBy: 'Quality Team', date: '19 Feb 2026', size: '3.7 MB' },
+          { id: '4', name: 'Infrastructure Upgrade Plan.docx', type: 'document', uploadedBy: 'IT Dept', date: '18 Feb 2026', size: '856 KB' },
+          { id: '5', name: 'District Boundary Maps.png', type: 'image', uploadedBy: 'Geo Team', date: '17 Feb 2026', size: '5.2 MB' },
         ]);
 
-        // Pending Approvals
         setPendingApprovals([
-          { id: '1', title: 'OBC Certificate Request', applicant: 'Ramesh Yadav', type: 'Certificate', submittedDate: '10 Feb', urgency: 'urgent', amount: '₹ 300' },
-          { id: '2', title: 'GST Registration', applicant: 'Sundar Enterprises', type: 'Business', submittedDate: '09 Feb', urgency: 'urgent', amount: '₹ 1,500' },
-          { id: '3', title: 'Land Mutation Request', applicant: 'Anil Gupta', type: 'Land Record', submittedDate: '08 Feb', urgency: 'normal', amount: '₹ 500' },
-          { id: '4', title: 'Building Plan Approval', applicant: 'Sharma Constructions', type: 'Property', submittedDate: '07 Feb', urgency: 'normal', amount: '₹ 5,000' },
-          { id: '5', title: 'Water Connection', applicant: 'Priya Nagar Society', type: 'Utility', submittedDate: '06 Feb', urgency: 'low', amount: '₹ 800' },
-          { id: '6', title: 'Shop License Renewal', applicant: 'Kiran General Store', type: 'License', submittedDate: '05 Feb', urgency: 'low', amount: '₹ 1,200' },
+          { id: '1', title: 'OBC Certificate Request', applicant: 'Ramesh Yadav', type: 'Certificate', submittedDate: '21 Feb', urgency: 'urgent', amount: '₹ 300' },
+          { id: '2', title: 'GST Registration', applicant: 'Sundar Enterprises', type: 'Business', submittedDate: '20 Feb', urgency: 'urgent', amount: '₹ 1,500' },
+          { id: '3', title: 'Land Mutation Request', applicant: 'Anil Gupta', type: 'Land Record', submittedDate: '19 Feb', urgency: 'normal', amount: '₹ 500' },
+          { id: '4', title: 'Building Plan Approval', applicant: 'Sharma Constructions', type: 'Property', submittedDate: '18 Feb', urgency: 'normal', amount: '₹ 5,000' },
+          { id: '5', title: 'Water Connection', applicant: 'Priya Nagar Society', type: 'Utility', submittedDate: '17 Feb', urgency: 'low', amount: '₹ 800' },
+          { id: '6', title: 'Shop License Renewal', applicant: 'Kiran General Store', type: 'License', submittedDate: '16 Feb', urgency: 'low', amount: '₹ 1,200' },
         ]);
 
-        // Top Districts
         setTopDistricts([
           { name: 'Pune', state: 'Maharashtra', applications: 4567, revenue: 1370100, growth: 14.2, rank: 1 },
           { name: 'Bengaluru Urban', state: 'Karnataka', applications: 4234, revenue: 1270200, growth: 12.8, rank: 2 },
@@ -379,12 +426,44 @@ const Dashboard = () => {
           { name: 'Mumbai', state: 'Maharashtra', applications: 2987, revenue: 896100, growth: 6.4, rank: 8 },
         ]);
 
-        // Announcements
         setAnnouncements([
-          { id: '1', title: 'New Digital Signature Service Launched', description: 'DSC service is now available for all citizens across 28 states.', date: '10 Feb 2026', type: 'update', isNew: true },
-          { id: '2', title: 'System Maintenance Scheduled', description: 'Planned maintenance on Feb 20, 11 PM - 3 AM. Services may be unavailable.', date: '09 Feb 2026', type: 'alert', isNew: true },
-          { id: '3', title: '85,000+ Applications Milestone', description: 'We have crossed 85,000 total processed applications. Great teamwork!', date: '08 Feb 2026', type: 'achievement', isNew: false },
-          { id: '4', title: 'Updated Data Privacy Guidelines', description: 'New privacy guidelines effective from March 1, 2026. Please review.', date: '06 Feb 2026', type: 'info', isNew: false },
+          { id: '1', title: 'New Digital Signature Service Launched', description: 'DSC service is now available for all citizens across 28 states.', date: '21 Feb 2026', type: 'update', isNew: true },
+          { id: '2', title: 'System Maintenance Scheduled', description: 'Planned maintenance on Mar 1, 11 PM - 3 AM. Services may be unavailable.', date: '20 Feb 2026', type: 'alert', isNew: true },
+          { id: '3', title: '85,000+ Applications Milestone', description: 'We have crossed 85,000 total processed applications. Great teamwork!', date: '19 Feb 2026', type: 'achievement', isNew: false },
+          { id: '4', title: 'Updated Data Privacy Guidelines', description: 'New privacy guidelines effective from March 1, 2026. Please review.', date: '17 Feb 2026', type: 'info', isNew: false },
+        ]);
+
+        setGrievances([
+          { category: 'Service Delays', total: 342, resolved: 278, pending: 64, color: '#ef4444' },
+          { category: 'Technical Issues', total: 186, resolved: 156, pending: 30, color: '#f59e0b' },
+          { category: 'Staff Behaviour', total: 78, resolved: 72, pending: 6, color: '#8b5cf6' },
+          { category: 'Payment Issues', total: 124, resolved: 110, pending: 14, color: '#3b82f6' },
+          { category: 'Document Errors', total: 95, resolved: 82, pending: 13, color: '#06b6d4' },
+        ]);
+
+        setCitizenFeedback([
+          { id: '1', name: 'Ananya Verma', service: 'Caste Certificate', rating: 5, comment: 'Very fast processing. Got my certificate in 2 days!', date: '21 Feb', sentiment: 'positive' },
+          { id: '2', name: 'Mohit Agarwal', service: 'PAN Card', rating: 4, comment: 'Good service but the portal could be faster.', date: '20 Feb', sentiment: 'positive' },
+          { id: '3', name: 'Rekha Devi', service: 'Income Certificate', rating: 3, comment: 'Average experience, took longer than expected.', date: '19 Feb', sentiment: 'neutral' },
+          { id: '4', name: 'Sanjay Patel', service: 'Land Record', rating: 2, comment: 'Had to visit the office multiple times for corrections.', date: '18 Feb', sentiment: 'negative' },
+          { id: '5', name: 'Kavita Singh', service: 'GST Registration', rating: 5, comment: 'Seamless process! Highly recommended.', date: '17 Feb', sentiment: 'positive' },
+        ]);
+
+        setHourlyTraffic([
+          { hour: '6AM', visitors: 120, applications: 8 },
+          { hour: '7AM', visitors: 340, applications: 22 },
+          { hour: '8AM', visitors: 780, applications: 56 },
+          { hour: '9AM', visitors: 1250, applications: 98 },
+          { hour: '10AM', visitors: 1680, applications: 142 },
+          { hour: '11AM', visitors: 1890, applications: 165 },
+          { hour: '12PM', visitors: 1420, applications: 118 },
+          { hour: '1PM', visitors: 1100, applications: 85 },
+          { hour: '2PM', visitors: 1560, applications: 134 },
+          { hour: '3PM', visitors: 1780, applications: 156 },
+          { hour: '4PM', visitors: 1650, applications: 138 },
+          { hour: '5PM', visitors: 1200, applications: 92 },
+          { hour: '6PM', visitors: 680, applications: 45 },
+          { hour: '7PM', visitors: 340, applications: 18 },
         ]);
 
       } catch (error) {
@@ -466,6 +545,35 @@ const Dashboard = () => {
     return map[type] || '#6b7280';
   };
 
+  const getSentimentColor = (sentiment: string) => {
+    const map: Record<string, string> = { positive: '#22c55e', neutral: '#f59e0b', negative: '#ef4444' };
+    return map[sentiment] || '#94a3b8';
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1500);
+  };
+
+  // ─── Computed Values ─────────────────────────────────────
+
+  const citizenSatisfaction = useMemo(() => {
+    if (!citizenFeedback.length) return { avg: 0, positive: 0, neutral: 0, negative: 0 };
+    const avg = citizenFeedback.reduce((s, f) => s + f.rating, 0) / citizenFeedback.length;
+    const positive = citizenFeedback.filter(f => f.sentiment === 'positive').length;
+    const neutral = citizenFeedback.filter(f => f.sentiment === 'neutral').length;
+    const negative = citizenFeedback.filter(f => f.sentiment === 'negative').length;
+    return { avg, positive, neutral, negative };
+  }, [citizenFeedback]);
+
+  const totalGrievances = useMemo(() => {
+    return grievances.reduce((s, g) => s + g.total, 0);
+  }, [grievances]);
+
+  const resolvedGrievances = useMemo(() => {
+    return grievances.reduce((s, g) => s + g.resolved, 0);
+  }, [grievances]);
+
   // ─── Primary Stat Cards Config ─────────────────────────────
 
   const primaryStats = [
@@ -516,10 +624,12 @@ const Dashboard = () => {
   ];
 
   const quickActions = [
-    { icon: HiOutlineDocumentText, label: 'New Application', desc: 'Start a new service request', path: '/applications/new' },
-    { icon: HiOutlineCloudUpload, label: 'Upload Document', desc: 'Add documents to existing', path: '/documents' },
-    { icon: HiOutlineSearch, label: 'Track Status', desc: 'Check application progress', path: '/applications' },
-    { icon: HiOutlineSupport, label: 'Get Support', desc: 'Contact helpdesk', path: '/help' },
+    { icon: HiOutlineDocumentText, label: 'New Application', desc: 'Start a new service request', path: '/applications/new', color: '#3b82f6' },
+    { icon: HiOutlineCloudUpload, label: 'Upload Document', desc: 'Add documents to existing', path: '/documents', color: '#8b5cf6' },
+    { icon: HiOutlineSearch, label: 'Track Status', desc: 'Check application progress', path: '/applications', color: '#10b981' },
+    { icon: HiOutlineSupport, label: 'Get Support', desc: 'Contact helpdesk', path: '/support', color: '#f59e0b' },
+    { icon: HiOutlineUserGroup, label: 'Manage Staff', desc: 'View team & performance', path: '/staff', color: '#ec4899' },
+    { icon: HiOutlineChartPie, label: 'View Reports', desc: 'Analytics & insights', path: '/finance', color: '#06b6d4' },
   ];
 
   // ─── Loading State ─────────────────────────────────────────
@@ -537,6 +647,10 @@ const Dashboard = () => {
 
   const totalPipeline = pipeline.reduce((sum, s) => sum + s.count, 0);
   const maxRevenue = Math.max(...revenueData.map(r => Math.max(r.revenue, r.target)));
+  const maxTraffic = Math.max(...hourlyTraffic.map(t => t.visitors));
+  const activeServices = documentServices.concat(digitalServices);
+  const currentActiveOverview = activeOverviewTab === 'document' ? documentServices : digitalServices;
+  const todayTotalServices = activeServices.reduce((s, svc) => s + svc.todayCount, 0);
 
   // ─── Render ────────────────────────────────────────────────
 
@@ -555,8 +669,11 @@ const Dashboard = () => {
       {/* ─── Header ─────────────────────────────────────────── */}
       <header className="bm-page-header">
         <div className="bm-header-left">
-          <h1 className="bm-page-title">Dashboard</h1>
-          <p className="bm-page-desc">Business Overview</p>
+          <div className="bm-header-greeting">
+            <h1 className="bm-page-title">Dashboard</h1>
+            <span className="bm-header-wave">Welcome back, Admin</span>
+          </div>
+          <p className="bm-page-desc">Here's what's happening across your services today</p>
         </div>
         <div className="bm-header-right">
           <div className="bm-today-badge">
@@ -567,9 +684,9 @@ const Dashboard = () => {
             <span className="bm-live-dot"></span>
             <span>System Live</span>
           </div>
-          <button className="bm-btn bm-btn-secondary" onClick={() => window.location.reload()}>
+          <button className={`bm-btn bm-btn-secondary ${refreshing ? 'bm-btn-spinning' : ''}`} onClick={handleRefresh}>
             <HiOutlineRefresh />
-            <span>Refresh</span>
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
           </button>
           <button className="bm-btn bm-btn-primary">
             <HiOutlineDownload />
@@ -683,6 +800,15 @@ const Dashboard = () => {
           </div>
           <span className="bm-today-change negative">-3%</span>
         </div>
+        <div className="bm-today-divider"></div>
+        <div className="bm-today-item">
+          <HiOutlineViewGrid className="bm-today-icon" />
+          <div className="bm-today-info">
+            <span className="bm-today-value">{todayTotalServices}</span>
+            <span className="bm-today-label">Services Used</span>
+          </div>
+          <span className="bm-today-change positive">+5%</span>
+        </div>
       </div>
 
       {/* ─── Application Pipeline ───────────────────────────── */}
@@ -709,119 +835,154 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* ─── Revenue Analytics ────────────────────────────────── */}
-      <section className="bm-card bm-revenue-card">
-        <div className="bm-card-header">
-          <h2 className="bm-card-title">Revenue Analytics (8 Months)</h2>
-          <div className="bm-revenue-legend">
-            <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: 'var(--color-primary)' }}></span> Revenue</span>
-            <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: '#94a3b8' }}></span> Target</span>
-          </div>
-        </div>
-        <div className="bm-revenue-chart">
-          <div className="bm-revenue-y-axis">
-            <span>₹4.5Cr</span>
-            <span>₹3.0Cr</span>
-            <span>₹1.5Cr</span>
-            <span>₹0</span>
-          </div>
-          <div className="bm-revenue-bars">
-            {revenueData.map((item, idx) => (
-              <div key={idx} className="bm-revenue-bar-group">
-                <div className="bm-revenue-bar-container">
-                  <div
-                    className="bm-revenue-bar bm-revenue-bar--actual"
-                    style={{ height: `${(item.revenue / maxRevenue) * 100}%` }}
-                    title={formatCurrency(item.revenue)}
-                  >
-                    <span className="bm-revenue-bar-tooltip">{formatCurrency(item.revenue)}</span>
-                  </div>
-                  <div
-                    className="bm-revenue-bar bm-revenue-bar--target"
-                    style={{ height: `${(item.target / maxRevenue) * 100}%` }}
-                    title={`Target: ${formatCurrency(item.target)}`}
-                  ></div>
-                </div>
-                <span className="bm-revenue-bar-label">{item.month}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="bm-revenue-summary">
-          <div className="bm-revenue-summary-item">
-            <span className="bm-revenue-summary-label">Total Revenue (8 months)</span>
-            <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0))}</span>
-          </div>
-          <div className="bm-revenue-summary-item">
-            <span className="bm-revenue-summary-label">Average Monthly</span>
-            <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.length)}</span>
-          </div>
-          <div className="bm-revenue-summary-item">
-            <span className="bm-revenue-summary-label">Best Month</span>
-            <span className="bm-revenue-summary-value success">{formatCurrency(Math.max(...revenueData.map(r => r.revenue)))}</span>
-          </div>
-          <div className="bm-revenue-summary-item">
-            <span className="bm-revenue-summary-label">Target Achievement</span>
-            <span className="bm-revenue-summary-value success">
-              {((revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.reduce((s, r) => s + r.target, 0)) * 100).toFixed(1)}%
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Service Overview Tables ────────────────────────── */}
+      {/* ─── Revenue Analytics + Traffic Heatmap Row ──────────── */}
       <div className="bm-overview-row">
-        <section className="bm-card">
+        <section className="bm-card bm-revenue-card">
           <div className="bm-card-header">
-            <h2 className="bm-card-title">Document Services Overview</h2>
-            <button className="bm-link-btn"><HiOutlineDotsHorizontal /></button>
-          </div>
-          <div className="bm-overview-table">
-            <div className="bm-overview-table-header">
-              <span></span>
-              <span>Service</span>
-              <span>Today</span>
-              <span>All Time</span>
+            <h2 className="bm-card-title">Revenue Analytics (8 Months)</h2>
+            <div className="bm-revenue-legend">
+              <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: 'var(--color-primary)' }}></span> Revenue</span>
+              <span className="bm-revenue-legend-item"><span className="bm-legend-dot" style={{ background: '#94a3b8' }}></span> Target</span>
             </div>
-            {documentServices.map((item, idx) => (
-              <div key={idx} className="bm-overview-table-row">
-                <span className="bm-overview-dot" style={{ background: getStatusDot(item.status) }}></span>
-                <span className="bm-overview-name">{item.name}</span>
-                <span className="bm-overview-count">{item.todayCount}</span>
-                <span className="bm-overview-count">{item.allTimeCount.toLocaleString('en-IN')}</span>
-              </div>
-            ))}
+          </div>
+          <div className="bm-revenue-chart">
+            <div className="bm-revenue-y-axis">
+              <span>₹4.5Cr</span>
+              <span>₹3.0Cr</span>
+              <span>₹1.5Cr</span>
+              <span>₹0</span>
+            </div>
+            <div className="bm-revenue-bars">
+              {revenueData.map((item, idx) => (
+                <div key={idx} className="bm-revenue-bar-group">
+                  <div className="bm-revenue-bar-container">
+                    <div
+                      className="bm-revenue-bar bm-revenue-bar--actual"
+                      style={{ height: `${(item.revenue / maxRevenue) * 100}%` }}
+                      title={formatCurrency(item.revenue)}
+                    >
+                      <span className="bm-revenue-bar-tooltip">{formatCurrency(item.revenue)}</span>
+                    </div>
+                    <div
+                      className="bm-revenue-bar bm-revenue-bar--target"
+                      style={{ height: `${(item.target / maxRevenue) * 100}%` }}
+                      title={`Target: ${formatCurrency(item.target)}`}
+                    ></div>
+                  </div>
+                  <span className="bm-revenue-bar-label">{item.month}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bm-revenue-summary">
+            <div className="bm-revenue-summary-item">
+              <span className="bm-revenue-summary-label">Total Revenue</span>
+              <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0))}</span>
+            </div>
+            <div className="bm-revenue-summary-item">
+              <span className="bm-revenue-summary-label">Average Monthly</span>
+              <span className="bm-revenue-summary-value">{formatCurrency(revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.length)}</span>
+            </div>
+            <div className="bm-revenue-summary-item">
+              <span className="bm-revenue-summary-label">Best Month</span>
+              <span className="bm-revenue-summary-value success">{formatCurrency(Math.max(...revenueData.map(r => r.revenue)))}</span>
+            </div>
+            <div className="bm-revenue-summary-item">
+              <span className="bm-revenue-summary-label">Target Achievement</span>
+              <span className="bm-revenue-summary-value success">
+                {((revenueData.reduce((s, r) => s + r.revenue, 0) / revenueData.reduce((s, r) => s + r.target, 0)) * 100).toFixed(1)}%
+              </span>
+            </div>
           </div>
         </section>
 
+        {/* Today's Traffic Pattern */}
         <section className="bm-card">
           <div className="bm-card-header">
-            <h2 className="bm-card-title">Digital Services Overview</h2>
-            <button className="bm-link-btn"><HiOutlineDotsHorizontal /></button>
-          </div>
-          <div className="bm-overview-table">
-            <div className="bm-overview-table-header">
-              <span></span>
-              <span>Service</span>
-              <span>Today</span>
-              <span>All Time</span>
+            <h2 className="bm-card-title">Today's Traffic Pattern</h2>
+            <div className="bm-traffic-legend">
+              <span className="bm-traffic-legend-item"><span className="bm-legend-dot" style={{ background: '#3b82f6' }}></span> Visitors</span>
+              <span className="bm-traffic-legend-item"><span className="bm-legend-dot" style={{ background: '#10b981' }}></span> Applications</span>
             </div>
-            {digitalServices.map((item, idx) => (
-              <div key={idx} className="bm-overview-table-row">
-                <span className="bm-overview-dot" style={{ background: getStatusDot(item.status) }}></span>
-                <span className="bm-overview-name">{item.name}</span>
-                <span className="bm-overview-count">{item.todayCount}</span>
-                <span className="bm-overview-count">{item.allTimeCount.toLocaleString('en-IN')}</span>
+          </div>
+          <div className="bm-traffic-chart">
+            {hourlyTraffic.map((item, idx) => (
+              <div key={idx} className="bm-traffic-bar-group">
+                <div className="bm-traffic-bar-container">
+                  <div className="bm-traffic-bar bm-traffic-bar--visitors"
+                    style={{ height: `${(item.visitors / maxTraffic) * 100}%` }}
+                    title={`${item.visitors} visitors`}
+                  ></div>
+                  <div className="bm-traffic-bar bm-traffic-bar--apps"
+                    style={{ height: `${(item.applications / maxTraffic) * 100}%` }}
+                    title={`${item.applications} applications`}
+                  ></div>
+                </div>
+                <span className="bm-traffic-hour">{item.hour}</span>
               </div>
             ))}
+          </div>
+          <div className="bm-traffic-summary">
+            <div className="bm-traffic-stat">
+              <span className="bm-traffic-stat-value">{hourlyTraffic.reduce((s, t) => s + t.visitors, 0).toLocaleString('en-IN')}</span>
+              <span className="bm-traffic-stat-label">Total Visitors</span>
+            </div>
+            <div className="bm-traffic-stat">
+              <span className="bm-traffic-stat-value">{hourlyTraffic.reduce((s, t) => s + t.applications, 0).toLocaleString('en-IN')}</span>
+              <span className="bm-traffic-stat-label">Total Applications</span>
+            </div>
+            <div className="bm-traffic-stat">
+              <span className="bm-traffic-stat-value">{hourlyTraffic.length > 0 ? hourlyTraffic.reduce((max, t) => t.visitors > max.visitors ? t : max, hourlyTraffic[0]).hour : '-'}</span>
+              <span className="bm-traffic-stat-label">Peak Hour</span>
+            </div>
           </div>
         </section>
       </div>
 
+      {/* ─── Service Overview (Tabbed) ────────────────────────── */}
+      <section className="bm-card">
+        <div className="bm-card-header">
+          <h2 className="bm-card-title">Service Overview</h2>
+          <div className="bm-overview-tabs">
+            <button
+              className={`bm-overview-tab ${activeOverviewTab === 'document' ? 'active' : ''}`}
+              onClick={() => setActiveOverviewTab('document')}
+            >
+              <HiOutlineDocumentText /> Document ({documentServices.reduce((s, d) => s + d.todayCount, 0)} today)
+            </button>
+            <button
+              className={`bm-overview-tab ${activeOverviewTab === 'digital' ? 'active' : ''}`}
+              onClick={() => setActiveOverviewTab('digital')}
+            >
+              <HiOutlineFingerPrint /> Digital ({digitalServices.reduce((s, d) => s + d.todayCount, 0)} today)
+            </button>
+          </div>
+        </div>
+        <div className="bm-overview-table">
+          <div className="bm-overview-table-header">
+            <span></span>
+            <span>Service</span>
+            <span>Today</span>
+            <span>All Time</span>
+          </div>
+          {currentActiveOverview.map((item, idx) => (
+            <div key={idx} className="bm-overview-table-row">
+              <span className="bm-overview-dot" style={{ background: getStatusDot(item.status) }}></span>
+              <span className="bm-overview-name">{item.name}</span>
+              <span className={`bm-overview-count ${item.todayCount > 0 ? 'bm-overview-count--active' : ''}`}>
+                {item.todayCount > 0 ? item.todayCount : '—'}
+              </span>
+              <span className="bm-overview-count">{item.allTimeCount.toLocaleString('en-IN')}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ─── Payment / Business Overview ────────────────────── */}
       <section className="bm-card">
         <div className="bm-card-header">
-          <h2 className="bm-card-title">Today's Business Overview (Payments)</h2>
+          <h2 className="bm-card-title">Business Overview (Payments)</h2>
+          <button className="bm-link-btn" onClick={() => navigate('/finance')}>Finance <HiOutlineArrowSmRight /></button>
         </div>
         <div className="bm-payment-overview">
           {paymentOverview.map((payment) => (
@@ -830,6 +991,7 @@ const Dashboard = () => {
                 {payment.icon === 'fees' && <HiOutlineCreditCard />}
                 {payment.icon === 'online' && <HiOutlineCash />}
                 {payment.icon === 'transfer' && <HiOutlineReceiptRefund />}
+                {payment.icon === 'stamp' && <HiOutlineBadgeCheck />}
               </div>
               <div className="bm-payment-info">
                 <span className="bm-payment-name">{payment.name}</span>
@@ -847,6 +1009,108 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
+
+      {/* ─── Grievance Tracker + Citizen Satisfaction Row ─────── */}
+      <div className="bm-overview-row">
+        {/* Grievance Tracker */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Grievance Tracker</h2>
+            <div className="bm-grievance-summary-badge">
+              <span className="bm-grievance-resolved">{resolvedGrievances} resolved</span>
+              <span className="bm-grievance-total">/ {totalGrievances} total</span>
+            </div>
+          </div>
+          <div className="bm-grievance-overview">
+            <div className="bm-grievance-donut">
+              <div className="bm-donut-center">
+                <span className="bm-donut-value">{((resolvedGrievances / totalGrievances) * 100).toFixed(0)}%</span>
+                <span className="bm-donut-label">Resolved</span>
+              </div>
+              <svg viewBox="0 0 100 100" className="bm-donut-svg">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-border-light)" strokeWidth="8" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" strokeWidth="8"
+                  strokeDasharray={`${(resolvedGrievances / totalGrievances) * 251.2} 251.2`}
+                  strokeLinecap="round" transform="rotate(-90 50 50)" />
+              </svg>
+            </div>
+            <div className="bm-grievance-categories">
+              {grievances.map((g, idx) => (
+                <div key={idx} className="bm-grievance-category">
+                  <div className="bm-grievance-cat-header">
+                    <span className="bm-grievance-cat-dot" style={{ background: g.color }}></span>
+                    <span className="bm-grievance-cat-name">{g.category}</span>
+                    <span className="bm-grievance-cat-count">{g.pending} pending</span>
+                  </div>
+                  <div className="bm-grievance-bar-wrap">
+                    <div className="bm-grievance-bar" style={{ width: `${(g.resolved / g.total) * 100}%`, background: g.color }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Citizen Satisfaction */}
+        <section className="bm-card">
+          <div className="bm-card-header">
+            <h2 className="bm-card-title">Citizen Satisfaction</h2>
+            <div className="bm-satisfaction-score">
+              <HiOutlineStar className="bm-satisfaction-star" />
+              <span>{citizenSatisfaction.avg.toFixed(1)}/5</span>
+            </div>
+          </div>
+          <div className="bm-satisfaction-overview">
+            <div className="bm-satisfaction-bars">
+              <div className="bm-satisfaction-bar-item">
+                <span className="bm-satisfaction-bar-label positive">Positive</span>
+                <div className="bm-satisfaction-bar-wrap">
+                  <div className="bm-satisfaction-bar" style={{ width: `${(citizenSatisfaction.positive / citizenFeedback.length) * 100}%`, background: '#22c55e' }}></div>
+                </div>
+                <span className="bm-satisfaction-bar-count">{citizenSatisfaction.positive}</span>
+              </div>
+              <div className="bm-satisfaction-bar-item">
+                <span className="bm-satisfaction-bar-label neutral">Neutral</span>
+                <div className="bm-satisfaction-bar-wrap">
+                  <div className="bm-satisfaction-bar" style={{ width: `${(citizenSatisfaction.neutral / citizenFeedback.length) * 100}%`, background: '#f59e0b' }}></div>
+                </div>
+                <span className="bm-satisfaction-bar-count">{citizenSatisfaction.neutral}</span>
+              </div>
+              <div className="bm-satisfaction-bar-item">
+                <span className="bm-satisfaction-bar-label negative">Negative</span>
+                <div className="bm-satisfaction-bar-wrap">
+                  <div className="bm-satisfaction-bar" style={{ width: `${(citizenSatisfaction.negative / citizenFeedback.length) * 100}%`, background: '#ef4444' }}></div>
+                </div>
+                <span className="bm-satisfaction-bar-count">{citizenSatisfaction.negative}</span>
+              </div>
+            </div>
+          </div>
+          <div className="bm-feedback-list">
+            {citizenFeedback.slice(0, 4).map((fb) => (
+              <div key={fb.id} className="bm-feedback-item">
+                <div className="bm-feedback-avatar" style={{ background: getSentimentColor(fb.sentiment) }}>
+                  {fb.name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div className="bm-feedback-content">
+                  <div className="bm-feedback-header">
+                    <span className="bm-feedback-name">{fb.name}</span>
+                    <span className="bm-feedback-service">{fb.service}</span>
+                  </div>
+                  <p className="bm-feedback-comment">{fb.comment}</p>
+                  <div className="bm-feedback-meta">
+                    <span className="bm-feedback-stars">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <HiOutlineStar key={i} className={i < fb.rating ? 'filled' : ''} />
+                      ))}
+                    </span>
+                    <span className="bm-feedback-date">{fb.date}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* ─── Pending Approvals + Upcoming Events Row ─────────── */}
       <div className="bm-overview-row">
@@ -988,7 +1252,7 @@ const Dashboard = () => {
             <div className="bm-actions-grid">
               {quickActions.map((action, index) => (
                 <button key={index} className="bm-quick-action" onClick={() => navigate(action.path)}>
-                  <action.icon className="bm-action-icon" />
+                  <action.icon className="bm-action-icon" style={{ color: action.color, background: `${action.color}12` }} />
                   <div className="bm-action-content">
                     <span className="bm-action-label">{action.label}</span>
                     <span className="bm-action-desc">{action.desc}</span>
@@ -1027,6 +1291,7 @@ const Dashboard = () => {
           <section className="bm-card bm-support-card">
             <div className="bm-card-header">
               <h2 className="bm-card-title">Support Center</h2>
+              <button className="bm-link-btn" onClick={() => navigate('/support')}>Open <HiOutlineArrowSmRight /></button>
             </div>
             <div className="bm-support-content">
               <div className="bm-support-status">
@@ -1055,6 +1320,20 @@ const Dashboard = () => {
                 <div>
                   <span className="bm-support-info-title">WhatsApp</span>
                   <span className="bm-support-info-desc bm-support-phone">+91 XXXXX XXXXX</span>
+                </div>
+              </div>
+              <div className="bm-support-quick-stats">
+                <div className="bm-support-quick-stat">
+                  <span className="bm-support-quick-value">234</span>
+                  <span className="bm-support-quick-label">Open Tickets</span>
+                </div>
+                <div className="bm-support-quick-stat">
+                  <span className="bm-support-quick-value">45 min</span>
+                  <span className="bm-support-quick-label">Avg Response</span>
+                </div>
+                <div className="bm-support-quick-stat">
+                  <span className="bm-support-quick-value">96%</span>
+                  <span className="bm-support-quick-label">Resolution</span>
                 </div>
               </div>
               <div className="bm-support-note">
@@ -1233,6 +1512,10 @@ const Dashboard = () => {
       <section className="bm-card bm-card--compact">
         <div className="bm-card-header">
           <h2 className="bm-card-title">System Health</h2>
+          <div className="bm-system-health-status">
+            <span className="bm-health-pulse"></span>
+            <span>All Systems Operational</span>
+          </div>
         </div>
         <div className="bm-health-grid">
           <div className="bm-health-item">
@@ -1257,10 +1540,10 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="bm-health-item">
-            <HiOutlineChartBar className="bm-health-icon bm-health-icon--warning" />
+            <HiOutlineDatabase className="bm-health-icon bm-health-icon--success" />
             <div className="bm-health-info">
-              <span className="bm-health-label">Open Tickets</span>
-              <span className="bm-health-value">234</span>
+              <span className="bm-health-label">DB Connections</span>
+              <span className="bm-health-value">42/100</span>
             </div>
           </div>
           <div className="bm-health-item">
@@ -1271,10 +1554,31 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="bm-health-item">
-            <HiOutlineGlobe className="bm-health-icon bm-health-icon--success" />
+            <HiOutlineServer className="bm-health-icon bm-health-icon--success" />
             <div className="bm-health-info">
-              <span className="bm-health-label">DB Connections</span>
-              <span className="bm-health-value">42/100</span>
+              <span className="bm-health-label">Server Load</span>
+              <span className="bm-health-value">32%</span>
+            </div>
+          </div>
+          <div className="bm-health-item">
+            <HiOutlineWifi className="bm-health-icon bm-health-icon--success" />
+            <div className="bm-health-info">
+              <span className="bm-health-label">Bandwidth</span>
+              <span className="bm-health-value">4.2 Gbps</span>
+            </div>
+          </div>
+          <div className="bm-health-item">
+            <HiOutlineChartBar className="bm-health-icon bm-health-icon--warning" />
+            <div className="bm-health-info">
+              <span className="bm-health-label">Open Tickets</span>
+              <span className="bm-health-value">234</span>
+            </div>
+          </div>
+          <div className="bm-health-item">
+            <HiOutlinePaperAirplane className="bm-health-icon bm-health-icon--success" />
+            <div className="bm-health-info">
+              <span className="bm-health-label">SMS/Email Queue</span>
+              <span className="bm-health-value">128 pending</span>
             </div>
           </div>
         </div>

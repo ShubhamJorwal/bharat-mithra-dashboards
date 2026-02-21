@@ -19,6 +19,9 @@ import {
   HiOutlineGlobe,
   HiOutlineCash,
   HiOutlineCreditCard,
+  HiOutlineCurrencyRupee,
+  HiOutlinePhone,
+  HiOutlineSupport,
 } from 'react-icons/hi';
 import './Sidebar.scss';
 
@@ -114,11 +117,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       ]
     },
     { path: '/payment-gateways', icon: HiOutlineCreditCard, label: 'Payment Gateways', badge: null },
+    { path: '/finance', icon: HiOutlineCurrencyRupee, label: 'Finance', badge: null },
   ];
 
   const secondaryNavItems: NavItem[] = [
     { path: '/users', icon: HiOutlineUsers, label: 'Users', badge: null },
     { path: '/staff', icon: HiOutlineUsers, label: 'Staff Members', badge: null },
+    { path: '/telecaller', icon: HiOutlinePhone, label: 'Telecaller', badge: null },
+    { path: '/support', icon: HiOutlineSupport, label: 'Support', badge: null },
     { path: '/notifications', icon: HiOutlineBell, label: 'Notifications', badge: null },
     { path: '/files', icon: HiOutlineFolder, label: 'Files', badge: null },
   ];

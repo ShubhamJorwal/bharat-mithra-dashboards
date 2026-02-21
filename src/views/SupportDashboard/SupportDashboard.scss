@@ -1,0 +1,1427 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// ─── Container ────────────────────────────────────────────
+.sp-container {
+  padding: $spacing-lg;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+// ─── Header ───────────────────────────────────────────────
+.sp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-lg;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.sp-header-left {
+  .sp-title {
+    font-size: $font-2xl;
+    font-weight: $font-bold;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .sp-subtitle {
+    font-size: $font-sm;
+    color: var(--color-text-secondary);
+    margin: 2px 0 0;
+  }
+}
+
+.sp-header-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.sp-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: $radius-full;
+  background: #22c55e15;
+  color: #22c55e;
+  font-size: $font-xs;
+  font-weight: 600;
+  svg { font-size: 14px; }
+}
+
+// ─── Buttons ──────────────────────────────────────────────
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-fast;
+  svg { font-size: 15px; }
+}
+
+.sp-btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  &:hover { opacity: 0.9; }
+}
+
+.sp-btn-secondary {
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  &:hover { background: var(--color-background); }
+}
+
+.sp-btn-danger {
+  background: #ef4444;
+  color: #fff;
+  &:hover { opacity: 0.9; }
+}
+
+.sp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+  svg { font-size: 14px; }
+}
+
+.sp-icon-btn {
+  @include flex-center;
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-md;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  &:hover { background: var(--color-background); color: var(--color-text); }
+  &--danger:hover { background: #fef2f2; color: #ef4444; }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────
+.sp-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: $spacing-lg;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sp-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: $font-sm;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all $transition-fast;
+  svg { font-size: 16px; }
+  &:hover { color: var(--color-text); }
+  &.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+}
+
+// ─── Cards ────────────────────────────────────────────────
+.sp-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  backdrop-filter: blur(var(--glass-blur, 8px));
+}
+
+.sp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  h2 {
+    font-size: $font-base;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+}
+
+// ─── Stats Grid ───────────────────────────────────────────
+.sp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  @include md { grid-template-columns: repeat(3, 1fr); }
+  @include sm { grid-template-columns: repeat(2, 1fr); }
+}
+
+.sp-stat-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  &--open::before { background: #3b82f6; }
+  &--progress::before { background: #f59e0b; }
+  &--escalated::before { background: #ef4444; }
+  &--waiting::before { background: #8b5cf6; }
+  &--resolved::before { background: #22c55e; }
+  &--satisfaction::before { background: #f59e0b; }
+}
+
+.sp-stat-icon {
+  font-size: 20px;
+  color: var(--color-text-secondary);
+}
+
+.sp-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-stat-value {
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  color: var(--color-text);
+}
+
+.sp-stat-label {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+}
+
+// ─── Alert Banner ─────────────────────────────────────────
+.sp-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-lg;
+  color: #991b1b;
+  font-size: $font-sm;
+
+  svg {
+    font-size: 20px;
+    color: #ef4444;
+    flex-shrink: 0;
+  }
+
+  span { flex: 1; }
+}
+
+.sp-alert-btn {
+  padding: 5px 14px;
+  border-radius: $radius-md;
+  border: 1px solid #ef4444;
+  background: #ef4444;
+  color: #fff;
+  font-size: $font-xs;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover { opacity: 0.9; }
+}
+
+// ─── Overview Row ─────────────────────────────────────────
+.sp-overview-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  @include md { grid-template-columns: 1fr; }
+}
+
+// ─── Channel Distribution ─────────────────────────────────
+.sp-channel-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-channel-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: $radius-md;
+  border-left: 3px solid;
+  background: var(--color-background);
+}
+
+.sp-channel-icon {
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sp-channel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-channel-name {
+  display: block;
+  font-size: $font-sm;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+.sp-channel-count {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+}
+
+.sp-channel-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sp-channel-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+// ─── Category Breakdown ───────────────────────────────────
+.sp-category-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sp-category-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sp-category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sp-category-label {
+  font-size: $font-sm;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.sp-category-count {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: var(--color-text);
+  min-width: 24px;
+  text-align: right;
+}
+
+.sp-category-bar {
+  width: 80px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sp-category-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+// ─── Recent Tickets ───────────────────────────────────────
+.sp-recent-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sp-recent-ticket {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: background $transition-fast;
+  &:hover { background: var(--color-background); }
+}
+
+.sp-recent-ticket-priority {
+  width: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.sp-recent-ticket-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-recent-ticket-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.sp-recent-ticket-id {
+  font-size: $font-xs;
+  font-weight: 600;
+  color: var(--color-primary);
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.sp-recent-ticket-status {
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sp-recent-ticket-subject {
+  display: block;
+  font-size: $font-sm;
+  font-weight: 500;
+  color: var(--color-text);
+  @include text-truncate;
+}
+
+.sp-recent-ticket-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+}
+
+.sp-recent-ticket-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-transform: capitalize;
+  svg { font-size: 12px; }
+}
+
+// ─── Agent Workload ───────────────────────────────────────
+.sp-agent-workload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-agent-workload-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: $radius-md;
+  &:hover { background: var(--color-background); }
+}
+
+.sp-agent-workload-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-agent-avatar-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-background);
+  flex-shrink: 0;
+}
+
+.sp-agent-workload-info {
+  min-width: 0;
+}
+
+.sp-agent-workload-name {
+  display: block;
+  font-size: $font-sm;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sp-agent-workload-role {
+  display: block;
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+  @include text-truncate;
+}
+
+.sp-agent-workload-right {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.sp-agent-workload-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:last-child {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.sp-agent-workload-val {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: $font-sm;
+  font-weight: 700;
+  color: var(--color-text);
+  svg { font-size: 14px; }
+}
+
+// ─── Satisfaction ─────────────────────────────────────────
+.sp-satisfaction-avg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $font-sm;
+  font-weight: 700;
+  color: #f59e0b;
+  svg { font-size: 16px; }
+}
+
+.sp-satisfaction-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sp-satisfaction-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sp-satisfaction-label {
+  font-size: $font-sm;
+  color: var(--color-text);
+  min-width: 100px;
+}
+
+.sp-satisfaction-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sp-satisfaction-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width $transition-base;
+}
+
+.sp-satisfaction-count {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+  min-width: 60px;
+  text-align: right;
+}
+
+// ─── Toolbar ──────────────────────────────────────────────
+.sp-toolbar {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.sp-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 250px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-card-bg);
+  svg { color: var(--color-text-secondary); font-size: 16px; flex-shrink: 0; }
+  input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: $font-sm;
+    color: var(--color-text);
+    outline: none;
+    &::placeholder { color: var(--color-text-secondary); }
+  }
+}
+
+.sp-search-clear {
+  @include flex-center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: var(--color-border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.sp-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.sp-select {
+  padding: 7px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: $font-sm;
+  cursor: pointer;
+  outline: none;
+}
+
+.sp-select-full { width: 100%; }
+
+// ─── Table ────────────────────────────────────────────────
+.sp-table-wrapper {
+  overflow-x: auto;
+  @include custom-scrollbar;
+}
+
+.sp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-sm;
+
+  th {
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: $font-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid var(--color-border-light, var(--color-border));
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background $transition-fast;
+    &:hover { background: var(--color-background); }
+  }
+
+  .sp-row-critical {
+    background: #fef2f208;
+    &:hover { background: #fef2f215; }
+  }
+}
+
+.sp-ticket-id {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-weight: 600;
+  color: var(--color-primary) !important;
+}
+
+.sp-ticket-subject {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  span {
+    font-weight: 500;
+    @include text-truncate;
+    max-width: 300px;
+  }
+}
+
+.sp-ticket-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sp-tag {
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.sp-tag-more {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.sp-priority-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sp-channel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $font-xs;
+  font-weight: 600;
+  text-transform: capitalize;
+  svg { font-size: 14px; }
+}
+
+.sp-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: $radius-full;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.sp-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: sp-pulse 1.5s ease-in-out infinite;
+}
+
+.sp-response-time, .sp-created-at {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sp-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.sp-empty {
+  @include flex-center;
+  flex-direction: column;
+  gap: 8px;
+  padding: $spacing-2xl;
+  color: var(--color-text-secondary);
+  svg { font-size: 32px; }
+  p { font-size: $font-sm; }
+}
+
+// ─── Agents Grid ──────────────────────────────────────────
+.sp-agents-overview {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.sp-agents-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  span:last-child {
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+  }
+}
+
+.sp-agents-stat-val {
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  color: var(--color-text);
+}
+
+.sp-agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $spacing-md;
+}
+
+.sp-agent-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+}
+
+.sp-agent-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: $spacing-md;
+}
+
+.sp-agent-avatar-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-background);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sp-agent-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-card-bg);
+}
+
+.sp-agent-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-agent-card-name {
+  display: block;
+  font-size: $font-base;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sp-agent-card-role {
+  display: block;
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+}
+
+.sp-agent-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: $font-sm;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.sp-agent-specializations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: $spacing-md;
+}
+
+.sp-agent-spec-tag {
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.sp-agent-card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.sp-agent-card-stat {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: $radius-sm;
+  background: var(--color-background);
+  span:last-child {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.sp-agent-card-stat-val {
+  font-size: $font-base;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+// ─── Knowledge Base ───────────────────────────────────────
+.sp-knowledge-header {
+  margin-bottom: $spacing-lg;
+}
+
+.sp-knowledge-stats {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.sp-knowledge-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  span:last-child {
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+  }
+}
+
+.sp-knowledge-stat-val {
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  color: var(--color-text);
+}
+
+.sp-knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: $spacing-md;
+}
+
+.sp-knowledge-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  transition: all $transition-fast;
+  cursor: pointer;
+  &:hover { box-shadow: $shadow-md; transform: translateY(-1px); }
+}
+
+.sp-knowledge-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  svg {
+    font-size: 20px;
+    color: var(--color-primary);
+  }
+}
+
+.sp-knowledge-category {
+  font-size: $font-xs;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.sp-knowledge-title {
+  font-size: $font-sm;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 $spacing-md;
+  line-height: 1.4;
+}
+
+.sp-knowledge-meta {
+  display: flex;
+  gap: 12px;
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+  span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    svg { font-size: 13px; }
+  }
+}
+
+// ─── Analytics ────────────────────────────────────────────
+.sp-analytics-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  @include md { grid-template-columns: repeat(2, 1fr); }
+  @include sm { grid-template-columns: 1fr; }
+}
+
+.sp-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: $spacing-lg;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+}
+
+.sp-kpi-icon {
+  @include flex-center;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-lg;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sp-kpi-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-kpi-value {
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  color: var(--color-text);
+}
+
+.sp-kpi-label {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+}
+
+.sp-kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: $font-xs;
+  font-weight: 600;
+  svg { font-size: 14px; }
+  &.positive { color: #22c55e; }
+  &.negative { color: #ef4444; }
+}
+
+// ─── Status / Priority Breakdown ──────────────────────────
+.sp-status-breakdown, .sp-priority-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sp-status-row, .sp-priority-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sp-status-dot, .sp-priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sp-status-name, .sp-priority-name {
+  font-size: $font-sm;
+  color: var(--color-text);
+  min-width: 80px;
+  text-transform: capitalize;
+}
+
+.sp-status-bar, .sp-priority-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sp-status-bar-fill, .sp-priority-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width $transition-base;
+}
+
+.sp-status-count, .sp-priority-count {
+  font-size: $font-xs;
+  color: var(--color-text-secondary);
+  min-width: 60px;
+  text-align: right;
+}
+
+// ─── Agent Performance ────────────────────────────────────
+.sp-rank-badge {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.sp-agent-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sp-agent-avatar-xs {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text);
+  background: var(--color-background);
+  flex-shrink: 0;
+}
+
+.sp-sat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: #f59e0b;
+  svg { font-size: 14px; }
+}
+
+// ─── Category Badge ───────────────────────────────────────
+.sp-category-badge {
+  font-size: $font-xs;
+  font-weight: 600;
+}
+
+// ─── Modal ────────────────────────────────────────────────
+.sp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-lg;
+  animation: sp-fadeIn 0.2s ease;
+}
+
+.sp-modal {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: sp-slideUp 0.3s ease;
+  @include custom-scrollbar;
+
+  &--sm { max-width: 500px; }
+
+  &--confirm {
+    max-width: 400px;
+    padding: $spacing-2xl;
+    text-align: center;
+    h3 { margin: $spacing-md 0 8px; color: var(--color-text); }
+    p { font-size: $font-sm; color: var(--color-text-secondary); margin: 0 0 $spacing-lg; }
+  }
+}
+
+.sp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid var(--color-border);
+  h2 {
+    font-size: $font-lg;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+}
+
+.sp-modal-close {
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-background);
+  border-radius: $radius-md;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 18px;
+  &:hover { background: var(--color-border); }
+}
+
+.sp-modal-body {
+  padding: $spacing-lg;
+}
+
+.sp-confirm-icon {
+  @include flex-center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #ef4444;
+  font-size: 28px;
+  margin: 0 auto;
+}
+
+.sp-confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+// ─── Ticket Detail ────────────────────────────────────────
+.sp-ticket-detail-top {
+  margin-bottom: $spacing-lg;
+  h3 {
+    font-size: $font-lg;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 $spacing-sm;
+  }
+}
+
+.sp-ticket-detail-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sp-ticket-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+
+  @include sm { grid-template-columns: 1fr; }
+}
+
+.sp-detail-section {
+  h4 {
+    font-size: $font-sm;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 $spacing-sm;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.sp-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: $font-sm;
+  span:first-child { color: var(--color-text-secondary); }
+  span:last-child { font-weight: 500; color: var(--color-text); }
+}
+
+.sp-ticket-detail-desc {
+  margin-bottom: $spacing-lg;
+  h4 {
+    font-size: $font-sm;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 6px;
+  }
+  p {
+    font-size: $font-sm;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    padding: $spacing-md;
+    background: var(--color-background);
+    border-radius: $radius-md;
+  }
+}
+
+.sp-ticket-detail-tags {
+  h4 {
+    font-size: $font-sm;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 6px;
+  }
+}
+
+.sp-tags-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+// ─── Form ─────────────────────────────────────────────────
+.sp-form-group {
+  margin-bottom: $spacing-md;
+  label {
+    display: block;
+    font-size: $font-sm;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+}
+
+.sp-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.sp-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: $font-sm;
+  outline: none;
+  &:focus { border-color: var(--color-primary); }
+}
+
+.sp-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: $font-sm;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  &:focus { border-color: var(--color-primary); }
+}
+
+.sp-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: $spacing-md;
+}
+
+// ─── Animations ───────────────────────────────────────────
+@keyframes sp-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sp-slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+// ─── Dark Mode ────────────────────────────────────────────
+body.dark-mode {
+  .sp-alert-banner {
+    background: #3b111180;
+    border-color: #7f1d1d80;
+    color: #fecaca;
+  }
+  .sp-alert-btn {
+    background: #dc2626;
+    border-color: #dc2626;
+  }
+  .sp-confirm-icon { background: #3b1111; }
+  .sp-icon-btn--danger:hover { background: #3b1111; }
+  .sp-knowledge-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+}
+
+// ─── Responsive ───────────────────────────────────────────
+@media (max-width: 640px) {
+  .sp-container { padding: $spacing-md; }
+  .sp-header { flex-direction: column; }
+  .sp-header-right { width: 100%; justify-content: flex-end; }
+  .sp-stats-grid { grid-template-columns: 1fr 1fr; }
+  .sp-toolbar { flex-direction: column; }
+  .sp-filters { flex-wrap: wrap; }
+  .sp-agents-grid { grid-template-columns: 1fr; }
+  .sp-knowledge-grid { grid-template-columns: 1fr; }
+  .sp-analytics-kpis { grid-template-columns: 1fr; }
+}
