@@ -361,45 +361,229 @@ $navy-accent: #1e3a5f;
   }
 }
 
-// Bharat Mithra Brand with Indian Flag Colors
+// Bharat Mithra Brand
 .bm-topbar-brand {
   display: flex;
   align-items: center;
+  gap: 10px;
   flex-shrink: 0;
-  font-size: 20px;
-  font-weight: 600;
-  // text-transform: uppercase;
-  letter-spacing: -0.5px;
   position: relative;
   z-index: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  .infinity-logo {
+    flex-shrink: 0;
+    margin-top: 2px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .infinity-logo {
+    transform: scale(1.05);
+  }
+}
+
+.bm-brand-text {
+  display: flex;
+  align-items: baseline;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1;
+
+  // Hide text until animation class is applied (after splash finishes)
+  &:not([class*="brand-anim-"]) {
+    .bm-brand-bharat,
+    .bm-brand-mithra {
+      opacity: 0;
+    }
+  }
+}
+
+.bm-brand-space {
+  width: 6px;
+  display: inline-block;
 }
 
 .bm-brand-bharat {
-  background: linear-gradient(135deg, #ff9933, #ffb366);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 10px rgba(255, 153, 51, 0.3);
-}
+  color: #1a3c5e;
+  -webkit-text-fill-color: #1a3c5e;
 
-.bm-brand-dot {
-  color: #ffffff;
-  margin: 0 2px;
-  font-size: 24px;
-  animation: pulseDot 2s ease-in-out infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.9); }
+  body.dark-mode & {
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+  }
 }
 
 .bm-brand-mithra {
-  background: linear-gradient(135deg, #138808, #4caf50);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 10px rgba(19, 136, 8, 0.3);
+  color: #d4a010;
+  -webkit-text-fill-color: #d4a010;
+}
+
+// ── Brand text entrance animations (one picked randomly per refresh) ──
+
+// 1. Typewriter — letters appear one by one
+.brand-anim-typewriter {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    animation: brandTypewriter 0.6s steps(6, end) forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.3s; }
+  .bm-brand-mithra { animation-delay: 0.8s; animation-duration: 0.5s; animation-timing-function: steps(6, end); }
+}
+
+@keyframes brandTypewriter {
+  from { width: 0; }
+  to { width: auto; width: max-content; }
+}
+
+// 2. Slide up — each word slides up from below
+.brand-anim-slide-up {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: brandSlideUp 0.5s ease-out forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.2s; }
+  .bm-brand-mithra { animation-delay: 0.45s; }
+}
+
+@keyframes brandSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// 3. Slide in — Bharat from left, Mithra from right
+.brand-anim-slide-in {
+  .bm-brand-bharat {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: brandSlideLeft 0.5s ease-out 0.2s forwards;
+  }
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(30px);
+    animation: brandSlideRight 0.5s ease-out 0.35s forwards;
+  }
+}
+
+@keyframes brandSlideLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes brandSlideRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+// 4. Blur in — fades in from blurry
+.brand-anim-blur-in {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(10px);
+    animation: brandBlurIn 0.6s ease-out forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.2s; }
+  .bm-brand-mithra { animation-delay: 0.5s; }
+}
+
+@keyframes brandBlurIn {
+  from { opacity: 0; filter: blur(10px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+// 5. Bounce in — drops in with a bounce
+.brand-anim-bounce-in {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+    animation: brandBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.15s; }
+  .bm-brand-mithra { animation-delay: 0.4s; }
+}
+
+@keyframes brandBounceIn {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.8); }
+  60% { opacity: 1; transform: translateY(4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// 6. Flip in — 3D flip from top
+.brand-anim-flip-in {
+  perspective: 600px;
+
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    transform: rotateX(-90deg);
+    transform-origin: top center;
+    animation: brandFlipIn 0.6s ease-out forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.2s; }
+  .bm-brand-mithra { animation-delay: 0.45s; }
+}
+
+@keyframes brandFlipIn {
+  from { opacity: 0; transform: rotateX(-90deg); }
+  to { opacity: 1; transform: rotateX(0deg); }
+}
+
+// 7. Glow in — appears with a text glow pulse
+.brand-anim-glow-in {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    animation: brandGlowIn 0.8s ease-out forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.1s; }
+  .bm-brand-mithra { animation-delay: 0.4s; }
+}
+
+@keyframes brandGlowIn {
+  0% { opacity: 0; text-shadow: 0 0 30px currentColor; }
+  50% { opacity: 1; text-shadow: 0 0 15px currentColor; }
+  100% { opacity: 1; text-shadow: none; }
+}
+
+// 8. Wave — each letter pops up in a wave
+.brand-anim-wave {
+  .bm-brand-bharat,
+  .bm-brand-mithra {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0.5) rotate(-5deg);
+    animation: brandWave 0.5s ease-out forwards;
+  }
+  .bm-brand-bharat { animation-delay: 0.2s; }
+  .bm-brand-mithra { animation-delay: 0.45s; }
+}
+
+@keyframes brandWave {
+  0% { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+  70% { opacity: 1; transform: scale(1.05) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
 // Divider between logo and menu

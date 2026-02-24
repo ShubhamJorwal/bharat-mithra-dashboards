@@ -3058,3 +3058,336 @@ export interface CurrentWorkflowStepResponse {
   can_reject?: boolean;
   can_send_back?: boolean;
 }
+
+// ══════════════════════════════════════════════════════════════════
+// SERVICE PLATFORM TYPES — Field Templates, Commissions, Providers, Bundles, Reviews
+// ══════════════════════════════════════════════════════════════════
+
+// ── Field Templates ──
+export interface ServiceFieldTemplate {
+  id: string;
+  template_name: string;
+  template_slug: string;
+  description?: string;
+  category: string;
+  field_schema: Record<string, unknown>[];
+  is_system: boolean;
+  usage_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FieldTemplateCreateRequest {
+  template_name: string;
+  template_slug?: string;
+  description?: string;
+  category: string;
+  field_schema: Record<string, unknown>[];
+  is_system?: boolean;
+}
+
+export interface FieldTemplateUpdateRequest {
+  template_name?: string;
+  template_slug?: string;
+  description?: string;
+  category?: string;
+  field_schema?: Record<string, unknown>[];
+  is_active?: boolean;
+}
+
+// ── Form Template Mapping ──
+export interface ServiceFormTemplateMapping {
+  id: string;
+  service_id: string;
+  template_id: string;
+  section_title?: string;
+  section_order: number;
+  field_overrides?: Record<string, unknown>;
+  excluded_fields?: string[];
+  is_active: boolean;
+  created_at: string;
+  template?: ServiceFieldTemplate;
+}
+
+export interface TemplateMappingCreateRequest {
+  template_id: string;
+  section_title?: string;
+  section_order?: number;
+  field_overrides?: Record<string, unknown>;
+  excluded_fields?: string[];
+}
+
+// ── Commission Slabs ──
+export type CommissionSlabType = 'flat' | 'percentage' | 'tiered';
+export type CommissionTxnStatus = 'pending' | 'approved' | 'paid' | 'rejected' | 'reversed';
+export type AgentType = 'retailer' | 'distributor' | 'super_distributor';
+
+export interface CommissionTier {
+  min_txn: number;
+  max_txn: number | null;
+  commission: number;
+  type: 'flat' | 'percent';
+  max_cap?: number;
+}
+
+export interface CommissionSlab {
+  id: string;
+  name: string;
+  description?: string;
+  slab_type: CommissionSlabType;
+  service_id?: string;
+  category_id?: string;
+  commission_amount: number;
+  commission_percent: number;
+  max_commission?: number;
+  min_commission?: number;
+  tiers?: CommissionTier[];
+  agent_type?: AgentType;
+  state_code?: string;
+  valid_from: string;
+  valid_to?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  service_name?: string;
+  category_name?: string;
+}
+
+export interface CommissionSlabCreateRequest {
+  name: string;
+  description?: string;
+  slab_type: CommissionSlabType;
+  service_id?: string;
+  category_id?: string;
+  commission_amount?: number;
+  commission_percent?: number;
+  max_commission?: number;
+  min_commission?: number;
+  tiers?: CommissionTier[];
+  agent_type?: AgentType;
+  state_code?: string;
+  valid_from: string;
+  valid_to?: string;
+}
+
+export interface CommissionSlabUpdateRequest {
+  name?: string;
+  description?: string;
+  slab_type?: CommissionSlabType;
+  commission_amount?: number;
+  commission_percent?: number;
+  max_commission?: number;
+  min_commission?: number;
+  tiers?: CommissionTier[];
+  is_active?: boolean;
+}
+
+// ── Commission Transactions ──
+export interface CommissionTransaction {
+  id: string;
+  application_id: string;
+  agent_id: string;
+  service_id: string;
+  slab_id?: string;
+  transaction_amount: number;
+  commission_amount: number;
+  tds_amount: number;
+  net_amount: number;
+  status: CommissionTxnStatus;
+  paid_at?: string;
+  payment_reference?: string;
+  parent_agent_id?: string;
+  parent_commission: number;
+  remarks?: string;
+  created_at: string;
+  updated_at: string;
+  service_name?: string;
+  agent_name?: string;
+  application_number?: string;
+}
+
+export interface CommissionSummary {
+  total_earned: number;
+  total_pending: number;
+  total_paid: number;
+  total_tds: number;
+  total_transactions: number;
+  this_month_earned: number;
+  last_month_earned: number;
+}
+
+// ── Service Providers ──
+export type ProviderType = 'payment_gateway' | 'banking_api' | 'insurance_api' | 'utility_api' | 'travel_api' | 'identity_api' | 'government_portal' | 'recharge_api';
+export type AuthType = 'api_key' | 'oauth2' | 'jwt' | 'basic' | 'hmac';
+
+export interface ServiceProvider {
+  id: string;
+  name: string;
+  slug: string;
+  provider_type: ProviderType;
+  api_base_url?: string;
+  api_version?: string;
+  auth_type?: AuthType;
+  is_sandbox: boolean;
+  sandbox_url?: string;
+  production_url?: string;
+  webhook_url?: string;
+  callback_url?: string;
+  health_check_url?: string;
+  last_health_check?: string;
+  is_active: boolean;
+  priority: number;
+  config?: Record<string, unknown>;
+  supported_services?: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceProviderCreateRequest {
+  name: string;
+  slug?: string;
+  provider_type: ProviderType;
+  api_base_url?: string;
+  api_version?: string;
+  auth_type?: AuthType;
+  credentials?: Record<string, unknown>;
+  is_sandbox?: boolean;
+  sandbox_url?: string;
+  production_url?: string;
+  webhook_url?: string;
+  callback_url?: string;
+  health_check_url?: string;
+  priority?: number;
+  config?: Record<string, unknown>;
+  supported_services?: string[];
+}
+
+export interface ServiceProviderUpdateRequest {
+  name?: string;
+  provider_type?: ProviderType;
+  api_base_url?: string;
+  auth_type?: AuthType;
+  credentials?: Record<string, unknown>;
+  is_sandbox?: boolean;
+  is_active?: boolean;
+  priority?: number;
+  config?: Record<string, unknown>;
+}
+
+// ── Service Provider Transactions ──
+export type ProviderTxnStatus = 'initiated' | 'processing' | 'success' | 'failed' | 'timeout' | 'refunded';
+
+export interface ServiceProviderTransaction {
+  id: string;
+  application_id?: string;
+  provider_id: string;
+  service_id: string;
+  request_payload?: Record<string, unknown>;
+  response_payload?: Record<string, unknown>;
+  http_status?: number;
+  provider_txn_id?: string;
+  provider_ref_id?: string;
+  amount?: number;
+  status: ProviderTxnStatus;
+  error_code?: string;
+  error_message?: string;
+  initiated_at: string;
+  completed_at?: string;
+  response_time_ms?: number;
+  retry_count: number;
+  created_at: string;
+  provider_name?: string;
+  service_name?: string;
+}
+
+// ── Service Bundles ──
+export type TargetAudience = 'individual' | 'business' | 'farmer' | 'student' | 'all';
+
+export interface ServiceBundle {
+  id: string;
+  name: string;
+  name_hindi?: string;
+  slug: string;
+  description?: string;
+  description_hindi?: string;
+  icon_url?: string;
+  banner_url?: string;
+  original_price: number;
+  bundle_price: number;
+  discount_percent?: number;
+  service_ids: string[];
+  is_featured: boolean;
+  is_active: boolean;
+  valid_from?: string;
+  valid_to?: string;
+  sort_order: number;
+  target_audience?: TargetAudience;
+  created_at: string;
+  updated_at: string;
+  services?: Service[];
+}
+
+export interface ServiceBundleCreateRequest {
+  name: string;
+  name_hindi?: string;
+  slug?: string;
+  description?: string;
+  description_hindi?: string;
+  icon_url?: string;
+  banner_url?: string;
+  original_price: number;
+  bundle_price: number;
+  discount_percent?: number;
+  service_ids: string[];
+  is_featured?: boolean;
+  valid_from?: string;
+  valid_to?: string;
+  sort_order?: number;
+  target_audience?: TargetAudience;
+}
+
+export interface ServiceBundleUpdateRequest {
+  name?: string;
+  bundle_price?: number;
+  is_active?: boolean;
+  is_featured?: boolean;
+  service_ids?: string[];
+}
+
+// ── Service Reviews ──
+export interface ServiceReview {
+  id: string;
+  service_id: string;
+  user_id: string;
+  application_id?: string;
+  rating: number;
+  review_text?: string;
+  is_approved: boolean;
+  is_flagged: boolean;
+  approved_by?: string;
+  approved_at?: string;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  user_name?: string;
+  service_name?: string;
+}
+
+export interface ServiceReviewCreateRequest {
+  user_id: string;
+  application_id?: string;
+  rating: number;
+  review_text?: string;
+}
+
+export interface ServiceReviewSummary {
+  service_id: string;
+  average_rating: number;
+  total_reviews: number;
+  rating_5_count: number;
+  rating_4_count: number;
+  rating_3_count: number;
+  rating_2_count: number;
+  rating_1_count: number;
+}

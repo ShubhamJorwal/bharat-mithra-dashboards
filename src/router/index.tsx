@@ -55,6 +55,12 @@ import { Telecaller } from "../views/Telecaller";
 // Support Dashboard Page
 import { SupportDashboard } from "../views/SupportDashboard";
 
+// Test Plan Page
+import { TestPlan } from "../views/TestPlan";
+
+// Platform Pages
+import { FieldTemplates, Commissions, Providers, Bundles, Reviews } from "../views/Platform";
+
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
@@ -321,6 +327,32 @@ const routerConfig = [
       {
         path: "settings",
         element: <Settings />,
+      },
+      // Platform Routes
+      {
+        path: "platform/field-templates",
+        element: <FieldTemplates />,
+      },
+      {
+        path: "platform/commissions",
+        element: <Commissions />,
+      },
+      {
+        path: "platform/providers",
+        element: <Providers />,
+      },
+      {
+        path: "platform/bundles",
+        element: <Bundles />,
+      },
+      {
+        path: "platform/reviews",
+        element: <Reviews />,
+      },
+      // Test Plan — Full Blueprint
+      {
+        path: "test",
+        element: <TestPlan />,
       },
     ],
   },

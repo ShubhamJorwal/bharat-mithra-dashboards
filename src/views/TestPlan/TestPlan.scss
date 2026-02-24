@@ -1,0 +1,337 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.tp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-text, #1a1a2e);
+  line-height: 1.6;
+}
+
+// Header
+.tp-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 32px;
+  background: linear-gradient(135deg, #1a3c5e 0%, #2d7d9a 100%);
+  border-radius: 16px;
+  color: #fff;
+}
+
+.tp-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+.tp-subtitle {
+  font-size: 15px;
+  opacity: 0.85;
+  margin: 0 0 16px;
+}
+
+.tp-meta {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tp-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--research { background: rgba(255,255,255,0.2); }
+  &--api { background: rgba(46,212,122,0.3); }
+  &--db { background: rgba(155,122,224,0.3); }
+  &--services { background: rgba(212,160,16,0.3); }
+}
+
+// Sections
+.tp-section {
+  margin-bottom: 48px;
+}
+
+.tp-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a3c5e;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #d4a010;
+  display: inline-block;
+
+  body.dark-mode & {
+    color: #e0e0e0;
+  }
+}
+
+.tp-note {
+  font-size: 14px;
+  color: var(--color-text-secondary, #666);
+  margin: 0 0 20px;
+  font-style: italic;
+}
+
+// Cards
+.tp-card {
+  background: var(--color-card-bg, #fff);
+  border: 1px solid var(--color-border-light, #e8eaf0);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #1a3c5e;
+
+    body.dark-mode & { color: #e0e0e0; }
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 12px 0 8px;
+    color: #2d7d9a;
+  }
+
+  p {
+    margin: 0 0 10px;
+    font-size: 14px;
+  }
+
+  ul, ol {
+    margin: 0 0 8px;
+    padding-left: 20px;
+    font-size: 14px;
+
+    li {
+      margin-bottom: 4px;
+    }
+  }
+
+  code {
+    background: rgba(26,60,94,0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+
+    body.dark-mode & {
+      background: rgba(255,255,255,0.1);
+    }
+  }
+
+  &--schema {
+    border-left: 4px solid #9b7ae0;
+  }
+
+  &--cat {
+    border-left: 4px solid #2d7d9a;
+  }
+
+  &--phase {
+    border-left: 4px solid #d4a010;
+  }
+}
+
+// Category headers
+.tp-cat-header {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  display: inline-block;
+  color: #fff;
+}
+
+.tp-cat--govt { background: #1a3c5e; }
+.tp-cat--private { background: #2d7d9a; }
+.tp-cat--it { background: #9b7ae0; }
+.tp-cat--affiliate { background: #d4a010; }
+
+// Phase headers
+.tp-phase-header {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.tp-phase--1 { background: linear-gradient(135deg, #1a3c5e, #2d7d9a); }
+.tp-phase--2 { background: linear-gradient(135deg, #2d7d9a, #2ed47a); }
+.tp-phase--3 { background: linear-gradient(135deg, #9b7ae0, #d4a010); }
+.tp-phase--4 { background: linear-gradient(135deg, #d4a010, #f09840); }
+
+// Grid
+.tp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &--3col {
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+
+// Code blocks
+.tp-code-block {
+  background: #0f1923;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 8px 0;
+
+  h4 {
+    color: #d4a010;
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-family: 'Fira Code', monospace;
+  }
+
+  pre {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+// Tables
+.tp-table-wrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light, #e8eaf0);
+}
+
+.tp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    background: #1a3c5e;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border-light, #eee);
+    vertical-align: top;
+
+    code {
+      font-size: 12px;
+    }
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(0,0,0,0.02);
+
+    body.dark-mode & {
+      background: rgba(255,255,255,0.02);
+    }
+  }
+
+  tr:hover td {
+    background: rgba(26,60,94,0.04);
+  }
+
+  &--compact {
+    td, th { padding: 7px 12px; }
+  }
+}
+
+.tp-divider-row {
+  background: rgba(26,60,94,0.06) !important;
+  font-weight: 700;
+  color: #1a3c5e;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+
+  body.dark-mode & {
+    color: #e0e0e0;
+    background: rgba(255,255,255,0.05) !important;
+  }
+}
+
+// API method badges
+.tp-method {
+  font-weight: 700;
+  font-size: 11px;
+  font-family: 'Fira Code', monospace;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  &--get { color: #2ed47a; }
+  &--post { color: #4a9eda; }
+  &--put { color: #d4a010; }
+  &--del { color: #e74c3c; }
+}
+
+// Footer
+.tp-section--footer {
+  .tp-card {
+    background: linear-gradient(135deg, rgba(26,60,94,0.05), rgba(212,160,16,0.05));
+    border: 2px solid #d4a010;
+  }
+}
+
+// Dark mode overrides
+body.dark-mode {
+  .tp-container {
+    color: #e0e0e0;
+  }
+
+  .tp-header {
+    background: linear-gradient(135deg, #0f2233 0%, #1a4a5e 100%);
+  }
+
+  .tp-card {
+    background: var(--color-card-bg, #1a2332);
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .tp-table {
+    th {
+      background: #0f2233;
+    }
+  }
+
+  .tp-code-block {
+    background: #0a1420;
+  }
+}

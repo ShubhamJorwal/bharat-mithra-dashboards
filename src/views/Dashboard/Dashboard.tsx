@@ -49,6 +49,7 @@ import {
   HiOutlineWifi,
   HiOutlinePaperAirplane,
 } from 'react-icons/hi';
+import InfinityLogo from '../../components/common/InfinityLogo/InfinityLogo';
 import './Dashboard.scss';
 
 // ─── Interfaces ────────────────────────────────────────────
@@ -637,9 +638,21 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="bm-dashboard">
-        <div className="bm-loading">
-          <div className="bm-loading-spinner"></div>
-          <span>Loading dashboard...</span>
+        <div className="bm-splash-screen">
+          <div className="bm-splash-content">
+            <InfinityLogo size="splash" />
+            <div className="bm-splash-text">
+              <h1 className="bm-splash-title">
+                <span className="bm-splash-bharat">Bharat</span>
+                <span className="bm-splash-mithra"> Mithra</span>
+              </h1>
+              <p className="bm-splash-tagline">ALL SERVICES, AT ONE PLACE</p>
+              <div className="bm-splash-loader">
+                <div className="bm-splash-loader-bar"></div>
+              </div>
+              <span className="bm-splash-loading-text">Preparing your dashboard...</span>
+            </div>
+          </div>
         </div>
       </div>
     );

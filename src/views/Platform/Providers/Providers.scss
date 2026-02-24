@@ -1,0 +1,105 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.bm-providers {
+  padding: 0;
+}
+
+.bm-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.bm-provider-card {
+  background: var(--color-card-bg, #fff);
+  border: 1px solid var(--color-border-light, #e8eaf0);
+  border-radius: 10px;
+  padding: 16px;
+  transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+}
+
+.bm-provider-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.bm-provider-info {
+  h4 {
+    font-size: $font-base;
+    font-weight: $font-semibold;
+    color: var(--color-text);
+    margin: 0 0 4px;
+  }
+}
+
+.bm-provider-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bm-env-badge {
+  font-size: 10px;
+  font-weight: $font-bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--sandbox { background: rgba(212,160,16,0.15); color: #d4a010; }
+  &--prod { background: rgba(46,212,122,0.15); color: #2ed47a; }
+}
+
+.bm-provider-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.bm-auth-badge {
+  font-size: 10px;
+  font-weight: $font-bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(26,60,94,0.08);
+  color: var(--color-text-secondary);
+  font-family: 'Fira Code', monospace;
+}
+
+.bm-provider-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.bm-provider-url {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-family: 'Fira Code', monospace;
+  word-break: break-all;
+  margin: 0;
+  width: 100%;
+}
+
+.bm-version-tag, .bm-priority-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(26,60,94,0.06);
+  color: var(--color-text-secondary);
+}
+
+.bm-provider-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-light, #f0f0f0);
+}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo, type FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   HiOutlineSearch,
@@ -32,16 +32,45 @@ import {
   HiOutlineCash,
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
+import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
 import './Topbar.scss';
 
-// Bharat Mithra Logo Component with Indian Flag Colors
-const BharatMithraLogo = () => (
-  <div className="bm-topbar-brand">
-    <span className="bm-brand-bharat">Bharat</span>
-    <span className="bm-brand-dot">.</span>
-    <span className="bm-brand-mithra">Mithra</span>
-  </div>
-);
+// Brand text animation variants — one picked randomly on each mount/refresh
+const brandAnimations = [
+  'brand-anim-typewriter',
+  'brand-anim-slide-up',
+  'brand-anim-slide-in',
+  'brand-anim-blur-in',
+  'brand-anim-bounce-in',
+  'brand-anim-flip-in',
+  'brand-anim-glow-in',
+  'brand-anim-wave',
+] as const;
+
+const BharatMithraLogo: FC = () => {
+  const animClass = useMemo(
+    () => brandAnimations[Math.floor(Math.random() * brandAnimations.length)],
+    []
+  );
+  const [animReady, setAnimReady] = useState(false);
+
+  useEffect(() => {
+    // Delay animation until after splash screen finishes (3.2s)
+    const timer = setTimeout(() => setAnimReady(true), 3300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="bm-topbar-brand">
+      <InfinityLogo size="sm" />
+      <div className={`bm-brand-text ${animReady ? animClass : ''}`}>
+        <span className="bm-brand-bharat">Bharat</span>
+        <span className="bm-brand-space">&nbsp;</span>
+        <span className="bm-brand-mithra">Mithra</span>
+      </div>
+    </div>
+  );
+};
 
 interface HistoryItem {
   path: string;
