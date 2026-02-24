@@ -110,12 +110,12 @@ const Reviews = () => {
             <span className="bm-stat-mini-label">Avg Rating</span>
           </div>
           <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.five_star_count}</span>
+            <span className="bm-stat-mini-value">{summary.rating_5_count}</span>
             <span className="bm-stat-mini-label">5-Star</span>
           </div>
           <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.pending_count}</span>
-            <span className="bm-stat-mini-label">Pending</span>
+            <span className="bm-stat-mini-value">{summary.rating_1_count + summary.rating_2_count}</span>
+            <span className="bm-stat-mini-label">Low Rated</span>
           </div>
         </div>
       )}
