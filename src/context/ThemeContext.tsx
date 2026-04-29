@@ -142,6 +142,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     root.style.setProperty('--color-text', colors.text);
     root.style.setProperty('--color-text-secondary', colors.textSecondary);
     root.style.setProperty('--color-border', colors.border);
+    root.style.setProperty('--color-card-bg', isDark ? '#1E293B' : colors.background);
+    root.style.setProperty('--color-border-light', isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)');
     root.style.setProperty('--color-success', colors.success);
     root.style.setProperty('--color-warning', colors.warning);
     root.style.setProperty('--color-danger', colors.danger);

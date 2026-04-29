@@ -23,6 +23,7 @@ import {
   HiOutlinePhone,
   HiOutlineSupport,
   HiOutlineTemplate,
+  HiOutlineViewGrid,
 } from 'react-icons/hi';
 import './Sidebar.scss';
 
@@ -54,6 +55,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
   const mainNavItems: NavItem[] = [
     { path: '/', icon: HiOutlineHome, label: 'Dashboard', badge: null },
     {
+      path: '/services',
+      icon: HiOutlineViewGrid,
+      label: 'Services',
+      badge: null,
+      subItems: [
+        { path: '/services', label: 'Service Catalog' },
+        { path: '/services/manage', label: 'Manage Services' },
+        { path: '/services/categories', label: 'Categories' },
+        { path: '/services/custom', label: 'Custom Services' },
+      ]
+    },
+    {
       path: '/geography',
       icon: HiOutlineGlobe,
       label: 'Geography',
@@ -68,27 +81,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       ]
     },
     {
-      path: '/services',
+      path: '/old-services',
       icon: HiOutlineCollection,
-      label: 'Services',
+      label: 'Old Services',
       badge: null,
       subItems: [
-        { path: '/services/portal', label: 'Services Portal' },
-        { path: '/services', label: 'All Services' },
-        { path: '/services/categories', label: 'Categories' },
-        { path: '/services/portal/government-schemes', label: 'Govt Schemes' },
-        { path: '/services/portal/print-services', label: 'Print Services' },
-        { path: '/services/portal/pvc-delivery', label: 'PVC Delivery' },
-        { path: '/services/portal/pvc-maker', label: 'PVC Maker' },
-        { path: '/services/portal/pan-services', label: 'PAN Services' },
-        { path: '/services/portal/payment-services', label: 'Payment Services' },
-        { path: '/services/portal/msme-services', label: 'MSME Services' },
-        { path: '/services/portal/open-savings-account', label: 'Open Savings A/C' },
-        { path: '/services/portal/bbps', label: 'BBPS' },
-        { path: '/services/portal/e-governance', label: 'E-Governance' },
-        { path: '/services/portal/govt-job-alerts', label: 'Govt Job Alerts' },
-        { path: '/services/portal/insurance', label: 'Insurance' },
-        { path: '/services/portal/travel-booking', label: 'Travel & Booking' },
+        { path: '/old-services', label: 'All Services' },
+        { path: '/old-services/portal', label: 'Services Portal' },
+        { path: '/old-services/categories', label: 'Categories' },
       ]
     },
     {
@@ -263,7 +263,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
                   <NavLink
                     key={sub.path}
                     to={sub.path}
-                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/services/portal' || sub.path === '/applications' || sub.path === '/statements/wallet'}
+                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/old-services' || sub.path === '/applications' || sub.path === '/statements/wallet'}
                     className={({ isActive: navIsActive }) => `bm-nav-subitem ${navIsActive ? 'active' : ''}`}
                   >
                     <span className="bm-nav-label">{sub.label}</span>

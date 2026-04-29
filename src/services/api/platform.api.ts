@@ -163,8 +163,15 @@ export const platformApi = {
 
   // ═══════════ Service Reviews ═══════════
 
+  // Get reviews for a specific service
   getServiceReviews: async (serviceId: string, params?: { page?: number; per_page?: number; approved?: string }): Promise<PaginatedResponse<ServiceReview>> => {
     const response = await axiosInstance.get(`${SERVICES_BASE}/${serviceId}/reviews`, { params });
+    return response.data;
+  },
+
+  // Get all reviews across all services (admin endpoint)
+  getAllReviews: async (params?: { page?: number; per_page?: number; approved?: string }): Promise<PaginatedResponse<ServiceReview>> => {
+    const response = await axiosInstance.get(REVIEWS_BASE, { params });
     return response.data;
   },
 

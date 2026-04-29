@@ -103,7 +103,7 @@ const Bundles = () => {
               <div className="bm-bundle-pricing">
                 <div className="bm-bundle-price-original">{formatCurrency(bundle.original_price)}</div>
                 <div className="bm-bundle-price-current">{formatCurrency(bundle.bundle_price)}</div>
-                {bundle.discount_percent && (
+                {bundle.discount_percent != null && bundle.discount_percent > 0 && (
                   <span className="bm-bundle-discount">{bundle.discount_percent}% OFF</span>
                 )}
               </div>

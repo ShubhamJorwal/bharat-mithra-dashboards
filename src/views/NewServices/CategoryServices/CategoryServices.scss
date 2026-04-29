@@ -1,0 +1,233 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use '../services-shared' as *;
+
+.svc-category-view {
+  padding: 0;
+}
+
+// ── Category Banner ──
+.svc-cat-banner {
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+}
+
+.svc-cat-banner-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.svc-cat-banner-info {
+  flex: 1;
+
+  h1 {
+    font-size: $font-2xl;
+    font-weight: $font-bold;
+    margin: 0 0 4px;
+  }
+
+  p {
+    font-size: $font-sm;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .svc-cat-hindi {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+}
+
+// ── Activation Banner ──
+.svc-activation-banner {
+  background: var(--color-card-bg, #fff);
+  border: 2px dashed var(--color-border-light, #e8eaf0);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.svc-activation-title {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.svc-activation-price {
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  color: #1a3c5e;
+  margin: 8px 0;
+  body.dark-mode & { color: #4a9eda; }
+}
+
+.svc-activation-features {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+
+  li {
+    font-size: $font-sm;
+    color: var(--color-text-secondary);
+    padding: 4px 12px;
+    background: rgba(26, 60, 94, 0.05);
+    border-radius: 16px;
+    body.dark-mode & { background: rgba(74, 158, 218, 0.1); }
+  }
+}
+
+// ── Service Grid ──
+.svc-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.svc-service-card {
+  background: var(--color-card-bg, #fff);
+  border: 1px solid var(--color-border-light, #e8eaf0);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border-color: var(--color-border, #ddd);
+    body.dark-mode & { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); }
+  }
+}
+
+.svc-service-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.svc-service-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.svc-service-meta {
+  flex: 1;
+  min-width: 0;
+
+  h4 {
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: var(--color-text);
+    margin: 0 0 2px;
+  }
+}
+
+.svc-service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.svc-service-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-light, #f0f0f0);
+}
+
+.svc-service-fee {
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  color: var(--color-text);
+
+  .svc-fee-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-weight: $font-normal;
+    margin-right: 4px;
+  }
+}
+
+.svc-service-commission {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: $font-medium;
+  body.dark-mode & { color: #4ade80; }
+}
+
+.svc-service-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+// ── Service Detail Drawer (expandable) ──
+.svc-service-detail {
+  padding: 12px 0 0;
+  border-top: 1px solid var(--color-border-light, #f0f0f0);
+  margin-top: 10px;
+}
+
+.svc-service-fields-label {
+  font-size: 12px;
+  font-weight: $font-semibold;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.svc-field-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.svc-field-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(26, 60, 94, 0.06);
+  color: var(--color-text-secondary);
+  body.dark-mode & { background: rgba(74, 158, 218, 0.1); }
+}
+
+@media (max-width: $breakpoint-md) {
+  .svc-cat-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .svc-services-grid {
+    grid-template-columns: 1fr;
+  }
+}

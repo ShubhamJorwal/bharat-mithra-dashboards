@@ -3,7 +3,6 @@ import { HiOutlineCloud, HiOutlinePlus, HiOutlineSearch, HiOutlinePencil, HiOutl
 import platformApi from '../../../services/api/platform.api';
 import type { ServiceProvider } from '../../../types/api.types';
 import '../FieldTemplates/FieldTemplates.scss';
-import '../Commissions/Commissions.scss';
 import './Providers.scss';
 
 const PROVIDER_TYPES = ['payment_gateway', 'banking_api', 'insurance_api', 'utility_api', 'travel_api', 'identity_api', 'government_portal', 'recharge_api'];

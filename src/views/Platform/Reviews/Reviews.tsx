@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { HiOutlineStar, HiOutlineSearch, HiOutlineCheck, HiOutlineX, HiOutlineUser } from 'react-icons/hi';
 import platformApi from '../../../services/api/platform.api';
-import type { ServiceReview, ServiceReviewSummary } from '../../../types/api.types';
+import type { ServiceReview } from '../../../types/api.types';
 import '../FieldTemplates/FieldTemplates.scss';
 import './Reviews.scss';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState<ServiceReview[]>([]);
-  const [summary, setSummary] = useState<ServiceReviewSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -15,7 +14,8 @@ const Reviews = () => {
   const fetchReviews = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await platformApi.getServiceReviews('', { approved: statusFilter !== 'all' ? statusFilter : undefined });
+      const approved = statusFilter === 'approved' ? 'true' : statusFilter === 'pending' ? 'false' : undefined;
+      const response = await platformApi.getAllReviews({ approved, per_page: 100 });
       if (response.success && response.data) {
         setReviews(response.data);
       }
@@ -26,27 +26,14 @@ const Reviews = () => {
     }
   }, [statusFilter]);
 
-  const fetchSummary = useCallback(async () => {
-    try {
-      const response = await platformApi.getReviewSummary('');
-      if (response.success && response.data) {
-        setSummary(response.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch review summary:', err);
-    }
-  }, []);
-
   useEffect(() => {
     fetchReviews();
-    fetchSummary();
-  }, [fetchReviews, fetchSummary]);
+  }, [fetchReviews]);
 
   const handleApprove = async (reviewId: string) => {
     try {
       await platformApi.approveReview(reviewId);
       fetchReviews();
-      fetchSummary();
     } catch (err) {
       console.error('Failed to approve review:', err);
     }
@@ -58,7 +45,16 @@ const Reviews = () => {
     (r.review_text || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const statusFilters = ['all', 'approved', 'pending', 'rejected'];
+  // Compute stats from loaded reviews
+  const stats = useMemo(() => {
+    const total = reviews.length;
+    const avgRating = total > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
+    const fiveStar = reviews.filter(r => r.rating === 5).length;
+    const pending = reviews.filter(r => !r.is_approved).length;
+    return { total, avgRating, fiveStar, pending };
+  }, [reviews]);
+
+  const statusFilters = ['all', 'approved', 'pending'];
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -99,26 +95,24 @@ const Reviews = () => {
         </div>
       </div>
 
-      {summary && (
-        <div className="bm-stats-row">
-          <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.total_reviews}</span>
-            <span className="bm-stat-mini-label">Total Reviews</span>
-          </div>
-          <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.average_rating?.toFixed(1) || '0.0'}</span>
-            <span className="bm-stat-mini-label">Avg Rating</span>
-          </div>
-          <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.rating_5_count}</span>
-            <span className="bm-stat-mini-label">5-Star</span>
-          </div>
-          <div className="bm-stat-mini">
-            <span className="bm-stat-mini-value">{summary.rating_1_count + summary.rating_2_count}</span>
-            <span className="bm-stat-mini-label">Low Rated</span>
-          </div>
+      <div className="bm-stats-row">
+        <div className="bm-stat-mini">
+          <span className="bm-stat-mini-value">{stats.total}</span>
+          <span className="bm-stat-mini-label">Total Reviews</span>
         </div>
-      )}
+        <div className="bm-stat-mini">
+          <span className="bm-stat-mini-value">{stats.avgRating.toFixed(1)}</span>
+          <span className="bm-stat-mini-label">Avg Rating</span>
+        </div>
+        <div className="bm-stat-mini">
+          <span className="bm-stat-mini-value">{stats.fiveStar}</span>
+          <span className="bm-stat-mini-label">5-Star</span>
+        </div>
+        <div className="bm-stat-mini">
+          <span className="bm-stat-mini-value">{stats.pending}</span>
+          <span className="bm-stat-mini-label">Pending</span>
+        </div>
+      </div>
 
       {loading ? (
         <div className="bm-loading-state">Loading reviews...</div>

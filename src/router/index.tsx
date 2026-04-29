@@ -61,6 +61,9 @@ import { TestPlan } from "../views/TestPlan";
 // Platform Pages
 import { FieldTemplates, Commissions, Providers, Bundles, Reviews } from "../views/Platform";
 
+// New Services Module
+import { ServiceCatalog, CategoryServices, ServiceManager, CategoryManager, CustomServices } from "../views/NewServices";
+
 // Geography Pages
 import NationalDashboard from "../views/Geography/National/NationalDashboard";
 import StateList from "../views/Geography/States/StateList";
@@ -123,44 +126,63 @@ const routerConfig = [
         path: "users/:id/edit",
         element: <UserEdit />,
       },
-      // Services Portal Routes
+      // Old Services Routes (preserved — to be rebuilt)
       {
-        path: "services/portal",
+        path: "old-services/portal",
         element: <ServicePortal />,
       },
       {
-        path: "services/portal/:slug",
+        path: "old-services/portal/:slug",
         element: <ServiceCategoryView />,
       },
-      // Services Routes
       {
-        path: "services",
+        path: "old-services",
         element: <ServiceList />,
       },
       {
-        path: "services/new",
+        path: "old-services/new",
         element: <ServiceCreate />,
       },
       {
-        path: "services/:id",
+        path: "old-services/:id",
         element: <ServiceDetails />,
       },
       {
-        path: "services/:id/edit",
+        path: "old-services/:id/edit",
         element: <ServiceEdit />,
       },
-      // Categories Routes (under Services)
       {
-        path: "services/categories",
+        path: "old-services/categories",
         element: <CategoryList />,
       },
       {
-        path: "services/categories/new",
+        path: "old-services/categories/new",
         element: <CategoryCreate />,
       },
       {
-        path: "services/categories/:id/edit",
+        path: "old-services/categories/:id/edit",
         element: <CategoryEdit />,
+      },
+      // New Services Module
+      {
+        path: "services",
+        element: <ServiceCatalog />,
+      },
+      {
+        path: "services/category/:slug",
+        element: <CategoryServices />,
+      },
+      {
+        path: "services/manage",
+        element: <ServiceManager />,
+      },
+      {
+        path: "services/categories",
+        element: <CategoryManager />,
+      },
+      {
+        path: "services/custom",
+        element: <CustomServices />,
       },
       // Geography Routes
       {
