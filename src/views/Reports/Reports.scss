@@ -26,10 +26,6 @@
   }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 // Header Actions
 .bm-header-actions {
   display: flex;
@@ -164,7 +160,7 @@
 
     &--primary {
       background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
+      color: $primary-color;
     }
 
     &--success {
@@ -174,7 +170,7 @@
 
     &--warning {
       background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+      color: $warning-color;
     }
 
     &--info {
@@ -222,7 +218,7 @@
 
     &--negative {
       background: rgba(239, 68, 68, 0.1);
-      color: #dc2626;
+      color: $danger-deep;
     }
   }
 }
@@ -339,7 +335,7 @@
   }
 
   &--applications::before {
-    background: #3b82f6;
+    background: $primary-color;
   }
 
   &--approved::before {
@@ -347,7 +343,7 @@
   }
 
   &--rejected::before {
-    background: #ef4444;
+    background: $danger-color;
   }
 }
 
@@ -390,7 +386,7 @@
   }
 
   &--applications {
-    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    background: linear-gradient(180deg, $primary-color, #2563eb);
   }
 
   &--approved {
@@ -398,7 +394,7 @@
   }
 
   &--rejected {
-    background: linear-gradient(180deg, #ef4444, #dc2626);
+    background: linear-gradient(180deg, $danger-color, $danger-deep);
   }
 }
 
@@ -449,7 +445,7 @@
 
 .bm-revenue-bar {
   height: 100%;
-  background: linear-gradient(90deg, #f59e0b, #d97706);
+  background: linear-gradient(90deg, $warning-color, #d97706);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -504,7 +500,7 @@
 }
 
 .bm-text-danger {
-  color: #dc2626;
+  color: $danger-deep;
 }
 
 .bm-success-rate {
@@ -759,17 +755,17 @@
 
 .bm-btn-outline--danger {
   &:hover {
-    border-color: #ef4444 !important;
-    color: #ef4444 !important;
+    border-color: $danger-color !important;
+    color: $danger-color !important;
     background: rgba(239, 68, 68, 0.05) !important;
   }
 }
 
 .bm-btn-danger {
-  background: #ef4444;
+  background: $danger-color;
   color: #fff;
   &:hover {
-    background: #dc2626;
+    background: $danger-deep;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
@@ -866,12 +862,12 @@
 
   &--generating {
     background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    color: $primary-color;
   }
 
   &--failed {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 }
 
@@ -879,7 +875,7 @@
   width: 12px;
   height: 12px;
   border: 2px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3b82f6;
+  border-top-color: $primary-color;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -1078,7 +1074,7 @@
     justify-content: center;
     margin-bottom: 14px;
 
-    svg { font-size: 24px; color: #ef4444; }
+    svg { font-size: 24px; color: $danger-color; }
   }
 
   h3 {

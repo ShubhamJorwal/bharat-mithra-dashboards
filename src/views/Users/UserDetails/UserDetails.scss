@@ -111,7 +111,7 @@
 
   &--info {
     background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    color: $primary-color;
   }
 
   &--success {
@@ -121,12 +121,12 @@
 
   &--warning {
     background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    color: $warning-color;
   }
 
   &--danger {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 }
 
@@ -150,11 +150,11 @@
   }
 
   &--warning::before {
-    background: #f59e0b;
+    background: $warning-color;
   }
 
   &--danger::before {
-    background: #ef4444;
+    background: $danger-color;
   }
 }
 

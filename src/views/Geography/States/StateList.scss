@@ -14,7 +14,6 @@
 }
 
 .bm-spin { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 // Alert
 .sl-alert {
@@ -27,7 +26,7 @@
   font-size: 13px;
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #dc2626;
+  color: $danger-deep;
   flex-shrink: 0;
 
   svg { font-size: 18px; flex-shrink: 0; }
@@ -236,7 +235,7 @@
     border-radius: 50%;
     border: none;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
-    color: #3b82f6;
+    color: $primary-color;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -251,7 +250,7 @@
     }
 
     &:hover {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      background: linear-gradient(135deg, $primary-color, #1d4ed8);
       color: #fff;
       opacity: 1;
       transform: rotate(0deg) scale(1.1);
@@ -262,9 +261,9 @@
   &--state {
     .sl-card__view-icon {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
-      color: #3b82f6;
+      color: $primary-color;
       &:hover {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, $primary-color, #1d4ed8);
         color: #fff;
       }
     }
@@ -274,9 +273,9 @@
   &--ut {
     .sl-card__view-icon {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-      color: #10b981;
+      color: $success-alt;
       &:hover {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, $success-alt, #059669);
         color: #fff;
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
       }
@@ -328,7 +327,7 @@
 
     &.tag-state {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.06));
-      color: #3b82f6;
+      color: $primary-color;
       border: 1px solid rgba(59, 130, 246, 0.2);
     }
 
@@ -459,18 +458,18 @@
       }
 
       &.view-btn:hover {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, $primary-color, #1d4ed8);
         border-color: transparent;
       }
 
       &.edit-btn:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: linear-gradient(135deg, $warning-color, #d97706);
         border-color: transparent;
         box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
       }
 
       &.del:hover {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, $danger-color, $danger-deep);
         border-color: transparent;
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
       }
@@ -564,12 +563,12 @@
 
     &:hover {
       background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
-      border-left-color: #3b82f6;
+      border-left-color: $primary-color;
       transform: scale(1.005);
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
       .sl-table__acts { opacity: 1; }
-      .sl-table__txt strong { color: #3b82f6; }
+      .sl-table__txt strong { color: $primary-color; }
     }
 
     &:last-child td { border-bottom: none; }
@@ -603,7 +602,7 @@
 
     &.code-state {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.06));
-      color: #3b82f6;
+      color: $primary-color;
       border: 1px solid rgba(59, 130, 246, 0.2);
     }
 
@@ -628,7 +627,7 @@
 
     &.type-state {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04));
-      color: #3b82f6;
+      color: $primary-color;
     }
 
     &.type-ut {
@@ -710,25 +709,25 @@
       }
 
       &.view-btn:hover {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, $primary-color, #1d4ed8);
         border-color: transparent;
         color: #fff;
       }
 
       &.nav-btn:hover {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, $success-alt, #059669);
         border-color: transparent;
         color: #fff;
       }
 
       &.edit-btn:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: linear-gradient(135deg, $warning-color, #d97706);
         border-color: transparent;
         color: #fff;
       }
 
       &.del:hover {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, $danger-color, $danger-deep);
         border-color: transparent;
         color: #fff;
       }

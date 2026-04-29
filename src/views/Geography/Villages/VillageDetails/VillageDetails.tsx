@@ -25,9 +25,9 @@ import {
   HiOutlineIdentification,
   HiOutlineLightningBolt
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { Village } from '../../../../types/api.types';
-import ConfirmModal from '../../../../components/common/ConfirmModal';
+import geographyApi from '@/services/api/geography.api';
+import type { Village } from '@/types/api.types';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import '../../_details-shared.scss';
 import './VillageDetails.scss';
 

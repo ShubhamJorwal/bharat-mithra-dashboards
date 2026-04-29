@@ -142,7 +142,7 @@
   border-radius: $radius-md;
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #dc2626;
+  color: $danger-deep;
   font-size: 13px;
 
   svg { font-size: 18px; flex-shrink: 0; }
@@ -242,10 +242,6 @@
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 // Empty State
@@ -790,7 +786,7 @@
 
   &--primary {
     border: none;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, $primary-color, #1d4ed8);
     color: #fff;
 
     &:hover:not(:disabled) {
@@ -823,7 +819,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, $success-alt, #059669);
   color: #fff;
   margin-bottom: 24px;
   animation: successPop 0.5s ease;
@@ -962,7 +958,7 @@
 
   svg {
     font-size: 48px;
-    color: #10b981;
+    color: $success-alt;
     margin-bottom: 16px;
   }
 
@@ -1009,11 +1005,11 @@
   }
 
   &.mandatory {
-    border-left: 3px solid #f59e0b;
+    border-left: 3px solid $warning-color;
   }
 
   &.uploaded {
-    border-left: 3px solid #10b981;
+    border-left: 3px solid $success-alt;
     background: rgba(16, 185, 129, 0.02);
   }
 }
@@ -1047,7 +1043,7 @@
   padding: 2px 6px;
   border-radius: $radius-sm;
   background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  color: $danger-deep;
 }
 
 .apc-doc-hindi {
@@ -1088,7 +1084,7 @@
 
   &.uploaded {
     background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    color: $success-alt;
   }
 }
 
@@ -1188,7 +1184,7 @@
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
-  color: #dc2626;
+  color: $danger-deep;
   background: rgba(239, 68, 68, 0.1);
   border: none;
   border-radius: $radius-sm;
@@ -1257,7 +1253,7 @@
 
   svg {
     font-size: 16px;
-    color: #10b981;
+    color: $success-alt;
   }
 }
 

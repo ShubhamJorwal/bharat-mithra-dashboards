@@ -68,7 +68,7 @@
 .bm-review-star {
   font-size: 16px;
   color: #d1d5db;
-  &--filled { color: #f59e0b; }
+  &--filled { color: $warning-color; }
 }
 
 .bm-review-rating-num {

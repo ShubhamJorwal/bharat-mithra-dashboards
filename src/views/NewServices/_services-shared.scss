@@ -348,7 +348,7 @@
   &--active { background: rgba(46, 212, 122, 0.15); color: #2ed47a; }
   &--inactive { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
   &--new { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-  &--popular { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  &--popular { background: rgba(245, 158, 11, 0.15); color: $warning-color; }
   &--featured { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
   &--free { background: rgba(34, 197, 94, 0.15); color: #2ed47a; }
   &--custom { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }

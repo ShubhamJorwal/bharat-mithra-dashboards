@@ -31,7 +31,7 @@ $vl-theme: #6366f1;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.06));
-  color: #f59e0b;
+  color: $warning-color;
   border: 1px solid rgba(245, 158, 11, 0.2);
 }
 

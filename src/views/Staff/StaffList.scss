@@ -26,10 +26,6 @@
   }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 // Buttons
 .bm-btn {
   display: inline-flex;
@@ -105,7 +101,7 @@
 
     &--primary {
       background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
+      color: $primary-color;
     }
 
     &--success {
@@ -115,7 +111,7 @@
 
     &--warning {
       background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+      color: $warning-color;
     }
 
     &--info {
@@ -336,11 +332,11 @@
   }
 
   &--warning {
-    background: #f59e0b;
+    background: $warning-color;
   }
 
   &--danger {
-    background: #ef4444;
+    background: $danger-color;
   }
 }
 
@@ -368,7 +364,7 @@
 
   &.bm-danger:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 }
 
@@ -408,7 +404,7 @@
   }
 
   &.bm-danger {
-    color: #ef4444;
+    color: $danger-color;
 
     &:hover {
       background: rgba(239, 68, 68, 0.1);
@@ -447,7 +443,7 @@
 
   &--primary {
     background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    color: $primary-color;
   }
 
   &--success {
@@ -462,7 +458,7 @@
 
   &--danger {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 
   &--info {
@@ -495,7 +491,7 @@
 
   &--danger {
     background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    color: $danger-deep;
   }
 }
 
@@ -720,9 +716,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
-  background: #ef4444;
+  background: $danger-color;
   color: white;
-  &:hover { background: #dc2626; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+  &:hover { background: $danger-deep; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
 }
 
 // ============================================
@@ -958,7 +954,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 14px;
-    svg { font-size: 24px; color: #ef4444; }
+    svg { font-size: 24px; color: $danger-color; }
   }
 
   h3 { font-size: 17px; font-weight: 700; color: var(--color-text); margin: 0 0 6px; }

@@ -234,10 +234,10 @@
   }
 
   &--danger {
-    background: #ef4444;
+    background: $danger-color;
     color: #fff;
     &:hover {
-      background: #dc2626;
+      background: $danger-deep;
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
@@ -1080,7 +1080,7 @@
     justify-content: center;
     margin-bottom: 14px;
 
-    svg { font-size: 24px; color: #ef4444; }
+    svg { font-size: 24px; color: $danger-color; }
   }
 
   h3 {

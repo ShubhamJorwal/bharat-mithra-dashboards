@@ -21,9 +21,9 @@ import {
   HiOutlineHashtag,
   HiOutlineIdentification
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { GramPanchayat } from '../../../../types/api.types';
-import ConfirmModal from '../../../../components/common/ConfirmModal';
+import geographyApi from '@/services/api/geography.api';
+import type { GramPanchayat } from '@/types/api.types';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import '../../_details-shared.scss';
 import './GramPanchayatDetails.scss';
 

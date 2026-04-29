@@ -91,7 +91,7 @@
     border-bottom-color: rgba(239, 68, 68, 0.2);
 
     > svg {
-      color: #ef4444;
+      color: $danger-color;
     }
   }
 }
@@ -125,7 +125,7 @@
   padding: 12px 20px;
   background: rgba(239, 68, 68, 0.08);
   border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-  color: #dc2626;
+  color: $danger-deep;
   font-size: 13px;
 
   svg {
@@ -384,7 +384,7 @@
     color: white;
 
     &:hover:not(:disabled) {
-      background: var(--color-primary-hover, darken(#0052cc, 10%));
+      background: var(--color-primary-hover, #003a99);
     }
   }
 
@@ -400,11 +400,11 @@
   }
 
   &--danger {
-    background: #ef4444;
+    background: $danger-color;
     color: white;
 
     &:hover:not(:disabled) {
-      background: #dc2626;
+      background: $danger-deep;
     }
   }
 
@@ -460,7 +460,7 @@
   }
 
   &:hover {
-    background: var(--color-primary-hover, darken(#0052cc, 10%));
+    background: var(--color-primary-hover, #003a99);
   }
 }
 
@@ -530,7 +530,7 @@
     }
 
     &.delete:hover {
-      background: #ef4444;
+      background: $danger-color;
     }
   }
 }

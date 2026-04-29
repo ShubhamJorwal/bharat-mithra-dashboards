@@ -4,7 +4,7 @@
 
 // Use geography shared mixins for table, footer, pagination
 @include geo-table-wrap('wst');
-@include geo-table('wst', #3b82f6);
+@include geo-table('wst', $primary-color);
 @include geo-table-acts('wst');
 @include geo-footer('wst');
 @include geo-pagination('wst');
@@ -79,19 +79,19 @@
   }
 
   &--balance .wst-stat__icon {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, $primary-color, #1d4ed8);
   }
 
   &--pending .wst-stat__icon {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(135deg, $warning-color, #d97706);
   }
 
   &--credit .wst-stat__icon {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
   }
 
   &--debit .wst-stat__icon {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, $danger-color, $danger-deep);
   }
 }
 
@@ -185,7 +185,7 @@
   }
 
   &--add {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, $primary-color, #1d4ed8);
     color: #fff;
 
     &:hover {
@@ -215,7 +215,7 @@
   }
 
   &--approve {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
     color: #fff;
 
     &:hover {
@@ -224,7 +224,7 @@
   }
 
   &--reject {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, $danger-color, $danger-deep);
     color: #fff;
 
     &:hover {
@@ -249,11 +249,11 @@
   &--delete {
     background: transparent;
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ef4444;
+    color: $danger-color;
 
     &:hover {
       background: rgba(239, 68, 68, 0.08);
-      border-color: #ef4444;
+      border-color: $danger-color;
     }
   }
 
@@ -355,12 +355,12 @@
   font-weight: 600;
   letter-spacing: 0.3px;
 
-  &--wallet_request { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-  &--top_up { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &--wallet_request { background: rgba(59, 130, 246, 0.1); color: $primary-color; }
+  &--top_up { background: rgba(16, 185, 129, 0.1); color: $success-alt; }
   &--service_fee { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
   &--commission { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-  &--refund { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-  &--withdrawal { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  &--refund { background: rgba(245, 158, 11, 0.1); color: $warning-color; }
+  &--withdrawal { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
 }
 
 // Amount display
@@ -377,15 +377,15 @@
   }
 
   &--credit {
-    color: #10b981;
+    color: $success-alt;
   }
 
   &--debit {
-    color: #ef4444;
+    color: $danger-color;
   }
 
   &--request {
-    color: #f59e0b;
+    color: $warning-color;
   }
 }
 
@@ -415,12 +415,12 @@
 
   &--pending {
     background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    color: $warning-color;
   }
 
   &--approved {
     background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    color: $success-alt;
   }
 
   &--completed {
@@ -430,12 +430,12 @@
 
   &--rejected {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 
   &--failed {
     background: rgba(239, 68, 68, 0.08);
-    color: #dc2626;
+    color: $danger-deep;
   }
 
   &--hold {
@@ -517,7 +517,7 @@
 
       &:hover {
         background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        color: $danger-color;
       }
 
       svg {

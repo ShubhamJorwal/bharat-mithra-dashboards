@@ -76,9 +76,9 @@
   }
 
   &--danger {
-    background: #ef4444;
+    background: $danger-color;
     color: white;
-    &:hover { background: #dc2626; }
+    &:hover { background: $danger-deep; }
   }
 }
 
@@ -109,7 +109,7 @@
   transition: all 0.15s ease;
   svg { font-size: 16px; }
   &:hover { background: rgba(var(--color-primary-rgb), 0.1); color: var(--color-primary); }
-  &--danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  &--danger:hover { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
 }
 
 // ── Tabs ───────────────────────────────────────────────────
@@ -205,7 +205,7 @@
 
   &--success { background: rgba(34, 197, 94, 0.12); color: #16a34a; }
   &--warning { background: rgba(245, 158, 11, 0.12); color: #d97706; }
-  &--danger { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+  &--danger { background: rgba(239, 68, 68, 0.12); color: $danger-deep; }
   &--info { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
   &--muted { background: rgba(148, 163, 184, 0.12); color: #94a3b8; }
 }
@@ -309,9 +309,9 @@
   &:hover { transform: translateY(-3px); box-shadow: $shadow-lg; }
 
   &--revenue { border-left: 4px solid #22c55e; }
-  &--expenses { border-left: 4px solid #ef4444; }
-  &--balance { border-left: 4px solid #3b82f6; }
-  &--pending { border-left: 4px solid #f59e0b; }
+  &--expenses { border-left: 4px solid $danger-color; }
+  &--balance { border-left: 4px solid $primary-color; }
+  &--pending { border-left: 4px solid $warning-color; }
   &--budget { border-left: 4px solid #8b5cf6; }
   &--net { border-left: 4px solid #06b6d4; }
 }
@@ -325,9 +325,9 @@
   font-size: 22px;
 
   .fin-stat-card--revenue & { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-  .fin-stat-card--expenses & { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-  .fin-stat-card--balance & { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-  .fin-stat-card--pending & { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  .fin-stat-card--expenses & { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
+  .fin-stat-card--balance & { background: rgba(59, 130, 246, 0.1); color: $primary-color; }
+  .fin-stat-card--pending & { background: rgba(245, 158, 11, 0.1); color: $warning-color; }
   .fin-stat-card--budget & { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
   .fin-stat-card--net & { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
 }
@@ -361,7 +361,7 @@
   font-weight: 600;
   svg { font-size: 14px; }
   &.positive { color: #16a34a; }
-  &.negative { color: #dc2626; }
+  &.negative { color: $danger-deep; }
 }
 
 .fin-stat-meta {
@@ -472,7 +472,7 @@
   position: relative;
 
   &--revenue { background: #22c55e; }
-  &--expense { background: #ef4444; }
+  &--expense { background: $danger-color; }
 
   &:hover .fin-chart-bar-tip { opacity: 1; transform: translateY(-4px); }
 }
@@ -536,7 +536,7 @@
 }
 
 .fin-category-credit { color: #16a34a; }
-.fin-category-debit { color: #dc2626; }
+.fin-category-debit { color: $danger-deep; }
 
 .fin-category-bar-wrapper {
   height: 6px;
@@ -553,7 +553,7 @@
   transition: width 0.5s ease;
 
   &--credit { background: #22c55e; }
-  &--debit { background: #ef4444; }
+  &--debit { background: $danger-color; }
 }
 
 // ── Mini Transactions ──────────────────────────────────────
@@ -584,7 +584,7 @@
   flex-shrink: 0;
   svg { font-size: 16px; }
   &--credit { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-  &--debit { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  &--debit { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
 }
 
 .fin-mini-txn-info { flex: 1; min-width: 0; }
@@ -596,7 +596,7 @@
   font-weight: 700;
   flex-shrink: 0;
   &--credit { color: #16a34a; }
-  &--debit { color: #dc2626; }
+  &--debit { color: $danger-deep; }
 }
 
 // ── Account Summary ────────────────────────────────────────
@@ -712,7 +712,7 @@
 .fin-td-amount {
   font-weight: 700;
   &--credit { color: #16a34a !important; }
-  &--debit { color: #dc2626 !important; }
+  &--debit { color: $danger-deep !important; }
   &--bold { font-weight: 700; color: var(--color-text) !important; }
 }
 
@@ -792,8 +792,8 @@
   &:hover { transform: translateY(-3px); box-shadow: $shadow-lg; }
 
   &--savings { border-top: 3px solid #22c55e; }
-  &--current { border-top: 3px solid #3b82f6; }
-  &--escrow { border-top: 3px solid #f59e0b; }
+  &--current { border-top: 3px solid $primary-color; }
+  &--escrow { border-top: 3px solid $warning-color; }
   &--operational { border-top: 3px solid #8b5cf6; }
   &--reserve { border-top: 3px solid #06b6d4; }
 }
@@ -861,7 +861,7 @@
 }
 
 .fin-flow-in { color: #22c55e; font-size: 18px; flex-shrink: 0; }
-.fin-flow-out { color: #ef4444; font-size: 18px; flex-shrink: 0; }
+.fin-flow-out { color: $danger-color; font-size: 18px; flex-shrink: 0; }
 
 .fin-flow-label {
   display: block;
@@ -877,7 +877,7 @@
   font-size: 14px;
   font-weight: 700;
   &.positive { color: #16a34a; }
-  &.negative { color: #dc2626; }
+  &.negative { color: $danger-deep; }
 }
 
 .fin-account-card-footer {
@@ -928,8 +928,8 @@
   color: var(--color-text);
 
   &.positive { color: #16a34a; }
-  &.negative { color: #dc2626; }
-  &.danger { color: #ef4444; }
+  &.negative { color: $danger-deep; }
+  &.danger { color: $danger-color; }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1007,7 +1007,7 @@
 
 .fin-budget-total-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(90deg, $primary-color, #8b5cf6);
   border-radius: 5px;
   transition: width 0.5s ease;
 }
@@ -1082,7 +1082,7 @@
   color: var(--color-text);
   margin-top: 2px;
   &.positive { color: #16a34a; }
-  &.negative { color: #dc2626; }
+  &.negative { color: $danger-deep; }
 }
 
 .fin-budget-card-bar {
@@ -1099,9 +1099,9 @@
   transition: width 0.5s ease;
 
   &--success { background: #22c55e; }
-  &--warning { background: #f59e0b; }
-  &--danger { background: #ef4444; }
-  &--info { background: #3b82f6; }
+  &--warning { background: $warning-color; }
+  &--danger { background: $danger-color; }
+  &--info { background: $primary-color; }
 }
 
 .fin-budget-card-footer {
@@ -1177,7 +1177,7 @@
   color: var(--color-text-secondary);
   transition: all 0.15s ease;
   svg { font-size: 18px; }
-  &:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  &:hover { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
 }
 
 .fin-modal-body {
@@ -1198,7 +1198,7 @@
   font-weight: 800;
   letter-spacing: -1px;
   &--credit { color: #16a34a; }
-  &--debit { color: #dc2626; }
+  &--debit { color: $danger-deep; }
 }
 
 .fin-detail-acc-balance {
@@ -1311,7 +1311,7 @@
 
 .fin-confirm-icon {
   font-size: 48px;
-  color: #ef4444;
+  color: $danger-color;
   margin-bottom: 12px;
 }
 
@@ -1339,7 +1339,7 @@
 // ── Utilities ──────────────────────────────────────────────
 
 .positive { color: #16a34a; }
-.negative { color: #dc2626; }
+.negative { color: $danger-deep; }
 
 // ═══════════════════════════════════════════════════════════
 // DARK MODE

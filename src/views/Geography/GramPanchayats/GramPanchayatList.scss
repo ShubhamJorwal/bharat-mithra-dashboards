@@ -4,10 +4,10 @@
 
 // ============================================
 // GRAM PANCHAYATS LIST - Using Shared Geography Styles
-// Theme Color: #f59e0b (Amber)
+// Theme Color: $warning-color (Amber)
 // ============================================
 
-$gpl-theme: #f59e0b;
+$gpl-theme: $warning-color;
 
 // Apply all common Geography styles
 @include geo.geo-all-common('gpl', $gpl-theme);

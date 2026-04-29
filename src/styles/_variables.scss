@@ -1,10 +1,17 @@
-// Colors
+// Colors — semantic tokens
 $primary-color: #3b82f6;
 $secondary-color: #6366f1;
 $success-color: #22c55e;
 $warning-color: #f59e0b;
 $danger-color: #ef4444;
 $info-color: #06b6d4;
+
+// Extended palette (added 2026-04-29 for de-duplication)
+// These hex values were repeated across many SCSS files; reach for the
+// token, not the hex. Visual output is unchanged.
+$danger-deep: #dc2626;     // alt red used in 73+ sites (slightly darker than $danger-color)
+$success-alt: #10b981;     // alt green used in 60+ sites (emerald, not the bluer $success-color)
+$primary-deep: #0052cc;    // pre-computed darken($primary, ~10%) — replaces deprecated darken() calls
 
 // Dark theme colors
 $bg-dark: #0f172a;

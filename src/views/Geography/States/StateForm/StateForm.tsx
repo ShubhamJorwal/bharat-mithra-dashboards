@@ -6,9 +6,9 @@ import {
   HiOutlineRefresh,
   HiOutlineExclamationCircle
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { CreateStateRequest, UpdateStateRequest } from '../../../../types/api.types';
-import { PageHeader } from '../../../../components/common/PageHeader';
+import geographyApi from '@/services/api/geography.api';
+import type { CreateStateRequest, UpdateStateRequest } from '@/types/api.types';
+import { PageHeader } from '@/components/common/PageHeader';
 import './StateForm.scss';
 
 type ZoneType = 'north' | 'south' | 'east' | 'west' | 'central' | 'northeast';

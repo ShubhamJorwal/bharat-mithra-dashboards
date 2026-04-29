@@ -4,10 +4,10 @@
 
 // ============================================
 // DISTRICTS LIST - Using Shared Geography Styles
-// Theme Color: #10b981 (Emerald/Green)
+// Theme Color: $success-alt (Emerald/Green)
 // ============================================
 
-$dl-theme: #10b981;
+$dl-theme: $success-alt;
 
 // Apply all common Geography styles
 @include geo.geo-all-common('dl', $dl-theme);

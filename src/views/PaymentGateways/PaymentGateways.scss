@@ -73,10 +73,10 @@
       color: #fff;
     }
 
-    &--bank { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-    &--active { background: linear-gradient(135deg, #10b981, #059669); }
+    &--bank { background: linear-gradient(135deg, $primary-color, #1d4ed8); }
+    &--active { background: linear-gradient(135deg, $success-alt, #059669); }
     &--upi { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-    &--active-upi { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    &--active-upi { background: linear-gradient(135deg, $warning-color, #d97706); }
   }
 
   &__info {
@@ -213,7 +213,7 @@
   svg { font-size: 16px; }
 
   &--add {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, $primary-color, #1d4ed8);
     color: #fff;
     &:hover { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transform: translateY(-1px); }
   }
@@ -228,7 +228,7 @@
   }
 
   &--save {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
     color: #fff;
     &:hover { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
   }
@@ -294,7 +294,7 @@
     svg { width: 22px; height: 22px; color: #fff; }
   }
 
-  &__bank-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+  &__bank-icon { background: linear-gradient(135deg, $primary-color, #1d4ed8); }
   &__upi-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
 
   &__title {
@@ -335,8 +335,8 @@
     font-weight: 600;
     flex-shrink: 0;
 
-    &--active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-    &--inactive { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    &--active { background: rgba(16, 185, 129, 0.1); color: $success-alt; }
+    &--inactive { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
   }
 
   &__body {
@@ -435,14 +435,14 @@
     &:hover { transform: translateY(-1px); }
 
     &--toggle:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: linear-gradient(135deg, $warning-color, #d97706);
       border-color: transparent;
       color: #fff;
       box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
     }
 
     &--edit:hover {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      background: linear-gradient(135deg, $primary-color, #1d4ed8);
       border-color: transparent;
       color: #fff;
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
@@ -453,7 +453,7 @@
       padding: 5px 8px;
 
       &:hover {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, $danger-color, $danger-deep);
         border-color: transparent;
         color: #fff;
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
@@ -554,7 +554,7 @@
       color: var(--color-text-secondary);
       transition: all 0.2s ease;
 
-      &:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+      &:hover { background: rgba(239, 68, 68, 0.1); color: $danger-color; }
       svg { font-size: 18px; }
     }
   }

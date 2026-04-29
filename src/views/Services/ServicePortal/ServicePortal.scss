@@ -153,7 +153,7 @@
   }
 
   &--categories .spt-stat__icon {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, $primary-color, #1d4ed8);
   }
 
   &--services .spt-stat__icon {
@@ -161,11 +161,11 @@
   }
 
   &--popular .spt-stat__icon {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(135deg, $warning-color, #d97706);
   }
 
   &--new .spt-stat__icon {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
   }
 }
 

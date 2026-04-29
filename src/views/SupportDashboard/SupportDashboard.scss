@@ -80,7 +80,7 @@
 }
 
 .sp-btn-danger {
-  background: #ef4444;
+  background: $danger-color;
   color: #fff;
   &:hover { opacity: 0.9; }
 }
@@ -111,7 +111,7 @@
   cursor: pointer;
   font-size: 16px;
   &:hover { background: var(--color-background); color: var(--color-text); }
-  &--danger:hover { background: #fef2f2; color: #ef4444; }
+  &--danger:hover { background: #fef2f2; color: $danger-color; }
 }
 
 // ─── Tabs ─────────────────────────────────────────────────
@@ -197,12 +197,12 @@
     height: 3px;
   }
 
-  &--open::before { background: #3b82f6; }
-  &--progress::before { background: #f59e0b; }
-  &--escalated::before { background: #ef4444; }
+  &--open::before { background: $primary-color; }
+  &--progress::before { background: $warning-color; }
+  &--escalated::before { background: $danger-color; }
   &--waiting::before { background: #8b5cf6; }
   &--resolved::before { background: #22c55e; }
-  &--satisfaction::before { background: #f59e0b; }
+  &--satisfaction::before { background: $warning-color; }
 }
 
 .sp-stat-icon {
@@ -241,7 +241,7 @@
 
   svg {
     font-size: 20px;
-    color: #ef4444;
+    color: $danger-color;
     flex-shrink: 0;
   }
 
@@ -251,8 +251,8 @@
 .sp-alert-btn {
   padding: 5px 14px;
   border-radius: $radius-md;
-  border: 1px solid #ef4444;
-  background: #ef4444;
+  border: 1px solid $danger-color;
+  background: $danger-color;
   color: #fff;
   font-size: $font-xs;
   font-weight: 600;
@@ -541,7 +541,7 @@
   gap: 4px;
   font-size: $font-sm;
   font-weight: 700;
-  color: #f59e0b;
+  color: $warning-color;
   svg { font-size: 16px; }
 }
 
@@ -882,7 +882,7 @@
   gap: 3px;
   font-size: $font-sm;
   font-weight: 700;
-  color: #f59e0b;
+  color: $warning-color;
 }
 
 .sp-agent-specializations {
@@ -1072,7 +1072,7 @@
   font-weight: 600;
   svg { font-size: 14px; }
   &.positive { color: #22c55e; }
-  &.negative { color: #ef4444; }
+  &.negative { color: $danger-color; }
 }
 
 // ─── Status / Priority Breakdown ──────────────────────────
@@ -1155,7 +1155,7 @@
   align-items: center;
   gap: 3px;
   font-weight: 700;
-  color: #f59e0b;
+  color: $warning-color;
   svg { font-size: 14px; }
 }
 
@@ -1238,7 +1238,7 @@
   height: 56px;
   border-radius: 50%;
   background: #fef2f2;
-  color: #ef4444;
+  color: $danger-color;
   font-size: 28px;
   margin: 0 auto;
 }
@@ -1405,8 +1405,8 @@ body.dark-mode {
     color: #fecaca;
   }
   .sp-alert-btn {
-    background: #dc2626;
-    border-color: #dc2626;
+    background: $danger-deep;
+    border-color: $danger-deep;
   }
   .sp-confirm-icon { background: #3b1111; }
   .sp-icon-btn--danger:hover { background: #3b1111; }

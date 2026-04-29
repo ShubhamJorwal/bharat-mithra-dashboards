@@ -902,7 +902,7 @@ $navy-accent: #1e3a5f;
   padding: 0 4px;
   font-size: 10px;
   font-weight: 700;
-  background: linear-gradient(135deg, #ef4444, #f87171);
+  background: linear-gradient(135deg, $danger-color, #f87171);
   color: #fff;
   border-radius: $radius-full;
   @include flex-center;
@@ -1062,7 +1062,7 @@ $navy-accent: #1e3a5f;
   }
 
   .bm-avatar {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    background: linear-gradient(135deg, $primary-color, #8b5cf6);
 
     &::after {
       border-color: rgba(255, 255, 255, 0.3);
@@ -1316,7 +1316,7 @@ $navy-accent: #1e3a5f;
   width: 30px;
   height: 30px;
   border-radius: $radius-lg;
-  // background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  // background: linear-gradient(135deg, $primary-color, #8b5cf6);
   @include flex-center;
   font-size: 12px;
   font-weight: 700;
@@ -1538,7 +1538,7 @@ $navy-accent: #1e3a5f;
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, $primary-color, #8b5cf6);
   @include flex-center;
   font-size: 28px;
   font-weight: 700;
@@ -1568,7 +1568,7 @@ $navy-accent: #1e3a5f;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, $primary-color, #1d4ed8);
   border: 2px solid $navy-dark;
   color: #ffffff;
   cursor: pointer;
@@ -1871,7 +1871,7 @@ $navy-accent: #1e3a5f;
       color: #fff;
     }
 
-    &.bank { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    &.bank { background: linear-gradient(135deg, $primary-color, #1d4ed8); }
     &.upi { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
   }
 
@@ -1901,7 +1901,7 @@ $navy-accent: #1e3a5f;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2034,7 +2034,7 @@ $navy-accent: #1e3a5f;
 
 .bm-addmoney-submit {
   padding: 9px 22px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, $success-alt, #059669);
   border: none;
   border-radius: $radius-md;
   color: #ffffff;

@@ -26,7 +26,7 @@ $tl-theme: #ec4899;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.06));
-  color: #10b981;
+  color: $success-alt;
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 

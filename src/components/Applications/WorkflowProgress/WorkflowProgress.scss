@@ -45,7 +45,7 @@
       padding: 12px 16px;
       background: rgba(239, 68, 68, 0.1);
       border-radius: $radius-md;
-      color: #ef4444;
+      color: $danger-color;
       font-size: 13px;
       margin-bottom: 16px;
 
@@ -70,7 +70,7 @@
       padding: 12px 24px;
       font-size: 14px;
       font-weight: 600;
-      background: linear-gradient(135deg, #10b981, #059669);
+      background: linear-gradient(135deg, $success-alt, #059669);
       color: white;
       border: none;
       border-radius: $radius-md;
@@ -181,7 +181,7 @@
 
     &-fill {
       height: 100%;
-      background: linear-gradient(90deg, #3b82f6, #10b981);
+      background: linear-gradient(90deg, $primary-color, $success-alt);
       border-radius: 3px;
       transition: width 0.3s ease;
     }
@@ -202,7 +202,7 @@
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 600;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, $success-alt, #059669);
     color: white;
     border: none;
     border-radius: $radius-md;
@@ -233,7 +233,7 @@
     padding: 12px 24px;
     background: rgba(239, 68, 68, 0.1);
     border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-    color: #ef4444;
+    color: $danger-color;
     font-size: 13px;
 
     svg {
@@ -298,7 +298,7 @@
       z-index: 0;
 
       &.completed {
-        background: #10b981;
+        background: $success-alt;
       }
     }
 
@@ -405,7 +405,7 @@
       background: rgba(245, 158, 11, 0.1);
       border-radius: $radius-sm;
       font-size: 12px;
-      color: #f59e0b;
+      color: $warning-color;
 
       svg {
         width: 14px;
@@ -414,7 +414,7 @@
 
       &.breached {
         background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        color: $danger-color;
       }
     }
 
@@ -476,7 +476,7 @@
     }
 
     &.advance {
-      background: #10b981;
+      background: $success-alt;
       color: white;
 
       &:hover {
@@ -486,7 +486,7 @@
 
     &.send-back {
       background: rgba(245, 158, 11, 0.15);
-      color: #f59e0b;
+      color: $warning-color;
       border: 1px solid rgba(245, 158, 11, 0.3);
 
       &:hover {
@@ -496,7 +496,7 @@
 
     &.reject {
       background: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
+      color: $danger-color;
       border: 1px solid rgba(239, 68, 68, 0.3);
 
       &:hover {
@@ -542,7 +542,7 @@
       padding: 12px;
       background: rgba(239, 68, 68, 0.1);
       border-radius: $radius-md;
-      color: #ef4444;
+      color: $danger-color;
       font-size: 13px;
       margin-bottom: 16px;
 
@@ -620,7 +620,7 @@
       }
 
       &.advance {
-        background: #10b981;
+        background: $success-alt;
         color: white;
 
         &:hover:not(:disabled) {
@@ -629,7 +629,7 @@
       }
 
       &.send_back {
-        background: #f59e0b;
+        background: $warning-color;
         color: white;
 
         &:hover:not(:disabled) {
@@ -638,11 +638,11 @@
       }
 
       &.reject {
-        background: #ef4444;
+        background: $danger-color;
         color: white;
 
         &:hover:not(:disabled) {
-          background: #dc2626;
+          background: $danger-deep;
         }
       }
     }

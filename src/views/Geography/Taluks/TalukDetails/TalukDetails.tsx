@@ -19,9 +19,9 @@ import {
   HiOutlineCalendar,
   HiOutlineHashtag
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { Taluk } from '../../../../types/api.types';
-import ConfirmModal from '../../../../components/common/ConfirmModal';
+import geographyApi from '@/services/api/geography.api';
+import type { Taluk } from '@/types/api.types';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import '../../_details-shared.scss';
 import './TalukDetails.scss';
 

@@ -54,7 +54,7 @@
 
     svg {
       font-size: 36px;
-      color: #ef4444;
+      color: $danger-color;
     }
   }
 
@@ -260,7 +260,7 @@
       color: #fff;
 
       &:hover {
-        background: #ef4444;
+        background: $danger-color;
         transform: translateY(-1px);
       }
     }
@@ -328,17 +328,17 @@
 
     &--gps {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
-      svg { color: #f59e0b; }
+      svg { color: $warning-color; }
     }
 
     &--villages {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
-      svg { color: #10b981; }
+      svg { color: $success-alt; }
     }
 
     &--population {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
-      svg { color: #3b82f6; }
+      svg { color: $primary-color; }
     }
 
     &--area {
@@ -569,7 +569,7 @@
 
     &--blue {
       background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
+      color: $primary-color;
 
       &:hover {
         background: rgba(59, 130, 246, 0.2);
@@ -627,12 +627,12 @@
 
     &--active {
       background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
+      color: $success-alt;
     }
 
     &--inactive {
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      color: $danger-color;
     }
   }
 }

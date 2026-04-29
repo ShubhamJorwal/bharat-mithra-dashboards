@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
@@ -8,7 +9,6 @@
 
 // Spin animation
 .bm-spin { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 // ============================================
 // MIXIN: Base Layout
@@ -37,7 +37,7 @@
     font-size: 13px;
     background: rgba(239, 68, 68, 0.08);
     border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #dc2626;
+    color: $danger-deep;
     flex-shrink: 0;
 
     svg { font-size: 18px; flex-shrink: 0; }
@@ -288,7 +288,7 @@
     svg { font-size: 18px; }
 
     &:hover {
-      background: linear-gradient(135deg, $theme-color, darken($theme-color, 10%));
+      background: linear-gradient(135deg, $theme-color, color.adjust($theme-color, $lightness: -10%));
       color: #fff;
       opacity: 1;
       transform: rotate(0deg) scale(1.1);
@@ -437,24 +437,24 @@
       }
 
       &.view-btn:hover {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, $primary-color, #1d4ed8);
         border-color: transparent;
       }
 
       &.nav-btn:hover {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, $success-alt, #059669);
         border-color: transparent;
         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
       }
 
       &.edit-btn:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: linear-gradient(135deg, $warning-color, #d97706);
         border-color: transparent;
         box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
       }
 
       &.del:hover {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, $danger-color, $danger-deep);
         border-color: transparent;
         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
       }
@@ -681,25 +681,25 @@
       }
 
       &.view-btn:hover {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, $primary-color, #1d4ed8);
         border-color: transparent;
         color: #fff;
       }
 
       &.nav-btn:hover {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, $success-alt, #059669);
         border-color: transparent;
         color: #fff;
       }
 
       &.edit-btn:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
+        background: linear-gradient(135deg, $warning-color, #d97706);
         border-color: transparent;
         color: #fff;
       }
 
       &.del:hover {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: linear-gradient(135deg, $danger-color, $danger-deep);
         border-color: transparent;
         color: #fff;
       }

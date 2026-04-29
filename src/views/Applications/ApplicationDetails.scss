@@ -34,14 +34,9 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--color-border);
-  border-top-color: #3b82f6;
+  border-top-color: $primary-color;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 // ============================================
@@ -68,7 +63,7 @@
 
   svg {
     font-size: 32px;
-    color: #ef4444;
+    color: $danger-color;
   }
 }
 
@@ -121,8 +116,8 @@
 
   &:hover {
     background: var(--color-background-secondary);
-    border-color: #3b82f6;
-    color: #3b82f6;
+    border-color: $primary-color;
+    color: $primary-color;
   }
 }
 
@@ -137,7 +132,7 @@
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, $primary-color 0%, #6366f1 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -179,7 +174,7 @@
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
   font-size: 13px;
-  color: #dc2626;
+  color: $danger-deep;
   line-height: 1.5;
 
   svg {
@@ -211,7 +206,7 @@
 
   &--urgent {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 }
 
@@ -245,7 +240,7 @@
   }
 
   &--primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, $primary-color 0%, #6366f1 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 
@@ -277,7 +272,7 @@
 
   &--danger {
     background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    color: $danger-deep;
     border: 1px solid rgba(239, 68, 68, 0.2);
 
     &:hover:not(:disabled) {
@@ -375,7 +370,7 @@
 
   svg {
     font-size: 18px;
-    color: #3b82f6;
+    color: $primary-color;
   }
 }
 
@@ -434,8 +429,8 @@
   }
 
   &.active {
-    color: #3b82f6;
-    border-bottom-color: #3b82f6;
+    color: $primary-color;
+    border-bottom-color: $primary-color;
   }
 }
 
@@ -478,7 +473,7 @@
 
   svg {
     font-size: 18px;
-    color: #3b82f6;
+    color: $primary-color;
   }
 }
 
@@ -512,12 +507,12 @@
   color: var(--color-text);
 
   &--highlight {
-    color: #3b82f6;
+    color: $primary-color;
     font-weight: 600;
   }
 
   &--urgent {
-    color: #ef4444;
+    color: $danger-color;
     font-weight: 600;
   }
 }
@@ -557,7 +552,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: #3b82f6;
+    border-color: $primary-color;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
   }
 }
@@ -574,7 +569,7 @@
 
   svg {
     font-size: 20px;
-    color: #3b82f6;
+    color: $primary-color;
   }
 }
 
@@ -609,17 +604,17 @@
 
   &--verified {
     background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    color: $success-alt;
   }
 
   &--rejected {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 
   &--pending {
     background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    color: $warning-color;
   }
 }
 
@@ -627,7 +622,7 @@
   padding: 8px 16px;
   font-size: 12px;
   font-weight: 500;
-  color: #3b82f6;
+  color: $primary-color;
   background: rgba(59, 130, 246, 0.1);
   border-radius: 6px;
   text-decoration: none;
@@ -725,7 +720,7 @@
   border-radius: 10px;
 
   &.private {
-    border-left: 3px solid #f59e0b;
+    border-left: 3px solid $warning-color;
   }
 }
 
@@ -741,7 +736,7 @@
   font-size: 10px;
   font-weight: 600;
   background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  color: $primary-color;
   border-radius: 20px;
   text-transform: uppercase;
 }
@@ -799,11 +794,11 @@
     color: var(--color-text);
 
     &--success {
-      color: #10b981;
+      color: $success-alt;
     }
 
     &--danger {
-      color: #ef4444;
+      color: $danger-color;
     }
   }
 }
@@ -843,7 +838,7 @@
 
   svg {
     font-size: 20px;
-    color: #10b981;
+    color: $success-alt;
   }
 }
 
@@ -881,17 +876,17 @@
 
   &--success {
     background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    color: $success-alt;
   }
 
   &--pending {
     background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    color: $warning-color;
   }
 
   &--failed {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: $danger-color;
   }
 
   &--refunded {
@@ -931,7 +926,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: $primary-color;
   border: 2px solid white;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
   flex-shrink: 0;
@@ -972,7 +967,7 @@
 
 .apd-history-to {
   background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  color: $primary-color;
 }
 
 .apd-history-arrow {
@@ -1098,7 +1093,7 @@
 
     &:focus {
       outline: none;
-      border-color: #3b82f6;
+      border-color: $primary-color;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
   }

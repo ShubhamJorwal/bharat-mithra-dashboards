@@ -64,7 +64,7 @@
     border: 1px solid rgba(239, 68, 68, 0.3);
     border-radius: $radius-md;
     margin: 16px;
-    color: #dc2626;
+    color: $danger-deep;
     font-size: 14px;
 
     svg {
@@ -187,6 +187,3 @@
   }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}

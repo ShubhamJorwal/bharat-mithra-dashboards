@@ -21,9 +21,9 @@ import {
   HiOutlineHashtag,
   HiOutlineFlag
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { State } from '../../../../types/api.types';
-import ConfirmModal from '../../../../components/common/ConfirmModal';
+import geographyApi from '@/services/api/geography.api';
+import type { State } from '@/types/api.types';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import '../../_details-shared.scss';
 import './StateDetails.scss';
 

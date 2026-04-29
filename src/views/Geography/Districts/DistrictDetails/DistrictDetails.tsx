@@ -20,9 +20,9 @@ import {
   HiOutlineCalendar,
   HiOutlineHashtag
 } from 'react-icons/hi';
-import geographyApi from '../../../../services/api/geography.api';
-import type { District } from '../../../../types/api.types';
-import ConfirmModal from '../../../../components/common/ConfirmModal';
+import geographyApi from '@/services/api/geography.api';
+import type { District } from '@/types/api.types';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import '../../_details-shared.scss';
 import './DistrictDetails.scss';
 
