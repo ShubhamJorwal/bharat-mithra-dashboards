@@ -1,20 +1,23 @@
 @use '../../../styles/variables' as *;
 
 .bm-svc-details {
+  // ============================================================
+  // HERO
+  // ============================================================
   .bm-svc-hero {
     --cat-color: #{$primary-color};
     border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
+    border-radius: $radius-xl;
     margin-bottom: $spacing-xl;
     overflow: hidden;
     background: var(--color-card-bg);
+    position: relative;
   }
   .bm-svc-hero-image {
     position: relative;
-    height: 180px;
+    height: 220px;
     background: var(--color-background);
     overflow: hidden;
-    border-bottom: 4px solid var(--cat-color);
     img {
       width: 100%; height: 100%;
       object-fit: cover;
@@ -22,86 +25,187 @@
     }
     &::after {
       content: "";
-      position: absolute; left: 0; right: 0; bottom: 0;
-      height: 50%;
-      background: linear-gradient(to top, rgba(0,0,0,0.35), transparent);
+      position: absolute; left: 0; right: 0; bottom: 0; top: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, transparent 60%);
       pointer-events: none;
     }
   }
-  .bm-svc-hero-meta,
-  .bm-svc-hero-stats { padding-left: $spacing-xl; padding-right: $spacing-xl; }
-  .bm-svc-hero-meta { padding-top: $spacing-lg; }
-  .bm-svc-hero-stats { padding-bottom: $spacing-lg; }
-  .bm-svc-hero-meta {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    flex-wrap: wrap;
-    margin-bottom: $spacing-md;
-    code {
-      font-family: ui-monospace, "SF Mono", Menlo, monospace;
-      font-size: 12px;
-      background: rgba(0, 0, 0, 0.06);
-      padding: 2px 8px;
-      border-radius: $radius-sm;
-    }
+  .bm-svc-hero-overlay-meta {
+    position: absolute;
+    left: $spacing-xl; right: $spacing-xl; bottom: $spacing-md;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    z-index: 1;
   }
   .bm-svc-hero-cat {
-    color: var(--cat-color);
+    color: #fff;
     text-decoration: none;
-    font-size: $font-sm;
-    font-weight: $font-semibold;
+    font-size: $font-xs;
+    font-weight: $font-bold;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    &:hover { text-decoration: underline; }
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: $radius-full;
+    background: var(--cat-color);
+    &:hover { opacity: 0.9; }
   }
-  .bm-svc-hero-stats {
+
+  // ============================================================
+  // TWO-COLUMN LAYOUT
+  // ============================================================
+  .bm-svc-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: $spacing-lg;
-    @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
-    > div {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      .l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); }
-      .n {
-        font-size: $font-lg;
-        font-weight: $font-bold;
-        color: var(--color-text);
-        display: inline-flex;
-        align-items: center;
-        gap: 2px;
-      }
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: $spacing-xl;
+    align-items: start;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
     }
   }
 
+  .bm-svc-main {
+    min-width: 0;        // prevent flex/grid overflow
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+
+  .bm-svc-sidebar {
+    position: sticky;
+    top: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    @media (max-width: 1100px) {
+      position: static;
+    }
+  }
+
+  // ============================================================
+  // SIDEBAR CARDS
+  // ============================================================
+  .bm-svc-sidebar-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-lg $spacing-lg;
+  }
+  .bm-svc-fees {
+    background: linear-gradient(135deg, rgba($primary-color, 0.06), rgba($success-color, 0.04));
+    border-color: rgba($primary-color, 0.25);
+  }
+  .bm-svc-fee-display {
+    display: flex; flex-direction: column; gap: 3px;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px dashed var(--color-border);
+    margin-bottom: $spacing-md;
+  }
+  .bm-svc-fee-label {
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: $font-semibold;
+  }
+  .bm-svc-fee-value {
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    display: inline-flex; align-items: center;
+    line-height: 1.1;
+  }
+  .bm-svc-fee-free {
+    color: $success-color;
+    font-size: $font-2xl;
+    letter-spacing: 0.04em;
+  }
+  .bm-svc-fee-meta {
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+  }
+  .bm-svc-fee-breakdown {
+    display: grid; gap: 6px;
+    div {
+      display: flex; justify-content: space-between;
+      font-size: $font-sm;
+      span { color: var(--color-text-secondary); }
+      b { color: var(--color-text); font-weight: $font-semibold; }
+    }
+  }
+
+  .bm-svc-side-title {
+    margin: 0 0 $spacing-md;
+    font-size: $font-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    font-weight: $font-bold;
+  }
+  .bm-svc-side-list {
+    margin: 0; padding: 0; list-style: none;
+    display: flex; flex-direction: column; gap: 8px;
+    li {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: $spacing-md;
+      font-size: $font-sm;
+      span { color: var(--color-text-secondary); }
+      strong { color: var(--color-text); font-weight: $font-semibold; text-align: right; }
+    }
+  }
+
+  .bm-svc-side-link {
+    display: flex; flex-direction: column; gap: 2px;
+    text-decoration: none;
+    transition: $transition-fast;
+    &:hover {
+      border-color: $primary-color;
+      transform: translateY(-1px);
+    }
+  }
+  .bm-svc-side-link-label {
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: $primary-color;
+  }
+  .bm-svc-side-link-host {
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+  }
+
+  // ============================================================
+  // TABS
+  // ============================================================
   .bm-tabs {
     display: flex;
     gap: 0;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: $spacing-lg;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: 4px;
     overflow-x: auto;
   }
   .bm-tab {
     background: none;
     border: none;
     cursor: pointer;
-    padding: $spacing-md $spacing-lg;
+    padding: 8px 16px;
     font-size: $font-sm;
     font-weight: $font-medium;
     color: var(--color-text-secondary);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+    border-radius: $radius-md;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
     transition: $transition-fast;
+    flex: 1 1 auto;
+    justify-content: center;
     &:hover { color: var(--color-text); }
     &.active {
-      color: $primary-color;
-      border-bottom-color: $primary-color;
+      background: $primary-color;
+      color: #fff;
+      .bm-tab-count { background: rgba(#fff, 0.25); color: #fff; }
     }
   }
   .bm-tab-count {
@@ -110,48 +214,87 @@
     font-weight: $font-bold;
     padding: 1px 7px;
     border-radius: $radius-full;
+    color: var(--color-text-secondary);
   }
-  .bm-tab.active .bm-tab-count { background: rgba($primary-color, 0.15); color: $primary-color; }
 
-  .bm-grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: $spacing-md;
+  // ============================================================
+  // SECTIONS
+  // ============================================================
+  .bm-section-stack {
+    display: flex; flex-direction: column;
+    gap: $spacing-lg;
   }
-  .bm-svc-card-detail {
+  .bm-svc-section {
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: $radius-lg;
-    padding: $spacing-lg $spacing-xl;
-    h3 {
-      font-size: $font-xs;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-text-secondary);
-      font-weight: $font-bold;
-      margin: 0 0 $spacing-md;
-      padding-bottom: $spacing-sm;
-      border-bottom: 1px solid var(--color-border-light);
+    overflow: hidden;
+  }
+  .bm-svc-section-head {
+    display: flex; align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-background);
+    h2 {
+      margin: 0;
+      font-size: $font-base;
+      font-weight: $font-semibold;
+      letter-spacing: -0.01em;
     }
-    p { font-size: $font-sm; line-height: 1.6; color: var(--color-text); margin: 0; }
+  }
+  .bm-svc-section-icon {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: $radius-md;
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+    font-size: 16px;
+  }
+  .bm-svc-section-body {
+    padding: $spacing-lg $spacing-xl;
+  }
+
+  .bm-prose {
+    font-size: $font-base;
+    line-height: 1.65;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .bm-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $spacing-md $spacing-2xl;
   }
   .bm-row {
     display: grid;
     grid-template-columns: 160px 1fr;
     gap: $spacing-md;
-    padding: 5px 0;
+    padding: 6px 0;
     font-size: $font-sm;
+    border-bottom: 1px solid var(--color-border-light);
+    &:last-child { border-bottom: 0; }
   }
   .bm-row-k { color: var(--color-text-secondary); }
   .bm-row-v { color: var(--color-text); font-weight: $font-medium; word-break: break-word; }
-  .bm-row-v code { font-size: 12px; background: rgba(0, 0, 0, 0.06); padding: 2px 6px; border-radius: $radius-sm; }
+  .bm-row-v code {
+    font-size: 12px;
+    background: var(--color-background);
+    padding: 2px 7px;
+    border-radius: $radius-sm;
+    border: 1px solid var(--color-border);
+  }
   .bm-row-v a { color: $primary-color; }
 
-  .bm-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  // ============================================================
+  // TAGS
+  // ============================================================
+  .bm-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .bm-tag {
-    background: rgba($primary-color, 0.1);
+    background: rgba($primary-color, 0.08);
     color: $primary-color;
-    padding: 3px 10px;
+    padding: 4px 11px;
     border-radius: $radius-full;
     font-size: 11px;
     font-weight: $font-semibold;
@@ -159,12 +302,15 @@
     letter-spacing: 0.04em;
   }
 
+  // ============================================================
+  // TABLES (used in builders)
+  // ============================================================
   .bm-table {
     width: 100%;
     border-collapse: collapse;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
+    border-radius: $radius-md;
     overflow: hidden;
     font-size: $font-sm;
     th, td {
@@ -180,104 +326,106 @@
       background: var(--color-background);
     }
     tr:last-child td { border-bottom: 0; }
+    tr:hover td { background: var(--color-background); }
     code {
-      background: rgba(0, 0, 0, 0.06);
+      background: var(--color-background);
       padding: 2px 6px;
       border-radius: $radius-sm;
       font-size: 11px;
     }
   }
 
-  .bm-workflow { padding: 0; list-style: none; margin: 0; }
+  // ============================================================
+  // WORKFLOW LIST
+  // ============================================================
+  .bm-workflow {
+    padding: 0; list-style: none; margin: 0;
+    display: flex; flex-direction: column;
+    gap: $spacing-sm;
+  }
   .bm-workflow-step {
     display: grid;
-    grid-template-columns: 48px 1fr;
+    grid-template-columns: 44px 1fr auto;
     gap: $spacing-md;
-    padding: $spacing-md 0;
-    border-bottom: 1px solid var(--color-border-light);
-    &:last-child { border-bottom: 0; }
+    padding: $spacing-md;
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: $radius-md;
+    align-items: flex-start;
   }
   .bm-step-num {
-    width: 36px;
-    height: 36px;
+    width: 32px; height: 32px;
     border-radius: $radius-full;
     background: $primary-color;
     color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-weight: $font-bold;
     font-size: $font-sm;
+    flex-shrink: 0;
   }
   .bm-step-body h4 {
     margin: 0 0 4px;
     font-size: $font-base;
     font-weight: $font-semibold;
   }
-  .bm-step-body p { margin: 0 0 6px; font-size: $font-sm; color: var(--color-text-secondary); }
+  .bm-step-body p { margin: 0 0 6px; font-size: $font-sm; color: var(--color-text-secondary); line-height: 1.5; }
   .bm-step-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-md;
-    font-size: 12px;
-    color: var(--color-text-secondary);
+    display: flex; flex-wrap: wrap; gap: 12px;
+    font-size: 12px; color: var(--color-text-secondary);
     code {
-      background: rgba(0, 0, 0, 0.06);
+      background: var(--color-card-bg);
       padding: 1px 6px;
       border-radius: $radius-sm;
       font-size: 11px;
     }
   }
 
+  // ============================================================
+  // FAQs (collapsible)
+  // ============================================================
+  .bm-faqs-list {
+    display: flex; flex-direction: column;
+    gap: $spacing-sm;
+  }
   .bm-faq {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
     border-radius: $radius-md;
     padding: $spacing-md $spacing-lg;
-    margin-bottom: $spacing-sm;
-    summary { font-weight: $font-semibold; cursor: pointer; }
-    p { margin: $spacing-sm 0 0; color: var(--color-text-secondary); }
+    transition: $transition-fast;
+    summary {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer;
+      font-weight: $font-semibold;
+      list-style: none;
+      gap: $spacing-md;
+    }
+    summary::-webkit-details-marker { display: none; }
+    p {
+      margin: $spacing-sm 0 0;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    &[open] {
+      background: rgba($primary-color, 0.04);
+      border-color: rgba($primary-color, 0.2);
+    }
   }
 
-  .bm-btn-danger {
-    background: $danger-color;
-    border-color: $danger-color;
-    color: #fff;
-    &:hover { background: $danger-deep; border-color: $danger-deep; color: #fff; }
-  }
-
-  // Type pill in hero
-  .bm-type-pill {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: $radius-full;
-    font-size: 10px;
-    font-weight: $font-bold;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .bm-type-government { background: rgba($primary-color, 0.12); color: $primary-color; }
-  .bm-type-financial  { background: rgba($success-color, 0.15); color: $success-color; }
-  .bm-type-utility    { background: rgba($info-color, 0.12); color: $info-color; }
-  .bm-type-private    { background: rgba($secondary-color, 0.12); color: $secondary-color; }
-  .bm-type-schemes    { background: rgba($danger-color, 0.12); color: $danger-color; }
-
-  // ===== Inline builders =====
+  // ============================================================
+  // BUILDERS (form panels embedded inside sections)
+  // ============================================================
   .bm-builder {
     .bm-builder-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: $spacing-md;
-      margin-bottom: $spacing-md;
-      flex-wrap: wrap;
-      p { margin: 0; flex: 1; min-width: 240px; font-size: $font-sm; }
+      display: flex; justify-content: space-between; align-items: center;
+      gap: $spacing-md; margin-bottom: $spacing-md; flex-wrap: wrap;
+      p { margin: 0; flex: 1; min-width: 240px; font-size: $font-sm; color: var(--color-text-secondary); line-height: 1.5; }
     }
     .bm-builder-form {
-      background: var(--color-card-bg);
+      background: var(--color-background);
       border: 2px solid $primary-color;
-      border-radius: $radius-lg;
-      padding: $spacing-lg $spacing-xl;
+      border-radius: $radius-md;
+      padding: $spacing-lg;
       margin-bottom: $spacing-md;
     }
     .bm-form-grid {
@@ -296,11 +444,11 @@
         height: 36px; padding: 0 $spacing-md;
         border: 1px solid var(--color-border);
         border-radius: $radius-md;
-        background: var(--color-background);
+        background: var(--color-card-bg);
         color: var(--color-text);
         font-size: $font-sm;
         font-family: inherit;
-        &:focus { outline: none; border-color: $primary-color; }
+        &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 3px rgba($primary-color, 0.1); }
       }
       textarea { height: auto; padding: $spacing-md; resize: vertical; }
       .bm-form-hint-inline {
@@ -309,30 +457,21 @@
         line-height: 1.4;
       }
     }
-    .bm-form-checks {
-      display: flex; flex-wrap: wrap; gap: $spacing-md;
-    }
+    .bm-form-checks { display: flex; flex-wrap: wrap; gap: $spacing-md; }
     .bm-check {
       display: inline-flex !important;
-      align-items: center;
-      gap: 6px;
+      align-items: center; gap: 6px;
       font-size: $font-sm;
       cursor: pointer;
       input { width: auto; height: auto; }
       grid-column: span 2;
     }
     .bm-form-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: $spacing-md;
-      padding-top: $spacing-md;
+      display: flex; justify-content: flex-end;
+      margin-top: $spacing-md; padding-top: $spacing-md;
       border-top: 1px solid var(--color-border-light);
     }
-    .bm-btn-sm {
-      height: 28px;
-      padding: 0 8px;
-      font-size: 11px;
-    }
+    .bm-btn-sm { height: 28px; padding: 0 8px; font-size: 11px; }
     .bm-toggle-mini {
       background: rgba(#94a3b8, 0.12);
       border: 1px solid var(--color-border);
@@ -348,21 +487,62 @@
         color: $success-color;
       }
     }
-    .bm-faqs-list {
-      display: flex; flex-direction: column; gap: $spacing-sm;
-    }
-    .bm-faq {
-      summary {
-        display: flex; align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-        font-weight: $font-semibold;
-        list-style: none;
-      }
-      summary::-webkit-details-marker { display: none; }
-    }
-    .bm-workflow-step {
-      grid-template-columns: 48px 1fr auto !important;
-    }
   }
+
+  // ============================================================
+  // EMPTY / ALERT / BUTTONS  (shared with list page)
+  // ============================================================
+  .bm-empty {
+    text-align: center;
+    padding: $spacing-2xl;
+    color: var(--color-text-secondary);
+    background: var(--color-background);
+    border: 1px dashed var(--color-border);
+    border-radius: $radius-md;
+    font-size: $font-sm;
+  }
+  .bm-text-muted { color: var(--color-text-secondary); }
+
+  .bm-btn-danger {
+    background: $danger-color;
+    border-color: $danger-color;
+    color: #fff;
+    &:hover { background: $danger-deep; border-color: $danger-deep; color: #fff; }
+  }
+
+  // ============================================================
+  // Type pill (govt/financial/utility/private/schemes)
+  // ============================================================
+  .bm-type-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: $radius-full;
+    font-size: 10px;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(#fff, 0.92);
+  }
+  .bm-type-government { color: $primary-color; }
+  .bm-type-financial  { color: $success-color; }
+  .bm-type-utility    { color: $info-color; }
+  .bm-type-private    { color: $secondary-color; }
+  .bm-type-schemes    { color: $danger-color; }
+
+  // ============================================================
+  // Badges
+  // ============================================================
+  .bm-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px;
+    font-weight: $font-semibold;
+    padding: 3px 9px;
+    border-radius: $radius-full;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(#fff, 0.92);
+  }
+  .bm-badge-featured { color: $warning-color; }
+  .bm-badge-popular  { color: $primary-color; }
+  .bm-badge-new      { color: $success-color; }
 }

@@ -119,80 +119,173 @@ const ServiceDetails = () => {
         }
       />
 
-      {/* Hero strip */}
+      {/* Hero with banner image */}
       <div className="bm-svc-hero" style={{ "--cat-color": svc.category?.color } as React.CSSProperties}>
         <div className="bm-svc-hero-image">
           <img src={svc.banner_url || `https://picsum.photos/seed/bm-${svc.code}/1200/300`} alt={svc.name} />
-        </div>
-        <div className="bm-svc-hero-meta">
-          {svc.category && <Link to={`/services?category=${svc.category.code}`} className="bm-svc-hero-cat">{svc.category.name}</Link>}
-          {svc.category && <span className={`bm-type-pill bm-type-${svc.category.category_type}`}>{svc.category.category_type}</span>}
-          <span>·</span>
-          <code>{svc.code}</code>
-          {svc.is_featured && <span className="bm-badge bm-badge-featured"><HiOutlineLightningBolt /> Featured</span>}
-          {svc.is_popular && <span className="bm-badge bm-badge-popular"><HiOutlineSparkles /> Popular</span>}
-          {svc.is_new && <span className="bm-badge bm-badge-new">New</span>}
-        </div>
-        <div className="bm-svc-hero-stats">
-          <div><span className="l">Base fee</span><span className="n">{svc.is_free ? "FREE" : <><HiOutlineCurrencyRupee />{totalFee.toFixed(0)}</>}</span></div>
-          <div><span className="l">Processing</span><span className="n">{svc.base_processing_time || "—"}</span></div>
-          <div><span className="l">Profiles</span><span className="n">{profiles.length}</span></div>
-          <div><span className="l">Department</span><span className="n">{svc.department || "—"}</span></div>
+          <div className="bm-svc-hero-overlay-meta">
+            {svc.category && (
+              <Link to={`/services?category=${svc.category.code}`} className="bm-svc-hero-cat">
+                {svc.category.name}
+              </Link>
+            )}
+            {svc.category && <span className={`bm-type-pill bm-type-${svc.category.category_type}`}>{svc.category.category_type}</span>}
+            {svc.is_featured && <span className="bm-badge bm-badge-featured"><HiOutlineLightningBolt /> Featured</span>}
+            {svc.is_popular && <span className="bm-badge bm-badge-popular"><HiOutlineSparkles /> Popular</span>}
+            {svc.is_new && <span className="bm-badge bm-badge-new">New</span>}
+          </div>
         </div>
       </div>
 
-      <div className="bm-tabs">
-        {(["overview", "profiles", "documents", "workflow", "faqs"] as Tab[]).map(t => {
-          const counts: Record<Tab, number> = {
-            overview: 0, profiles: profiles.length, documents: docs.length, workflow: workflow.length, faqs: faqs.length,
-          };
-          return (
-            <button key={t} className={`bm-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-              {counts[t] > 0 && <span className="bm-tab-count">{counts[t]}</span>}
-            </button>
-          );
-        })}
-      </div>
+      {/* Two-column layout: main content + sticky sidebar */}
+      <div className="bm-svc-grid">
+        <main className="bm-svc-main">
+          {/* Tab nav */}
+          <nav className="bm-tabs">
+            {(["overview", "profiles", "documents", "workflow", "faqs"] as Tab[]).map(t => {
+              const counts: Record<Tab, number> = {
+                overview: 0, profiles: profiles.length, documents: docs.length, workflow: workflow.length, faqs: faqs.length,
+              };
+              return (
+                <button key={t} className={`bm-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                  {counts[t] > 0 && <span className="bm-tab-count">{counts[t]}</span>}
+                </button>
+              );
+            })}
+          </nav>
 
-      {tab === "overview" && (
-        <div className="bm-grid-2">
-          <Card title="Description"><p>{svc.description || svc.short_description || "—"}</p></Card>
-          <Card title="Identifiers">
-            <Row k="Code" v={<code>{svc.code}</code>} />
-            <Row k="Slug" v={<code>{svc.slug}</code>} />
-            <Row k="Category" v={svc.category?.name || "—"} />
-            <Row k="Department" v={svc.department || "—"} />
-            <Row k="Ministry" v={svc.ministry || "—"} />
-            <Row k="Issuing authority" v={svc.issuing_authority || "—"} />
-            <Row k="Official URL" v={svc.official_url ? <a href={svc.official_url} target="_blank" rel="noopener">{svc.official_url}</a> : "—"} />
-            <Row k="Target audience" v={svc.target_audience || "—"} />
-          </Card>
-          <Card title="Tags">
-            <div className="bm-tags">
-              {svc.tags.length === 0 ? <span className="bm-text-muted">No tags</span> :
-                svc.tags.map(t => <span key={t} className="bm-tag">{t}</span>)}
+          {tab === "overview" && (
+            <div className="bm-section-stack">
+              <Section title="About this service" icon={<HiOutlineCollection />}>
+                <p className="bm-prose">{svc.description || svc.short_description || "No description added yet."}</p>
+                {svc.tags.length > 0 && (
+                  <div className="bm-tags" style={{ marginTop: 16 }}>
+                    {svc.tags.map(t => <span key={t} className="bm-tag">{t}</span>)}
+                  </div>
+                )}
+              </Section>
+
+              <Section title="Issuing authority" icon={<HiOutlineCollection />}>
+                <div className="bm-info-grid">
+                  <Row k="Department" v={svc.department || "—"} />
+                  <Row k="Ministry" v={svc.ministry || "—"} />
+                  <Row k="Issuing authority" v={svc.issuing_authority || "—"} />
+                  <Row k="Target audience" v={svc.target_audience || "—"} />
+                  <Row k="Official URL" v={svc.official_url ? <a href={svc.official_url} target="_blank" rel="noopener">{svc.official_url}</a> : "—"} />
+                  <Row k="Code" v={<code>{svc.code}</code>} />
+                </div>
+              </Section>
+
+              <Section title="Catalog stats" icon={<HiOutlineSparkles />}>
+                <div className="bm-info-grid">
+                  <Row k="Active" v={svc.is_active ? "Yes" : "No"} />
+                  <Row k="Featured" v={svc.is_featured ? "Yes" : "No"} />
+                  <Row k="Popular" v={svc.is_popular ? "Yes" : "No"} />
+                  <Row k="Marked new" v={svc.is_new ? "Yes" : "No"} />
+                  <Row k="Total applications" v={svc.total_applications} />
+                  <Row k="Avg rating" v={svc.avg_rating > 0 ? `${svc.avg_rating} / 5` : "—"} />
+                </div>
+              </Section>
             </div>
-          </Card>
-          <Card title="Status">
-            <Row k="Active" v={svc.is_active ? "Yes" : "No"} />
-            <Row k="Popular" v={svc.is_popular ? "Yes" : "No"} />
-            <Row k="Featured" v={svc.is_featured ? "Yes" : "No"} />
-            <Row k="New" v={svc.is_new ? "Yes" : "No"} />
-            <Row k="Sort order" v={svc.sort_order} />
-            <Row k="Total applications" v={svc.total_applications} />
-            <Row k="Avg rating" v={svc.avg_rating > 0 ? `${svc.avg_rating} / 5` : "—"} />
-          </Card>
-        </div>
-      )}
+          )}
 
-      {tab === "profiles" && <ProfilesBuilder svcId={svc.id} profiles={profiles} reload={reload} />}
-      {tab === "documents" && <DocumentsBuilder svcId={svc.id} docs={docs} reload={reload} />}
-      {tab === "workflow" && <WorkflowBuilder svcId={svc.id} steps={workflow} reload={reload} />}
-      {tab === "faqs" && <FAQsBuilder svcId={svc.id} faqs={faqs} reload={reload} />}
+          {tab === "profiles" && (
+            <Section title={`Service profiles (${profiles.length})`} icon={<HiOutlineCollection />}>
+              <ProfilesBuilder svcId={svc.id} profiles={profiles} reload={reload} />
+            </Section>
+          )}
+          {tab === "documents" && (
+            <Section title={`Required documents (${docs.length})`} icon={<HiOutlineCollection />}>
+              <DocumentsBuilder svcId={svc.id} docs={docs} reload={reload} />
+            </Section>
+          )}
+          {tab === "workflow" && (
+            <Section title={`Workflow (${workflow.length} steps)`} icon={<HiOutlineCollection />}>
+              <WorkflowBuilder svcId={svc.id} steps={workflow} reload={reload} />
+            </Section>
+          )}
+          {tab === "faqs" && (
+            <Section title={`Frequently asked questions (${faqs.length})`} icon={<HiOutlineCollection />}>
+              <FAQsBuilder svcId={svc.id} faqs={faqs} reload={reload} />
+            </Section>
+          )}
+        </main>
+
+        {/* Sticky sidebar with quick info + CTA */}
+        <aside className="bm-svc-sidebar">
+          <div className="bm-svc-sidebar-card bm-svc-fees">
+            <div className="bm-svc-fee-display">
+              {svc.is_free ? (
+                <>
+                  <span className="bm-svc-fee-label">Service fee</span>
+                  <span className="bm-svc-fee-value bm-svc-fee-free">FREE</span>
+                </>
+              ) : (
+                <>
+                  <span className="bm-svc-fee-label">Citizen pays from</span>
+                  <span className="bm-svc-fee-value">
+                    <HiOutlineCurrencyRupee />{totalFee.toFixed(0)}
+                  </span>
+                  <span className="bm-svc-fee-meta">+ GST · government + platform fee</span>
+                </>
+              )}
+            </div>
+            <div className="bm-svc-fee-breakdown">
+              <div><span>Government</span><b>₹{svc.base_government_fee.toFixed(0)}</b></div>
+              <div><span>Platform</span><b>₹{svc.base_platform_fee.toFixed(0)}</b></div>
+              <div><span>GST</span><b>{svc.base_gst_percent}%</b></div>
+            </div>
+          </div>
+
+          <div className="bm-svc-sidebar-card">
+            <h4 className="bm-svc-side-title">Quick info</h4>
+            <ul className="bm-svc-side-list">
+              <li>
+                <span>Processing</span>
+                <strong>{svc.base_processing_time || "—"}</strong>
+              </li>
+              <li>
+                <span>Department</span>
+                <strong>{svc.department || "—"}</strong>
+              </li>
+              <li>
+                <span>Profiles</span>
+                <strong>{profiles.length} variant{profiles.length === 1 ? "" : "s"}</strong>
+              </li>
+              <li>
+                <span>Documents</span>
+                <strong>{docs.length} required</strong>
+              </li>
+              <li>
+                <span>Workflow steps</span>
+                <strong>{workflow.length}</strong>
+              </li>
+            </ul>
+          </div>
+
+          {svc.official_url && (
+            <a href={svc.official_url} target="_blank" rel="noopener" className="bm-svc-sidebar-card bm-svc-side-link">
+              <span className="bm-svc-side-link-label">Official portal ↗</span>
+              <span className="bm-svc-side-link-host">{new URL(svc.official_url).host}</span>
+            </a>
+          )}
+        </aside>
+      </div>
     </div>
   );
 };
+
+// Section wrapper used in main column
+const Section = ({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) => (
+  <section className="bm-svc-section">
+    <header className="bm-svc-section-head">
+      {icon && <span className="bm-svc-section-icon">{icon}</span>}
+      <h2>{title}</h2>
+    </header>
+    <div className="bm-svc-section-body">{children}</div>
+  </section>
+);
 
 // =====================================================================
 // Profiles Builder
@@ -636,13 +729,6 @@ const FAQsBuilder = ({ svcId, faqs, reload }: { svcId: string; faqs: ServiceFAQ[
 // =====================================================================
 // Helpers
 // =====================================================================
-
-const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="bm-svc-card-detail">
-    <h3>{title}</h3>
-    {children}
-  </div>
-);
 
 const Row = ({ k, v }: { k: string; v: React.ReactNode }) => (
   <div className="bm-row">
