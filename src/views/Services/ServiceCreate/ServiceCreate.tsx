@@ -20,7 +20,6 @@ const ServiceCreate = () => {
     category_id: "",
     code: "",
     name: "",
-    name_hindi: "",
     short_description: "",
     description: "",
     department: "",
@@ -81,7 +80,6 @@ const ServiceCreate = () => {
       const r = await servicesApi.create({
         ...form,
         slug: slugify(form.name),
-        name_hindi: form.name_hindi || undefined,
         short_description: form.short_description || undefined,
         description: form.description || undefined,
         department: form.department || undefined,
@@ -117,9 +115,6 @@ const ServiceCreate = () => {
         <div className="bm-form-grid">
           <Field label="Service name *">
             <input type="text" value={form.name} onChange={(e) => onNameChange(e.target.value)} required placeholder="e.g. Ayushman Bharat Card" />
-          </Field>
-          <Field label="Service name (Hindi)">
-            <input type="text" value={form.name_hindi || ""} onChange={(e) => set("name_hindi", e.target.value)} placeholder="e.g. आयुष्मान भारत कार्ड" />
           </Field>
           <Field label="Code *" hint="Stable identifier — used in URLs and seed data. Auto-derived from name.">
             <input type="text" value={form.code} onChange={(e) => set("code", e.target.value)} required pattern="[a-z0-9-]+" />

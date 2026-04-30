@@ -33,6 +33,7 @@ const ServiceList = lazy(() => import("@/views/Services/ServiceList/ServiceList"
 const ServiceDetails = lazy(() => import("@/views/Services/ServiceDetails/ServiceDetails"));
 const ServiceCreate = lazy(() => import("@/views/Services/ServiceCreate/ServiceCreate"));
 const ServiceEdit = lazy(() => import("@/views/Services/ServiceEdit/ServiceEdit"));
+const CategoryManager = lazy(() => import("@/views/Services/CategoryManager/CategoryManager"));
 
 // ─── Geography ──────────────────────────────────────────────────────────────
 const NationalDashboard = lazy(() => import("@/views/Geography/National/NationalDashboard"));
@@ -106,6 +107,7 @@ const routerConfig = [
       // Services (rebuilt)
       { path: "services", element: lazyRoute(<ServiceList />) },
       { path: "services/new", element: lazyRoute(<ServiceCreate />) },
+      { path: "services/categories", element: lazyRoute(<CategoryManager />) },
       { path: "services/:id", element: lazyRoute(<ServiceDetails />) },
       { path: "services/:id/edit", element: lazyRoute(<ServiceEdit />) },
 

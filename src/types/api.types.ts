@@ -298,6 +298,84 @@ export interface UpdateProfileRequest {
   is_active?: boolean;
 }
 
+// Documents
+export interface CreateDocumentRequest {
+  profile_id?: string;
+  code: string;
+  document_name: string;
+  document_type: string;
+  is_mandatory?: boolean;
+  alternatives_group?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  sample_url?: string;
+  description?: string;
+  sort_order?: number;
+}
+export interface UpdateDocumentRequest {
+  profile_id?: string;
+  document_name?: string;
+  document_type?: string;
+  is_mandatory?: boolean;
+  alternatives_group?: string;
+  accepted_formats?: string[];
+  max_size_mb?: number;
+  min_size_kb?: number;
+  sample_url?: string;
+  description?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// Workflow
+export interface CreateWorkflowStepRequest {
+  profile_id?: string;
+  step_number: number;
+  step_name: string;
+  step_description?: string;
+  step_type?: string;
+  assigned_role?: string;
+  sla_hours?: number;
+  is_optional?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
+  notify_whatsapp?: boolean;
+  sort_order?: number;
+}
+export interface UpdateWorkflowStepRequest {
+  profile_id?: string;
+  step_number?: number;
+  step_name?: string;
+  step_description?: string;
+  step_type?: string;
+  assigned_role?: string;
+  sla_hours?: number;
+  is_optional?: boolean;
+  notify_applicant?: boolean;
+  notify_email?: boolean;
+  notify_sms?: boolean;
+  notify_whatsapp?: boolean;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// FAQs
+export interface CreateFAQRequest {
+  profile_id?: string;
+  question: string;
+  answer: string;
+  sort_order?: number;
+}
+export interface UpdateFAQRequest {
+  profile_id?: string;
+  question?: string;
+  answer?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
 export interface CreateCategoryRequest {
   code: string;
   name: string;

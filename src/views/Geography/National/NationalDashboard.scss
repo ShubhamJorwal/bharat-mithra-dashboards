@@ -18,6 +18,7 @@ $ink-3: #142544;
 .nd {
   position: relative;
   width: 100%;
+  padding-bottom: 300px;
   background: var(--color-background, #f7f8fb);
   color: var(--color-text);
 
@@ -86,10 +87,11 @@ $ink-3: #142544;
 // =====================================================================
 .nd-hero {
   position: relative;
-  min-height: 1020px;
-  padding: 24px 28px 32px;
+  min-height: 600px;
+  padding: 20px 28px 28px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   background: radial-gradient(ellipse at 30% 20%, $ink-3 0%, $ink-2 35%, $ink 100%);
   color: #fff;
   border-radius: 24px;
@@ -103,36 +105,36 @@ $ink-3: #142544;
 // --- Aurora layers (the crazy floating colour blobs) ---
 .nd-aurora {
   position: absolute;
-  width: 900px;
-  height: 900px;
+  width: 720px;
+  height: 720px;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.32;
+  filter: blur(90px);
+  opacity: 0.22;
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: screen;
 
   &--saffron {
-    top: -30%;
-    left: -20%;
+    top: -25%;
+    left: -15%;
     background: radial-gradient(circle, $saffron 0%, transparent 60%);
     animation: nd-aurora-drift-1 24s ease-in-out infinite;
   }
   &--green {
-    bottom: -30%;
-    right: -15%;
+    bottom: -25%;
+    right: -10%;
     background: radial-gradient(circle, $india-green 0%, transparent 60%);
     animation: nd-aurora-drift-2 30s ease-in-out infinite;
-    opacity: 0.25;
+    opacity: 0.18;
   }
   &--blue {
-    top: 20%;
-    right: 10%;
-    width: 700px;
-    height: 700px;
+    top: 15%;
+    right: 8%;
+    width: 580px;
+    height: 580px;
     background: radial-gradient(circle, $chakra-blue 0%, transparent 60%);
     animation: nd-aurora-drift-3 36s ease-in-out infinite;
-    opacity: 0.45;
+    opacity: 0.35;
   }
 }
 
@@ -205,21 +207,44 @@ $ink-3: #142544;
   &:hover svg { animation: nd-spin 1s linear infinite; }
 }
 
+// --- Hero main: side-by-side cosmos + strip on desktop ---
+.nd-hero__main {
+  position: relative;
+  z-index: 4;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  min-height: 540px;
+  padding: 8px 0;
+
+  @media (max-width: 1100px) {
+    flex-direction: column;
+    gap: 20px;
+    min-height: 0;
+  }
+}
+
 // --- The Cosmos (chakra + orbits) ---
 .nd-cosmos {
   position: relative;
-  z-index: 4;
-  width: 100%;
   flex: 1;
-  min-height: 880px;
+  align-self: stretch;
+  min-height: 540px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: -20px 0;
-  will-change: transform;
+
+  @media (max-width: 1100px) {
+    width: 100%;
+  }
 }
 
-// Chakra — center piece
+// Chakra — center piece. Sized so its outer rim sits just inside the orbit ring.
+// Orbit radius is 230px (so orbit diameter 460px). Chakra rim at r=96 in viewBox 200,
+// so 360px chakra → rim at 173px → ~57px gap to orbit (clean breathing room).
 .nd-chakra {
   position: absolute;
   top: 50%;
@@ -238,7 +263,7 @@ $ink-3: #142544;
     width: 100%;
     height: 100%;
     color: rgba(255, 255, 255, 0.95);
-    filter: drop-shadow(0 0 30px rgba(0, 0, 128, 0.6)) drop-shadow(0 0 60px rgba(255, 153, 51, 0.2));
+    filter: drop-shadow(0 0 24px rgba(0, 0, 128, 0.55)) drop-shadow(0 0 48px rgba(255, 153, 51, 0.18));
     animation: nd-spin 60s linear infinite;
   }
 
@@ -251,10 +276,10 @@ $ink-3: #142544;
     height: 144px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 25%, rgba(20, 37, 68, 0.95), rgba(10, 22, 40, 0.98));
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 0 0 6px rgba(0, 0, 128, 0.18),
-      0 0 40px rgba(0, 0, 128, 0.45),
+      0 0 0 5px rgba(0, 0, 128, 0.22),
+      0 0 36px rgba(0, 0, 128, 0.55),
       inset 0 2px 8px rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
@@ -264,184 +289,208 @@ $ink-3: #142544;
     padding: 12px;
     text-align: center;
   }
-  &__hindi {
-    font-size: 32px;
+  &__title {
+    font-size: 28px;
     font-weight: 700;
     line-height: 1;
-    background: linear-gradient(135deg, $saffron 0%, #fff 50%, $india-green 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #fff;
     letter-spacing: 1px;
   }
-  &__english {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.65);
-  }
   &__capital {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 4px;
-    padding: 3px 8px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 999px;
-    font-size: 9px;
+    margin-top: 2px;
+    font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
-    svg { font-size: 10px; color: $saffron; }
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
   }
 }
 
-// Orbit rings (visual guides)
+// =====================================================================
+// SINGLE ORBIT RING — all 5 level pins live on this one circle
+// =====================================================================
+$orbit-radius: 230px;
+
 .nd-orbit-ring {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: #{$orbit-radius * 2};
+  height: #{$orbit-radius * 2};
   border-radius: 50%;
-  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
+  box-shadow:
+    inset 0 0 40px rgba(255, 255, 255, 0.04),
+    0 0 32px rgba(255, 255, 255, 0.05);
+
+  // Subtle highlight glint that sweeps along the ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.22) 25deg,
+      transparent 50deg,
+      transparent 360deg);
+    -webkit-mask: radial-gradient(circle, transparent calc(50% - 2px), #000 calc(50% - 2px), #000 50%, transparent 50%);
+            mask: radial-gradient(circle, transparent calc(50% - 2px), #000 calc(50% - 2px), #000 50%, transparent 50%);
+    animation: nd-spin 18s linear infinite;
+  }
 }
 
-// Orbit (the rotating container)
-.nd-orbit {
+// Pin — static icon with label, sits on the orbit ring at its assigned angle
+.nd-pin {
   position: absolute;
   top: 50%;
   left: 50%;
   margin: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  animation: nd-orbit-spin linear infinite;
-
-  &--hovered { animation-play-state: paused; }
-}
-
-// Planet — sits at the top of its orbit ring
-.nd-planet {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
+  padding: 0;
   border: none;
-  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.6), transparent 50%), var(--planet-color);
-  color: #fff;
+  background: transparent;
+  color: var(--pin-color);
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  box-shadow:
-    0 0 0 4px rgba(255, 255, 255, 0.04),
-    0 8px 32px rgba(0, 0, 0, 0.45),
-    inset 0 -8px 16px rgba(0, 0, 0, 0.25);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s;
-  // Counter-rotate so the icon stays upright
-  animation: nd-orbit-counter linear infinite;
-
-  &__halo {
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    background: var(--planet-color);
-    opacity: 0.25;
-    filter: blur(14px);
-    z-index: -1;
-    animation: nd-halo-pulse 2.4s ease-in-out infinite;
-  }
+  gap: 8px;
+  width: 96px;
+  z-index: 4;
+  // Place the pin on the ring at its angle, then translate so the pin sits AT the radius
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--pin-angle))
+    translateY(-#{$orbit-radius})
+    rotate(calc(-1 * var(--pin-angle)));
+  transition: filter 0.25s;
 
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    svg { font-size: 22px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)); }
-  }
-
-  &__tooltip {
-    position: absolute;
-    bottom: calc(100% + 14px);
-    left: 50%;
-    transform: translate(-50%, 8px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 8px 14px;
-    background: rgba(10, 22, 40, 0.95);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    backdrop-filter: blur(20px);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.25s;
-    z-index: 10;
-    strong { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--planet-color); }
-    em { font-size: 18px; font-weight: 800; font-style: normal; color: #fff; font-variant-numeric: tabular-nums; }
-    &::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: rgba(10, 22, 40, 0.95);
+    transition: all 0.25s ease;
+
+    svg {
+      font-size: 22px;
+      stroke-width: 1.8;
+      color: var(--pin-color);
     }
   }
 
-  &:hover {
-    transform: translate(-50%, -50%) scale(1.25);
-    box-shadow:
-      0 0 0 6px rgba(255, 255, 255, 0.08),
-      0 16px 48px rgba(0, 0, 0, 0.6),
-      0 0 80px var(--planet-color);
-    .nd-planet__tooltip { opacity: 1; transform: translate(-50%, 0); }
-    .nd-planet__halo { opacity: 0.5; filter: blur(20px); }
+  &__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    text-align: center;
+    pointer-events: none;
+    transition: transform 0.25s;
+    strong {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    em {
+      font-size: 13px;
+      font-weight: 800;
+      font-style: normal;
+      color: var(--pin-color);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
   }
+
+  &:hover .nd-pin__icon {
+    background: var(--pin-color);
+    border-color: var(--pin-color);
+    transform: scale(1.1);
+    svg { color: #fff; }
+  }
+  &:hover .nd-pin__label strong { color: #fff; }
 }
 
 // --- Hero metric strip ---
+// Desktop: vertical column on the right next to the cosmos.
+// Mobile (<1100px): horizontal strip below the cosmos.
 .nd-hero__strip {
   position: relative;
   z-index: 5;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 36px;
-  margin: 0 auto;
-  max-width: 880px;
-  padding: 20px 36px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 240px;
+  flex-shrink: 0;
+  padding: 22px 24px;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(28px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  flex-wrap: wrap;
+
+  @media (max-width: 1100px) {
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    gap: 12px;
+    padding: 18px 20px;
+    flex-wrap: wrap;
+  }
 }
 .nd-hero__metric {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
+  padding: 6px 0;
+
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    align-items: center;
+    flex: 1;
+    min-width: 100px;
+    padding: 0;
+
+    & + & {
+      border-top: none;
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 0;
+      padding-left: 12px;
+    }
+  }
 }
 .nd-hero__metric-value {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
   color: #fff;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
   &--ticker {
     background: linear-gradient(135deg, $saffron, #fff, $india-green);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+
+  @media (max-width: 1100px) {
+    font-size: 22px;
   }
 }
 .nd-hero__metric-label {
@@ -451,11 +500,8 @@ $ink-3: #142544;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
 }
-.nd-hero__divider {
-  width: 1px;
-  height: 36px;
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18), transparent);
-}
+// Dividers no longer used — strip uses borders between metrics
+.nd-hero__divider { display: none; }
 
 // --- Scroll cue ---
 .nd-scroll-cue {
@@ -524,12 +570,14 @@ $ink-3: #142544;
 
 // =====================================================================
 // ACT 2 — THE CASCADE
+// A timeline-style ladder of governance tiers, connected by a single spine
+// on the left. No bars. No background fills on the icons. Just data.
 // =====================================================================
 .nd-cascade {
   position: relative;
   padding: 0 16px;
 
-  // Floating decorative numerals in the background
+  // Big background numeral
   &::before {
     content: '02';
     position: absolute;
@@ -548,153 +596,180 @@ $ink-3: #142544;
 .nd-cascade__list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 1100px;
+  gap: 14px;
+  max-width: 980px;
   margin: 0 auto;
 }
 
 .nd-cascade__row {
+  position: relative;
   display: grid;
-  grid-template-columns: 60px 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: 64px 56px 1fr auto auto;
   align-items: center;
-  gap: 14px 18px;
-  padding: 18px 22px;
+  gap: 20px;
+  padding: 20px 24px 20px 0;
   background: var(--color-background);
   border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.06));
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
   color: inherit;
-  position: relative;
-  overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
   animation: nd-rise 0.8s ease-out forwards;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, border-color 0.3s;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, var(--row-color) 50%, transparent);
-    opacity: 0;
-    transition: opacity 0.4s;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-  }
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 
   &:hover {
-    transform: translateY(-3px) scale(1.005);
+    transform: translateX(4px);
     border-color: var(--row-color);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--row-color);
-    &::before { opacity: 0.06; }
-    .nd-cascade__bar-fill { width: var(--row-width); }
-    .nd-cascade__icon { transform: rotate(-8deg) scale(1.1); }
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    .nd-cascade__tier {
+      transform: scale(1.1);
+      background: var(--row-color);
+      color: #fff;
+    }
+    .nd-cascade__icon {
+      border-color: var(--row-color);
+      color: var(--row-color);
+    }
+    .nd-cascade__text strong { color: var(--row-color); }
     .nd-cascade__count-num { color: var(--row-color); }
+    .nd-cascade__cta {
+      background: var(--row-color);
+      color: #fff;
+      border-color: var(--row-color);
+      transform: translateX(4px);
+    }
   }
 }
 
-.nd-cascade__index {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  align-self: center;
-  font-size: 36px;
-  font-weight: 900;
-  line-height: 1;
-  color: var(--row-color);
-  opacity: 0.25;
-  letter-spacing: -2px;
-  font-variant-numeric: tabular-nums;
-}
-
-.nd-cascade__meta {
-  grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: 48px 1fr auto;
-  align-items: center;
-  gap: 16px;
-}
-
-.nd-cascade__bar {
-  grid-column: 2;
-  grid-row: 2;
+// Spine — the tier numeral badge + the line connecting it to the next row
+.nd-cascade__spine {
   position: relative;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 999px;
-  overflow: hidden;
-  width: 100%;
+  width: 64px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.nd-cascade__bar-fill {
-  position: absolute;
-  inset: 0;
-  width: var(--row-width);
-  background: linear-gradient(90deg, var(--row-color) 0%, transparent 200%);
-  border-radius: inherit;
-  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.nd-cascade__bar-shine {
-  position: absolute;
-  top: 0;
-  left: -40%;
-  width: 30%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: nd-shine 3.2s ease-in-out infinite;
+.nd-cascade__tier {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: var(--color-background);
+  border: 2px solid var(--row-color);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--row-color);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 4px var(--color-background);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
 }
 
+// Connector line: from below the tier badge of this row, through the gap,
+// down to where the next row's tier badge will be.
+// Row gap is 14px; row badge is 38px tall. Line starts 19px below center,
+// ends 19px below the next row's center → height = (50% - 19px) + 14px (gap) + (50% - 19px) of next row.
+// We can't reference the next row's height, so we extend by half-this-row + gap; the next row's badge naturally covers the rest.
+.nd-cascade__line {
+  position: absolute;
+  top: calc(50% + 19px);
+  left: 50%;
+  width: 2px;
+  height: calc(50% - 19px + 14px + 22px); // bottom-half of row + gap + safety margin
+  background: linear-gradient(180deg,
+    var(--row-color) 0%,
+    rgba(148, 163, 184, 0.35) 100%);
+  opacity: 0.6;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+// Icon — outline only, no background fill
 .nd-cascade__icon {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--row-color);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  svg { font-size: 22px; }
+  background: transparent;
+  border: 1.5px solid var(--color-border-light, rgba(0, 0, 0, 0.1));
+  color: var(--color-text-secondary);
+  transition: border-color 0.25s, color 0.25s;
+
+  svg { font-size: 24px; stroke-width: 1.6; }
 }
+
 .nd-cascade__text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  min-width: 0;
   strong {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--color-text);
     line-height: 1.2;
+    letter-spacing: -0.2px;
+    transition: color 0.25s;
   }
   small {
     font-size: 12px;
+    font-weight: 500;
     color: var(--color-text-secondary);
+    letter-spacing: 0.2px;
   }
 }
+
 .nd-cascade__count {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
+  padding: 0 8px;
+  border-left: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.06));
+  padding-left: 24px;
 }
 .nd-cascade__count-num {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
-  letter-spacing: -0.5px;
-  transition: color 0.3s;
+  letter-spacing: -0.8px;
+  transition: color 0.25s;
   line-height: 1;
 }
 .nd-cascade__count-compact {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--color-text-secondary);
+}
+
+.nd-cascade__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid var(--color-border-light, rgba(0, 0, 0, 0.12));
+  color: var(--color-text-secondary);
+  transition: all 0.25s;
+  flex-shrink: 0;
+
+  svg { font-size: 20px; stroke-width: 2; }
 }
 
 // =====================================================================
@@ -1051,16 +1126,12 @@ $ink-3: #142544;
   .nd-aurora,
   .nd-star,
   .nd-chakra__svg,
-  .nd-orbit,
-  .nd-planet,
-  .nd-planet__halo,
+  .nd-orbit-ring::before,
   .nd-cascade__bar-shine,
   .nd-compass__svg,
   .nd-compass__core,
   .nd-pulse__dot,
   .nd-pulse::before,
-  .nd-cosmos,
-  .nd-scroll-cue__line::before,
   .nd-hero__brand-dot {
     animation: none !important;
   }
@@ -1089,18 +1160,26 @@ body.dark-mode {
 // RESPONSIVE
 // =====================================================================
 @media (max-width: 900px) {
-  .nd-hero { min-height: 720px; padding: 20px 16px 50px; }
-  .nd-cosmos { height: 540px; }
-  .nd-chakra { width: 200px; height: 200px; }
-  .nd-chakra__hindi { font-size: 32px; }
-  .nd-chakra__english { font-size: 9px; letter-spacing: 4px; }
-  // Pull orbits in on smaller screens
-  .nd-orbit, .nd-orbit-ring { transform: translate(-50%, -50%) scale(0.6); }
+  .nd-hero { min-height: 540px; padding: 16px 16px 24px; }
+  .nd-cosmos { min-height: 420px; }
+  .nd-chakra { width: 260px; height: 260px; }
+  .nd-chakra__core { width: 104px; height: 104px; }
+  .nd-chakra__title { font-size: 22px; }
+  // Tighten the orbit on smaller screens
+  .nd-orbit-ring { transform: translate(-50%, -50%) scale(0.72); }
+  .nd-pin {
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--pin-angle))
+      translateY(-166px)
+      rotate(calc(-1 * var(--pin-angle)));
+  }
+  .nd-pin__icon { width: 38px; height: 38px; }
+  .nd-pin__icon svg { font-size: 18px; }
   .nd-section-head__title { font-size: 28px; }
   .nd-cascade::before, .nd-compass-section::before { font-size: 200px; }
   .nd-cascade__index { font-size: 28px; }
   .nd-cascade__count-num { font-size: 18px; }
-  .nd-hero__metric-value { font-size: 20px; }
 }
 
 @media (max-width: 600px) {

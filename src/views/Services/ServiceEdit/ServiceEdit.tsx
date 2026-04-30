@@ -27,7 +27,6 @@ const ServiceEdit = () => {
         setForm({
           category_id: r.data.category_id,
           name: r.data.name,
-          name_hindi: r.data.name_hindi || "",
           short_description: r.data.short_description || "",
           description: r.data.description || "",
           department: r.data.department || "",
@@ -98,9 +97,6 @@ const ServiceEdit = () => {
         <div className="bm-form-grid">
           <Field label="Service name">
             <input value={form.name || ""} onChange={(e) => set("name", e.target.value)} />
-          </Field>
-          <Field label="Service name (Hindi)">
-            <input value={form.name_hindi || ""} onChange={(e) => set("name_hindi", e.target.value)} />
           </Field>
           <Field label="Category">
             <select value={form.category_id} onChange={(e) => set("category_id", e.target.value)}>

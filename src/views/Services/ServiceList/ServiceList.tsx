@@ -96,9 +96,14 @@ const ServiceList = () => {
             : "Loading catalog…"
         }
         actions={
-          <Link to="/services/new" className="bm-btn bm-btn-primary">
-            <HiOutlinePlus /> Add service
-          </Link>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Link to="/services/categories" className="bm-btn">
+              Manage categories
+            </Link>
+            <Link to="/services/new" className="bm-btn bm-btn-primary">
+              <HiOutlinePlus /> Add service
+            </Link>
+          </div>
         }
       />
 
@@ -218,6 +223,11 @@ const ServiceCard = ({ svc }: { svc: Service }) => {
       <div className="bm-svc-header">
         <span className="bm-svc-cat">{svc.category?.name || ""}</span>
         <div className="bm-svc-badges">
+          {svc.category?.category_type && (
+            <span className={`bm-type-pill bm-type-${svc.category.category_type}`}>
+              {svc.category.category_type}
+            </span>
+          )}
           {svc.is_featured && <span className="bm-badge bm-badge-featured"><HiOutlineLightningBolt /> Featured</span>}
           {svc.is_popular && <span className="bm-badge bm-badge-popular"><HiOutlineSparkles /> Popular</span>}
           {svc.is_new && <span className="bm-badge bm-badge-new">New</span>}

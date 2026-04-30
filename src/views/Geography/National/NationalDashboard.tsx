@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type CSSProperties } from 'react';
+import { useState, useEffect, useCallback, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlineRefresh,
@@ -10,7 +10,8 @@ import {
   HiOutlineHome,
   HiOutlineFlag,
   HiOutlineGlobeAlt,
-  HiOutlineSparkles
+  HiOutlineSparkles,
+  HiOutlineArrowSmRight
 } from 'react-icons/hi';
 import geographyApi from '../../../services/api/geography.api';
 import type { NationalSummary } from '../../../types/api.types';
@@ -26,11 +27,7 @@ interface Orbit {
   path: string;
   icon: typeof HiOutlineMap;
   color: string;
-  // orbit ring geometry
-  radius: number;
-  duration: number; // seconds for one full revolution
-  startAngle: number; // degrees
-  size: number;
+  startAngle: number; // degrees on the shared ring
 }
 
 interface ZonePetal {
@@ -76,8 +73,8 @@ const formatCompact = (num: number | undefined): string => {
 };
 
 // Renders the 24-spoke Ashoka Chakra in pure SVG.
-// Spokes run from r=42 (outer-edge of the inner core ring) to r=86 — so the
-// center is left clear for the "Bharat" label.
+// Spokes run from r=42 (outer-edge of the inner core ring) to r=94 — so the
+// outer rim sits as close to the orbit ring as possible without touching.
 const AshokaChakra = () => {
   const spokes = Array.from({ length: 24 }, (_, i) => i * 15);
   return (
@@ -88,13 +85,13 @@ const AshokaChakra = () => {
           <stop offset="100%" stopColor="rgba(0, 0, 128, 0)" />
         </radialGradient>
       </defs>
-      <circle cx="0" cy="0" r="92" fill="url(#chakra-glow)" />
-      <circle cx="0" cy="0" r="88" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.9" />
-      <circle cx="0" cy="0" r="82" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
+      <circle cx="0" cy="0" r="98" fill="url(#chakra-glow)" />
+      <circle cx="0" cy="0" r="96" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.9" />
+      <circle cx="0" cy="0" r="90" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
       {spokes.map((angle) => (
         <g key={angle} transform={`rotate(${angle})`}>
-          <line x1="0" y1="-42" x2="0" y2="-82" stroke="currentColor" strokeWidth="1.6" opacity="0.85" strokeLinecap="round" />
-          <circle cx="0" cy="-82" r="2" fill="currentColor" opacity="0.85" />
+          <line x1="0" y1="-42" x2="0" y2="-90" stroke="currentColor" strokeWidth="1.6" opacity="0.85" strokeLinecap="round" />
+          <circle cx="0" cy="-90" r="2" fill="currentColor" opacity="0.85" />
         </g>
       ))}
       <circle cx="0" cy="0" r="40" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.6" />
@@ -108,7 +105,6 @@ const NationalDashboard = () => {
   const [data, setData] = useState<NationalSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hoveredOrbit, setHoveredOrbit] = useState<LevelKey | null>(null);
-  const lastUpdated = useRef<Date>(new Date());
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -117,7 +113,6 @@ const NationalDashboard = () => {
       const response = await geographyApi.getNationalSummary();
       if (response.success && response.data) {
         setData(response.data);
-        lastUpdated.current = new Date();
       } else {
         setError(response.message || 'Failed to load national data');
         setData(null);
@@ -169,36 +164,22 @@ const NationalDashboard = () => {
     );
   }
 
+  // All 5 levels share ONE orbit. Evenly spaced at 72° apart.
   const orbits: Orbit[] = [
-    { key: 'states', label: 'States & UTs', shortLabel: 'States', value: totalStatesUts, path: '/geography/states', icon: HiOutlineMap, color: '#FF9933', radius: 230, duration: 50, startAngle: -30, size: 58 },
-    { key: 'districts', label: 'Districts', shortLabel: 'Districts', value: data.total_districts, path: '/geography/districts', icon: HiOutlineOfficeBuilding, color: '#10b981', radius: 290, duration: 70, startAngle: 50, size: 54 },
-    { key: 'taluks', label: 'Taluks', shortLabel: 'Taluks', value: data.total_taluks, path: '/geography/taluks', icon: HiOutlineLocationMarker, color: '#ec4899', radius: 350, duration: 90, startAngle: 130, size: 52 },
-    { key: 'gp', label: 'Gram Panchayats', shortLabel: 'GPs', value: data.total_gram_panchayats, path: '/geography/gram-panchayats', icon: HiOutlineUserGroup, color: '#f59e0b', radius: 410, duration: 110, startAngle: 210, size: 50 },
-    { key: 'villages', label: 'Villages', shortLabel: 'Villages', value: data.total_villages, path: '/geography/villages', icon: HiOutlineHome, color: '#6366f1', radius: 470, duration: 130, startAngle: 295, size: 48 }
+    { key: 'states', label: 'States & UTs', shortLabel: 'States', value: totalStatesUts, path: '/geography/states', icon: HiOutlineMap, color: '#FF9933', startAngle: -90 },
+    { key: 'districts', label: 'Districts', shortLabel: 'Districts', value: data.total_districts, path: '/geography/districts', icon: HiOutlineOfficeBuilding, color: '#10b981', startAngle: -18 },
+    { key: 'taluks', label: 'Taluks', shortLabel: 'Taluks', value: data.total_taluks, path: '/geography/taluks', icon: HiOutlineLocationMarker, color: '#ec4899', startAngle: 54 },
+    { key: 'gp', label: 'Gram Panchayats', shortLabel: 'Panchayats', value: data.total_gram_panchayats, path: '/geography/gram-panchayats', icon: HiOutlineUserGroup, color: '#f59e0b', startAngle: 126 },
+    { key: 'villages', label: 'Villages', shortLabel: 'Villages', value: data.total_villages, path: '/geography/villages', icon: HiOutlineHome, color: '#6366f1', startAngle: 198 }
   ];
 
-  const cascadeMax = Math.max(
-    totalStatesUts,
-    data.total_districts,
-    data.total_taluks,
-    data.total_gram_panchayats,
-    data.total_villages
-  );
-
-  // Logarithmic width — emphasises the dramatic scale-up from 36 → 600,000
-  const logWidth = (n: number) => {
-    if (!n) return 6;
-    const ratio = Math.log10(Math.max(n, 1)) / Math.log10(Math.max(cascadeMax, 10));
-    return Math.max(8, Math.min(100, ratio * 100));
-  };
-
   const cascade = [
-    { label: 'Bharat', subLabel: 'भारत · The Nation', count: 1, color: '#FF9933', icon: HiOutlineFlag, path: '/geography' },
-    { label: 'States & Union Territories', subLabel: 'Federal Subjects', count: totalStatesUts, color: '#3b82f6', icon: HiOutlineMap, path: '/geography/states' },
-    { label: 'Districts', subLabel: 'जिला · Administrative Divisions', count: data.total_districts, color: '#10b981', icon: HiOutlineOfficeBuilding, path: '/geography/districts' },
-    { label: 'Taluks', subLabel: 'तालुक · Sub-divisions', count: data.total_taluks, color: '#ec4899', icon: HiOutlineLocationMarker, path: '/geography/taluks' },
-    { label: 'Gram Panchayats', subLabel: 'ग्राम पंचायत · Village Councils', count: data.total_gram_panchayats, color: '#f59e0b', icon: HiOutlineUserGroup, path: '/geography/gram-panchayats' },
-    { label: 'Villages', subLabel: 'गाँव · Local Communities', count: data.total_villages, color: '#6366f1', icon: HiOutlineHome, path: '/geography/villages' }
+    { label: 'Bharat', subLabel: 'The Republic', count: 1, color: '#FF9933', icon: HiOutlineFlag, path: '/geography', tier: 'I' },
+    { label: 'States & Union Territories', subLabel: 'Federal Subjects', count: totalStatesUts, color: '#3b82f6', icon: HiOutlineMap, path: '/geography/states', tier: 'II' },
+    { label: 'Districts', subLabel: 'Administrative Divisions', count: data.total_districts, color: '#10b981', icon: HiOutlineOfficeBuilding, path: '/geography/districts', tier: 'III' },
+    { label: 'Taluks', subLabel: 'Sub-divisions', count: data.total_taluks, color: '#ec4899', icon: HiOutlineLocationMarker, path: '/geography/taluks', tier: 'IV' },
+    { label: 'Gram Panchayats', subLabel: 'Village Councils', count: data.total_gram_panchayats, color: '#f59e0b', icon: HiOutlineUserGroup, path: '/geography/gram-panchayats', tier: 'V' },
+    { label: 'Villages', subLabel: 'Local Communities', count: data.total_villages, color: '#6366f1', icon: HiOutlineHome, path: '/geography/villages', tier: 'VI' }
   ];
 
   const zones: ZonePetal[] = data.zones
@@ -252,74 +233,49 @@ const NationalDashboard = () => {
           </button>
         </div>
 
+        <div className="nd-hero__main">
         <div className="nd-cosmos">
           {/* Chakra at the center */}
           <div className="nd-chakra">
             <AshokaChakra />
             <div className="nd-chakra__core">
-              <span className="nd-chakra__hindi">भारत</span>
-              <span className="nd-chakra__english">{data.country || 'India'}</span>
+              <span className="nd-chakra__title">India</span>
               {data.capital && (
-                <span className="nd-chakra__capital">
-                  <HiOutlineLocationMarker /> {data.capital}
-                </span>
+                <span className="nd-chakra__capital">{data.capital}</span>
               )}
             </div>
           </div>
 
-          {/* Orbit rings */}
-          {orbits.map((o) => (
-            <div
-              key={`ring-${o.key}`}
-              className="nd-orbit-ring"
-              style={{
-                width: `${o.radius * 2}px`,
-                height: `${o.radius * 2}px`
-              }}
-            />
-          ))}
+          {/* Single shared orbit ring */}
+          <div className="nd-orbit-ring" />
 
-          {/* Orbiting planets */}
+          {/* Five level pins arrayed around the ring */}
           {orbits.map((o) => {
             const Icon = o.icon;
             const isHovered = hoveredOrbit === o.key;
             return (
-              <div
+              <button
                 key={o.key}
-                className={`nd-orbit ${isHovered ? 'nd-orbit--hovered' : ''}`}
+                className={`nd-pin ${isHovered ? 'nd-pin--hovered' : ''}`}
+                onClick={() => navigate(o.path)}
+                onMouseEnter={() => setHoveredOrbit(o.key)}
+                onMouseLeave={() => setHoveredOrbit(null)}
                 style={
                   {
-                    width: `${o.radius * 2}px`,
-                    height: `${o.radius * 2}px`,
-                    animationDuration: `${o.duration}s`,
-                    transform: `rotate(${o.startAngle}deg)`
+                    '--pin-angle': `${o.startAngle}deg`,
+                    '--pin-color': o.color
                   } as CSSProperties
                 }
+                title={`${o.label} — ${formatIndian(o.value)}`}
               >
-                <button
-                  className="nd-planet"
-                  onClick={() => navigate(o.path)}
-                  onMouseEnter={() => setHoveredOrbit(o.key)}
-                  onMouseLeave={() => setHoveredOrbit(null)}
-                  style={
-                    {
-                      width: `${o.size}px`,
-                      height: `${o.size}px`,
-                      '--planet-color': o.color,
-                      animationDuration: `${o.duration}s`
-                    } as CSSProperties
-                  }
-                >
-                  <span className="nd-planet__halo" />
-                  <span className="nd-planet__icon">
-                    <Icon />
-                  </span>
-                  <span className="nd-planet__tooltip">
-                    <strong>{o.label}</strong>
-                    <em>{formatIndian(o.value)}</em>
-                  </span>
-                </button>
-              </div>
+                <span className="nd-pin__icon">
+                  <Icon />
+                </span>
+                <span className="nd-pin__label">
+                  <strong>{o.shortLabel}</strong>
+                  <em>{formatIndian(o.value)}</em>
+                </span>
+              </button>
             );
           })}
         </div>
@@ -361,6 +317,7 @@ const NationalDashboard = () => {
             </>
           ) : null}
         </div>
+        </div>
 
       </section>
 
@@ -370,21 +327,21 @@ const NationalDashboard = () => {
       <section className="nd-cascade">
         <header className="nd-section-head">
           <span className="nd-section-head__kicker">
-            <HiOutlineSparkles /> 02 · The Cascade
+            <HiOutlineSparkles /> 02 · The Hierarchy
           </span>
           <h2 className="nd-section-head__title">
-            One nation, <em>flowing</em> through six layers of governance.
+            Six tiers of <em>governance</em>, end to end.
           </h2>
           <p className="nd-section-head__sub">
-            From a single republic to over half a million villages — each level scaled
-            to the truth of its size.
+            From the Republic of India down to its half a million villages —
+            click any tier to drill in.
           </p>
         </header>
 
         <div className="nd-cascade__list">
           {cascade.map((row, idx) => {
             const Icon = row.icon;
-            const width = logWidth(row.count);
+            const isLast = idx === cascade.length - 1;
             return (
               <button
                 key={row.label}
@@ -393,29 +350,33 @@ const NationalDashboard = () => {
                 style={
                   {
                     '--row-color': row.color,
-                    '--row-width': `${width}%`,
                     animationDelay: `${idx * 90}ms`
                   } as CSSProperties
                 }
               >
-                <div className="nd-cascade__index">{String(idx + 1).padStart(2, '0')}</div>
-                <div className="nd-cascade__bar">
-                  <div className="nd-cascade__bar-fill" />
-                  <div className="nd-cascade__bar-shine" />
+                {/* Vertical connector spine */}
+                <div className="nd-cascade__spine">
+                  {!isLast && <div className="nd-cascade__line" />}
+                  <span className="nd-cascade__tier">{row.tier}</span>
                 </div>
-                <div className="nd-cascade__meta">
-                  <div className="nd-cascade__icon">
-                    <Icon />
-                  </div>
-                  <div className="nd-cascade__text">
-                    <strong>{row.label}</strong>
-                    <small>{row.subLabel}</small>
-                  </div>
-                  <div className="nd-cascade__count">
-                    <span className="nd-cascade__count-num">{formatIndian(row.count)}</span>
-                    <span className="nd-cascade__count-compact">{formatCompact(row.count)}</span>
-                  </div>
+
+                <div className="nd-cascade__icon">
+                  <Icon />
                 </div>
+
+                <div className="nd-cascade__text">
+                  <strong>{row.label}</strong>
+                  <small>{row.subLabel}</small>
+                </div>
+
+                <div className="nd-cascade__count">
+                  <span className="nd-cascade__count-num">{formatIndian(row.count)}</span>
+                  <span className="nd-cascade__count-compact">{formatCompact(row.count)}</span>
+                </div>
+
+                <span className="nd-cascade__cta" aria-label="Explore">
+                  <HiOutlineArrowSmRight />
+                </span>
               </button>
             );
           })}
@@ -508,23 +469,6 @@ const NationalDashboard = () => {
         </section>
       )}
 
-      {/* ============================================================
-          PULSE FOOTER
-         ============================================================ */}
-      <footer className="nd-pulse">
-        <div className="nd-pulse__live">
-          <span className="nd-pulse__dot" />
-          <span>Live · synced {lastUpdated.current.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
-        <div className="nd-pulse__quote">
-          <em>"सत्यमेव जयते"</em> — Truth alone triumphs.
-        </div>
-        <div className="nd-pulse__refresh">
-          <button onClick={fetchData}>
-            <HiOutlineRefresh /> Re-sync
-          </button>
-        </div>
-      </footer>
     </div>
   );
 };

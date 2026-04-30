@@ -6,12 +6,21 @@ import type {
   ServiceCategory,
   ServiceProfile,
   ServiceCompleteResponse,
+  ServiceDocument,
+  ServiceWorkflowStep,
+  ServiceFAQ,
   CreateServiceRequest,
   UpdateServiceRequest,
   CreateProfileRequest,
   UpdateProfileRequest,
   CreateCategoryRequest,
   UpdateCategoryRequest,
+  CreateDocumentRequest,
+  UpdateDocumentRequest,
+  CreateWorkflowStepRequest,
+  UpdateWorkflowStepRequest,
+  CreateFAQRequest,
+  UpdateFAQRequest,
   ServicesQueryParams,
   CatalogStats,
 } from '@/types/api.types';
@@ -87,6 +96,64 @@ export const servicesApi = {
   },
   deleteProfile: async (id: string): Promise<ApiResponse<null>> => {
     const r = await axiosInstance.delete(`${BASE}/profiles/${id}`);
+    return r.data;
+  },
+
+  // Documents
+  listDocuments: async (idOrSlug: string, profileId?: string): Promise<ApiResponse<ServiceDocument[]>> => {
+    const r = await axiosInstance.get(`${BASE}/services/${idOrSlug}/documents`, {
+      params: profileId ? { profile_id: profileId } : undefined,
+    });
+    return r.data;
+  },
+  createDocument: async (idOrSlug: string, body: CreateDocumentRequest): Promise<ApiResponse<ServiceDocument>> => {
+    const r = await axiosInstance.post(`${BASE}/services/${idOrSlug}/documents`, body);
+    return r.data;
+  },
+  updateDocument: async (id: string, body: UpdateDocumentRequest): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.put(`${BASE}/documents/${id}`, body);
+    return r.data;
+  },
+  deleteDocument: async (id: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.delete(`${BASE}/documents/${id}`);
+    return r.data;
+  },
+
+  // Workflow steps
+  listWorkflow: async (idOrSlug: string, profileId?: string): Promise<ApiResponse<ServiceWorkflowStep[]>> => {
+    const r = await axiosInstance.get(`${BASE}/services/${idOrSlug}/workflow`, {
+      params: profileId ? { profile_id: profileId } : undefined,
+    });
+    return r.data;
+  },
+  createWorkflowStep: async (idOrSlug: string, body: CreateWorkflowStepRequest): Promise<ApiResponse<ServiceWorkflowStep>> => {
+    const r = await axiosInstance.post(`${BASE}/services/${idOrSlug}/workflow`, body);
+    return r.data;
+  },
+  updateWorkflowStep: async (id: string, body: UpdateWorkflowStepRequest): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.put(`${BASE}/workflow/${id}`, body);
+    return r.data;
+  },
+  deleteWorkflowStep: async (id: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.delete(`${BASE}/workflow/${id}`);
+    return r.data;
+  },
+
+  // FAQs
+  listFAQs: async (idOrSlug: string): Promise<ApiResponse<ServiceFAQ[]>> => {
+    const r = await axiosInstance.get(`${BASE}/services/${idOrSlug}/faqs`);
+    return r.data;
+  },
+  createFAQ: async (idOrSlug: string, body: CreateFAQRequest): Promise<ApiResponse<ServiceFAQ>> => {
+    const r = await axiosInstance.post(`${BASE}/services/${idOrSlug}/faqs`, body);
+    return r.data;
+  },
+  updateFAQ: async (id: string, body: UpdateFAQRequest): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.put(`${BASE}/faqs/${id}`, body);
+    return r.data;
+  },
+  deleteFAQ: async (id: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.delete(`${BASE}/faqs/${id}`);
     return r.data;
   },
 };

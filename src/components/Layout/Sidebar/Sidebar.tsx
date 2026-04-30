@@ -59,6 +59,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       subItems: [
         { path: '/services', label: 'Catalog' },
         { path: '/services/new', label: 'Add Service' },
+        { path: '/services/categories', label: 'Categories' },
       ]
     },
     {

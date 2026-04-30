@@ -100,11 +100,6 @@ const UserEdit = () => {
           <Field label="Preferred language">
             <select value={form.preferred_language || "en"} onChange={(e) => set("preferred_language", e.target.value)}>
               <option value="en">English</option>
-              <option value="hi">Hindi</option>
-              <option value="kn">Kannada</option>
-              <option value="ta">Tamil</option>
-              <option value="te">Telugu</option>
-              <option value="mr">Marathi</option>
             </select>
           </Field>
           <Field label="State code">
