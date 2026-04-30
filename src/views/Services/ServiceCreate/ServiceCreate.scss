@@ -1,6 +1,196 @@
 @use '../../../styles/variables' as *;
 
 .bm-svc-create {
+  // ============================================================
+  // 2-column wizard layout
+  // ============================================================
+  .bm-wizard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: $spacing-xl;
+    align-items: start;
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  .bm-wizard-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+  .bm-wizard-aside {
+    position: sticky;
+    top: $spacing-lg;
+    display: flex; flex-direction: column;
+    gap: $spacing-md;
+    @media (max-width: 1100px) { position: static; }
+  }
+  .bm-wizard-aside-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    h4 {
+      margin: 0 0 $spacing-md;
+      font-size: $font-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-secondary);
+      font-weight: $font-bold;
+    }
+  }
+  .bm-wizard-aside-warn {
+    background: rgba($warning-color, 0.07);
+    border-color: rgba($warning-color, 0.3);
+    h4 { color: $warning-color; }
+    ul {
+      margin: 0; padding-left: 18px;
+      li { font-size: $font-sm; color: var(--color-text); padding: 2px 0; }
+    }
+  }
+
+  // Preview card
+  .bm-preview {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .bm-preview-name {
+    margin: 0;
+    font-size: $font-base;
+    font-weight: $font-semibold;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+  .bm-preview-cat {
+    margin: 0;
+    font-size: $font-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $primary-color;
+    font-weight: $font-bold;
+  }
+  .bm-preview-fee {
+    margin-top: 6px;
+    font-size: $font-2xl;
+    font-weight: $font-bold;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    span { display: inline-flex; align-items: center; }
+  }
+  .bm-preview-fee-free {
+    color: $success-color;
+    font-size: $font-base;
+    letter-spacing: 0.06em;
+  }
+  .bm-preview-meta {
+    margin: 0;
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+  }
+
+  // Checklist on aside
+  .bm-checklist {
+    margin: 0; padding: 0; list-style: none;
+    display: flex; flex-direction: column; gap: 8px;
+    li {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: $spacing-md;
+      font-size: $font-sm;
+      span { color: var(--color-text-secondary); }
+      strong {
+        color: var(--color-text-secondary);
+        font-weight: $font-semibold;
+      }
+      &.ok strong { color: $success-color; }
+    }
+  }
+
+  // ============================================================
+  // Step indicator
+  // ============================================================
+  .bm-wizard-steps {
+    list-style: none;
+    margin: 0 0 $spacing-lg;
+    padding: 8px;
+    display: flex;
+    gap: 2px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    overflow-x: auto;
+  }
+  .bm-wizard-step {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 10px 14px;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: $transition-fast;
+    min-width: 160px;
+    &:hover {
+      background: var(--color-background);
+    }
+    &.active {
+      background: rgba($primary-color, 0.08);
+      .bm-step-circle {
+        background: $primary-color;
+        color: #fff;
+      }
+      .bm-step-title { color: $primary-color; }
+    }
+    &.done {
+      .bm-step-circle {
+        background: $success-color;
+        color: #fff;
+      }
+    }
+  }
+  .bm-step-circle {
+    width: 28px; height: 28px;
+    border-radius: $radius-full;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: $font-bold;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+  .bm-step-text {
+    display: flex; flex-direction: column;
+    line-height: 1.2;
+  }
+  .bm-step-title {
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: var(--color-text);
+  }
+  .bm-step-sub {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  // ============================================================
+  // Wizard nav (Previous / Next / Publish)
+  // ============================================================
+  .bm-wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-md;
+    margin-top: $spacing-lg;
+    padding: $spacing-md $spacing-lg;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+  }
+
+  // ============================================================
+  // Form card (each step)
+  // ============================================================
   .bm-form-card {
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
@@ -20,16 +210,15 @@
     font-size: $font-sm;
     color: var(--color-text-secondary);
     margin: 0 0 $spacing-md;
+    line-height: 1.5;
   }
   .bm-form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: $spacing-md;
   }
   .bm-form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: flex; flex-direction: column; gap: 5px;
     .bm-form-label {
       font-size: $font-xs;
       font-weight: $font-semibold;
@@ -38,7 +227,7 @@
       letter-spacing: 0.04em;
     }
     input, select, textarea {
-      height: 38px;
+      height: 36px;
       padding: 0 $spacing-md;
       border: 1px solid var(--color-border);
       border-radius: $radius-md;
@@ -46,7 +235,11 @@
       color: var(--color-text);
       font-size: $font-sm;
       font-family: inherit;
-      &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 3px rgba($primary-color, 0.1); }
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
       &:disabled { opacity: 0.5; }
     }
     textarea { height: auto; padding: $spacing-md; min-height: 80px; resize: vertical; }
@@ -56,91 +249,219 @@
     color: var(--color-text-secondary);
     line-height: 1.4;
   }
-
   .bm-form-checks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-md;
-    align-self: flex-end;
+    display: flex; flex-wrap: wrap; gap: $spacing-md;
     grid-column: span 2;
   }
   .bm-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: $font-sm;
-    cursor: pointer;
-    color: var(--color-text);
-    user-select: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: $font-sm; cursor: pointer;
+    color: var(--color-text); user-select: none;
     input { width: auto; height: auto; }
   }
-
   .bm-fee-preview {
     grid-column: span 2;
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
+    display: flex; align-items: center; gap: $spacing-md;
     padding: $spacing-md $spacing-lg;
     background: linear-gradient(135deg, rgba($primary-color, 0.08), rgba($success-color, 0.06));
     border: 1px solid rgba($primary-color, 0.2);
     border-radius: $radius-md;
     .l { font-size: $font-xs; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
-    .n { font-size: $font-2xl; font-weight: $font-bold; letter-spacing: -0.01em; color: var(--color-text); }
+    .n { font-size: $font-2xl; font-weight: $font-bold; letter-spacing: -0.01em; }
     .bm-fee-hint { font-size: $font-xs; color: var(--color-text-secondary); margin-left: auto; }
   }
 
+  // Tag chips on basics
   .bm-tag-input-wrap {
     border: 1px solid var(--color-border);
     border-radius: $radius-md;
     background: var(--color-background);
     padding: 4px 6px;
     min-height: 38px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
     &:focus-within { border-color: $primary-color; box-shadow: 0 0 0 3px rgba($primary-color, 0.1); }
     input {
-      flex: 1;
-      min-width: 100px;
-      height: 28px;
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: $font-sm;
-      padding: 0 6px;
+      flex: 1; min-width: 100px; height: 28px;
+      border: none; background: transparent; outline: none;
+      font-size: $font-sm; padding: 0 6px;
     }
   }
   .bm-tag-list { display: flex; gap: 4px; flex-wrap: wrap; }
   .bm-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    display: inline-flex; align-items: center; gap: 4px;
     background: rgba($primary-color, 0.12);
     color: $primary-color;
     padding: 2px 4px 2px 10px;
     border-radius: $radius-full;
-    font-size: 12px;
-    font-weight: $font-semibold;
+    font-size: 12px; font-weight: $font-semibold;
     button {
       background: rgba($primary-color, 0.18);
-      border: none;
-      color: $primary-color;
-      width: 18px;
-      height: 18px;
+      border: none; color: $primary-color;
+      width: 18px; height: 18px;
       border-radius: $radius-full;
-      cursor: pointer;
-      font-weight: $font-bold;
+      cursor: pointer; font-weight: $font-bold;
       &:hover { background: $primary-color; color: #fff; }
     }
   }
 
-  .bm-form-actions {
+  // ============================================================
+  // Step head (header inside each step body)
+  // ============================================================
+  .bm-step-head {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: $spacing-md;
-    margin-top: $spacing-2xl;
-    padding-top: $spacing-lg;
-    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+    margin-bottom: $spacing-lg;
+    > div { flex: 1; min-width: 280px; }
   }
+
+  // ============================================================
+  // Documents step — doc rows
+  // ============================================================
+  .bm-doc-list {
+    display: flex; flex-direction: column;
+    gap: $spacing-md;
+  }
+  .bm-doc-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: $radius-md;
+  }
+  .bm-doc-row-num {
+    width: 28px; height: 28px;
+    border-radius: $radius-full;
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: $font-bold;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .bm-doc-row-body { min-width: 0; }
+
+  // ============================================================
+  // Fields step — sections + fields
+  // ============================================================
+  .bm-fields-builder {
+    display: flex; flex-direction: column;
+    gap: $spacing-md;
+  }
+  .bm-section-block {
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    overflow: hidden;
+    background: var(--color-background);
+  }
+  .bm-section-block-head {
+    display: flex; align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background: rgba($primary-color, 0.06);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  .bm-section-num {
+    font-size: 11px;
+    font-weight: $font-bold;
+    color: $primary-color;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .bm-section-title-input {
+    flex: 1;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: $font-base;
+    font-weight: $font-semibold;
+    padding: 4px 8px;
+    border-radius: $radius-sm;
+    color: var(--color-text);
+    &:focus, &:hover {
+      outline: none;
+      border-color: var(--color-border);
+      background: var(--color-card-bg);
+    }
+  }
+  .bm-fields-list {
+    padding: $spacing-md;
+    display: flex; flex-direction: column;
+    gap: $spacing-md;
+  }
+  .bm-field-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 32px;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border-light);
+    border-radius: $radius-md;
+  }
+  .bm-field-row-num {
+    width: 24px; height: 24px;
+    border-radius: $radius-full;
+    background: rgba(0,0,0,0.06);
+    color: var(--color-text-secondary);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: $font-bold;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .bm-field-row-body { min-width: 0; }
+  .bm-add-field-btn {
+    align-self: flex-start;
+    border: 1px dashed var(--color-border);
+    background: transparent;
+  }
+
+  // ============================================================
+  // Empty / alerts / buttons
+  // ============================================================
+  .bm-empty {
+    text-align: center;
+    padding: $spacing-2xl;
+    color: var(--color-text-secondary);
+    background: var(--color-background);
+    border: 1px dashed var(--color-border);
+    border-radius: $radius-md;
+    font-size: $font-sm;
+    strong { color: $primary-color; font-weight: $font-semibold; }
+  }
+  .bm-alert {
+    padding: $spacing-md $spacing-lg;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-lg;
+    font-size: $font-sm;
+  }
+  .bm-alert-error {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+    border: 1px solid rgba($danger-color, 0.25);
+  }
+  .bm-text-muted { color: var(--color-text-secondary); }
+
+  .bm-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 14px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    color: var(--color-text);
+    font-size: $font-sm; font-weight: $font-medium;
+    cursor: pointer; text-decoration: none;
+    transition: $transition-base;
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  .bm-btn-primary {
+    background: $primary-color; color: #fff; border-color: $primary-color;
+    &:hover { background: $primary-deep; border-color: $primary-deep; color: #fff; }
+  }
+  .bm-btn-ghost { background: transparent; }
+  .bm-btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
 }

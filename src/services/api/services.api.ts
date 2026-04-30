@@ -156,6 +156,36 @@ export const servicesApi = {
     const r = await axiosInstance.delete(`${BASE}/faqs/${id}`);
     return r.data;
   },
+
+  // Form field sections
+  listFields: async (idOrSlug: string, profileId?: string): Promise<ApiResponse<unknown[]>> => {
+    const r = await axiosInstance.get(`${BASE}/services/${idOrSlug}/fields`, {
+      params: profileId ? { profile_id: profileId } : undefined,
+    });
+    return r.data;
+  },
+  createFieldSection: async (
+    idOrSlug: string,
+    body: {
+      profile_id?: string;
+      section_title?: string;
+      section_order?: number;
+      field_schema?: unknown;
+      field_overrides?: unknown;
+      excluded_fields?: string[];
+    }
+  ): Promise<ApiResponse<unknown>> => {
+    const r = await axiosInstance.post(`${BASE}/services/${idOrSlug}/fields`, body);
+    return r.data;
+  },
+  updateFieldSection: async (id: string, body: Record<string, unknown>): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.put(`${BASE}/fields/${id}`, body);
+    return r.data;
+  },
+  deleteFieldSection: async (id: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.delete(`${BASE}/fields/${id}`);
+    return r.data;
+  },
 };
 
 export default servicesApi;
