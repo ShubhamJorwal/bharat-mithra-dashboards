@@ -121,6 +121,9 @@ const ServiceDetails = () => {
 
       {/* Hero strip */}
       <div className="bm-svc-hero" style={{ "--cat-color": svc.category?.color } as React.CSSProperties}>
+        <div className="bm-svc-hero-image">
+          <img src={svc.banner_url || `https://picsum.photos/seed/bm-${svc.code}/1200/300`} alt={svc.name} />
+        </div>
         <div className="bm-svc-hero-meta">
           {svc.category && <Link to={`/services?category=${svc.category.code}`} className="bm-svc-hero-cat">{svc.category.name}</Link>}
           {svc.category && <span className={`bm-type-pill bm-type-${svc.category.category_type}`}>{svc.category.category_type}</span>}

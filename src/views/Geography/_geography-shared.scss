@@ -170,6 +170,15 @@
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 59, 130, 246), 0.12);
     }
+
+    // <option> uses the native OS menu — must be styled directly,
+    // it does NOT inherit from <select>. Browser support is limited but
+    // these properties work in Chromium / Firefox / Edge on most platforms.
+    option {
+      background-color: var(--color-background);
+      color: var(--color-text);
+      padding: 8px;
+    }
   }
 }
 
@@ -788,6 +797,12 @@
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 59, 130, 246), 0.12);
     }
+
+    option {
+      background-color: var(--color-background);
+      color: var(--color-text);
+      padding: 8px;
+    }
   }
 }
 
@@ -915,7 +930,21 @@
 
     .#{$prefix}-filters select {
       background-color: rgba(255, 255, 255, 0.04);
+      color-scheme: dark; // Tells the browser the dropdown menu should be dark
       &:hover { background-color: rgba(255, 255, 255, 0.06); }
+
+      option {
+        background-color: $bg-dark-secondary;
+        color: $text-light;
+      }
+    }
+
+    .#{$prefix}-footer__perpage {
+      color-scheme: dark;
+      option {
+        background-color: $bg-dark-secondary;
+        color: $text-light;
+      }
     }
 
     .#{$prefix}-toggle { background: rgba(255, 255, 255, 0.04); }

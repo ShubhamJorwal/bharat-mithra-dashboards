@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -30 640 360">
+  <defs>
+    <linearGradient id="bm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2ed47a"/>
+      <stop offset="25%" stop-color="#ffe040"/>
+      <stop offset="50%" stop-color="#ffb84d"/>
+      <stop offset="75%" stop-color="#9b7ae0"/>
+      <stop offset="100%" stop-color="#48d090"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M 280,150 C 312,80 365,25 435,25 C 505,25 555,80 555,150 C 555,220 505,275 435,275 C 365,275 312,220 280,150 C 248,80 195,25 125,25 C 55,25 5,80 5,150 C 5,220 55,275 125,275 C 195,275 248,220 280,150 Z"
+    fill="none"
+    stroke="url(#bm-grad)"
+    stroke-width="80"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

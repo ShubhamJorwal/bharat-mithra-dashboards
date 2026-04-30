@@ -421,17 +421,17 @@ const GramPanchayatList = () => {
                     <span className="state"><HiOutlineMap /> {gp.state_name}</span>
                   </div> */}
 
-                  <div className="tl-card__row">
-                    <span className="tl-card__label"><HiOutlineLocationMarker /> Taluk</span>
-                    <span className="tl-card__value">{gp?.taluk?.name || '—'}</span>
+                  <div className="gpl-card__row">
+                    <span className="gpl-card__label"><HiOutlineLocationMarker /> Taluk</span>
+                    <span className="gpl-card__value">{gp?.taluk?.name || '—'}</span>
                   </div>
-                  <div className="tl-card__row">
-                    <span className="tl-card__label"><HiOutlineLocationMarker /> District</span>
-                    <span className="tl-card__value">{gp?.district?.name || '—'}</span>
+                  <div className="gpl-card__row">
+                    <span className="gpl-card__label"><HiOutlineLocationMarker /> District</span>
+                    <span className="gpl-card__value">{gp?.district?.name || '—'}</span>
                   </div>
-                  <div className="tl-card__row">
-                    <span className="tl-card__label"><HiOutlineLocationMarker /> State</span>
-                    <span className="tl-card__value">{gp?.state?.name || '—'}</span>
+                  <div className="gpl-card__row">
+                    <span className="gpl-card__label"><HiOutlineLocationMarker /> State</span>
+                    <span className="gpl-card__value">{gp?.state?.name || '—'}</span>
                   </div>
 
 

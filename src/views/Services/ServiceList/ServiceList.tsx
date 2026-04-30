@@ -218,11 +218,12 @@ const ServiceList = () => {
 
 const ServiceCard = ({ svc }: { svc: Service }) => {
   const total = svc.base_government_fee + svc.base_platform_fee;
+  const bannerUrl = svc.banner_url || `https://picsum.photos/seed/bm-${svc.code}/600/300`;
   return (
     <Link to={`/services/${svc.slug || svc.code}`} className="bm-svc-card" style={{ "--cat-color": svc.category?.color } as React.CSSProperties}>
-      <div className="bm-svc-header">
-        <span className="bm-svc-cat">{svc.category?.name || ""}</span>
-        <div className="bm-svc-badges">
+      <div className="bm-svc-image">
+        <img src={bannerUrl} alt={svc.name} loading="lazy" />
+        <div className="bm-svc-image-badges">
           {svc.category?.category_type && (
             <span className={`bm-type-pill bm-type-${svc.category.category_type}`}>
               {svc.category.category_type}
@@ -233,19 +234,22 @@ const ServiceCard = ({ svc }: { svc: Service }) => {
           {svc.is_new && <span className="bm-badge bm-badge-new">New</span>}
         </div>
       </div>
-      <h3 className="bm-svc-name">{svc.name}</h3>
-      {svc.short_description && <p className="bm-svc-desc">{svc.short_description}</p>}
-      <div className="bm-svc-meta">
-        {svc.department && <span className="bm-svc-meta-item">{svc.department}</span>}
-        {svc.base_processing_time && <span className="bm-svc-meta-item">⏱ {svc.base_processing_time}</span>}
-      </div>
-      <div className="bm-svc-foot">
-        {svc.is_free ? (
-          <span className="bm-svc-fee bm-svc-fee-free">FREE</span>
-        ) : (
-          <span className="bm-svc-fee"><HiOutlineCurrencyRupee />{total.toFixed(0)}</span>
-        )}
-        <span className="bm-svc-cta">View →</span>
+      <div className="bm-svc-body">
+        <span className="bm-svc-cat">{svc.category?.name || ""}</span>
+        <h3 className="bm-svc-name">{svc.name}</h3>
+        {svc.short_description && <p className="bm-svc-desc">{svc.short_description}</p>}
+        <div className="bm-svc-meta">
+          {svc.department && <span className="bm-svc-meta-item">{svc.department}</span>}
+          {svc.base_processing_time && <span className="bm-svc-meta-item">⏱ {svc.base_processing_time}</span>}
+        </div>
+        <div className="bm-svc-foot">
+          {svc.is_free ? (
+            <span className="bm-svc-fee bm-svc-fee-free">FREE</span>
+          ) : (
+            <span className="bm-svc-fee"><HiOutlineCurrencyRupee />{total.toFixed(0)}</span>
+          )}
+          <span className="bm-svc-cta">View →</span>
+        </div>
       </div>
     </Link>
   );
