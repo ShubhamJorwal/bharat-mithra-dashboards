@@ -1,201 +1,151 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { HiOutlineArrowLeft, HiOutlineUserAdd } from 'react-icons/hi';
-import { PageHeader } from '../../../components/common/PageHeader';
-import './UserCreate.scss';
-
-interface UserFormData {
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'user' | 'moderator';
-  status: 'active' | 'inactive' | 'pending';
-  department: string;
-  address: string;
-}
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { HiOutlineUserAdd, HiOutlineArrowLeft } from "react-icons/hi";
+import { PageHeader } from "@/components/common/PageHeader";
+import usersApi from "@/services/api/users.api";
+import type { CreateUserRequest } from "@/types/api.types";
+import "../UserList/UserList.scss";
 
 const UserCreate = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<UserFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'user',
-    status: 'pending',
-    department: '',
-    address: ''
+  const nav = useNavigate();
+  const [form, setForm] = useState<CreateUserRequest>({
+    mobile: "",
+    full_name: "",
+    email: "",
+    preferred_language: "en",
+    state_code: "",
+    city: "",
+    pincode: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const set = (k: keyof CreateUserRequest, v: string) =>
+    setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
+    setError(null);
+    if (!/^[6-9]\d{9}$/.test(form.mobile)) {
+      setError("Mobile must be a valid 10-digit Indian number.");
+      return;
+    }
+    if (!form.full_name.trim()) {
+      setError("Full name is required.");
+      return;
+    }
+    setSubmitting(true);
     try {
-      // Mock API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Creating user:', formData);
-      navigate('/users');
-    } catch (error) {
-      console.error('Failed to create user:', error);
+      const r = await usersApi.create({
+        ...form,
+        email: form.email || undefined,
+        state_code: form.state_code || undefined,
+        city: form.city || undefined,
+        pincode: form.pincode || undefined,
+      });
+      nav(`/users/${r.data.id}`);
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: { message?: string } } }; message?: string };
+      setError(e.response?.data?.error?.message || e.message || "Failed to create citizen");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="bm-user-create">
+    <div className="bm-users">
       <PageHeader
         icon={<HiOutlineUserAdd />}
-        title="Create User"
-        description="Add a new user to the system"
+        title="Add citizen"
+        description="Manually create a new citizen profile. They can later log in via OTP using this mobile number."
         actions={
-          <button
-            className="bm-btn bm-btn-secondary"
-            onClick={() => navigate('/users')}
-          >
-            <HiOutlineArrowLeft />
-            <span>Back</span>
-          </button>
+          <Link to="/users" className="bm-btn">
+            <HiOutlineArrowLeft /> Back to list
+          </Link>
         }
       />
 
-      <div className="bm-card">
-        <form onSubmit={handleSubmit} className="bm-form">
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Basic Information</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter full name"
-                  required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="email">Email *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter email address"
-                  required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="phone">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="+91 XXXXXXXXXX"
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="department">Department</label>
-                <input
-                  type="text"
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter department"
-                />
-              </div>
-            </div>
-          </div>
+      {error && <div className="bm-alert bm-alert-error">{error}</div>}
 
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Role & Status</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="role">Role *</label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="bm-select"
-                  required
-                >
-                  <option value="user">User</option>
-                  <option value="moderator">Moderator</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="status">Status *</label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="bm-select"
-                  required
-                >
-                  <option value="pending">Pending</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Additional Information</h3>
-            <div className="bm-form-group bm-form-group--full">
-              <label className="bm-label" htmlFor="address">Address</label>
-              <textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="bm-textarea"
-                placeholder="Enter full address"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <div className="bm-form-actions">
-            <button
-              type="button"
-              className="bm-btn bm-btn-secondary"
-              onClick={() => navigate('/users')}
-              disabled={loading}
+      <form className="bm-card bm-form" onSubmit={submit}>
+        <div className="bm-form-grid">
+          <Field label="Full name *">
+            <input
+              type="text"
+              value={form.full_name}
+              onChange={(e) => set("full_name", e.target.value)}
+              required
+            />
+          </Field>
+          <Field label="Mobile (10 digits) *">
+            <input
+              type="tel"
+              value={form.mobile}
+              onChange={(e) => set("mobile", e.target.value.replace(/\D/g, "").slice(0, 10))}
+              maxLength={10}
+              required
+            />
+          </Field>
+          <Field label="Email">
+            <input
+              type="email"
+              value={form.email || ""}
+              onChange={(e) => set("email", e.target.value)}
+            />
+          </Field>
+          <Field label="Preferred language">
+            <select
+              value={form.preferred_language || "en"}
+              onChange={(e) => set("preferred_language", e.target.value)}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bm-btn bm-btn-primary"
-              disabled={loading}
-            >
-              {loading ? 'Creating...' : 'Create User'}
-            </button>
-          </div>
-        </form>
-      </div>
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="kn">Kannada</option>
+              <option value="ta">Tamil</option>
+              <option value="te">Telugu</option>
+              <option value="mr">Marathi</option>
+            </select>
+          </Field>
+          <Field label="State code">
+            <input
+              type="text"
+              value={form.state_code || ""}
+              onChange={(e) => set("state_code", e.target.value.toUpperCase().slice(0, 5))}
+              placeholder="KA, MH, TN..."
+            />
+          </Field>
+          <Field label="City">
+            <input
+              type="text"
+              value={form.city || ""}
+              onChange={(e) => set("city", e.target.value)}
+            />
+          </Field>
+          <Field label="Pincode">
+            <input
+              type="text"
+              value={form.pincode || ""}
+              onChange={(e) => set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+              maxLength={6}
+            />
+          </Field>
+        </div>
+        <div className="bm-form-actions">
+          <Link to="/users" className="bm-btn">Cancel</Link>
+          <button type="submit" className="bm-btn bm-btn-primary" disabled={submitting}>
+            {submitting ? "Creating…" : "Create citizen"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <label className="bm-form-field">
+    <span>{label}</span>
+    {children}
+  </label>
+);
 
 export default UserCreate;

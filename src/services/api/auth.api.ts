@@ -4,35 +4,38 @@ import type {
   SendOtpRequest,
   SendOtpResponse,
   VerifyOtpRequest,
-  VerifyOtpResponse
-} from '../../types/api.types';
+  VerifyOtpResponse,
+  User,
+} from '@/types/api.types';
 
-const AUTH_BASE = '/api/v1/auth';
+// Citizen authentication (OTP-based)
+const BASE = '/api/v1/users/auth';
 
 export const authApi = {
-  // Send OTP to mobile
   sendOtp: async (data: SendOtpRequest): Promise<ApiResponse<SendOtpResponse>> => {
-    const response = await axiosInstance.post(`${AUTH_BASE}/send-otp`, data);
-    return response.data;
+    const r = await axiosInstance.post(`${BASE}/otp/send`, data);
+    return r.data;
   },
 
-  // Verify OTP and get token
   verifyOtp: async (data: VerifyOtpRequest): Promise<ApiResponse<VerifyOtpResponse>> => {
-    const response = await axiosInstance.post(`${AUTH_BASE}/verify-otp`, data);
-    return response.data;
+    const r = await axiosInstance.post(`${BASE}/otp/verify`, data);
+    return r.data;
   },
 
-  // Refresh token
-  refreshToken: async (): Promise<ApiResponse<{ token: string; expires_at: string }>> => {
-    const response = await axiosInstance.post(`${AUTH_BASE}/refresh`);
-    return response.data;
+  refresh: async (refresh_token: string): Promise<ApiResponse<VerifyOtpResponse>> => {
+    const r = await axiosInstance.post(`${BASE}/refresh`, { refresh_token });
+    return r.data;
   },
 
-  // Logout
-  logout: async (): Promise<ApiResponse<null>> => {
-    const response = await axiosInstance.post(`${AUTH_BASE}/logout`);
-    return response.data;
-  }
+  logout: async (refresh_token?: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.post(`${BASE}/logout`, { refresh_token });
+    return r.data;
+  },
+
+  me: async (): Promise<ApiResponse<User>> => {
+    const r = await axiosInstance.get('/api/v1/users/me');
+    return r.data;
+  },
 };
 
 export default authApi;

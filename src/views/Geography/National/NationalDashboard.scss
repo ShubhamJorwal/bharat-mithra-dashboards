@@ -1,994 +1,1116 @@
+@use 'sass:color';
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
 
-// ==============================================
-// NATIONAL DASHBOARD - Modern Redesign
-// ==============================================
+// =====================================================================
+// NATIONAL DASHBOARD — "BHARAT COSMOS"
+// A three-act page: Cosmos hero → Cascade → Compass
+// =====================================================================
 
-// Brand Colors
-$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-$accent-gradient: linear-gradient(135deg, #FF9933 0%, #138808 100%);
+// India tricolour — used as accents only on this page
+$saffron: #FF9933;
+$india-green: #138808;
+$chakra-blue: #000080;
+$ink: #0a1628;
+$ink-2: #0f1d32;
+$ink-3: #142544;
 
 .nd {
-  padding: 0;
-  min-height: 100%;
+  position: relative;
+  width: 100%;
+  background: var(--color-background, #f7f8fb);
+  color: var(--color-text);
 
-  // ==============================================
-  // LOADING STATE
-  // ==============================================
-  &-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 50vh;
-    gap: 16px;
+  *, *::before, *::after { box-sizing: border-box; }
+}
 
-    &__spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--color-border);
-      border-top-color: var(--color-text);
-      border-radius: 50%;
-      animation: nd-spin 0.8s linear infinite;
-    }
+// =====================================================================
+// LOADING / ERROR
+// =====================================================================
+.nd-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  gap: 24px;
+  color: $chakra-blue;
 
-    &__text {
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      letter-spacing: 0.5px;
-    }
+  &__chakra {
+    width: 120px;
+    height: 120px;
+    color: $chakra-blue;
+    animation: nd-spin 4s linear infinite;
   }
 
-  // ==============================================
-  // ERROR STATE
-  // ==============================================
-  &-error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 50vh;
-    text-align: center;
-    padding: 40px 20px;
-
-    &__icon {
-      font-size: 40px;
-      color: var(--color-text-muted);
-      margin-bottom: 16px;
-    }
-
-    &__title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--color-text);
-      margin: 0 0 8px;
-    }
-
-    &__text {
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      margin: 0 0 20px;
-      max-width: 280px;
-    }
-
-    &__btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      background: var(--color-text);
-      border: none;
-      border-radius: 6px;
-      color: var(--color-background);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: opacity 0.2s;
-
-      &:hover {
-        opacity: 0.85;
-      }
-
-      svg {
-        font-size: 16px;
-      }
-    }
+  &__text {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    animation: nd-fade-pulse 1.6s ease-in-out infinite;
   }
-
-  // ==============================================
-  // HERO SECTION - Redesigned
-  // ==============================================
-  &-hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background: var(--color-background);
-    border: 1px solid var(--color-border-light);
-    border-radius: 20px;
-    padding: 40px 32px 36px;
-    margin-bottom: 24px;
-    overflow: hidden;
-
-    // Subtle background pattern
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 153, 51, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(19, 136, 8, 0.03) 0%, transparent 50%);
-      pointer-events: none;
-    }
-
-    // Emblem container - centered, 50% width
-    &__emblem {
-      position: relative;
-      width: 50%;
-      max-width: 120px;
-      aspect-ratio: 1;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &__emblem-ring {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: $accent-gradient;
-      padding: 4px;
-      animation: nd-emblem-glow 3s ease-in-out infinite;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -6px;
-        border-radius: 50%;
-        border: 2px dashed rgba(255, 153, 51, 0.3);
-        animation: nd-emblem-rotate 20s linear infinite;
-      }
-    }
-
-    &__emblem-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: var(--color-background);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &__emblem-icon {
-      font-size: 48px;
-      color: #FF9933;
-      filter: drop-shadow(0 2px 8px rgba(255, 153, 51, 0.3));
-    }
-
-    &__emblem-decoration {
-      position: absolute;
-      inset: -20px;
-      border-radius: 50%;
-      border: 1px solid var(--color-border-light);
-      opacity: 0.5;
-    }
-
-    // Text content
-    &__text {
-      position: relative;
-      z-index: 1;
-    }
-
-    &__badge {
-      display: inline-block;
-      padding: 6px 16px;
-      background: $accent-gradient;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 12px rgba(255, 153, 51, 0.25);
-    }
-
-    &__title {
-      font-size: 42px;
-      font-weight: 700;
-      color: var(--color-text);
-      margin: 0;
-      letter-spacing: -1px;
-      line-height: 1.1;
-    }
-
-    &__tagline {
-      font-size: 14px;
-      color: var(--color-text-secondary);
-      margin: 8px 0 0;
-      font-weight: 500;
-    }
-
-    &__stats {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--color-border-light);
-    }
-
-    &__stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    &__stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--color-text);
-    }
-
-    &__stat-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    &__stat-divider {
-      width: 1px;
-      height: 32px;
-      background: var(--color-border);
-    }
-
-    &__refresh {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s;
-      z-index: 2;
-
-      svg {
-        font-size: 16px;
-      }
-
-      &:hover {
-        border-color: var(--color-text);
-        color: var(--color-text);
-        background: var(--color-background-secondary);
-      }
-    }
-  }
-
-  // ==============================================
-  // CAROUSEL
-  // ==============================================
-  &-carousel {
-    position: relative;
-    background: var(--color-background);
-    border: 1px solid var(--color-border-light);
-    border-radius: 16px;
-    padding: 32px 60px;
-    overflow: hidden;
-
-    &__track {
-      position: relative;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &__slide {
-      position: absolute;
-      width: 280px;
-      height: 160px;
-      background: var(--slide-gradient);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      opacity: 0;
-      transform: scale(0.8) translateX(100%);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      pointer-events: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-
-      &--active {
-        opacity: 1;
-        transform: scale(1) translateX(0);
-        pointer-events: auto;
-        z-index: 3;
-      }
-
-      &--prev {
-        opacity: 0.4;
-        transform: scale(0.85) translateX(-120%);
-        z-index: 2;
-      }
-
-      &--next {
-        opacity: 0.4;
-        transform: scale(0.85) translateX(120%);
-        z-index: 2;
-      }
-    }
-
-    &__slide-icon {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      margin-bottom: 16px;
-
-      svg {
-        font-size: 24px;
-        color: #fff;
-      }
-    }
-
-    &__slide-content {
-      color: #fff;
-    }
-
-    &__slide-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 4px;
-    }
-
-    &__slide-subtitle {
-      font-size: 12px;
-      opacity: 0.85;
-      font-weight: 500;
-    }
-
-    &__slide-desc {
-      font-size: 13px;
-      margin: 8px 0 0;
-      opacity: 0.9;
-      line-height: 1.4;
-    }
-
-    &__nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-background);
-      border: 1px solid var(--color-border);
-      border-radius: 50%;
-      color: var(--color-text);
-      cursor: pointer;
-      transition: all 0.2s;
-      z-index: 10;
-
-      svg {
-        font-size: 20px;
-      }
-
-      &:hover {
-        background: var(--color-text);
-        color: var(--color-background);
-        border-color: var(--color-text);
-      }
-
-      &--prev {
-        left: 12px;
-      }
-
-      &--next {
-        right: 12px;
-      }
-    }
-
-    &__dots {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    &__dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--color-border);
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      padding: 0;
-
-      &:hover {
-        background: var(--color-text-secondary);
-      }
-
-      &--active {
-        width: 24px;
-        border-radius: 4px;
-        background: var(--color-text);
-      }
-    }
-  }
-
-  // ==============================================
-  // SECTION STYLES
-  // ==============================================
-  &-section {
-    margin-bottom: 24px;
-
-    &__title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin: 0 0 16px;
-    }
-  }
-
-  // ==============================================
-  // STATS GRID
-  // ==============================================
-  &-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-  }
-
-  &-card {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border-light);
-    border-radius: 12px;
-    padding: 18px 20px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    animation: nd-fadeIn 0.4s ease forwards;
-    opacity: 0;
-
-    &:hover {
-      border-color: var(--color-text);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-
-      .nd-card__arrow {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .nd-card__icon {
-        background: var(--color-text);
-        color: var(--color-background);
-      }
-    }
-
-    &__icon {
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-background-secondary);
-      border-radius: 10px;
-      flex-shrink: 0;
-      transition: all 0.25s ease;
-
-      svg {
-        font-size: 20px;
-        color: var(--color-text-secondary);
-      }
-    }
-
-    &__content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    &__number {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--color-text);
-      line-height: 1.1;
-      font-variant-numeric: tabular-nums;
-    }
-
-    &__label {
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      font-weight: 500;
-      margin-top: 2px;
-    }
-
-    &__arrow {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateX(-8px) translateY(-50%);
-      font-size: 16px;
-      color: var(--color-text);
-      opacity: 0;
-      transition: all 0.25s ease;
-    }
-  }
-
-  // ==============================================
-  // HIERARCHY FLOW
-  // ==============================================
-  &-flow {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 20px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border-light);
-    border-radius: 12px;
-    overflow-x: auto;
-    @include custom-scrollbar;
-
-    &__item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 18px;
-      background: var(--color-background-secondary);
-      border-radius: 10px;
-      min-width: 100px;
-      text-align: center;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      }
-
-      &--nation {
-        background: linear-gradient(135deg, rgba(255, 153, 51, 0.1), rgba(19, 136, 8, 0.1));
-      }
-    }
-
-    &__emoji {
-      font-size: 24px;
-    }
-
-    &__icon {
-      font-size: 20px;
-      color: var(--color-text-secondary);
-    }
-
-    &__name {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-
-    &__count {
-      font-size: 10px;
-      color: var(--color-text-secondary);
-      font-weight: 500;
-    }
-
-    &__connector {
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      color: var(--color-text-muted);
-      flex-shrink: 0;
-
-      svg {
-        font-size: 14px;
-        animation: nd-arrow-pulse 1.5s ease-in-out infinite;
-      }
-    }
-  }
-
-  // ==============================================
-  // ZONES
-  // ==============================================
-  &-zones {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-  }
-
-  &-zone {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border-light);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: var(--color-text);
-      transform: translateY(-2px);
-
-      .nd-zone__arrow {
-        opacity: 1;
-      }
-
-      .nd-zone__code {
-        background: var(--color-text);
-        color: var(--color-background);
-      }
-    }
-
-    &__code {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-background-secondary);
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--color-text-secondary);
-      flex-shrink: 0;
-      transition: all 0.2s ease;
-    }
-
-    &__info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    &__name {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-
-    &__count {
-      display: block;
-      font-size: 11px;
-      color: var(--color-text-secondary);
-      margin-top: 1px;
-    }
-
-    &__arrow {
-      font-size: 14px;
-      color: var(--color-text-muted);
-      opacity: 0;
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-    }
-  }
-
-  // ==============================================
-  // QUICK ACTIONS
-  // ==============================================
-  &-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  &-action {
+}
+
+.nd-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 24px;
+  text-align: center;
+  gap: 14px;
+
+  &__icon { font-size: 56px; color: $danger-color; }
+  &__title { font-size: 22px; font-weight: 700; margin: 0; }
+  &__text { color: var(--color-text-secondary); font-size: 14px; margin: 0; max-width: 400px; }
+  &__btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 18px;
-    background: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-text);
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: $chakra-blue;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-
-    svg {
-      font-size: 16px;
-      color: var(--color-text-secondary);
-      transition: color 0.2s;
-    }
-
-    &:hover {
-      background: var(--color-text);
-      border-color: var(--color-text);
-      color: var(--color-background);
-
-      svg {
-        color: var(--color-background);
-      }
-    }
+    transition: transform 0.2s, box-shadow 0.2s;
+    &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba($chakra-blue, 0.3); }
   }
 }
 
-// ==============================================
-// ANIMATIONS
-// ==============================================
-@keyframes nd-spin {
-  to {
-    transform: rotate(360deg);
+// =====================================================================
+// ACT 1 — THE COSMOS
+// =====================================================================
+.nd-hero {
+  position: relative;
+  min-height: 1020px;
+  padding: 24px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 30% 20%, $ink-3 0%, $ink-2 35%, $ink 100%);
+  color: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    0 20px 60px rgba(10, 22, 40, 0.25),
+    inset 0 0 120px rgba(0, 0, 0, 0.4);
+}
+
+// --- Aurora layers (the crazy floating colour blobs) ---
+.nd-aurora {
+  position: absolute;
+  width: 900px;
+  height: 900px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+
+  &--saffron {
+    top: -30%;
+    left: -20%;
+    background: radial-gradient(circle, $saffron 0%, transparent 60%);
+    animation: nd-aurora-drift-1 24s ease-in-out infinite;
+  }
+  &--green {
+    bottom: -30%;
+    right: -15%;
+    background: radial-gradient(circle, $india-green 0%, transparent 60%);
+    animation: nd-aurora-drift-2 30s ease-in-out infinite;
+    opacity: 0.25;
+  }
+  &--blue {
+    top: 20%;
+    right: 10%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, $chakra-blue 0%, transparent 60%);
+    animation: nd-aurora-drift-3 36s ease-in-out infinite;
+    opacity: 0.45;
   }
 }
 
-@keyframes nd-fadeIn {
-  from {
+// --- Starfield ---
+.nd-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.nd-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: nd-twinkle 3s ease-in-out infinite;
+  &:nth-child(3n) { width: 3px; height: 3px; opacity: 0.85; }
+  &:nth-child(7n) { width: 1px; height: 1px; opacity: 0.4; }
+}
+
+// --- Top bar ---
+.nd-hero__topbar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.nd-hero__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.75);
+}
+.nd-hero__brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $saffron;
+  box-shadow: 0 0 12px $saffron;
+  animation: nd-pulse-dot 1.6s ease-in-out infinite;
+}
+.nd-hero__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  svg { font-size: 14px; }
+  &:hover { background: rgba(255, 255, 255, 0.16); transform: translateY(-1px); }
+  &:hover svg { animation: nd-spin 1s linear infinite; }
+}
+
+// --- The Cosmos (chakra + orbits) ---
+.nd-cosmos {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  flex: 1;
+  min-height: 880px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -20px 0;
+  will-change: transform;
+}
+
+// Chakra — center piece
+.nd-chakra {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 360px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+
+  &__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 0 30px rgba(0, 0, 128, 0.6)) drop-shadow(0 0 60px rgba(255, 153, 51, 0.2));
+    animation: nd-spin 60s linear infinite;
+  }
+
+  // Solid core disc that sits OVER the chakra spokes so text is fully readable.
+  // Diameter calibrated to match the inner ring (r=40 in viewBox 200 → 40% of 360 = 144px).
+  &__core {
+    position: relative;
+    z-index: 2;
+    width: 144px;
+    height: 144px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, rgba(20, 37, 68, 0.95), rgba(10, 22, 40, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 0 0 6px rgba(0, 0, 128, 0.18),
+      0 0 40px rgba(0, 0, 128, 0.45),
+      inset 0 2px 8px rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px;
+    text-align: center;
+  }
+  &__hindi {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, $saffron 0%, #fff 50%, $india-green 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  &__english {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.65);
+  }
+  &__capital {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    svg { font-size: 10px; color: $saffron; }
+  }
+}
+
+// Orbit rings (visual guides)
+.nd-orbit-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+// Orbit (the rotating container)
+.nd-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  animation: nd-orbit-spin linear infinite;
+
+  &--hovered { animation-play-state: paused; }
+}
+
+// Planet — sits at the top of its orbit ring
+.nd-planet {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.6), transparent 50%), var(--planet-color);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s;
+  // Counter-rotate so the icon stays upright
+  animation: nd-orbit-counter linear infinite;
+
+  &__halo {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: var(--planet-color);
+    opacity: 0.25;
+    filter: blur(14px);
+    z-index: -1;
+    animation: nd-halo-pulse 2.4s ease-in-out infinite;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg { font-size: 22px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)); }
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translate(-50%, 8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 14px;
+    background: rgba(10, 22, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    backdrop-filter: blur(20px);
+    white-space: nowrap;
     opacity: 0;
-    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.25s;
+    z-index: 10;
+    strong { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--planet-color); }
+    em { font-size: 18px; font-weight: 800; font-style: normal; color: #fff; font-variant-numeric: tabular-nums; }
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(10, 22, 40, 0.95);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.25);
+    box-shadow:
+      0 0 0 6px rgba(255, 255, 255, 0.08),
+      0 16px 48px rgba(0, 0, 0, 0.6),
+      0 0 80px var(--planet-color);
+    .nd-planet__tooltip { opacity: 1; transform: translate(-50%, 0); }
+    .nd-planet__halo { opacity: 0.5; filter: blur(20px); }
   }
 }
 
-@keyframes nd-emblem-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
+// --- Hero metric strip ---
+.nd-hero__strip {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  margin: 0 auto;
+  max-width: 880px;
+  padding: 20px 36px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  flex-wrap: wrap;
+}
+.nd-hero__metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.nd-hero__metric-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  &--ticker {
+    background: linear-gradient(135deg, $saffron, #fff, $india-green);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 153, 51, 0.4);
+}
+.nd-hero__metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.nd-hero__divider {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+// --- Scroll cue ---
+.nd-scroll-cue {
+  display: none; // Removed — strip is the anchor at the bottom; cue was overlapping
+}
+.nd-scroll-cue__line {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    animation: nd-scroll-trail 2s ease-in-out infinite;
   }
 }
 
-@keyframes nd-emblem-rotate {
-  from {
-    transform: rotate(0deg);
+// =====================================================================
+// SECTION HEAD — shared across acts 2 & 3
+// =====================================================================
+.nd-section-head {
+  margin: 80px auto 36px;
+  max-width: 720px;
+  text-align: center;
+  &__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba($chakra-blue, 0.08);
+    border: 1px solid rgba($chakra-blue, 0.18);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: $chakra-blue;
+    margin-bottom: 16px;
+    svg { font-size: 12px; }
   }
-  to {
-    transform: rotate(360deg);
+  &__title {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin: 0 0 12px;
+    color: var(--color-text);
+    em {
+      font-style: italic;
+      background: linear-gradient(135deg, $saffron 0%, $chakra-blue 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  &__sub {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.55;
   }
 }
 
-@keyframes nd-arrow-pulse {
-  0%, 100% {
+// =====================================================================
+// ACT 2 — THE CASCADE
+// =====================================================================
+.nd-cascade {
+  position: relative;
+  padding: 0 16px;
+
+  // Floating decorative numerals in the background
+  &::before {
+    content: '02';
+    position: absolute;
+    top: 60px;
+    right: 4%;
+    font-size: 360px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-text);
+    opacity: 0.025;
+    pointer-events: none;
+    letter-spacing: -20px;
+  }
+}
+
+.nd-cascade__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.nd-cascade__row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 14px 18px;
+  padding: 18px 22px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.06));
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: nd-rise 0.8s ease-out forwards;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, border-color 0.3s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--row-color) 50%, transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  &:hover {
+    transform: translateY(-3px) scale(1.005);
+    border-color: var(--row-color);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--row-color);
+    &::before { opacity: 0.06; }
+    .nd-cascade__bar-fill { width: var(--row-width); }
+    .nd-cascade__icon { transform: rotate(-8deg) scale(1.1); }
+    .nd-cascade__count-num { color: var(--row-color); }
+  }
+}
+
+.nd-cascade__index {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: center;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--row-color);
+  opacity: 0.25;
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nd-cascade__meta {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.nd-cascade__bar {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 999px;
+  overflow: hidden;
+  width: 100%;
+}
+.nd-cascade__bar-fill {
+  position: absolute;
+  inset: 0;
+  width: var(--row-width);
+  background: linear-gradient(90deg, var(--row-color) 0%, transparent 200%);
+  border-radius: inherit;
+  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nd-cascade__bar-shine {
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: nd-shine 3.2s ease-in-out infinite;
+}
+
+.nd-cascade__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--row-color);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  svg { font-size: 22px; }
+}
+.nd-cascade__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  strong {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  small {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+}
+.nd-cascade__count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.nd-cascade__count-num {
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  letter-spacing: -0.5px;
+  transition: color 0.3s;
+  line-height: 1;
+}
+.nd-cascade__count-compact {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+// =====================================================================
+// ACT 3 — THE COMPASS
+// =====================================================================
+.nd-compass-section {
+  position: relative;
+  padding: 0 16px 60px;
+  &::before {
+    content: '03';
+    position: absolute;
+    top: 60px;
+    left: 4%;
+    font-size: 360px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-text);
+    opacity: 0.025;
+    pointer-events: none;
+    letter-spacing: -20px;
+  }
+}
+
+.nd-compass {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nd-compass__rose {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nd-compass__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text);
+  animation: nd-spin 80s linear infinite;
+}
+.nd-compass__cardinal {
+  fill: var(--color-text);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  opacity: 0.4;
+}
+
+// Petals — rotated children from center
+.nd-compass__petal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transform: translate(-50%, -50%) rotate(var(--petal-angle));
+  transform-origin: center;
+
+  &-shape {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 90px;
+    height: 200px;
+    transform: translate(-50%, -100%) scale(var(--petal-scale));
+    transform-origin: bottom center;
+    background: linear-gradient(180deg, var(--petal-color) 0%, transparent 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     opacity: 0.4;
-    transform: translateX(0);
+    filter: blur(1px);
+    transition: opacity 0.4s, filter 0.4s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 40px var(--petal-color);
   }
-  50% {
-    opacity: 1;
-    transform: translateX(3px);
+
+  &-label {
+    position: absolute;
+    top: -180px;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(calc(-1 * var(--petal-angle)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    strong {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-text);
+    }
+    em {
+      font-size: 22px;
+      font-weight: 800;
+      font-style: normal;
+      font-variant-numeric: tabular-nums;
+      color: var(--petal-color);
+      line-height: 1;
+    }
+  }
+
+  &:hover .nd-compass__petal-shape {
+    opacity: 0.85;
+    filter: blur(0);
+    transform: translate(-50%, -100%) scale(calc(var(--petal-scale) * 1.15));
+  }
+  &:hover .nd-compass__petal-label {
+    transform: translate(-50%, -8px) rotate(calc(-1 * var(--petal-angle)));
   }
 }
 
-// ==============================================
-// RESPONSIVE DESIGN
-// ==============================================
-@media (max-width: 1200px) {
-  .nd {
-    &-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
+.nd-compass__core {
+  position: relative;
+  z-index: 5;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, $saffron, $india-green);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.6), 0 12px 32px rgba($saffron, 0.4);
+  animation: nd-core-pulse 3s ease-in-out infinite;
+}
+.nd-compass__core-glyph {
+  font-size: 22px;
+  line-height: 1;
+}
+.nd-compass__core-text {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
 
-    &-zones {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    &-carousel {
-      padding: 24px 50px;
-
-      &__slide {
-        width: 260px;
-        height: 150px;
-      }
-    }
+// Compass legend
+.nd-compass__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.nd-compass__legend-item {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px 12px;
+  padding: 12px 14px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.06));
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s;
+  &:hover {
+    transform: translateX(4px);
+    border-color: var(--row-color);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  }
+}
+.nd-compass__legend-code {
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--row-color);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.nd-compass__legend-text {
+  display: flex;
+  flex-direction: column;
+  strong { font-size: 13px; font-weight: 700; color: var(--color-text); }
+  small { font-size: 11px; color: var(--color-text-secondary); }
+}
+.nd-compass__legend-bar {
+  position: relative;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  overflow: hidden;
+  span {
+    position: absolute;
+    inset: 0;
+    background: var(--row-color);
+    border-radius: inherit;
+    transition: width 0.5s ease;
   }
 }
 
+// =====================================================================
+// PULSE FOOTER
+// =====================================================================
+.nd-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 60px 16px 24px;
+  padding: 18px 28px;
+  background: linear-gradient(135deg, $ink 0%, $ink-2 50%, $ink 100%);
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.75);
+  position: relative;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba($saffron, 0.04) 33%, rgba($india-green, 0.04) 66%, transparent);
+    animation: nd-shimmer 6s ease-in-out infinite;
+  }
+}
+.nd-pulse__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+.nd-pulse__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $india-green;
+  box-shadow: 0 0 12px $india-green;
+  animation: nd-pulse-dot 1.6s ease-in-out infinite;
+}
+.nd-pulse__quote {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+  em { color: $saffron; font-style: italic; font-weight: 600; margin-right: 6px; }
+}
+.nd-pulse__refresh {
+  position: relative;
+  z-index: 1;
+}
+.nd-pulse__refresh button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  &:hover { background: rgba(255, 255, 255, 0.16); }
+}
+
+// =====================================================================
+// ANIMATIONS
+// =====================================================================
+@keyframes nd-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes nd-orbit-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes nd-orbit-counter {
+  // The orbit container rotates; this counter-rotates the planet so the icon stays upright
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+@keyframes nd-aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(80px, 40px) scale(1.15); }
+}
+@keyframes nd-aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50% { transform: translate(-60px, -30px) scale(0.95); }
+}
+@keyframes nd-aurora-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 60px) scale(1.2); }
+}
+@keyframes nd-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+@keyframes nd-pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+@keyframes nd-halo-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.15); }
+}
+@keyframes nd-fade-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes nd-scroll-trail {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+@keyframes nd-rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes nd-shine {
+  0%, 100% { left: -40%; }
+  60%, 100% { left: 130%; }
+}
+@keyframes nd-core-pulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.6), 0 12px 32px rgba($saffron, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.4), 0 12px 48px rgba($saffron, 0.6); }
+}
+@keyframes nd-shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+// =====================================================================
+// REDUCED MOTION
+// =====================================================================
+@media (prefers-reduced-motion: reduce) {
+  .nd-aurora,
+  .nd-star,
+  .nd-chakra__svg,
+  .nd-orbit,
+  .nd-planet,
+  .nd-planet__halo,
+  .nd-cascade__bar-shine,
+  .nd-compass__svg,
+  .nd-compass__core,
+  .nd-pulse__dot,
+  .nd-pulse::before,
+  .nd-cosmos,
+  .nd-scroll-cue__line::before,
+  .nd-hero__brand-dot {
+    animation: none !important;
+  }
+  .nd-cascade__row { animation: none; opacity: 1; transform: none; }
+}
+
+// =====================================================================
+// DARK MODE
+// =====================================================================
+body.dark-mode {
+  .nd-cascade__row,
+  .nd-compass__legend-item {
+    background: var(--color-background-secondary);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+  .nd-cascade__bar { background: rgba(255, 255, 255, 0.05); }
+  .nd-compass__legend-bar { background: rgba(255, 255, 255, 0.05); }
+  .nd-section-head__kicker {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+}
+
+// =====================================================================
+// RESPONSIVE
+// =====================================================================
 @media (max-width: 900px) {
-  .nd {
-    &-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    &-zones {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    &-hero {
-      padding: 32px 24px 28px;
-
-      &__emblem {
-        max-width: 100px;
-      }
-
-      &__emblem-icon {
-        font-size: 40px;
-      }
-
-      &__title {
-        font-size: 36px;
-      }
-    }
-
-    &-carousel {
-      padding: 24px 45px;
-
-      &__slide {
-        width: 240px;
-        height: 140px;
-        padding: 20px;
-
-        &--prev,
-        &--next {
-          display: none;
-        }
-      }
-    }
-  }
+  .nd-hero { min-height: 720px; padding: 20px 16px 50px; }
+  .nd-cosmos { height: 540px; }
+  .nd-chakra { width: 200px; height: 200px; }
+  .nd-chakra__hindi { font-size: 32px; }
+  .nd-chakra__english { font-size: 9px; letter-spacing: 4px; }
+  // Pull orbits in on smaller screens
+  .nd-orbit, .nd-orbit-ring { transform: translate(-50%, -50%) scale(0.6); }
+  .nd-section-head__title { font-size: 28px; }
+  .nd-cascade::before, .nd-compass-section::before { font-size: 200px; }
+  .nd-cascade__index { font-size: 28px; }
+  .nd-cascade__count-num { font-size: 18px; }
+  .nd-hero__metric-value { font-size: 20px; }
 }
 
 @media (max-width: 600px) {
-  .nd {
-    &-hero {
-      padding: 24px 20px 20px;
-
-      &__emblem {
-        max-width: 80px;
-        margin-bottom: 16px;
-      }
-
-      &__emblem-icon {
-        font-size: 32px;
-      }
-
-      &__title {
-        font-size: 28px;
-      }
-
-      &__tagline {
-        font-size: 13px;
-      }
-
-      &__stats {
-        gap: 16px;
-        margin-top: 20px;
-        padding-top: 16px;
-      }
-
-      &__stat-value {
-        font-size: 20px;
-      }
-
-      &__refresh {
-        top: 12px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-      }
-    }
-
-    &-carousel {
-      padding: 20px 40px;
-
-      &__track {
-        height: 160px;
-      }
-
-      &__slide {
-        width: 220px;
-        height: 130px;
-        padding: 16px;
-      }
-
-      &__slide-icon {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 12px;
-
-        svg {
-          font-size: 20px;
-        }
-      }
-
-      &__slide-title {
-        font-size: 16px;
-      }
-
-      &__slide-subtitle {
-        font-size: 11px;
-      }
-
-      &__slide-desc {
-        font-size: 12px;
-      }
-
-      &__nav {
-        width: 32px;
-        height: 32px;
-
-        svg {
-          font-size: 16px;
-        }
-
-        &--prev {
-          left: 4px;
-        }
-
-        &--next {
-          right: 4px;
-        }
-      }
-
-      &__dots {
-        margin-top: 16px;
-        gap: 6px;
-      }
-
-      &__dot {
-        width: 6px;
-        height: 6px;
-
-        &--active {
-          width: 18px;
-        }
-      }
-    }
-
-    &-grid {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    &-card {
-      padding: 16px;
-    }
-
-    &-flow {
-      padding: 16px;
-
-      &__item {
-        min-width: 80px;
-        padding: 12px 14px;
-      }
-    }
-
-    &-zones {
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    &-actions {
-      flex-direction: column;
-    }
-
-    &-action {
-      justify-content: center;
-    }
-  }
+  .nd-hero__strip { gap: 14px; padding: 14px 16px; }
+  .nd-hero__divider { display: none; }
+  .nd-cascade__row { padding: 14px; gap: 12px; grid-template-columns: 44px 1fr; }
+  .nd-cascade__index { font-size: 24px; }
+  .nd-cascade__meta { grid-template-columns: 36px 1fr auto; gap: 10px; }
+  .nd-cascade__icon { width: 36px; height: 36px; svg { font-size: 18px; } }
+  .nd-cascade__text strong { font-size: 14px; }
+  .nd-cascade__text small { font-size: 11px; }
+  .nd-pulse { flex-direction: column; align-items: stretch; text-align: center; }
 }

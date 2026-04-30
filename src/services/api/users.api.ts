@@ -3,99 +3,55 @@ import type {
   ApiResponse,
   PaginatedResponse,
   User,
+  UserDocument,
   CreateUserRequest,
   UpdateUserRequest,
-  UserLoginHistory,
-  UsersQueryParams
-} from '../../types/api.types';
+  UsersQueryParams,
+} from '@/types/api.types';
 
-const USERS_BASE = '/api/v1/users';
+const BASE = '/api/v1/users';
 
 export const usersApi = {
-  // Check if mobile exists in a state
-  checkMobile: async (mobile: string, state_code: string): Promise<ApiResponse<{ mobile: string; state_code: string; exists: boolean }>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/check-mobile`, {
-      params: { mobile, state_code }
-    });
-    return response.data;
+  // ---- admin CRUD on citizens ----
+  list: async (params?: UsersQueryParams): Promise<PaginatedResponse<User>> => {
+    const r = await axiosInstance.get(BASE, { params });
+    return r.data;
   },
 
-  // Create a new user
-  createUser: async (data: CreateUserRequest): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.post(`${USERS_BASE}/create`, data);
-    return response.data;
+  getById: async (id: string): Promise<ApiResponse<User>> => {
+    const r = await axiosInstance.get(`${BASE}/${id}`);
+    return r.data;
   },
 
-  // Get paginated list of users
-  getUsers: async (params?: UsersQueryParams): Promise<PaginatedResponse<User>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/list`, { params });
-    return response.data;
+  getByMobile: async (mobile: string): Promise<ApiResponse<User>> => {
+    const r = await axiosInstance.get(`${BASE}/mobile/${mobile}`);
+    return r.data;
   },
 
-  // Get user by ID
-  getUserById: async (id: string, state_code: string): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/${id}`, {
-      params: { state_code }
-    });
-    return response.data;
+  checkMobile: async (mobile: string): Promise<ApiResponse<{ exists: boolean }>> => {
+    const r = await axiosInstance.get(`${BASE}/check-mobile`, { params: { mobile } });
+    return r.data;
   },
 
-  // Get user by mobile
-  getUserByMobile: async (mobile: string, state_code: string): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/mobile/${mobile}`, {
-      params: { state_code }
-    });
-    return response.data;
+  create: async (body: CreateUserRequest): Promise<ApiResponse<User>> => {
+    const r = await axiosInstance.post(BASE, body);
+    return r.data;
   },
 
-  // Update user
-  updateUser: async (id: string, state_code: string, data: UpdateUserRequest): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.put(`${USERS_BASE}/${id}`, data, {
-      params: { state_code }
-    });
-    return response.data;
+  update: async (id: string, body: UpdateUserRequest): Promise<ApiResponse<User>> => {
+    const r = await axiosInstance.put(`${BASE}/${id}`, body);
+    return r.data;
   },
 
-  // Request user deletion
-  deleteUser: async (id: string, state_code: string, reason: string): Promise<ApiResponse<{ user_id: string; deletion_status: string }>> => {
-    const response = await axiosInstance.delete(`${USERS_BASE}/${id}`, {
-      params: { state_code },
-      data: { reason }
-    });
-    return response.data;
+  remove: async (id: string): Promise<ApiResponse<null>> => {
+    const r = await axiosInstance.delete(`${BASE}/${id}`);
+    return r.data;
   },
 
-  // Approve user deletion (admin)
-  approveDeletion: async (id: string, state_code: string): Promise<ApiResponse<{ user_id: string; deletion_status: string; approved_by: string }>> => {
-    const response = await axiosInstance.post(`${USERS_BASE}/${id}/approve-deletion`, null, {
-      params: { state_code }
-    });
-    return response.data;
+  listDocuments: async (id: string): Promise<ApiResponse<UserDocument[]>> => {
+    const r = await axiosInstance.get(`${BASE}/${id}/documents`);
+    return r.data;
   },
-
-  // Get user login history
-  getLoginHistory: async (id: string, state_code: string, limit: number = 20): Promise<ApiResponse<{ user_id: string; history: UserLoginHistory[]; count: number }>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/${id}/login-history`, {
-      params: { state_code, limit }
-    });
-    return response.data;
-  },
-
-  // Get current user profile (authenticated)
-  getProfile: async (state_code: string): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.get(`${USERS_BASE}/profile`, {
-      params: { state_code }
-    });
-    return response.data;
-  },
-
-  // Update current user profile (authenticated)
-  updateProfile: async (state_code: string, data: UpdateUserRequest): Promise<ApiResponse<User>> => {
-    const response = await axiosInstance.put(`${USERS_BASE}/profile`, data, {
-      params: { state_code }
-    });
-    return response.data;
-  }
 };
 
 export default usersApi;

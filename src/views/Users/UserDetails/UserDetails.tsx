@@ -1,203 +1,160 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  HiOutlinePencil,
-  HiOutlineTrash,
-  HiOutlineMail,
-  HiOutlinePhone,
-  HiOutlineCalendar,
-  HiOutlineShieldCheck,
-  HiOutlineLocationMarker,
-  HiOutlineUser
-} from 'react-icons/hi';
-import { PageHeader } from '../../../components/common/PageHeader';
-import './UserDetails.scss';
-
-interface UserDetails {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'user' | 'moderator';
-  status: 'active' | 'inactive' | 'pending';
-  createdAt: string;
-  avatar?: string;
-  address?: string;
-  department?: string;
-  lastLogin?: string;
-}
+import { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { HiOutlineUser, HiOutlinePencil, HiOutlineArrowLeft, HiOutlineTrash } from "react-icons/hi";
+import { PageHeader } from "@/components/common/PageHeader";
+import usersApi from "@/services/api/users.api";
+import type { User, UserDocument } from "@/types/api.types";
+import "../UserList/UserList.scss";
+import "./UserDetails.scss";
 
 const UserDetails = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [user, setUser] = useState<UserDetails | null>(null);
+  const { id = "" } = useParams();
+  const nav = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [docs, setDocs] = useState<UserDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      setLoading(true);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const r = await usersApi.getById(id);
+      setUser(r.data);
       try {
-        // Mock data - replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        setUser({
-          id: id || '1',
-          name: 'Rahul Kumar',
-          email: 'rahul@example.com',
-          phone: '+91 9876543210',
-          role: 'admin',
-          status: 'active',
-          createdAt: '2024-01-15',
-          address: 'Mumbai, Maharashtra, India',
-          department: 'Administration',
-          lastLogin: '2024-03-15 10:30 AM'
-        });
-      } catch (error) {
-        console.error('Failed to fetch user details:', error);
-      } finally {
-        setLoading(false);
+        const d = await usersApi.listDocuments(id);
+        setDocs(d.data || []);
+      } catch {
+        setDocs([]);
       }
-    };
-
-    fetchUserDetails();
-  }, [id]);
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'danger';
-      case 'moderator': return 'warning';
-      default: return 'info';
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number }; message?: string };
+      setError(e.response?.status === 404 ? "Citizen not found" : e.message || "Failed to load");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'success';
-      case 'inactive': return 'danger';
-      default: return 'warning';
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const remove = async () => {
+    if (!confirm("Soft-delete this citizen? They will no longer be able to log in.")) return;
+    setDeleting(true);
+    try {
+      await usersApi.remove(id);
+      nav("/users");
+    } catch (err: unknown) {
+      const e = err as { message?: string };
+      alert(e.message || "Failed to delete");
+    } finally {
+      setDeleting(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="bm-user-details">
-        <div className="bm-loading">Loading user details...</div>
+      <div className="bm-users">
+        <div className="bm-card" style={{ padding: 40, textAlign: "center" }}>Loading…</div>
       </div>
     );
   }
-
-  if (!user) {
+  if (error || !user) {
     return (
-      <div className="bm-user-details">
-        <div className="bm-empty-state">User not found</div>
+      <div className="bm-users">
+        <div className="bm-alert bm-alert-error">{error || "Not found"}</div>
+        <Link to="/users" className="bm-btn"><HiOutlineArrowLeft /> Back</Link>
       </div>
     );
   }
 
   return (
-    <div className="bm-user-details">
+    <div className="bm-users bm-user-details">
       <PageHeader
         icon={<HiOutlineUser />}
-        title="User Details"
-        description="View and manage user information"
+        title={user.full_name}
+        description={`${user.mobile} · ${user.email || "no email"} · ${user.state_code || "—"}`}
         actions={
-          <>
-            <button className="bm-btn bm-btn-secondary" onClick={() => navigate(`/users/${id}/edit`)}>
-              <HiOutlinePencil />
-              <span>Edit</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Link to="/users" className="bm-btn"><HiOutlineArrowLeft /> Back</Link>
+            <Link to={`/users/${user.id}/edit`} className="bm-btn"><HiOutlinePencil /> Edit</Link>
+            <button className="bm-btn bm-btn-danger" onClick={remove} disabled={deleting}>
+              <HiOutlineTrash /> {deleting ? "Deleting…" : "Delete"}
             </button>
-            <button className="bm-btn bm-btn-danger">
-              <HiOutlineTrash />
-              <span>Delete</span>
-            </button>
-          </>
+          </div>
         }
       />
 
-      <div className="bm-details-grid">
-        <div className="bm-card bm-profile-card">
-          <div className="bm-profile-header">
-            <div className="bm-profile-avatar">
-              {user.avatar ? (
-                <img src={user.avatar} alt={user.name} />
-              ) : (
-                getInitials(user.name)
-              )}
-            </div>
-            <div className="bm-profile-info">
-              <h2 className="bm-profile-name">{user.name}</h2>
-              <div className="bm-profile-meta">
-                <span className={`bm-badge bm-badge--${getRoleColor(user.role)}`}>
-                  {user.role}
-                </span>
-                <span className={`bm-status-dot bm-status-dot--${getStatusColor(user.status)}`}>
-                  {user.status}
-                </span>
-              </div>
-            </div>
-          </div>
+      <div className="bm-grid-2">
+        <Section title="Profile">
+          <Row k="Full name" v={user.full_name} />
+          <Row k="Mobile" v={`${user.mobile}${user.mobile_verified ? " ✓" : ""}`} />
+          <Row k="Email" v={user.email ? `${user.email}${user.email_verified ? " ✓" : ""}` : "—"} />
+          <Row k="Date of birth" v={user.date_of_birth || "—"} />
+          <Row k="Gender" v={user.gender || "—"} />
+          <Row k="Preferred language" v={user.preferred_language} />
+        </Section>
 
-          <div className="bm-profile-details">
-            <div className="bm-detail-item">
-              <HiOutlineMail className="bm-detail-icon" />
-              <div className="bm-detail-content">
-                <span className="bm-detail-label">Email</span>
-                <span className="bm-detail-value">{user.email}</span>
-              </div>
-            </div>
-            <div className="bm-detail-item">
-              <HiOutlinePhone className="bm-detail-icon" />
-              <div className="bm-detail-content">
-                <span className="bm-detail-label">Phone</span>
-                <span className="bm-detail-value">{user.phone}</span>
-              </div>
-            </div>
-            <div className="bm-detail-item">
-              <HiOutlineLocationMarker className="bm-detail-icon" />
-              <div className="bm-detail-content">
-                <span className="bm-detail-label">Address</span>
-                <span className="bm-detail-value">{user.address || 'Not provided'}</span>
-              </div>
-            </div>
-            <div className="bm-detail-item">
-              <HiOutlineShieldCheck className="bm-detail-icon" />
-              <div className="bm-detail-content">
-                <span className="bm-detail-label">Department</span>
-                <span className="bm-detail-value">{user.department || 'Not assigned'}</span>
-              </div>
-            </div>
-            <div className="bm-detail-item">
-              <HiOutlineCalendar className="bm-detail-icon" />
-              <div className="bm-detail-content">
-                <span className="bm-detail-label">Joined</span>
-                <span className="bm-detail-value">{new Date(user.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Section title="KYC">
+          <Row k="Status" v={<span className={`bm-chip bm-chip-${user.kyc_status}`}>{user.kyc_status}</span>} />
+          <Row k="Aadhaar (last 4)" v={user.aadhaar_last4 ? `XXXX-XXXX-${user.aadhaar_last4}${user.aadhaar_verified ? " ✓" : ""}` : "—"} />
+          <Row k="PAN" v={user.pan_number ? `${user.pan_number}${user.pan_verified ? " ✓" : ""}` : "—"} />
+        </Section>
 
-        <div className="bm-card bm-activity-card">
-          <div className="bm-card-header">
-            <h3 className="bm-card-title">Activity</h3>
-          </div>
-          <div className="bm-activity-content">
-            <div className="bm-activity-item">
-              <span className="bm-activity-label">Last Login</span>
-              <span className="bm-activity-value">{user.lastLogin || 'Never'}</span>
-            </div>
-            <div className="bm-activity-item">
-              <span className="bm-activity-label">Account Created</span>
-              <span className="bm-activity-value">{new Date(user.createdAt).toLocaleDateString()}</span>
-            </div>
-          </div>
-        </div>
+        <Section title="Address">
+          <Row k="Line 1" v={user.address_line1 || "—"} />
+          <Row k="Line 2" v={user.address_line2 || "—"} />
+          <Row k="City" v={user.city || "—"} />
+          <Row k="State" v={user.state_code || "—"} />
+          <Row k="Pincode" v={user.pincode || "—"} />
+        </Section>
+
+        <Section title="Account">
+          <Row k="Status" v={<span className={`bm-chip bm-chip-${user.status}`}>{user.status}</span>} />
+          <Row k="Created" v={new Date(user.created_at).toLocaleString()} />
+          <Row k="Last login" v={user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "Never"} />
+          <Row k="Referral code" v={user.referral_code || "—"} />
+          <Row k="Referred by" v={user.referred_by_code || "—"} />
+        </Section>
       </div>
+
+      <Section title={`Documents (${docs.length})`} fullWidth>
+        {docs.length === 0 ? (
+          <div className="bm-text-muted" style={{ padding: 16 }}>No documents uploaded.</div>
+        ) : (
+          <table className="bm-table">
+            <thead><tr><th>Type</th><th>Last 4</th><th>Verified</th><th>Uploaded</th></tr></thead>
+            <tbody>
+              {docs.map((d) => (
+                <tr key={d.id}>
+                  <td>{d.doc_type}</td>
+                  <td>{d.doc_number_last4 || "—"}</td>
+                  <td>{d.is_verified ? <span className="bm-chip bm-chip-verified">Verified</span> : <span className="bm-chip bm-chip-pending">Pending</span>}</td>
+                  <td className="bm-text-muted">{new Date(d.created_at).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Section>
     </div>
   );
 };
+
+const Section = ({ title, children, fullWidth }: { title: string; children: React.ReactNode; fullWidth?: boolean }) => (
+  <div className="bm-card bm-section" style={fullWidth ? { gridColumn: "1 / -1" } : undefined}>
+    <h3 className="bm-section-title">{title}</h3>
+    {children}
+  </div>
+);
+
+const Row = ({ k, v }: { k: string; v: React.ReactNode }) => (
+  <div className="bm-row">
+    <span className="bm-row-k">{k}</span>
+    <span className="bm-row-v">{v}</span>
+  </div>
+);
 
 export default UserDetails;

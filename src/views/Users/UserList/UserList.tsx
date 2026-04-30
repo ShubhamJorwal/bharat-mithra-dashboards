@@ -1,338 +1,204 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  HiOutlinePlus,
-  HiOutlinePencil,
-  HiOutlineTrash,
-  HiOutlineEye,
-  HiOutlineSearch,
-  HiOutlineFilter,
-  HiOutlineDotsVertical,
-  HiOutlineShieldCheck,
-  HiOutlineUsers
-} from 'react-icons/hi';
-import usersApi from '../../../services/api/users.api';
-import type { User } from '../../../types/api.types';
-import { PageHeader } from '../../../components/common/PageHeader';
-import './UserList.scss';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { HiOutlineUsers, HiOutlinePlus, HiOutlineSearch, HiOutlineRefresh } from "react-icons/hi";
+import { PageHeader } from "@/components/common/PageHeader";
+import usersApi from "@/services/api/users.api";
+import type { User, UsersQueryParams } from "@/types/api.types";
+import "./UserList.scss";
 
-// Mock data for development/demo when API is not available
-const mockUsers: User[] = [
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    mobile: '9876543210',
-    full_name: 'Rajesh Kumar',
-    full_name_hindi: 'राजेश कुमार',
-    email: 'rajesh.kumar@example.com',
-    gender: 'male',
-    state_code: 'MH',
-    current_city: 'Mumbai',
-    current_district: 'Mumbai',
-    status: 'active',
-    kyc_status: 'verified',
-    aadhaar_verified: true,
-    created_at: '2025-01-15T10:00:00Z'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    mobile: '9876543211',
-    full_name: 'Priya Sharma',
-    full_name_hindi: 'प्रिया शर्मा',
-    email: 'priya.sharma@example.com',
-    gender: 'female',
-    state_code: 'DL',
-    current_city: 'New Delhi',
-    current_district: 'Central Delhi',
-    status: 'active',
-    kyc_status: 'pending',
-    aadhaar_verified: false,
-    created_at: '2025-02-20T14:30:00Z'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    mobile: '9876543212',
-    full_name: 'Amit Patel',
-    full_name_hindi: 'अमित पटेल',
-    email: 'amit.patel@example.com',
-    gender: 'male',
-    state_code: 'GJ',
-    current_city: 'Ahmedabad',
-    current_district: 'Ahmedabad',
-    status: 'active',
-    kyc_status: 'verified',
-    aadhaar_verified: true,
-    created_at: '2025-03-10T09:15:00Z'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440004',
-    mobile: '9876543213',
-    full_name: 'Sneha Reddy',
-    full_name_hindi: 'स्नेहा रेड्डी',
-    email: 'sneha.reddy@example.com',
-    gender: 'female',
-    state_code: 'KA',
-    current_city: 'Bangalore',
-    current_district: 'Bangalore Urban',
-    status: 'inactive',
-    kyc_status: 'partial',
-    aadhaar_verified: false,
-    created_at: '2025-04-05T16:45:00Z'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440005',
-    mobile: '9876543214',
-    full_name: 'Vikram Singh',
-    full_name_hindi: 'विक्रम सिंह',
-    email: 'vikram.singh@example.com',
-    gender: 'male',
-    state_code: 'UP',
-    current_city: 'Lucknow',
-    current_district: 'Lucknow',
-    status: 'suspended',
-    kyc_status: 'rejected',
-    aadhaar_verified: false,
-    created_at: '2025-05-12T11:20:00Z'
-  }
-];
+const PER_PAGE = 25;
 
 const UserList = () => {
-  const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 0 });
+  const [items, setItems] = useState<User[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [status, setStatus] = useState<UsersQueryParams["status"] | "">("");
+  const [kycStatus, setKycStatus] = useState<UsersQueryParams["kyc_status"] | "">("");
+
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PER_PAGE)), [total]);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const r = await usersApi.list({
+        page,
+        per_page: PER_PAGE,
+        search: search || undefined,
+        state_code: stateCode || undefined,
+        status: status || undefined,
+        kyc_status: kycStatus || undefined,
+      });
+      setItems(r.data || []);
+      setTotal(r.meta?.total || 0);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to load users";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await usersApi.getUsers({
-          page: pagination.page,
-          per_page: 20,
-          status: selectedStatus !== 'all' ? selectedStatus as 'active' | 'inactive' | 'suspended' : undefined
-        });
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
-        if (response.success && response.data) {
-          setUsers(response.data);
-          setPagination({
-            page: response.meta?.page || 1,
-            total: response.meta?.total || response.data.length,
-            totalPages: response.meta?.total_pages || 1
-          });
-        } else {
-          // Use mock data if API fails
-          setUsers(mockUsers);
-          setPagination({ page: 1, total: mockUsers.length, totalPages: 1 });
-        }
-      } catch (error) {
-        console.error('Failed to fetch users, using mock data:', error);
-        // Use mock data on error
-        setUsers(mockUsers);
-        setPagination({ page: 1, total: mockUsers.length, totalPages: 1 });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [pagination.page, selectedStatus]);
-
-  // Safe filter with null check
-  const filteredUsers = (users || []).filter(user => {
-    const matchesSearch = user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
-                         user.mobile.includes(searchQuery);
-    return matchesSearch;
-  });
-
-  const handleView = (user: User) => {
-    navigate(`/users/${user.id}?state_code=${user.state_code}`);
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    void load();
   };
-
-  const handleEdit = (user: User) => {
-    navigate(`/users/${user.id}/edit?state_code=${user.state_code}`);
-  };
-
-  const handleDelete = async (user: User) => {
-    if (window.confirm(`Are you sure you want to delete ${user.full_name}?`)) {
-      try {
-        await usersApi.deleteUser(user.id, user.state_code, 'Admin requested deletion');
-        setUsers((users || []).filter(u => u.id !== user.id));
-      } catch (error) {
-        console.error('Failed to delete user:', error);
-        // Still remove from UI for demo purposes
-        setUsers((users || []).filter(u => u.id !== user.id));
-      }
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
-  const getKycColor = (kycStatus: string) => {
-    switch (kycStatus) {
-      case 'verified': return 'success';
-      case 'rejected': return 'danger';
-      case 'partial': return 'warning';
-      default: return 'info';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'success';
-      case 'inactive': return 'danger';
-      case 'suspended': return 'warning';
-      default: return 'info';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="bm-users">
-        <div className="bm-loading">Loading users...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="bm-users">
       <PageHeader
         icon={<HiOutlineUsers />}
-        title="Users"
-        description="Manage all registered users and their access permissions"
+        title="Citizens"
+        description="Every user of BharatMithra. Citizens log in via OTP from the public site or are created here by staff."
         actions={
-          <button className="bm-btn bm-btn-primary" onClick={() => navigate('/users/new')}>
-            <HiOutlinePlus />
-            <span>Add User</span>
-          </button>
+          <Link to="/users/new" className="bm-btn bm-btn-primary">
+            <HiOutlinePlus /> Add citizen
+          </Link>
         }
       />
 
-      <div className="bm-card">
-        <div className="bm-table-toolbar">
-          <div className="bm-search-box">
-            <HiOutlineSearch className="bm-search-icon" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bm-search-input"
-            />
-          </div>
-          <div className="bm-toolbar-actions">
-            <div className="bm-filter-group">
-              <HiOutlineFilter className="bm-filter-icon" />
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bm-select"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
-            </div>
-          </div>
+      <form className="bm-toolbar" onSubmit={onSearch}>
+        <div className="bm-toolbar-search">
+          <HiOutlineSearch />
+          <input
+            type="search"
+            placeholder="Search by name, mobile, email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
+        <input
+          className="bm-toolbar-input"
+          type="text"
+          placeholder="State code (e.g. KA)"
+          value={stateCode}
+          onChange={(e) => setStateCode(e.target.value.toUpperCase())}
+          maxLength={5}
+        />
+        <select
+          className="bm-toolbar-input"
+          value={status}
+          onChange={(e) => setStatus(e.target.value as UsersQueryParams["status"] | "")}
+        >
+          <option value="">All status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="suspended">Suspended</option>
+          <option value="deleted">Deleted</option>
+        </select>
+        <select
+          className="bm-toolbar-input"
+          value={kycStatus}
+          onChange={(e) => setKycStatus(e.target.value as UsersQueryParams["kyc_status"] | "")}
+        >
+          <option value="">All KYC</option>
+          <option value="pending">Pending</option>
+          <option value="partial">Partial</option>
+          <option value="verified">Verified</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button type="submit" className="bm-btn">
+          Apply
+        </button>
+        <button type="button" className="bm-btn bm-btn-ghost" onClick={() => void load()} title="Refresh">
+          <HiOutlineRefresh />
+        </button>
+      </form>
 
-        <div className="bm-table-container">
+      {error && <div className="bm-alert bm-alert-error">{error}</div>}
+
+      <div className="bm-card">
+        <div className="bm-table-wrap">
           <table className="bm-table">
             <thead>
               <tr>
-                <th>User</th>
+                <th>Name</th>
                 <th>Mobile</th>
+                <th>Email</th>
                 <th>State</th>
-                <th>KYC Status</th>
+                <th>KYC</th>
                 <th>Status</th>
-                <th>Created</th>
-                <th>Actions</th>
+                <th>Joined</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <div className="bm-user-cell">
-                      <div className="bm-user-avatar">
-                        {user.profile_photo_url ? (
-                          <img src={user.profile_photo_url} alt={user.full_name} />
-                        ) : (
-                          getInitials(user.full_name)
-                        )}
-                      </div>
-                      <div className="bm-user-info">
-                        <span className="bm-user-name">
-                          {user.full_name}
-                          {user.aadhaar_verified && <HiOutlineShieldCheck className="bm-verified-icon" title="Aadhaar Verified" />}
-                        </span>
-                        <span className="bm-user-email">{user.email || 'No email'}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{user.mobile}</td>
-                  <td><span className="bm-state-badge">{user.state_code}</span></td>
-                  <td>
-                    <span className={`bm-badge bm-badge--${getKycColor(user.kyc_status)}`}>
-                      {user.kyc_status}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`bm-status-dot bm-status-dot--${getStatusColor(user.status)}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <div className="bm-actions-cell">
-                      <button
-                        className="bm-icon-btn"
-                        onClick={() => handleView(user)}
-                        title="View"
-                      >
-                        <HiOutlineEye />
-                      </button>
-                      <button
-                        className="bm-icon-btn"
-                        onClick={() => handleEdit(user)}
-                        title="Edit"
-                      >
-                        <HiOutlinePencil />
-                      </button>
-                      <div className="bm-dropdown-wrapper">
-                        <button
-                          className="bm-icon-btn"
-                          onClick={() => setActiveDropdown(activeDropdown === user.id ? null : user.id)}
-                        >
-                          <HiOutlineDotsVertical />
-                        </button>
-                        {activeDropdown === user.id && (
-                          <div className="bm-dropdown-menu">
-                            <button onClick={() => handleDelete(user)} className="bm-dropdown-item bm-danger">
-                              <HiOutlineTrash />
-                              <span>Delete</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+              {loading && (
+                <tr>
+                  <td colSpan={8} className="bm-table-empty">
+                    Loading…
                   </td>
                 </tr>
-              ))}
+              )}
+              {!loading && items.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="bm-table-empty">
+                    No citizens found.
+                  </td>
+                </tr>
+              )}
+              {!loading &&
+                items.map((u) => (
+                  <tr key={u.id}>
+                    <td>
+                      <Link to={`/users/${u.id}`} className="bm-link">
+                        {u.full_name}
+                      </Link>
+                    </td>
+                    <td>{u.mobile}</td>
+                    <td className="bm-text-muted">{u.email || "—"}</td>
+                    <td>{u.state_code || "—"}</td>
+                    <td>
+                      <span className={`bm-chip bm-chip-${u.kyc_status}`}>{u.kyc_status}</span>
+                    </td>
+                    <td>
+                      <span className={`bm-chip bm-chip-${u.status}`}>{u.status}</span>
+                    </td>
+                    <td className="bm-text-muted">
+                      {new Date(u.created_at).toLocaleDateString()}
+                    </td>
+                    <td>
+                      <Link to={`/users/${u.id}`} className="bm-link bm-link-sm">
+                        View →
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
-
-        {filteredUsers.length === 0 && (
-          <div className="bm-empty-state">
-            <p>No users found</p>
+        <div className="bm-pagination">
+          <span className="bm-text-muted">
+            Page {page} of {totalPages} · {total} citizens
+          </span>
+          <div className="bm-pagination-actions">
+            <button
+              className="bm-btn bm-btn-ghost"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              ← Previous
+            </button>
+            <button
+              className="bm-btn bm-btn-ghost"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next →
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

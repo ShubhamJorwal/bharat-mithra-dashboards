@@ -1,0 +1,51 @@
+@use '../../../styles/variables' as *;
+
+.bm-users {
+  .bm-section-title-inline {
+    font-size: $font-base;
+    font-weight: $font-semibold;
+    margin: 0 0 $spacing-md;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+  }
+  .bm-role-row {
+    display: grid;
+    grid-template-columns: 160px 130px 1fr 1fr 90px 36px;
+    gap: $spacing-sm;
+    align-items: center;
+    padding: $spacing-sm 0;
+    border-bottom: 1px dashed var(--color-border-light);
+    select, input {
+      height: 36px;
+      padding: 0 $spacing-md;
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      background: var(--color-background);
+      color: var(--color-text);
+      font-size: $font-sm;
+      &:disabled { opacity: 0.55; }
+    }
+  }
+  .bm-role-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $font-xs;
+    color: var(--color-text-secondary);
+    input { width: auto; height: auto; }
+  }
+  .bm-temp-pwd {
+    display: inline-block;
+    margin-top: $spacing-md;
+    padding: $spacing-md $spacing-xl;
+    background: rgba($warning-color, 0.12);
+    border: 1px solid rgba($warning-color, 0.35);
+    border-radius: $radius-md;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 18px;
+    font-weight: $font-bold;
+    color: $warning-color;
+    letter-spacing: 0.04em;
+  }
+}

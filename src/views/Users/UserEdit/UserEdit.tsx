@@ -1,238 +1,147 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { HiOutlineArrowLeft, HiOutlinePencilAlt } from 'react-icons/hi';
-import { PageHeader } from '../../../components/common/PageHeader';
-import './UserEdit.scss';
-
-interface UserFormData {
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'user' | 'moderator';
-  status: 'active' | 'inactive' | 'pending';
-  department: string;
-  address: string;
-}
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { HiOutlinePencil, HiOutlineArrowLeft } from "react-icons/hi";
+import { PageHeader } from "@/components/common/PageHeader";
+import usersApi from "@/services/api/users.api";
+import type { User, UpdateUserRequest } from "@/types/api.types";
+import "../UserList/UserList.scss";
+import "../UserCreate/UserCreate.scss";
 
 const UserEdit = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id = "" } = useParams();
+  const nav = useNavigate();
+  const [form, setForm] = useState<UpdateUserRequest>({});
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<UserFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'user',
-    status: 'pending',
-    department: '',
-    address: ''
-  });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
+    void (async () => {
       try {
-        // Mock API call - replace with actual API
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Simulating fetched data
-        setFormData({
-          name: 'Rahul Kumar',
-          email: 'rahul@example.com',
-          phone: '+91 9876543210',
-          role: 'admin',
-          status: 'active',
-          department: 'Administration',
-          address: 'Mumbai, Maharashtra, India'
+        const r = await usersApi.getById(id);
+        setUser(r.data);
+        setForm({
+          full_name: r.data.full_name,
+          email: r.data.email || "",
+          date_of_birth: r.data.date_of_birth || "",
+          gender: r.data.gender,
+          preferred_language: r.data.preferred_language,
+          address_line1: r.data.address_line1 || "",
+          address_line2: r.data.address_line2 || "",
+          city: r.data.city || "",
+          state_code: r.data.state_code || "",
+          pincode: r.data.pincode || "",
+          profile_photo_url: r.data.profile_photo_url || "",
         });
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
+      } catch {
+        setError("Failed to load citizen");
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchUser();
+    })();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const set = <K extends keyof UpdateUserRequest>(k: K, v: UpdateUserRequest[K]) =>
+    setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-
+    setError(null);
     try {
-      // Mock API call - replace with actual API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Updating user:', id, formData);
-      navigate(`/users/${id}`);
-    } catch (error) {
-      console.error('Failed to update user:', error);
+      await usersApi.update(id, form);
+      nav(`/users/${id}`);
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: { message?: string } } }; message?: string };
+      setError(e.response?.data?.error?.message || e.message || "Failed to save");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="bm-user-edit">
-        <div className="bm-loading">Loading user data...</div>
-      </div>
-    );
-  }
+  if (loading) return <div className="bm-users"><div className="bm-card" style={{ padding: 40, textAlign: "center" }}>Loading…</div></div>;
+  if (!user) return <div className="bm-users"><div className="bm-alert bm-alert-error">{error || "Not found"}</div></div>;
 
   return (
-    <div className="bm-user-edit">
+    <div className="bm-users">
       <PageHeader
-        icon={<HiOutlinePencilAlt />}
-        title="Edit User"
-        description="Update user information"
+        icon={<HiOutlinePencil />}
+        title={`Edit ${user.full_name}`}
+        description="Update profile, preferences, or address."
         actions={
-          <button
-            className="bm-btn bm-btn-secondary"
-            onClick={() => navigate(`/users/${id}`)}
-          >
-            <HiOutlineArrowLeft />
-            <span>Back</span>
-          </button>
+          <Link to={`/users/${id}`} className="bm-btn">
+            <HiOutlineArrowLeft /> Back
+          </Link>
         }
       />
 
-      <div className="bm-card">
-        <form onSubmit={handleSubmit} className="bm-form">
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Basic Information</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter full name"
-                  required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="email">Email *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter email address"
-                  required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="phone">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="+91 XXXXXXXXXX"
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="department">Department</label>
-                <input
-                  type="text"
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter department"
-                />
-              </div>
-            </div>
-          </div>
+      {error && <div className="bm-alert bm-alert-error">{error}</div>}
 
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Role & Status</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="role">Role *</label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="bm-select"
-                  required
-                >
-                  <option value="user">User</option>
-                  <option value="moderator">Moderator</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="status">Status *</label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="bm-select"
-                  required
-                >
-                  <option value="pending">Pending</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Additional Information</h3>
-            <div className="bm-form-group bm-form-group--full">
-              <label className="bm-label" htmlFor="address">Address</label>
-              <textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="bm-textarea"
-                placeholder="Enter full address"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <div className="bm-form-actions">
-            <button
-              type="button"
-              className="bm-btn bm-btn-secondary"
-              onClick={() => navigate(`/users/${id}`)}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bm-btn bm-btn-primary"
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
+      <form className="bm-card bm-form" onSubmit={submit}>
+        <div className="bm-form-grid">
+          <Field label="Full name">
+            <input value={form.full_name || ""} onChange={(e) => set("full_name", e.target.value)} />
+          </Field>
+          <Field label="Email">
+            <input type="email" value={form.email || ""} onChange={(e) => set("email", e.target.value)} />
+          </Field>
+          <Field label="Date of birth">
+            <input type="date" value={form.date_of_birth || ""} onChange={(e) => set("date_of_birth", e.target.value)} />
+          </Field>
+          <Field label="Gender">
+            <select value={form.gender || ""} onChange={(e) => set("gender", (e.target.value || undefined) as UpdateUserRequest["gender"]) }>
+              <option value="">—</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </Field>
+          <Field label="Preferred language">
+            <select value={form.preferred_language || "en"} onChange={(e) => set("preferred_language", e.target.value)}>
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="kn">Kannada</option>
+              <option value="ta">Tamil</option>
+              <option value="te">Telugu</option>
+              <option value="mr">Marathi</option>
+            </select>
+          </Field>
+          <Field label="State code">
+            <input value={form.state_code || ""} onChange={(e) => set("state_code", e.target.value.toUpperCase().slice(0, 5))} />
+          </Field>
+          <Field label="City">
+            <input value={form.city || ""} onChange={(e) => set("city", e.target.value)} />
+          </Field>
+          <Field label="Pincode">
+            <input value={form.pincode || ""} onChange={(e) => set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} />
+          </Field>
+          <Field label="Address line 1">
+            <input value={form.address_line1 || ""} onChange={(e) => set("address_line1", e.target.value)} />
+          </Field>
+          <Field label="Address line 2">
+            <input value={form.address_line2 || ""} onChange={(e) => set("address_line2", e.target.value)} />
+          </Field>
+          <Field label="Profile photo URL">
+            <input value={form.profile_photo_url || ""} onChange={(e) => set("profile_photo_url", e.target.value)} />
+          </Field>
+        </div>
+        <div className="bm-form-actions">
+          <Link to={`/users/${id}`} className="bm-btn">Cancel</Link>
+          <button className="bm-btn bm-btn-primary" type="submit" disabled={saving}>
+            {saving ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <label className="bm-form-field">
+    <span>{label}</span>
+    {children}
+  </label>
+);
 
 export default UserEdit;

@@ -1,542 +1,205 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  HiOutlineArrowLeft,
-  HiOutlinePlus,
-  HiOutlineX,
-  HiOutlineExclamationCircle,
-  HiOutlinePencilAlt
-} from 'react-icons/hi';
-import servicesApi from '../../../services/api/services.api';
-import type { ServiceCategory, UpdateServiceRequest } from '../../../types/api.types';
-import { PageHeader } from '../../../components/common/PageHeader';
-import './ServiceEdit.scss';
-
-interface ServiceFormData {
-  name: string;
-  category_id: string;
-  description: string;
-  department: string;
-  ministry: string;
-  eligibility_criteria: string;
-  processing_time: string;
-  service_fee: number;
-  platform_fee: number;
-  is_free_service: boolean;
-  is_active: boolean;
-  is_popular: boolean;
-  is_featured: boolean;
-  required_documents: string[];
-  official_url: string;
-}
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { HiOutlinePencil, HiOutlineArrowLeft } from "react-icons/hi";
+import { PageHeader } from "@/components/common/PageHeader";
+import servicesApi from "@/services/api/services.api";
+import type { Service, ServiceCategory, UpdateServiceRequest } from "@/types/api.types";
+import "../ServiceList/ServiceList.scss";
+import "../ServiceCreate/ServiceCreate.scss";
 
 const ServiceEdit = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { id = "" } = useParams();
+  const nav = useNavigate();
+  const [svc, setSvc] = useState<Service | null>(null);
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [form, setForm] = useState<UpdateServiceRequest>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [serviceId, setServiceId] = useState<string>('');
-  const [notFound, setNotFound] = useState(false);
-  const [formData, setFormData] = useState<ServiceFormData>({
-    name: '',
-    category_id: '',
-    description: '',
-    department: '',
-    ministry: '',
-    eligibility_criteria: '',
-    processing_time: '',
-    service_fee: 0,
-    platform_fee: 0,
-    is_free_service: false,
-    is_active: true,
-    is_popular: false,
-    is_featured: false,
-    required_documents: [''],
-    official_url: ''
-  });
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      setNotFound(false);
-
+    void (async () => {
       try {
-        // Fetch categories
-        const categoriesRes = await servicesApi.getCategories();
-        if (categoriesRes.success && categoriesRes.data) {
-          setCategories(categoriesRes.data);
-        } else {
-          setCategories([]);
-        }
-
-        // Fetch service by ID
-        if (id) {
-          const serviceRes = await servicesApi.getServiceById(id);
-          if (serviceRes.success && serviceRes.data) {
-            const service = serviceRes.data;
-            setServiceId(service.id);
-            setFormData({
-              name: service.name || '',
-              category_id: service.category_id || '',
-              description: service.description || '',
-              department: service.department || '',
-              ministry: service.ministry || '',
-              eligibility_criteria: service.eligibility_criteria || '',
-              processing_time: service.processing_time || '',
-              service_fee: service.service_fee || 0,
-              platform_fee: service.platform_fee || 0,
-              is_free_service: service.is_free_service || false,
-              is_active: service.is_active !== false,
-              is_popular: service.is_popular || false,
-              is_featured: service.is_featured || false,
-              required_documents: service.required_documents?.length ? service.required_documents : [''],
-              official_url: service.official_url || ''
-            });
-          } else {
-            setNotFound(true);
-            setError(`Service not found.`);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch data:', err);
-        setError('Unable to load service. Please check your connection and try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+        const [r, cats] = await Promise.all([servicesApi.get(id, false), servicesApi.listCategories(false)]);
+        setSvc(r.data);
+        setCategories(cats.data || []);
+        setForm({
+          category_id: r.data.category_id,
+          name: r.data.name,
+          name_hindi: r.data.name_hindi || "",
+          short_description: r.data.short_description || "",
+          description: r.data.description || "",
+          department: r.data.department || "",
+          ministry: r.data.ministry || "",
+          issuing_authority: r.data.issuing_authority || "",
+          official_url: r.data.official_url || "",
+          base_government_fee: r.data.base_government_fee,
+          base_platform_fee: r.data.base_platform_fee,
+          base_gst_percent: r.data.base_gst_percent,
+          base_processing_time: r.data.base_processing_time || "",
+          is_free: r.data.is_free,
+          tags: r.data.tags || [],
+          target_audience: r.data.target_audience || "citizen",
+          is_active: r.data.is_active,
+          is_popular: r.data.is_popular,
+          is_featured: r.data.is_featured,
+          is_new: r.data.is_new,
+          sort_order: r.data.sort_order,
+        });
+      } catch {
+        setError("Failed to load service");
+      } finally { setLoading(false); }
+    })();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
+  const set = <K extends keyof UpdateServiceRequest>(k: K, v: UpdateServiceRequest[K]) =>
+    setForm(p => ({ ...p, [k]: v }));
 
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: checked }));
-    } else if (type === 'number') {
-      setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+  const addTag = () => {
+    const t = tagInput.trim().toLowerCase();
+    if (t && !(form.tags || []).includes(t)) set("tags", [...(form.tags || []), t]);
+    setTagInput("");
   };
 
-  const handleDocumentChange = (index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      required_documents: prev.required_documents.map((doc, i) => i === index ? value : doc)
-    }));
-  };
-
-  const addDocument = () => {
-    setFormData(prev => ({
-      ...prev,
-      required_documents: [...prev.required_documents, '']
-    }));
-  };
-
-  const removeDocument = (index: number) => {
-    if (formData.required_documents.length > 1) {
-      setFormData(prev => ({
-        ...prev,
-        required_documents: prev.required_documents.filter((_, i) => i !== index)
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaveError(null);
-
-    if (!serviceId) {
-      setSaveError('Cannot save - service not found on server.');
-      return;
-    }
-
     setSaving(true);
-
+    setError(null);
     try {
-      const updateData: UpdateServiceRequest = {
-        name: formData.name,
-        description: formData.description,
-        department: formData.department || undefined,
-        ministry: formData.ministry || undefined,
-        eligibility_criteria: formData.eligibility_criteria || undefined,
-        processing_time: formData.processing_time || undefined,
-        service_fee: formData.service_fee,
-        platform_fee: formData.platform_fee,
-        is_free_service: formData.is_free_service,
-        is_active: formData.is_active,
-        is_popular: formData.is_popular,
-        is_featured: formData.is_featured,
-        required_documents: formData.required_documents.filter(d => d.trim()),
-        official_url: formData.official_url || undefined
-      };
-
-      const response = await servicesApi.updateService(serviceId, updateData);
-      if (response.success) {
-        navigate(`/services/${id}`);
-      } else {
-        setSaveError(response.message || 'Failed to update service');
-      }
+      await servicesApi.update(id, form);
+      nav(`/services/${id}`);
     } catch (err: unknown) {
-      console.error('Failed to update service:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update service. Please try again.';
-      setSaveError(errorMessage);
-    } finally {
-      setSaving(false);
-    }
+      const e = err as { response?: { data?: { error?: { message?: string } } }; message?: string };
+      setError(e.response?.data?.error?.message || e.message || "Failed to save");
+    } finally { setSaving(false); }
   };
 
-  if (loading) {
-    return (
-      <div className="bm-service-edit">
-        <div className="bm-loading-state">
-          <div className="bm-loading-spinner"></div>
-          <p>Loading service...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="bm-services"><div className="bm-empty">Loading…</div></div>;
+  if (!svc) return <div className="bm-services"><div className="bm-alert bm-alert-error">{error || "Not found"}</div></div>;
 
-  if (notFound) {
-    return (
-      <div className="bm-service-edit">
-        <PageHeader
-          icon={<HiOutlineExclamationCircle />}
-          title="Service Not Found"
-          description="The requested service could not be found"
-          variant="minimal"
-          actions={
-            <button
-              className="bm-btn bm-btn-secondary"
-              onClick={() => navigate('/services')}
-            >
-              <HiOutlineArrowLeft />
-              <span>Back</span>
-            </button>
-          }
-        />
-
-        <div className="bm-empty-state">
-          <div className="bm-empty-icon">
-            <HiOutlineExclamationCircle />
-          </div>
-          <h3>Service not found</h3>
-          <p>The service does not exist or has been deleted.</p>
-          <button
-            className="bm-btn bm-btn-primary"
-            onClick={() => navigate('/services')}
-          >
-            Back to Services
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const totalFee = form.is_free ? 0 :
+    Math.round((form.base_government_fee || 0) + (form.base_platform_fee || 0)) +
+    Math.round(((form.base_government_fee || 0) + (form.base_platform_fee || 0)) * (form.base_gst_percent || 0) / 100);
 
   return (
-    <div className="bm-service-edit">
+    <div className="bm-services bm-svc-create">
       <PageHeader
-        icon={<HiOutlinePencilAlt />}
-        title="Edit Service"
-        description="Update service information"
-        actions={
-          <button
-            className="bm-btn bm-btn-secondary"
-            onClick={() => navigate(`/services/${id}`)}
-          >
-            <HiOutlineArrowLeft />
-            <span>Back</span>
-          </button>
-        }
+        icon={<HiOutlinePencil />}
+        title={`Edit ${svc.name}`}
+        description="Update the service catalog entry. Profile/pricing variants are managed on the details page."
+        actions={<Link to={`/services/${id}`} className="bm-btn"><HiOutlineArrowLeft /> Back</Link>}
       />
 
-      {error && (
-        <div className="bm-alert bm-alert-error">
-          <HiOutlineExclamationCircle />
-          <span>{error}</span>
-          <button className="bm-alert-close" onClick={() => setError(null)}>&times;</button>
+      {error && <div className="bm-alert bm-alert-error">{error}</div>}
+
+      <form className="bm-form-card" onSubmit={submit}>
+        <h3 className="bm-form-section-title">Identity</h3>
+        <div className="bm-form-grid">
+          <Field label="Service name">
+            <input value={form.name || ""} onChange={(e) => set("name", e.target.value)} />
+          </Field>
+          <Field label="Service name (Hindi)">
+            <input value={form.name_hindi || ""} onChange={(e) => set("name_hindi", e.target.value)} />
+          </Field>
+          <Field label="Category">
+            <select value={form.category_id} onChange={(e) => set("category_id", e.target.value)}>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field label="Code (read-only)">
+            <input value={svc.code} disabled />
+          </Field>
         </div>
-      )}
 
-      {saveError && (
-        <div className="bm-alert bm-alert-error">
-          <HiOutlineExclamationCircle />
-          <span>{saveError}</span>
-          <button className="bm-alert-close" onClick={() => setSaveError(null)}>&times;</button>
+        <h3 className="bm-form-section-title">Description</h3>
+        <div className="bm-form-grid">
+          <Field label="Short description" span={2}>
+            <input value={form.short_description || ""} onChange={(e) => set("short_description", e.target.value)} maxLength={200} />
+          </Field>
+          <Field label="Long description" span={2}>
+            <textarea value={form.description || ""} onChange={(e) => set("description", e.target.value)} rows={4} />
+          </Field>
         </div>
-      )}
 
-      <div className="bm-card">
-        <form onSubmit={handleSubmit} className="bm-form">
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Basic Information</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="name">Service Name (English) *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter service name"
-                  required
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="category_id">Category *</label>
-                <select
-                  id="category_id"
-                  name="category_id"
-                  value={formData.category_id}
-                  onChange={handleChange}
-                  className="bm-select"
-                  required
-                  disabled={categories.length === 0}
-                >
-                  <option value="">
-                    {categories.length === 0 ? 'No categories available' : 'Select category'}
-                  </option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="department">Department</label>
-                <input
-                  type="text"
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter department name (optional)"
-                />
-              </div>
-              <div className="bm-form-group bm-form-group--full">
-                <label className="bm-label" htmlFor="description">Description *</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="bm-textarea"
-                  placeholder="Enter service description"
-                  rows={3}
-                  required
-                />
-              </div>
-              </div>
+        <h3 className="bm-form-section-title">Department &amp; authority</h3>
+        <div className="bm-form-grid">
+          <Field label="Department"><input value={form.department || ""} onChange={(e) => set("department", e.target.value)} /></Field>
+          <Field label="Ministry"><input value={form.ministry || ""} onChange={(e) => set("ministry", e.target.value)} /></Field>
+          <Field label="Issuing authority"><input value={form.issuing_authority || ""} onChange={(e) => set("issuing_authority", e.target.value)} /></Field>
+          <Field label="Official URL"><input type="url" value={form.official_url || ""} onChange={(e) => set("official_url", e.target.value)} /></Field>
+        </div>
+
+        <h3 className="bm-form-section-title">Default fees</h3>
+        <div className="bm-form-grid">
+          <Field label="Government fee (₹)">
+            <input type="number" step="0.01" min="0" value={form.base_government_fee || 0} onChange={(e) => set("base_government_fee", parseFloat(e.target.value) || 0)} disabled={form.is_free} />
+          </Field>
+          <Field label="Platform fee (₹)">
+            <input type="number" step="0.01" min="0" value={form.base_platform_fee || 0} onChange={(e) => set("base_platform_fee", parseFloat(e.target.value) || 0)} disabled={form.is_free} />
+          </Field>
+          <Field label="GST %">
+            <input type="number" step="0.01" min="0" max="28" value={form.base_gst_percent || 0} onChange={(e) => set("base_gst_percent", parseFloat(e.target.value) || 0)} disabled={form.is_free} />
+          </Field>
+          <Field label="Processing time">
+            <input value={form.base_processing_time || ""} onChange={(e) => set("base_processing_time", e.target.value)} />
+          </Field>
+          <div className="bm-form-checks">
+            <label className="bm-check">
+              <input type="checkbox" checked={form.is_free || false} onChange={(e) => set("is_free", e.target.checked)} />
+              Free service
+            </label>
           </div>
+          <div className="bm-fee-preview">
+            <span className="l">Citizen pays</span>
+            <span className="n">{form.is_free ? "FREE" : `₹ ${totalFee.toLocaleString("en-IN")}`}</span>
+          </div>
+        </div>
 
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Service Details</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="ministry">Ministry</label>
-                <input
-                  type="text"
-                  id="ministry"
-                  name="ministry"
-                  value={formData.ministry}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="Enter ministry name"
-                />
+        <h3 className="bm-form-section-title">Visibility</h3>
+        <div className="bm-form-grid">
+          <Field label="Tags" span={2}>
+            <div className="bm-tag-input-wrap">
+              <div className="bm-tag-list">
+                {(form.tags || []).map(t => (
+                  <span key={t} className="bm-tag">
+                    {t}
+                    <button type="button" onClick={() => set("tags", (form.tags || []).filter(x => x !== t))}>×</button>
+                  </span>
+                ))}
               </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="processing_time">Processing Time</label>
-                <input
-                  type="text"
-                  id="processing_time"
-                  name="processing_time"
-                  value={formData.processing_time}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="e.g., 7-10 days"
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="official_url">Official URL</label>
-                <input
-                  type="url"
-                  id="official_url"
-                  name="official_url"
-                  value={formData.official_url}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="https://..."
-                />
-              </div>
-              <div className="bm-form-group bm-form-group--full">
-                <label className="bm-label" htmlFor="eligibility_criteria">Eligibility Criteria</label>
-                <textarea
-                  id="eligibility_criteria"
-                  name="eligibility_criteria"
-                  value={formData.eligibility_criteria}
-                  onChange={handleChange}
-                  className="bm-textarea"
-                  placeholder="Enter eligibility criteria"
-                  rows={2}
-                />
-              </div>
+              <input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
+                placeholder="Type and press Enter…"
+              />
             </div>
+          </Field>
+          <div className="bm-form-checks">
+            <label className="bm-check"><input type="checkbox" checked={form.is_active || false} onChange={(e) => set("is_active", e.target.checked)} /> Active</label>
+            <label className="bm-check"><input type="checkbox" checked={form.is_popular || false} onChange={(e) => set("is_popular", e.target.checked)} /> Popular</label>
+            <label className="bm-check"><input type="checkbox" checked={form.is_featured || false} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
+            <label className="bm-check"><input type="checkbox" checked={form.is_new || false} onChange={(e) => set("is_new", e.target.checked)} /> New</label>
           </div>
+        </div>
 
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Fees</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="service_fee">Service Fee (₹)</label>
-                <input
-                  type="number"
-                  id="service_fee"
-                  name="service_fee"
-                  value={formData.service_fee}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label" htmlFor="platform_fee">Platform Fee (₹)</label>
-                <input
-                  type="number"
-                  id="platform_fee"
-                  name="platform_fee"
-                  value={formData.platform_fee}
-                  onChange={handleChange}
-                  className="bm-input"
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-              <div className="bm-form-group">
-                <label className="bm-label">Total Fee</label>
-                <div className="bm-fee-display">₹{formData.service_fee + formData.platform_fee}</div>
-              </div>
-              <div className="bm-form-group bm-checkbox-group">
-                <label className="bm-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="is_free_service"
-                    checked={formData.is_free_service}
-                    onChange={handleChange}
-                    className="bm-checkbox"
-                  />
-                  <span>Free Service</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Status & Visibility</h3>
-            <div className="bm-form-grid">
-              <div className="bm-form-group bm-checkbox-group">
-                <label className="bm-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="is_active"
-                    checked={formData.is_active}
-                    onChange={handleChange}
-                    className="bm-checkbox"
-                  />
-                  <span>Active</span>
-                </label>
-              </div>
-              <div className="bm-form-group bm-checkbox-group">
-                <label className="bm-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="is_popular"
-                    checked={formData.is_popular}
-                    onChange={handleChange}
-                    className="bm-checkbox"
-                  />
-                  <span>Popular</span>
-                </label>
-              </div>
-              <div className="bm-form-group bm-checkbox-group">
-                <label className="bm-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="is_featured"
-                    checked={formData.is_featured}
-                    onChange={handleChange}
-                    className="bm-checkbox"
-                  />
-                  <span>Featured</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="bm-form-section">
-            <h3 className="bm-form-section-title">Required Documents</h3>
-            <div className="bm-array-field">
-              {formData.required_documents.map((doc, index) => (
-                <div key={index} className="bm-array-item">
-                  <input
-                    type="text"
-                    value={doc}
-                    onChange={(e) => handleDocumentChange(index, e.target.value)}
-                    className="bm-input"
-                    placeholder="Enter document name"
-                  />
-                  <button
-                    type="button"
-                    className="bm-remove-btn"
-                    onClick={() => removeDocument(index)}
-                    disabled={formData.required_documents.length === 1}
-                  >
-                    <HiOutlineX />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="bm-add-btn"
-                onClick={addDocument}
-              >
-                <HiOutlinePlus />
-                <span>Add Document</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="bm-form-actions">
-            <button
-              type="button"
-              className="bm-btn bm-btn-secondary"
-              onClick={() => navigate(`/services/${id}`)}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bm-btn bm-btn-primary"
-              disabled={saving || !serviceId}
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="bm-form-actions">
+          <Link to={`/services/${id}`} className="bm-btn">Cancel</Link>
+          <button type="submit" className="bm-btn bm-btn-primary" disabled={saving}>
+            {saving ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
+
+const Field = ({ label, span, children }: { label: string; span?: number; children: React.ReactNode }) => (
+  <label className="bm-form-field" style={span ? { gridColumn: `span ${span}` } : undefined}>
+    <span className="bm-form-label">{label}</span>
+    {children}
+  </label>
+);
 
 export default ServiceEdit;

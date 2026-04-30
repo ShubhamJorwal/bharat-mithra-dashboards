@@ -4,8 +4,8 @@ export { default as apiClient } from './apiClient';
 // API Services - import and re-export
 import servicesApi from './services.api';
 import usersApi from './users.api';
+import staffApi from './staff.api';
 import authApi from './auth.api';
 import healthApi from './health.api';
-import platformApi from './platform.api';
 
-export { servicesApi, usersApi, authApi, healthApi, platformApi };
+export { servicesApi, usersApi, staffApi, authApi, healthApi };

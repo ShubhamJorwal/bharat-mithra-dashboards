@@ -7,8 +7,6 @@ import {
   HiOutlineChartBar,
   HiOutlineQuestionMarkCircle,
   HiOutlineLightningBolt,
-  HiOutlineCollection,
-  HiOutlineClipboardList,
   HiOutlineBell,
   HiOutlineCalendar,
   HiOutlineFolder,
@@ -22,7 +20,6 @@ import {
   HiOutlineCurrencyRupee,
   HiOutlinePhone,
   HiOutlineSupport,
-  HiOutlineTemplate,
   HiOutlineViewGrid,
 } from 'react-icons/hi';
 import './Sidebar.scss';
@@ -60,10 +57,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       label: 'Services',
       badge: null,
       subItems: [
-        { path: '/services', label: 'Service Catalog' },
-        { path: '/services/manage', label: 'Manage Services' },
-        { path: '/services/categories', label: 'Categories' },
-        { path: '/services/custom', label: 'Custom Services' },
+        { path: '/services', label: 'Catalog' },
+        { path: '/services/new', label: 'Add Service' },
       ]
     },
     {
@@ -80,31 +75,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
         { path: '/geography/villages', label: 'Villages' },
       ]
     },
-    {
-      path: '/old-services',
-      icon: HiOutlineCollection,
-      label: 'Old Services',
-      badge: null,
-      subItems: [
-        { path: '/old-services', label: 'All Services' },
-        { path: '/old-services/portal', label: 'Services Portal' },
-        { path: '/old-services/categories', label: 'Categories' },
-      ]
-    },
-    {
-      path: '/applications',
-      icon: HiOutlineClipboardList,
-      label: 'Applications',
-      badge: null,
-      subItems: [
-        { path: '/applications', label: 'All Applications' },
-        { path: '/applications/new', label: 'New Application' },
-        { path: '/applications?status=pending', label: 'Pending' },
-        { path: '/applications?status=approved', label: 'Approved' },
-        { path: '/applications?status=rejected', label: 'Rejected' },
-        { path: '/applications?status=completed', label: 'Completed' },
-      ]
-    },
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/calendar', icon: HiOutlineCalendar, label: 'Calendar', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
@@ -119,19 +89,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     },
     { path: '/payment-gateways', icon: HiOutlineCreditCard, label: 'Payment Gateways', badge: null },
     { path: '/finance', icon: HiOutlineCurrencyRupee, label: 'Finance', badge: null },
-    {
-      path: '/platform',
-      icon: HiOutlineTemplate,
-      label: 'Platform',
-      badge: null,
-      subItems: [
-        { path: '/platform/field-templates', label: 'Field Templates' },
-        { path: '/platform/commissions', label: 'Commissions' },
-        { path: '/platform/providers', label: 'Providers' },
-        { path: '/platform/bundles', label: 'Bundles' },
-        { path: '/platform/reviews', label: 'Reviews' },
-      ]
-    },
   ];
 
   const secondaryNavItems: NavItem[] = [
@@ -263,7 +220,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
                   <NavLink
                     key={sub.path}
                     to={sub.path}
-                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/old-services' || sub.path === '/applications' || sub.path === '/statements/wallet'}
+                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/statements/wallet'}
                     className={({ isActive: navIsActive }) => `bm-nav-subitem ${navIsActive ? 'active' : ''}`}
                   >
                     <span className="bm-nav-label">{sub.label}</span>
