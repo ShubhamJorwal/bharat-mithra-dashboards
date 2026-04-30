@@ -27,6 +27,8 @@ const StaffList = lazy(() => import("@/views/Staff/StaffList/StaffList"));
 const StaffCreate = lazy(() => import("@/views/Staff/StaffCreate/StaffCreate"));
 const StaffDetails = lazy(() => import("@/views/Staff/StaffDetails/StaffDetails"));
 const StaffEdit = lazy(() => import("@/views/Staff/StaffEdit/StaffEdit"));
+const StatePicker = lazy(() => import("@/views/Staff/StatePicker/StatePicker"));
+const StateStaff = lazy(() => import("@/views/Staff/StateStaff/StateStaff"));
 
 // ─── Services (rebuilt 2026-04-30) ──────────────────────────────────────────
 const ServiceList = lazy(() => import("@/views/Services/ServiceList/ServiceList"));
@@ -98,8 +100,10 @@ const routerConfig = [
       { path: "users/:id", element: lazyRoute(<UserDetails />) },
       { path: "users/:id/edit", element: lazyRoute(<UserEdit />) },
 
-      // Staff
-      { path: "staff", element: lazyRoute(<StaffList />) },
+      // Staff — /staff is the state-picker; the old list lives at /staff/members.
+      { path: "staff", element: lazyRoute(<StatePicker />) },
+      { path: "staff/members", element: lazyRoute(<StaffList />) },
+      { path: "staff/state/:code", element: lazyRoute(<StateStaff />) },
       { path: "staff/new", element: lazyRoute(<StaffCreate />) },
       { path: "staff/:id", element: lazyRoute(<StaffDetails />) },
       { path: "staff/:id/edit", element: lazyRoute(<StaffEdit />) },

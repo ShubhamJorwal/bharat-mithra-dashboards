@@ -894,3 +894,30 @@ export interface GeographyQueryParams extends PaginationParams {
   taluk_id?: string;
   gram_panchayat_id?: string;
 }
+
+// ─── Staff/management state-picker (added 2026-05-01) ─────────────────────
+export type StateManagementStatus = 'active' | 'inactive' | 'coming_soon';
+
+export interface StateButton {
+  id: string;
+  code: string;
+  name: string;
+  type: 'state' | 'union_territory';
+  capital?: string;
+  population: number;
+  management_status: StateManagementStatus;
+  banner_image_url?: string;
+  tagline?: string;
+}
+
+export interface StatesManagementResponse {
+  active: StateButton[];
+  inactive: StateButton[];
+  total: number;
+}
+
+export interface UpdateStateManagementRequest {
+  management_status?: StateManagementStatus;
+  banner_image_url?: string;
+  tagline?: string;
+}

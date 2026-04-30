@@ -94,7 +94,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
 
   const secondaryNavItems: NavItem[] = [
     { path: '/users', icon: HiOutlineUsers, label: 'Users', badge: null },
-    { path: '/staff', icon: HiOutlineUsers, label: 'Staff Members', badge: null },
+    { path: '/staff', icon: HiOutlineUsers, label: 'Staff', badge: null },
     { path: '/telecaller', icon: HiOutlinePhone, label: 'Telecaller', badge: null },
     { path: '/support', icon: HiOutlineSupport, label: 'Support', badge: null },
     { path: '/notifications', icon: HiOutlineBell, label: 'Notifications', badge: null },
