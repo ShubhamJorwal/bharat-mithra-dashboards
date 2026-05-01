@@ -12,6 +12,7 @@ import {
 import { PageHeader } from "@/components/common/PageHeader";
 import managementApi from "@/services/api/management.api";
 import type { StateButton, StatesManagementResponse } from "@/types/api.types";
+import { stateImageFor } from "./stateImages";
 import "./StatePicker.scss";
 
 type ViewFilter = "all" | "active" | "inactive";
@@ -286,8 +287,7 @@ const StateCard = ({
   onPick: (s: StateButton) => void;
 }) => {
   const isActive = state.management_status === "active";
-  const banner = state.banner_image_url
-    || `https://picsum.photos/seed/bm-state-${state.code.toLowerCase()}/800/500`;
+  const img = stateImageFor(state.code, state.banner_image_url);
   return (
     <button
       type="button"
@@ -295,35 +295,31 @@ const StateCard = ({
       onClick={() => onPick(state)}
       title={isActive ? `Manage ${state.name}` : `${state.name} — coming soon`}
     >
-      <div className="bm-card-image">
-        <img src={banner} alt={state.name} loading="lazy" />
-        <div className="bm-card-image-overlay" />
-        <span className={`bm-status-pill tone-${isActive ? "active" : "inactive"}`}>
-          <span className="bm-pill-dot" />
-          {isActive ? "Live" : "Coming soon"}
-        </span>
-        <div className="bm-card-image-bottom">
-          <h3>{state.name}</h3>
-          <span className="bm-code">{state.code}</span>
-        </div>
-      </div>
-      <div className="bm-card-body">
-        {state.tagline && <p className="bm-tagline">{state.tagline}</p>}
-        <div className="bm-card-meta">
+      <div className="bm-card-text">
+        <div className="bm-card-text-top">
+          <span className={`bm-status-pill tone-${isActive ? "active" : "inactive"}`}>
+            <span className="bm-pill-dot" />
+            {isActive ? "Live" : "Coming soon"}
+          </span>
           <span className="bm-meta-chip">
             {state.type === "union_territory" ? "UT" : "State"}
           </span>
-          {state.capital && (
-            <span className="bm-meta-capital">
-              <HiOutlineLocationMarker /> {state.capital}
-            </span>
-          )}
-          {isActive && (
-            <span className="bm-cta">
-              Manage <HiOutlineArrowRight />
-            </span>
-          )}
         </div>
+        <h3 className="bm-card-name">{state.name}</h3>
+        <div className="bm-card-code">{state.code}</div>
+        {state.capital && (
+          <div className="bm-card-capital">
+            <HiOutlineLocationMarker /> {state.capital}
+          </div>
+        )}
+        {isActive && (
+          <span className="bm-cta">
+            Manage <HiOutlineArrowRight />
+          </span>
+        )}
+      </div>
+      <div className="bm-card-thumb">
+        <img src={img} alt={state.name} loading="lazy" />
       </div>
     </button>
   );
