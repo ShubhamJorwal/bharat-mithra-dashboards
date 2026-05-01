@@ -53,6 +53,9 @@
 }
 
 // ─── Stage layout ────────────────────────────────────────────────
+// Tighter centered grid — both columns vertically centered with a
+// generous gap between them, but the whole stage capped so the form
+// and brand sit closer together rather than spreading to screen edges.
 .bm-login-stage {
   position: relative;
   z-index: 1;
@@ -60,14 +63,17 @@
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
+  justify-items: center;
   padding: $spacing-2xl;
-  gap: $spacing-2xl;
+  gap: $spacing-xl;
 
   @media (min-width: 980px) {
-    grid-template-columns: 1.1fr 0.9fr;
-    max-width: 1280px;
+    grid-template-columns: 1fr 1fr;
+    column-gap: $spacing-2xl;
+    max-width: 1080px;
     margin: 0 auto;
     min-height: 100vh;
+    justify-items: stretch;
   }
 }
 
@@ -75,59 +81,38 @@
 .bm-login-brand-panel {
   display: none;
   flex-direction: column;
-  justify-content: space-between;
-  gap: $spacing-2xl;
-  padding: $spacing-2xl;
+  align-items: flex-start;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding: $spacing-md $spacing-lg;
   color: #fff;
+  max-width: 480px;
 
   @media (min-width: 980px) { display: flex; }
 }
 .bm-login-brand-mark {
   width: 100%;
-  max-width: 460px;
+  max-width: 320px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-bottom: $spacing-sm;
   filter: drop-shadow(0 20px 50px rgba(99, 102, 241, 0.35));
-  // The infinity logo container has its own animations.
-  // Tighten its size from "lg" so it sits nicely in the panel.
-  :global(.infinity-logo) {
-    width: 100%;
-    max-width: 420px;
-    aspect-ratio: 640 / 360;
-  }
 }
 
 .bm-login-brand-copy {
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
-  max-width: 520px;
-}
-.bm-login-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
-  font-weight: $font-bold;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  padding: 6px 12px;
-  border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.78);
-  align-self: flex-start;
-  backdrop-filter: blur(10px);
-  svg { font-size: 0.95rem; color: #fbbf24; }
+  max-width: 480px;
 }
 .bm-login-headline {
-  font-size: 2.6rem;
+  font-size: 2.4rem;
   font-weight: $font-bold;
   letter-spacing: -0.025em;
   margin: 0;
   line-height: 1.05;
-  @media (min-width: 1200px) { font-size: 3.2rem; }
+  @media (min-width: 1200px) { font-size: 2.8rem; }
 }
 .bm-login-headline-accent {
   background: linear-gradient(135deg, #2ed47a 0%, #ffe040 30%, #ffb84d 60%, #9b7ae0 100%);
@@ -199,6 +184,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: 0.04em;
+  margin-top: $spacing-md;
   .bm-login-dot { color: rgba(255, 255, 255, 0.25); }
 }
 
@@ -211,10 +197,10 @@
   gap: $spacing-md;
   padding: $spacing-md;
   width: 100%;
+  max-width: 460px;
 
   @media (min-width: 980px) {
-    padding: $spacing-2xl;
-    align-items: stretch;
+    padding: $spacing-md $spacing-lg;
   }
 }
 .bm-login-form-mobile-brand {
@@ -227,9 +213,8 @@
   letter-spacing: -0.01em;
   margin-bottom: $spacing-md;
 
-  :global(.infinity-logo) {
+  .infinity-logo {
     width: 56px;
-    aspect-ratio: 640 / 360;
   }
 
   @media (min-width: 980px) { display: none; }
@@ -283,29 +268,6 @@
     line-height: 1.55;
   }
 }
-.bm-login-step {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.65rem;
-  font-weight: $font-bold;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.55);
-}
-.bm-login-step-num {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, $primary-color, $secondary-color);
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: $font-bold;
-  font-size: 0.75rem;
-  box-shadow: 0 4px 10px -2px rgba(99, 102, 241, 0.55);
-}
-
 .bm-login-form {
   display: flex;
   flex-direction: column;

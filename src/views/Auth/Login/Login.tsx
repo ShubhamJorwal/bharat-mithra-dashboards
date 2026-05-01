@@ -7,7 +7,6 @@ import {
   HiOutlineEyeOff,
   HiOutlineExclamationCircle,
   HiOutlineShieldCheck,
-  HiOutlineSparkles,
   HiOutlineLightningBolt,
 } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
@@ -83,9 +82,6 @@ const Login = () => {
           </div>
 
           <div className="bm-login-brand-copy">
-            <div className="bm-login-eyebrow">
-              <HiOutlineSparkles /> Staff Console
-            </div>
             <h1 className="bm-login-headline">
               Bharat<span className="bm-login-headline-accent">Mithra</span>
             </h1>
@@ -128,10 +124,6 @@ const Login = () => {
 
           <div className="bm-login-card">
             <div className="bm-login-card-head">
-              <div className="bm-login-step">
-                <span className="bm-login-step-num">1</span>
-                <span>Sign in</span>
-              </div>
               <h2>Welcome back</h2>
               <p>Use your staff credentials to continue. Your session is logged for security.</p>
             </div>
