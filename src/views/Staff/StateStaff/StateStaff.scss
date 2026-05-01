@@ -7,25 +7,7 @@
     display: flex;
     gap: $spacing-sm;
     flex-wrap: wrap;
-  }
-
-  .bm-state-bottom {
-    margin-top: $spacing-2xl;
-    text-align: center;
-  }
-
-  .bm-link {
-    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-size: $font-sm;
-    padding: 8px 14px;
-    border-radius: $radius-md;
-    border: 1px solid var(--color-border);
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-    &:hover { color: var(--color-primary); border-color: var(--color-primary); background: rgba(99, 102, 241, 0.05); }
   }
 
   .bm-btn-back {
@@ -43,21 +25,7 @@
     &:hover { background: var(--color-hover); border-color: var(--color-primary); }
   }
 
-  .bm-loading,
-  .bm-error {
-    margin: $spacing-lg 0;
-    padding: $spacing-md $spacing-lg;
-    border-radius: $radius-md;
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    font-size: $font-sm;
-  }
-  .bm-error {
-    color: #b91c1c;
-    border-color: rgba(220, 38, 38, 0.35);
-    background: rgba(220, 38, 38, 0.06);
-  }
-
+  // ─── Hero ─────────────────────────────────────────────────────────
   .bm-state-hero {
     margin: $spacing-lg 0 $spacing-xl;
     border-radius: $radius-xl;
@@ -75,106 +43,360 @@
       object-fit: cover;
       display: block;
     }
-    .bm-state-hero-meta {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: $spacing-xl $spacing-2xl;
-      background: linear-gradient(0deg, rgba(8, 14, 28, 0.85) 0%, rgba(8, 14, 28, 0.3) 60%, transparent 100%);
-      color: #fff;
+  }
+  .bm-state-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(8, 14, 28, 0.85) 0%,
+      rgba(8, 14, 28, 0.55) 45%,
+      rgba(8, 14, 28, 0.15) 100%
+    );
+    pointer-events: none;
+  }
+  .bm-state-hero-content {
+    position: absolute;
+    inset: auto auto $spacing-xl $spacing-2xl;
+    color: #fff;
+    max-width: 70%;
 
-      h2 {
-        margin: 6px 0 4px;
-        font-size: 2rem;
-        font-weight: $font-bold;
-        letter-spacing: -0.02em;
-        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
-      }
-      p {
-        margin: 0;
-        opacity: 0.92;
-        font-size: $font-sm;
-      }
+    h1 {
+      margin: 8px 0 6px;
+      font-size: 2.4rem;
+      font-weight: $font-bold;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+      @media (min-width: 1280px) { font-size: 2.8rem; }
     }
-    .bm-pill {
+  }
+  .bm-hero-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.66rem;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: $radius-full;
+    background: rgba(22, 163, 74, 0.95);
+    color: #fff;
+    backdrop-filter: blur(8px);
+
+    .bm-hero-status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #fff;
+      animation: bm-live-pulse 1.6s ease-out infinite;
+    }
+  }
+  .bm-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+    font-size: $font-sm;
+    opacity: 0.92;
+
+    span {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.66rem;
+      gap: 4px;
+    }
+    .bm-hero-code {
+      font-size: 0.7rem;
       font-weight: $font-bold;
-      padding: 5px 12px;
-      border-radius: $radius-full;
-      background: rgba(22, 163, 74, 0.95);
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      backdrop-filter: blur(8px);
-
-      &::before {
-        content: "";
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #fff;
-        animation: bm-live-dot 1.6s ease-out infinite;
-      }
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border-radius: $radius-sm;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
   }
 
-  .bm-coming-soon {
+  // ─── Coverage stats ──────────────────────────────────────────────
+  .bm-coverage-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    margin-bottom: $spacing-xl;
+    @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+  }
+  .bm-coverage-tile {
     background: var(--color-card-bg);
-    border: 1px dashed var(--color-border);
-    border-radius: $radius-xl;
-    padding: $spacing-2xl;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    transition: transform 0.15s ease, border-color 0.15s ease;
 
-    &::before {
-      content: "";
-      position: absolute;
-      inset: -50%;
-      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
-      pointer-events: none;
-    }
+    &:hover { transform: translateY(-2px); border-color: var(--color-primary); }
+  }
+  .bm-coverage-icon {
+    width: 44px; height: 44px;
+    border-radius: $radius-md;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
 
-    h3 {
-      margin: 0 0 $spacing-sm;
-      font-size: $font-xl;
-      font-weight: $font-semibold;
+    .tone-indigo & { background: rgba(99, 102, 241, 0.14); color: #6366f1; }
+    .tone-cyan   & { background: rgba(6, 182, 212, 0.14);  color: #06b6d4; }
+    .tone-green  & { background: rgba(22, 163, 74, 0.14);  color: #16a34a; }
+    .tone-amber  & { background: rgba(245, 158, 11, 0.14); color: #d97706; }
+  }
+  .bm-coverage-text { min-width: 0; }
+  .bm-coverage-value {
+    font-size: 1.6rem;
+    font-weight: $font-bold;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-text);
+  }
+  .bm-coverage-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    font-weight: $font-semibold;
+  }
+  .bm-coverage-sub {
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+    opacity: 0.85;
+  }
+
+  // ─── Quick jump nav ──────────────────────────────────────────────
+  .bm-jump-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .bm-jump-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: $radius-full;
+    background: var(--color-hover);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: $font-medium;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    &:hover {
+      background: var(--color-card-bg);
       color: var(--color-text);
-      letter-spacing: -0.01em;
-      position: relative;
+      border-color: var(--color-primary);
     }
-    p {
-      margin: 0 auto $spacing-lg;
-      max-width: 520px;
-      color: var(--color-text-secondary);
+  }
+  .bm-jump-badge {
+    font-size: 0.65rem;
+    font-weight: $font-bold;
+    background: var(--color-card-bg);
+    padding: 1px 7px;
+    border-radius: $radius-full;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  // ─── Section h2 with icon ───────────────────────────────────────
+  .bm-h2-icon {
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    vertical-align: -2px;
+    margin-right: 4px;
+  }
+
+  .bm-vacant-warn {
+    color: #d97706;
+    font-weight: $font-semibold;
+  }
+
+  // ─── District toolbar ──────────────────────────────────────────
+  .bm-district-toolbar {
+    display: grid;
+    gap: $spacing-md;
+    grid-template-columns: 1fr;
+    margin-bottom: $spacing-lg;
+    @media (min-width: 720px) {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+  .bm-search-bar {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 0 $spacing-md;
+    height: 44px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    color: var(--color-text-secondary);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    &:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); }
+    > svg { font-size: 1.1rem; }
+    input {
+      flex: 1;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: var(--color-text);
       font-size: $font-sm;
-      line-height: 1.6;
-      position: relative;
+      &::placeholder { color: var(--color-text-tertiary, var(--color-text-secondary)); }
     }
-    .bm-link {
-      position: relative;
+    .bm-search-clear {
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--color-text-secondary);
+      border-radius: $radius-sm;
+      display: inline-flex;
+      &:hover { background: var(--color-hover); color: var(--color-text); }
+    }
+  }
+  .bm-toolbar-controls {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+  }
+  .bm-sort-select {
+    appearance: none;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: $radius-lg;
+    padding: 10px 32px 10px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2398a3d8'><path d='M5.25 7.5L10 12.25 14.75 7.5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    transition: border-color 0.15s ease;
+    &:hover { border-color: var(--color-primary); }
+  }
+  .bm-view-toggle {
+    display: inline-flex;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: 4px;
+    gap: 2px;
+    button {
+      appearance: none;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 7px 11px;
+      border-radius: $radius-md;
+      color: var(--color-text-secondary);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      color: var(--color-primary);
-      font-weight: $font-medium;
-      text-decoration: none;
-      font-size: $font-sm;
-      padding: 8px 16px;
-      border-radius: $radius-md;
-      border: 1px solid var(--color-border);
-      background: var(--color-card-bg);
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
-      &:hover { background: var(--color-hover); border-color: var(--color-primary); }
-      &:active { transform: translateY(1px); }
+      transition: background 0.15s ease, color 0.15s ease;
+      svg { font-size: 1.05rem; }
+      &:hover:not(.is-on) { color: var(--color-text); }
+      &.is-on { background: var(--color-text); color: var(--color-card-bg); }
     }
+  }
+
+  // ─── District grid (rich) ───────────────────────────────────────
+  .bm-district-grid-rich {
+    .bm-district-card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  }
+  .bm-district-card-rich {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    align-items: stretch !important;
+  }
+  .bm-district-card-top {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .bm-district-name-block {
+    flex: 1;
+    min-width: 0;
+  }
+  .bm-district-stats {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-sm $spacing-lg;
+    background: var(--color-hover);
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+    line-height: 1.3;
+    span { display: inline-flex; gap: 4px; align-items: baseline; }
+    strong {
+      font-weight: $font-bold;
+      color: var(--color-text);
+      font-size: 0.85rem;
+    }
+  }
+
+  // ─── District list view ────────────────────────────────────────
+  .bm-district-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bm-district-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: $spacing-md;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    padding: $spacing-sm $spacing-lg;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: border-color 0.15s ease, background 0.15s ease;
+    &:hover { border-color: var(--color-primary); background: var(--color-hover); }
+  }
+  .bm-district-row-name {
+    min-width: 0;
+    .bm-district-name { font-weight: $font-semibold; font-size: $font-sm; }
+    .bm-district-meta { font-size: 0.7rem; color: var(--color-text-secondary); margin-top: 2px; }
+  }
+  .bm-district-row-stats {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    span { white-space: nowrap; }
+    strong { color: var(--color-text); font-weight: $font-bold; }
   }
 }
 
-@keyframes bm-live-dot {
-  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
-  70%  { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+@keyframes bm-live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
   100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
