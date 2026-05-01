@@ -1,0 +1,409 @@
+@use '../../../styles/variables' as *;
+
+.bm-app-new {
+  padding: 0 $spacing-xl $spacing-2xl;
+  max-width: 940px;
+  margin: 0 auto;
+
+  // ─── Buttons ─────────────────────────────────────────────────
+  .bm-app-new-btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: $radius-md;
+    padding: 8px 14px;
+    font-size: $font-sm;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    &:hover { background: var(--color-hover); border-color: var(--color-primary); }
+    svg { font-size: 1.05rem; }
+  }
+  .bm-app-new-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    color: #fff;
+    border: 0;
+    padding: 11px 22px;
+    border-radius: $radius-md;
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 14px -4px rgba(99, 102, 241, 0.55);
+    transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    &:hover:not(:disabled) {
+      filter: brightness(1.07);
+      box-shadow: 0 8px 22px -6px rgba(99, 102, 241, 0.7);
+    }
+    &:active:not(:disabled) { transform: translateY(1px); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  .bm-app-new-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 11px 22px;
+    border-radius: $radius-md;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    &:hover:not(:disabled) { background: var(--color-hover); border-color: var(--color-primary); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+
+  // ─── Step indicator ──────────────────────────────────────────
+  .bm-app-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    margin: $spacing-lg 0 $spacing-xl;
+    padding: 0;
+    list-style: none;
+  }
+  .bm-app-step {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 8px 16px;
+    border-radius: $radius-full;
+    background: var(--color-hover);
+    color: var(--color-text-secondary);
+    font-size: 0.78rem;
+    font-weight: $font-medium;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &.is-current {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+      color: var(--color-text);
+      box-shadow: 0 0 0 1px var(--color-primary);
+    }
+    &.is-done {
+      background: rgba(22, 163, 74, 0.15);
+      color: #16a34a;
+    }
+  }
+  .bm-app-step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: $font-bold;
+    font-size: 0.72rem;
+    .bm-app-step.is-current & { background: linear-gradient(135deg, $primary-color, $secondary-color); color: #fff; }
+    .bm-app-step.is-done & { background: #16a34a; color: #fff; }
+    svg { font-size: 0.95rem; }
+  }
+
+  // ─── Step body ───────────────────────────────────────────────
+  .bm-app-step-body {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-xl;
+    padding: $spacing-xl $spacing-2xl;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+  .bm-app-section-title {
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+      font-weight: $font-bold;
+      letter-spacing: -0.02em;
+      color: var(--color-text);
+    }
+    p { margin: 0; color: var(--color-text-secondary); font-size: $font-sm; line-height: 1.55; }
+  }
+
+  .bm-app-step-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding-top: $spacing-md;
+    border-top: 1px dashed var(--color-border);
+  }
+
+  // ─── Service search + cards (step 1) ─────────────────────────
+  .bm-app-search {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 0 $spacing-md;
+    height: 46px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    color: var(--color-text-secondary);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    &:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+    }
+    svg { font-size: 1.1rem; }
+    input {
+      flex: 1;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: var(--color-text);
+      font-size: $font-sm;
+    }
+  }
+  .bm-app-services {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .bm-app-service-card {
+    appearance: none;
+    text-align: left;
+    cursor: pointer;
+    background: var(--color-hover);
+    border: 1.5px solid transparent;
+    border-radius: $radius-md;
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    color: var(--color-text);
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &:hover { border-color: var(--color-border); }
+    &.is-picked {
+      border-color: $secondary-color;
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+  }
+  .bm-app-service-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .bm-app-service-name {
+    font-weight: $font-semibold;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+  .bm-app-service-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+  }
+  .bm-app-service-code {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, monospace;
+    background: var(--color-card-bg);
+    padding: 1px 6px;
+    border-radius: $radius-sm;
+    border: 1px solid var(--color-border);
+  }
+  .bm-app-service-check {
+    font-size: 1.4rem;
+    color: $secondary-color;
+  }
+
+  .bm-app-route-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: $radius-full;
+    font-size: 0.65rem;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    &.agent { background: rgba(99, 102, 241, 0.15); color: $secondary-color; }
+    &.caseworker, &.cw { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    &.warn { background: rgba(220, 38, 38, 0.15); color: #b91c1c; }
+    svg { font-size: 0.85rem; }
+  }
+
+  // ─── Citizen form (step 2) ───────────────────────────────────
+  .bm-app-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+  .bm-app-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: $font-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-secondary);
+      svg { font-size: 0.95rem; color: var(--color-text-secondary); }
+    }
+    input, select, textarea {
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: $radius-md;
+      padding: 10px 12px;
+      font-size: $font-sm;
+      outline: 0;
+      &:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); }
+    }
+    textarea { resize: vertical; min-height: 50px; }
+    select { cursor: pointer; }
+  }
+  .bm-app-field-wide { grid-column: 1 / -1; }
+  .bm-app-req { color: #ef4444; margin-left: 2px; }
+
+  // ─── Routing override card ───────────────────────────────────
+  .bm-app-routing {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: $radius-lg;
+    padding: $spacing-md $spacing-lg;
+    h3 { margin: 0 0 4px; font-size: $font-base; font-weight: $font-semibold; color: var(--color-text); }
+    p { margin: 0 0 $spacing-md; font-size: 0.78rem; color: var(--color-text-secondary); }
+  }
+  .bm-app-routing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $spacing-sm;
+  }
+  .bm-app-routing-card {
+    cursor: pointer;
+    background: var(--color-card-bg);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    padding: $spacing-sm $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    input { display: none; }
+    strong { font-size: 0.85rem; color: var(--color-text); font-weight: $font-semibold; }
+    small { font-size: 0.7rem; color: var(--color-text-secondary); }
+    transition: border-color 0.15s ease, background 0.15s ease;
+    &:hover { border-color: $secondary-color; }
+    &.is-picked {
+      border-color: $secondary-color;
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    }
+  }
+
+  // ─── Review (step 3) ─────────────────────────────────────────
+  .bm-app-review {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    overflow: hidden;
+  }
+  .bm-app-review-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: $spacing-md;
+    padding: $spacing-sm $spacing-lg;
+    background: var(--color-card-bg);
+    @media (max-width: 600px) { grid-template-columns: 1fr; gap: 4px; }
+  }
+  .bm-app-review-label {
+    font-size: 0.7rem;
+    font-weight: $font-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+  .bm-app-review-value {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    strong { color: var(--color-text); font-size: 0.9rem; font-weight: $font-medium; }
+    small { color: var(--color-text-secondary); font-size: 0.75rem; }
+  }
+
+  // ─── Empty + error ───────────────────────────────────────────
+  .bm-app-empty {
+    padding: $spacing-xl;
+    text-align: center;
+    color: var(--color-text-secondary);
+    background: var(--color-hover);
+    border-radius: $radius-md;
+  }
+  .bm-app-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #b91c1c;
+    border-radius: $radius-md;
+    font-size: $font-sm;
+    svg { font-size: 1.05rem; flex-shrink: 0; }
+  }
+
+  // ─── Success screen ──────────────────────────────────────────
+  .bm-app-success {
+    background: var(--color-card-bg);
+    border: 1px solid rgba(22, 163, 74, 0.35);
+    border-radius: $radius-xl;
+    padding: $spacing-2xl;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-md;
+    background: linear-gradient(180deg, rgba(22, 163, 74, 0.05) 0%, var(--color-card-bg) 60%);
+  }
+  .bm-app-success-check {
+    font-size: 3.5rem;
+    color: #16a34a;
+    filter: drop-shadow(0 4px 12px rgba(22, 163, 74, 0.3));
+  }
+  .bm-app-success h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: $font-bold;
+    letter-spacing: -0.02em;
+    font-family: ui-monospace, "JetBrains Mono", Menlo, monospace;
+  }
+  .bm-app-success p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: $font-sm;
+    line-height: 1.6;
+    max-width: 580px;
+  }
+  .bm-app-success-route { margin: $spacing-sm 0; }
+  .bm-app-success-actions {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

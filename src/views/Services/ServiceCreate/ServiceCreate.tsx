@@ -114,6 +114,10 @@ const ServiceCreate = () => {
     is_featured: false,
     is_new: true,
     tags: [],
+    // Application routing flags (added 2026-05-02). Default: routes to
+    // a caseworker; agent cannot complete on their own.
+    requires_caseworker: true,
+    agent_can_complete: false,
   });
   const [tagInput, setTagInput] = useState("");
 
@@ -606,6 +610,39 @@ const BasicsStep = ({ form, setField, onNameChange, categories, tagInput, setTag
             Mark as New
           </label>
         </div>
+
+        <Field
+          label="Application routing"
+          hint="How an application for this service is processed once an agent submits it."
+        >
+          <div className="bm-routing-toggles">
+            <label className="bm-routing-card">
+              <input
+                type="checkbox"
+                checked={form.requires_caseworker !== false}
+                onChange={(e) => setField("requires_caseworker", e.target.checked)}
+              />
+              <div>
+                <strong>Auto-assign to caseworker</strong>
+                <small>Routes to the caseworker covering the citizen's GP at submit time. Most services need this.</small>
+              </div>
+            </label>
+            <label className="bm-routing-card">
+              <input
+                type="checkbox"
+                checked={form.agent_can_complete === true}
+                onChange={(e) => setField("agent_can_complete", e.target.checked)}
+              />
+              <div>
+                <strong>Agent can complete on their own</strong>
+                <small>For simple services like Aadhaar download — agent finishes it without a caseworker. Both can be on; the agent then chooses per application.</small>
+              </div>
+            </label>
+          </div>
+          {!form.requires_caseworker && !form.agent_can_complete && (
+            <div className="bm-routing-warn">⚠ At least one routing option must be enabled.</div>
+          )}
+        </Field>
       </div>
     </div>
   );

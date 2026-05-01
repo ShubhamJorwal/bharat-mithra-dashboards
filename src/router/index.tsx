@@ -33,6 +33,11 @@ const DistrictStaff = lazy(() => import("@/views/Staff/DistrictStaff/DistrictSta
 const TalukStaff = lazy(() => import("@/views/Staff/TalukStaff/TalukStaff"));
 const GPList = lazy(() => import("@/views/Staff/GPList/GPList"));
 
+// ─── Applications (rebuilt 2026-05-02) ─────────────────────────────────────
+const ApplicationsList = lazy(() => import("@/views/Applications/ApplicationsList/ApplicationsList"));
+const ApplicationCreate = lazy(() => import("@/views/Applications/ApplicationCreate/ApplicationCreate"));
+const ApplicationDetails = lazy(() => import("@/views/Applications/ApplicationDetails/ApplicationDetails"));
+
 // ─── Services (rebuilt 2026-04-30) ──────────────────────────────────────────
 const ServiceList = lazy(() => import("@/views/Services/ServiceList/ServiceList"));
 const ServiceDetails = lazy(() => import("@/views/Services/ServiceDetails/ServiceDetails"));
@@ -120,6 +125,11 @@ const routerConfig = [
       { path: "services/categories", element: lazyRoute(<CategoryManager />) },
       { path: "services/:id", element: lazyRoute(<ServiceDetails />) },
       { path: "services/:id/edit", element: lazyRoute(<ServiceEdit />) },
+
+      // Applications (rebuilt 2026-05-02)
+      { path: "applications", element: lazyRoute(<ApplicationsList />) },
+      { path: "applications/new", element: lazyRoute(<ApplicationCreate />) },
+      { path: "applications/:id", element: lazyRoute(<ApplicationDetails />) },
 
       // Geography
       { path: "geography", element: lazyRoute(<NationalDashboard />) },

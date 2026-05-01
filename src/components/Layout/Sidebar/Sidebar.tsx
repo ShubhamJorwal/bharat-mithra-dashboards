@@ -63,6 +63,16 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       ]
     },
     {
+      path: '/applications',
+      icon: HiOutlineDocumentText,
+      label: 'Applications',
+      badge: null,
+      subItems: [
+        { path: '/applications', label: 'All' },
+        { path: '/applications/new', label: 'New application' },
+      ]
+    },
+    {
       path: '/geography',
       icon: HiOutlineGlobe,
       label: 'Geography',

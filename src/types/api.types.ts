@@ -96,6 +96,10 @@ export interface Service {
   is_new: boolean;
   sort_order: number;
 
+  // Application routing flags (added 2026-05-02)
+  requires_caseworker: boolean;
+  agent_can_complete: boolean;
+
   avg_rating: number;
   total_applications: number;
   total_reviews: number;
@@ -237,6 +241,9 @@ export interface CreateServiceRequest {
   is_featured?: boolean;
   is_new?: boolean;
   sort_order?: number;
+  // Application routing flags
+  requires_caseworker?: boolean;
+  agent_can_complete?: boolean;
 }
 
 export interface UpdateServiceRequest {
@@ -265,6 +272,9 @@ export interface UpdateServiceRequest {
   is_featured?: boolean;
   is_new?: boolean;
   sort_order?: number;
+  // Application routing flags
+  requires_caseworker?: boolean;
+  agent_can_complete?: boolean;
 }
 
 export interface CreateProfileRequest {
@@ -1068,4 +1078,229 @@ export interface UpdateAssignmentRequest {
   notes?: string;
   gp_ids?: string[];
   permissions?: AssignmentPermission[];
+}
+
+// ─── Applications module (added 2026-05-02) ──────────────────────────
+export type ApplicationStatus =
+  | 'draft'
+  | 'submitted'
+  | 'in_progress'
+  | 'awaiting_citizen'
+  | 'awaiting_external'
+  | 'agent_completed'
+  | 'completed'
+  | 'rejected'
+  | 'cancelled';
+
+export type ApplicationPriority = 'low' | 'normal' | 'high' | 'urgent';
+export type ApplicationPaymentStatus = 'pending' | 'paid' | 'refunded' | 'waived' | 'failed';
+
+export interface ApplicationServiceMini {
+  id: string;
+  code: string;
+  name: string;
+  category_name?: string;
+  requires_caseworker: boolean;
+  agent_can_complete: boolean;
+}
+
+export interface ApplicationStaffMini {
+  id: string;
+  employee_code: string;
+  full_name: string;
+  email: string;
+  mobile: string;
+  designation?: string;
+  profile_photo_url?: string;
+}
+
+export interface ApplicationGPMini {
+  id: string;
+  name: string;
+  code: string;
+  taluk_name?: string;
+  district_name?: string;
+}
+
+export interface ApplicationDocument {
+  id: string;
+  application_id: string;
+  required_doc_id?: string;
+  doc_label: string;
+  file_url: string;
+  file_size_bytes?: number;
+  file_mime_type?: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'replaced';
+  review_remark?: string;
+  uploaded_by?: string;
+  uploaded_at: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+}
+
+export interface ApplicationStatusHistory {
+  id: string;
+  application_id: string;
+  from_status?: ApplicationStatus;
+  to_status: ApplicationStatus;
+  remark?: string;
+  changed_by?: string;
+  changed_by_role?: string;
+  changed_by_name?: string;
+  is_system: boolean;
+  created_at: string;
+}
+
+export interface Application {
+  id: string;
+  application_code: string;
+
+  // Citizen
+  citizen_name: string;
+  citizen_mobile: string;
+  citizen_email?: string;
+  citizen_aadhaar_last4?: string;
+  citizen_address?: string;
+  citizen_pincode?: string;
+
+  // Service
+  service_id: string;
+  service?: ApplicationServiceMini;
+
+  // Geography
+  gram_panchayat_id?: string;
+  taluk_id?: string;
+  district_id?: string;
+  state_id?: string;
+  gp?: ApplicationGPMini;
+
+  // People
+  submitted_by_agent_id?: string;
+  submitted_by_agent?: ApplicationStaffMini;
+  is_agent_only: boolean;
+  assigned_caseworker_id?: string;
+  assigned_caseworker?: ApplicationStaffMini;
+
+  // Lifecycle
+  status: ApplicationStatus;
+  priority: ApplicationPriority;
+  latest_remark?: string;
+  internal_notes?: string;
+  rejection_reason?: string;
+
+  external_reference?: string;
+  external_status_url?: string;
+
+  fee_charged?: number;
+  payment_status: ApplicationPaymentStatus;
+  payment_method?: string;
+  payment_reference?: string;
+
+  submitted_at?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+
+  // Hydrated
+  documents?: ApplicationDocument[];
+  status_history?: ApplicationStatusHistory[];
+}
+
+export interface ApplicationListResponse {
+  data: Application[];
+  meta: { page: number; per_page: number; total: number; total_pages: number };
+}
+
+export interface ApplicationStatsResponse {
+  total: number;
+  by_status: Record<string, number>;
+  by_priority: Record<string, number>;
+  open_for_me: number;
+  awaiting_pickup: number;
+  awaiting_me?: number;
+}
+
+export interface ApplicationMetaResponse {
+  statuses: ApplicationStatus[];
+  priorities: ApplicationPriority[];
+  payment_statuses: ApplicationPaymentStatus[];
+  status_labels: Record<ApplicationStatus, string>;
+}
+
+export interface ApplicationListFilters {
+  search?: string;
+  status?: ApplicationStatus | '';
+  statuses?: string;
+  service_id?: string;
+  gram_panchayat_id?: string;
+  district_id?: string;
+  state_id?: string;
+  agent_id?: string;
+  caseworker_id?: string;
+  priority?: ApplicationPriority | '';
+  is_agent_only?: 'true' | 'false' | '';
+  include_terminal?: 'true' | 'false' | '';
+  from?: string;
+  to?: string;
+  page?: number;
+  per_page?: number;
+  sort_by?: 'created_at' | 'submitted_at' | 'updated_at' | 'priority' | 'status';
+  sort_order?: 'asc' | 'desc';
+}
+
+export interface CreateApplicationRequest {
+  service_id: string;
+  citizen_name: string;
+  citizen_mobile: string;
+  citizen_email?: string;
+  citizen_aadhaar_last4?: string;
+  citizen_address?: string;
+  citizen_pincode?: string;
+  gram_panchayat_id?: string;
+  priority?: ApplicationPriority;
+  fee_charged?: number;
+  payment_status?: ApplicationPaymentStatus;
+  internal_notes?: string;
+  agent_only_override?: boolean;
+}
+
+export interface UpdateApplicationRequest {
+  citizen_name?: string;
+  citizen_mobile?: string;
+  citizen_email?: string;
+  citizen_aadhaar_last4?: string;
+  citizen_address?: string;
+  citizen_pincode?: string;
+  priority?: ApplicationPriority;
+  internal_notes?: string;
+  external_reference?: string;
+  external_status_url?: string;
+  fee_charged?: number;
+  payment_status?: ApplicationPaymentStatus;
+  payment_method?: string;
+  payment_reference?: string;
+}
+
+export interface ChangeApplicationStatusRequest {
+  status: ApplicationStatus;
+  remark?: string;
+  rejection_reason?: string;
+}
+
+export interface AssignApplicationRequest {
+  caseworker_id?: string | null;
+  reason?: string;
+}
+
+export interface AddApplicationDocumentRequest {
+  required_doc_id?: string;
+  doc_label: string;
+  file_url: string;
+  file_size_bytes?: number;
+  file_mime_type?: string;
+}
+
+export interface ReviewApplicationDocumentRequest {
+  status: 'pending' | 'accepted' | 'rejected' | 'replaced';
+  review_remark?: string;
 }
