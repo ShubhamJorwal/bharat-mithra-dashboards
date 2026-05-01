@@ -345,8 +345,8 @@
     text-align: left;
     cursor: pointer;
     background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
+    border: 1.5px dashed var(--color-border);
+    border-radius: 14px;
     overflow: hidden;
     padding: $spacing-md;
     color: var(--color-text);
@@ -358,30 +358,20 @@
     min-height: 116px;
     transition: transform 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28),
                 box-shadow 0.18s ease,
-                border-color 0.18s ease;
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: $radius-lg;
-      padding: 1px;
-      background: linear-gradient(135deg, $primary-color, $secondary-color, #ec4899);
-      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      mask-composite: exclude;
-      -webkit-mask-composite: xor;
-      opacity: 0;
-      transition: opacity 0.18s ease;
-      pointer-events: none;
-    }
+                border-color 0.18s ease,
+                border-style 0s linear 0.18s;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.32);
-      border-color: var(--color-primary);
+      border-style: solid;
+      border-color: $secondary-color;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18),
+                  0 14px 30px -16px rgba(99, 102, 241, 0.45);
+      transition: transform 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28),
+                  box-shadow 0.18s ease,
+                  border-color 0.18s ease,
+                  border-style 0s linear 0s;
     }
-    &.is-active:hover::before { opacity: 1; }
 
     &.is-inactive {
       .bm-card-thumb img { filter: grayscale(0.55) brightness(0.92); }

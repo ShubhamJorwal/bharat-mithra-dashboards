@@ -12,7 +12,7 @@ import {
 import { PageHeader } from "@/components/common/PageHeader";
 import managementApi from "@/services/api/management.api";
 import type { StateButton, StatesManagementResponse } from "@/types/api.types";
-import { stateImageFor } from "./stateImages";
+import { stateImageFor, fallbackImage } from "./stateImages";
 import "./StatePicker.scss";
 
 type ViewFilter = "all" | "active" | "inactive";
@@ -319,7 +319,16 @@ const StateCard = ({
         )}
       </div>
       <div className="bm-card-thumb">
-        <img src={img} alt={state.name} loading="lazy" />
+        <img
+          src={img}
+          alt={state.name}
+          loading="lazy"
+          onError={(e) => {
+            const el = e.currentTarget;
+            const fb = fallbackImage(state.code);
+            if (el.src !== fb) el.src = fb;
+          }}
+        />
       </div>
     </button>
   );

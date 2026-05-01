@@ -1,91 +1,90 @@
 // Real per-state/UT famous-place image URLs sourced from Wikimedia Commons.
-// All images are public domain / CC-licensed and resized via Wikipedia's
-// thumbnail proxy so they load fast (320px wide is plenty for a small
-// card thumbnail).
+// All images are public domain / CC-licensed and resized via Wikimedia's
+// thumbnail proxy.
 //
-// To swap one out, replace the URL — the picker code falls back to the
-// banner_image_url stored on the state record (which is currently a
-// picsum placeholder), and from there to a generic placeholder.
+// If a URL ever 404s, the <img onError> handler in StatePicker.tsx falls
+// back to a deterministic picsum placeholder for that state — no broken
+// image icons.
 //
 // Updated: 2026-05-01
 
-const W = 320;
-const thumb = (file: string) =>
+const W = 400;
+const wm = (file: string) =>
   `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${W}`;
 
 export const STATE_IMAGES: Record<string, string> = {
   // Andaman & Nicobar — Radhanagar Beach
-  AN: thumb("Radhanagar Beach Havelock.jpg"),
+  AN: wm("Radhanagar Beach Havelock Island.jpg"),
   // Andhra Pradesh — Tirumala Tirupati Temple
-  AP: thumb("Sri Venkateswara Swamy Temple Tirumala.jpg"),
+  AP: wm("Tirumala 090615.jpg"),
   // Arunachal Pradesh — Tawang Monastery
-  AR: thumb("Tawang Monastery 2010.jpg"),
-  // Assam — Kamakhya Temple
-  AS: thumb("Kamakhya temple.jpg"),
+  AR: wm("Tawang Monastery Front View 2.jpg"),
+  // Assam — Kamakhya Temple, Guwahati
+  AS: wm("Kamakhya Temple Front view from main entrance.jpg"),
   // Bihar — Mahabodhi Temple, Bodh Gaya
-  BR: thumb("Mahabodhitemple.jpg"),
+  BR: wm("Mahabodhi temple.jpg"),
   // Chandigarh — Open Hand Monument
-  CH: thumb("Open Hand Monument 2007.jpg"),
+  CH: wm("Open Hand Monument Chandigarh.jpg"),
   // Chhattisgarh — Chitrakote Falls
-  CG: thumb("Chitrakot Falls Bastar.jpg"),
+  CG: wm("Chitrakot Waterfall, Bastar.jpg"),
   // Daman, Diu, DNH — Diu Fort
-  DD: thumb("Diu Fort 2013.jpg"),
+  DD: wm("Diu fort Sea side.jpg"),
   // Delhi — India Gate
-  DL: thumb("India Gate in New Delhi 03-2016.jpg"),
+  DL: wm("Indiagate.JPG"),
   // Goa — Basilica of Bom Jesus
-  GA: thumb("Basilica of Bom Jesus Goa.jpg"),
+  GA: wm("Basilica of Bom Jesus, Old Goa.jpg"),
   // Gujarat — Statue of Unity
-  GJ: thumb("Statue of Unity in November 2018.jpg"),
-  // Haryana — Kurukshetra (Brahma Sarovar)
-  HR: thumb("Brahma Sarovar Kurukshetra.jpg"),
-  // Himachal Pradesh — Hadimba Temple, Manali
-  HP: thumb("Hadimba Devi Temple Manali.jpg"),
+  GJ: wm("Statue of Unity in 2018.jpg"),
+  // Haryana — Brahma Sarovar Kurukshetra
+  HR: wm("Brahma Sarovar - Kurukshetra.jpg"),
+  // Himachal Pradesh — Hadimba Devi Temple, Manali
+  HP: wm("Hidimba Temple Manali.jpg"),
   // Jammu & Kashmir — Dal Lake
-  JK: thumb("Dal Lake in Srinagar.jpg"),
+  JK: wm("Dal Lake -Srinagar -Kashmir-1.jpg"),
   // Jharkhand — Hundru Falls
-  JH: thumb("Hundru Falls Ranchi.jpg"),
-  // Karnataka — Mysuru Palace
-  KA: thumb("Mysore Palace Morning.jpg"),
-  // Kerala — Kerala backwaters
-  KL: thumb("Kerala Backwaters.jpg"),
+  JH: wm("Hundru Falls in Ranchi.jpg"),
+  // Karnataka — Mysore Palace (verified working)
+  KA: wm("Mysore Palace Morning.jpg"),
+  // Kerala — Backwaters
+  KL: wm("Kerala Backwaters Houseboat.jpg"),
   // Ladakh — Pangong Tso
-  LA: thumb("Pangong Tso Ladakh.jpg"),
-  // Lakshadweep — Agatti Island aerial
-  LD: thumb("Agatti Island Aerial View.jpg"),
-  // Madhya Pradesh — Khajuraho temples
-  MP: thumb("Kandariya Mahadeva Temple Khajuraho.jpg"),
+  LA: wm("Pangong Lake.jpg"),
+  // Lakshadweep — Agatti aerial
+  LD: wm("Agatti island aerial view.jpg"),
+  // Madhya Pradesh — Kandariya Mahadeva Temple, Khajuraho
+  MP: wm("Kandariya Mahadeva Temple 02.jpg"),
   // Maharashtra — Gateway of India
-  MH: thumb("Gateway of India Mumbai 2015.jpg"),
+  MH: wm("Mumbai 03-2016 30 Gateway of India.jpg"),
   // Manipur — Loktak Lake
-  MN: thumb("Loktak Lake Manipur.jpg"),
-  // Meghalaya — Living root bridge, Cherrapunji
-  ML: thumb("Living root bridges Cherrapunji.jpg"),
-  // Mizoram — Aizawl skyline
-  MZ: thumb("Aizawl city Mizoram.jpg"),
+  MN: wm("Loktak Lake View.jpg"),
+  // Meghalaya — Living Root Bridge, Cherrapunji
+  ML: wm("Umshiang Double-Decker Root Bridge.jpg"),
+  // Mizoram — Aizawl
+  MZ: wm("Aizawl city view.jpg"),
   // Nagaland — Hornbill Festival
-  NL: thumb("Hornbill Festival Nagaland.jpg"),
+  NL: wm("Hornbill Festival Kohima.jpg"),
   // Odisha — Konark Sun Temple
-  OD: thumb("Konark Sun Temple Front view.jpg"),
-  // Puducherry — French Quarter
-  PY: thumb("French Quarter Pondicherry.jpg"),
-  // Punjab — Golden Temple
-  PB: thumb("Golden Temple Amritsar Punjab.jpg"),
+  OD: wm("Konark Sun Temple Front View.JPG"),
+  // Puducherry — Promenade Beach
+  PY: wm("Promenade Beach Pondicherry.jpg"),
+  // Punjab — Golden Temple, Amritsar
+  PB: wm("The Golden Temple of Amrithsar.jpg"),
   // Rajasthan — Hawa Mahal, Jaipur
-  RJ: thumb("Hawa Mahal Jaipur.jpg"),
+  RJ: wm("Hawa Mahal 2011.jpg"),
   // Sikkim — Kanchenjunga
-  SK: thumb("Kanchenjunga from Sikkim.jpg"),
+  SK: wm("Kangchenjunga India.jpg"),
   // Tamil Nadu — Meenakshi Temple, Madurai
-  TN: thumb("Meenakshi Temple Madurai.jpg"),
-  // Telangana — Charminar
-  TG: thumb("Charminar Hyderabad 03.jpg"),
+  TN: wm("Madurai Meenakshi Amman Temple Gopurams.jpg"),
+  // Telangana — Charminar, Hyderabad
+  TG: wm("Charminar 03.jpg"),
   // Tripura — Ujjayanta Palace
-  TR: thumb("Ujjayanta Palace Agartala.jpg"),
+  TR: wm("Ujjayanta Palace Front View.jpg"),
   // Uttar Pradesh — Taj Mahal
-  UP: thumb("Taj Mahal Agra Front View.jpg"),
+  UP: wm("Taj Mahal in March 2004.jpg"),
   // Uttarakhand — Kedarnath Temple
-  UK: thumb("Kedarnath Temple Uttarakhand.jpg"),
+  UK: wm("Kedarnath Temple in 2017.jpg"),
   // West Bengal — Howrah Bridge
-  WB: thumb("Howrah Bridge from Strand Road.jpg"),
+  WB: wm("Howrah Bridge in Kolkata, India.jpg"),
 };
 
 export const stateImageFor = (
@@ -93,5 +92,8 @@ export const stateImageFor = (
   fallback?: string,
 ): string => {
   const upper = (code || "").toUpperCase();
-  return STATE_IMAGES[upper] || fallback || `https://picsum.photos/seed/bm-state-${upper.toLowerCase()}/320/320`;
+  return STATE_IMAGES[upper] || fallback || fallbackImage(upper);
 };
+
+export const fallbackImage = (code: string): string =>
+  `https://picsum.photos/seed/bm-state-${(code || "").toLowerCase()}/400/400`;
