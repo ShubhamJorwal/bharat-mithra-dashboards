@@ -88,12 +88,22 @@ const StateStaff = () => {
   };
 
   // ─── Derived stats ──────────────────────────────────────────────
+  // Prefer state-level rollup counts (kept current by the importer).
+  // Fall back to summing per-district counters if the state row hasn't
+  // been refreshed (legacy seeds still rely on those).
   const totals = useMemo(() => {
-    const taluks = districts.reduce((sum, d) => sum + (d.total_taluks || 0), 0);
-    const gps = districts.reduce((sum, d) => sum + (d.total_gram_panchayats || 0), 0);
-    const villages = districts.reduce((sum, d) => sum + (d.total_villages || 0), 0);
-    return { taluks, gps, villages };
-  }, [districts]);
+    const fromState = {
+      taluks: state?.total_taluks || 0,
+      gps: state?.total_gram_panchayats || 0,
+      villages: state?.total_villages || 0,
+    };
+    if (fromState.taluks || fromState.gps || fromState.villages) return fromState;
+    return {
+      taluks: districts.reduce((sum, d) => sum + (d.total_taluks || 0), 0),
+      gps: districts.reduce((sum, d) => sum + (d.total_gram_panchayats || 0), 0),
+      villages: districts.reduce((sum, d) => sum + (d.total_villages || 0), 0),
+    };
+  }, [state, districts]);
 
   const staffStats = useMemo(() => {
     const filled = level?.counts.filled_slots || 0;
