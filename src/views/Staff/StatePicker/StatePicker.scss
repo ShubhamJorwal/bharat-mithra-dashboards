@@ -53,85 +53,52 @@
     }
   }
 
-  // ─── Hero ─────────────────────────────────────────────────────────
+  // ─── Hero (calm, neutral) ─────────────────────────────────────────
   .bm-hero {
     position: relative;
     margin: $spacing-lg 0 $spacing-xl;
-    padding: $spacing-2xl $spacing-2xl ($spacing-2xl + 4px);
+    padding: $spacing-2xl;
     border-radius: $radius-xl;
     overflow: hidden;
-    background:
-      linear-gradient(135deg,
-        rgba(59, 130, 246, 0.92) 0%,
-        rgba(99, 102, 241, 0.92) 45%,
-        rgba(139, 92, 246, 0.92) 100%);
-    color: #fff;
-    box-shadow: 0 12px 40px -18px rgba(99, 102, 241, 0.55);
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
   }
-  .bm-hero-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .bm-hero-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.55;
-    animation: bm-orb 18s ease-in-out infinite;
-  }
-  .bm-hero-orb-1 {
-    width: 320px; height: 320px;
-    background: #fbbf24;
-    top: -120px; right: -80px;
-  }
-  .bm-hero-orb-2 {
-    width: 260px; height: 260px;
-    background: #ec4899;
-    bottom: -100px; left: 20%;
-    animation-delay: -6s;
-  }
-  .bm-hero-orb-3 {
-    width: 200px; height: 200px;
-    background: #22d3ee;
-    top: 40%; right: 28%;
-    animation-delay: -12s;
-  }
-  .bm-hero-content {
-    position: relative;
-    z-index: 1;
-  }
+  .bm-hero-bg { display: none; }
+  .bm-hero-orb { display: none; }
+  .bm-hero-content { position: relative; z-index: 1; }
+
   .bm-hero-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: $font-xs;
-    font-weight: $font-semibold;
+    font-size: 0.66rem;
+    font-weight: $font-bold;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 5px 12px;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
     border-radius: $radius-full;
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: var(--color-hover);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
     margin-bottom: $spacing-md;
-    svg { font-size: 0.95rem; }
+    svg { font-size: 0.9rem; color: var(--color-primary); }
   }
   .bm-hero-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: $font-bold;
-    margin: 0 0 $spacing-sm;
+    margin: 0 0 6px;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    @media (min-width: 768px) { font-size: 2.5rem; }
+    color: var(--color-text);
+    @media (min-width: 768px) { font-size: 2rem; }
   }
   .bm-hero-sub {
     margin: 0 0 $spacing-xl;
-    font-size: $font-base;
-    opacity: 0.92;
+    font-size: $font-sm;
+    color: var(--color-text-secondary);
     max-width: 620px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
   .bm-hero-stats {
     display: grid;
@@ -139,36 +106,35 @@
     gap: $spacing-md;
     @media (min-width: 768px) {
       grid-template-columns: repeat(4, 1fr);
-      gap: $spacing-lg;
     }
   }
   .bm-hero-stat {
-    background: rgba(255, 255, 255, 0.14);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: var(--color-hover);
+    border: 1px solid var(--color-border);
     border-radius: $radius-lg;
     padding: $spacing-md $spacing-lg;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.15s ease, transform 0.15s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.22);
-      transform: translateY(-2px);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
     }
 
     .n {
       display: block;
-      font-size: 1.85rem;
+      font-size: 1.6rem;
       font-weight: $font-bold;
       letter-spacing: -0.02em;
       line-height: 1;
+      color: var(--color-text);
     }
     .l {
       display: block;
-      font-size: 0.7rem;
+      font-size: 0.66rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin-top: 6px;
-      opacity: 0.85;
+      color: var(--color-text-secondary);
     }
   }
 
@@ -268,32 +234,46 @@
 
   // ─── Section header ───────────────────────────────────────────────
   .bm-section-header {
-    margin: $spacing-2xl 0 $spacing-md;
+    margin: $spacing-2xl 0 $spacing-lg;
+    padding-top: $spacing-xl;
+    border-top: 1px dashed var(--color-border);
+
+    // First section after the toolbar — no top divider needed.
+    &:first-of-type {
+      border-top: 0;
+      padding-top: $spacing-md;
+      margin-top: $spacing-md;
+    }
+
     .bm-section-title {
       display: flex;
       align-items: center;
-      gap: $spacing-sm;
+      gap: $spacing-md;
       h2 {
-        font-size: $font-xl;
-        font-weight: $font-semibold;
+        font-size: 1.6rem;
+        font-weight: $font-bold;
         margin: 0;
         color: var(--color-text);
-        letter-spacing: -0.01em;
+        letter-spacing: -0.02em;
+        line-height: 1;
       }
       .bm-count {
         font-size: $font-xs;
         font-weight: $font-semibold;
-        padding: 2px 9px;
+        padding: 3px 10px;
         border-radius: $radius-full;
         background: var(--color-card-bg);
         border: 1px solid var(--color-border);
         color: var(--color-text-secondary);
+        line-height: 1.2;
       }
       .bm-dot {
-        width: 11px;
-        height: 11px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         position: relative;
+        flex-shrink: 0;
+        align-self: center;
         &.tone-active {
           background: #16a34a;
           box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
@@ -314,9 +294,9 @@
       }
     }
     .bm-section-note {
-      margin: 6px 0 0 20px;
+      margin: 8px 0 0 28px;
       color: var(--color-text-secondary);
-      font-size: $font-xs;
+      font-size: $font-sm;
     }
   }
 
@@ -426,15 +406,15 @@
   }
 
   .bm-card-name {
-    margin: 2px 0 0;
-    font-size: 1.4rem;
+    margin: 4px 0 0;
+    font-size: 1.65rem;
     font-weight: $font-bold;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
     color: var(--color-text);
 
     @media (min-width: 1500px) {
-      font-size: 1.55rem;
+      font-size: 1.85rem;
     }
   }
 
