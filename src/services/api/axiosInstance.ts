@@ -30,14 +30,20 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    // Bypass auth redirect for development (set to true to disable redirect)
-    const bypassAuthRedirect = true;
-
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      if (!bypassAuthRedirect) {
+      const url = error.config?.url || '';
+      // Don't redirect on auth-flow endpoints — login itself returns 401
+      // when credentials are wrong, and refresh failures are handled by
+      // the AuthContext silently. We just clear stored tokens and let
+      // the route guards bounce the user to /login on next render.
+      const isAuthFlow = /\/auth\/(login|refresh|logout)\b/.test(url) || /\/staff\/me\b/.test(url);
+      if (!isAuthFlow) {
         localStorage.removeItem('authToken');
-        window.location.href = '/login';
+        localStorage.removeItem('authRefreshToken');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       }
       return Promise.reject(error);
     }

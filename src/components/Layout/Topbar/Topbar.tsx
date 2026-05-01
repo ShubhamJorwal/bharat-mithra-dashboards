@@ -32,6 +32,7 @@ import {
   HiOutlineCash,
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
+import { useAuth } from '../../../context/AuthContext';
 import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
 import './Topbar.scss';
 
@@ -148,6 +149,7 @@ const Topbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const { logout: doLogout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -261,9 +263,9 @@ const Topbar = () => {
     setTheme(theme === 'darkMode' ? 'confluence' : 'darkMode');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+  const handleLogout = async () => {
+    try { await doLogout(); } catch {/* ignore */}
+    navigate('/login', { replace: true });
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;

@@ -98,7 +98,8 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
   const supportsSub = !!selectedRole?.supportsSub;
   const subRoles = defs?.sub_roles || [];
 
-  // Reset state every time the modal opens
+  // Reset state every time the modal opens. All fields start empty —
+  // the role-specific text appears as input placeholders only.
   useEffect(() => {
     if (!open) return;
     setRoleCode("caseworker");
@@ -106,31 +107,14 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
     setFullName("");
     setEmail("");
     setMobile("");
-    setDesignation("Caseworker");
-    setDepartment("Field");
+    setDesignation("");
+    setDepartment("");
     setNotes("");
     setError(null);
     setSuccess(null);
     setCopied(false);
     setSaving(false);
   }, [open]);
-
-  // Auto-fill designation + department from the role choice (only if the
-  // user hasn't manually edited them — track the previous role's defaults).
-  useEffect(() => {
-    if (!selectedRole) return;
-    setDesignation((prev) => {
-      const prevRoleDef = AGENT_ROLES.find((r) => r.designation === prev);
-      // If the current value matches a role's default OR is empty, swap it.
-      if (!prev || prevRoleDef) return selectedRole.designation;
-      return prev;
-    });
-    setDepartment((prev) => {
-      const prevRoleDef = AGENT_ROLES.find((r) => r.department === prev);
-      if (!prev || prevRoleDef) return selectedRole.department;
-      return prev;
-    });
-  }, [roleCode]);
 
   const validateForm = (): string | null => {
     if (!fullName.trim()) return "Full name is required";
