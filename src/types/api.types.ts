@@ -100,6 +100,9 @@ export interface Service {
   requires_caseworker: boolean;
   agent_can_complete: boolean;
 
+  // Citizen-facing action buttons (added 2026-05-02)
+  actions?: ServiceAction[];
+
   avg_rating: number;
   total_applications: number;
   total_reviews: number;
@@ -112,6 +115,32 @@ export interface Service {
 
   category?: ServiceCategory;
   profiles?: ServiceProfile[];
+}
+
+// Citizen-facing action button on a service (Apply / Check / Download /
+// Verify / Pay / Update). Added 2026-05-02 alongside migration 210.
+export type ServiceActionKind = 'apply' | 'check' | 'download' | 'verify' | 'pay' | 'update';
+export type ServiceActionHandler = 'direct_link' | 'caseworker_form' | 'aggregator' | 'app_internal';
+export type ServiceActionAggregator = 'surepass' | 'cashfree' | 'setu' | 'digilocker' | 'apisetu' | 'bbps';
+
+export interface ServiceAction {
+  id: string;
+  service_id: string;
+  kind: ServiceActionKind;
+  label: string;
+  helper_text?: string;
+  handler: ServiceActionHandler;
+  url?: string;
+  aggregator?: ServiceActionAggregator;
+  aggregator_endpoint?: string;
+  icon?: string;
+  sort_order: number;
+  is_primary: boolean;
+  requires_otp: boolean;
+  typical_fee_inr?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ServiceProfile {

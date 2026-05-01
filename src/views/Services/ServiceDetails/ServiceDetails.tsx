@@ -3,12 +3,15 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HiOutlineCollection, HiOutlinePencil, HiOutlineArrowLeft, HiOutlineTrash,
   HiOutlinePlus, HiOutlineCurrencyRupee, HiOutlineSparkles, HiOutlineLightningBolt,
-  HiOutlineX, HiOutlineCheck
+  HiOutlineX, HiOutlineCheck,
+  HiOutlineDownload, HiOutlineSearchCircle, HiOutlineCheckCircle,
+  HiOutlineCash, HiOutlinePencilAlt, HiOutlineExternalLink, HiOutlineUserGroup
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import servicesApi from "@/services/api/services.api";
 import type {
   Service, ServiceProfile, ServiceDocument, ServiceWorkflowStep, ServiceFAQ,
+  ServiceAction, ServiceActionKind,
   CreateProfileRequest, CreateDocumentRequest, CreateWorkflowStepRequest, CreateFAQRequest
 } from "@/types/api.types";
 import "../ServiceList/ServiceList.scss";
@@ -136,6 +139,11 @@ const ServiceDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Action panel — what an agent can do with this service */}
+      {svc.actions && svc.actions.length > 0 && (
+        <ActionPanel actions={svc.actions} />
+      )}
 
       {/* Two-column layout: main content + sticky sidebar */}
       <div className="bm-svc-grid">
@@ -286,6 +294,89 @@ const Section = ({ title, icon, children }: { title: string; icon?: React.ReactN
     <div className="bm-svc-section-body">{children}</div>
   </section>
 );
+
+// =====================================================================
+// Action Panel — buttons an agent can use right now
+// =====================================================================
+
+const ACTION_ICONS: Record<ServiceActionKind, React.ReactNode> = {
+  apply: <HiOutlineExternalLink />,
+  check: <HiOutlineSearchCircle />,
+  download: <HiOutlineDownload />,
+  verify: <HiOutlineCheckCircle />,
+  pay: <HiOutlineCash />,
+  update: <HiOutlinePencilAlt />,
+};
+
+const HANDLER_LABEL: Record<string, string> = {
+  direct_link: "Opens the official portal in a new tab",
+  caseworker_form: "Routes to a caseworker — agent collects details, caseworker completes",
+  aggregator: "API-driven — completed inside Bharat Mithra via aggregator",
+  app_internal: "Handled inside the dashboard",
+};
+
+const ActionPanel = ({ actions }: { actions: ServiceAction[] }) => {
+  const sorted = actions.slice().sort((a, b) => a.sort_order - b.sort_order);
+
+  const onClick = (action: ServiceAction) => {
+    if (action.handler === "direct_link" && action.url) {
+      window.open(action.url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (action.handler === "caseworker_form") {
+      alert(`This action will create a caseworker task for "${action.label}". (Wiring pending.)`);
+      return;
+    }
+    if (action.handler === "aggregator") {
+      alert(`This action uses ${action.aggregator || "an aggregator"} (${action.aggregator_endpoint || "endpoint TBD"}). API integration pending — sign up at the aggregator first.`);
+      return;
+    }
+    alert(`Action "${action.label}" — handler "${action.handler}" not yet wired.`);
+  };
+
+  return (
+    <section className="bm-action-panel">
+      <header className="bm-action-panel-head">
+        <h2>What you can do with this service</h2>
+        <p>Click an action to complete the request — direct portal, caseworker, or API-driven.</p>
+      </header>
+      <div className="bm-action-grid">
+        {sorted.map(a => {
+          const isCw = a.handler === "caseworker_form";
+          return (
+            <button
+              key={a.id}
+              type="button"
+              className={`bm-action-card ${a.is_primary ? "primary" : ""} ${isCw ? "caseworker" : ""}`}
+              onClick={() => onClick(a)}
+            >
+              <div className="bm-action-card-icon">
+                {isCw ? <HiOutlineUserGroup /> : ACTION_ICONS[a.kind]}
+              </div>
+              <div className="bm-action-card-body">
+                <div className="bm-action-card-title">
+                  {a.label}
+                  {a.is_primary && <span className="bm-action-card-badge">Primary</span>}
+                </div>
+                {a.helper_text && <div className="bm-action-card-helper">{a.helper_text}</div>}
+                <div className="bm-action-card-meta">
+                  <span className={`bm-action-card-handler bm-handler-${a.handler}`}>
+                    {a.handler.replace("_", " ")}
+                  </span>
+                  {a.aggregator && <span className="bm-action-card-agg">via {a.aggregator}</span>}
+                  {a.typical_fee_inr ? <span className="bm-action-card-fee">≈ ₹{a.typical_fee_inr}</span> : null}
+                </div>
+                <div className="bm-action-card-handler-desc">
+                  {HANDLER_LABEL[a.handler]}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
 
 // =====================================================================
 // Profiles Builder

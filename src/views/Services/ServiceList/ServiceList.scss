@@ -313,6 +313,53 @@
     color: var(--color-text-secondary);
     margin-top: 2px;
   }
+  .bm-svc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: $spacing-sm;
+  }
+  .bm-svc-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 10px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    svg { width: 14px; height: 14px; }
+    &:hover {
+      border-color: var(--cat-color);
+      color: var(--cat-color);
+      background: var(--color-card-bg);
+    }
+    &.primary {
+      background: var(--cat-color);
+      border-color: var(--cat-color);
+      color: #fff;
+      &:hover {
+        filter: brightness(0.92);
+        color: #fff;
+      }
+    }
+    &.caseworker {
+      background: rgba($warning-color, 0.1);
+      border-color: rgba($warning-color, 0.4);
+      color: $warning-color;
+      &:hover {
+        background: rgba($warning-color, 0.18);
+        border-color: $warning-color;
+        color: $warning-color;
+      }
+    }
+  }
+
   .bm-svc-foot {
     display: flex;
     align-items: center;

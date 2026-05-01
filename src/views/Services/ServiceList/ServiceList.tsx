@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   HiOutlineCollection, HiOutlinePlus, HiOutlineSearch, HiOutlineRefresh,
-  HiOutlineCurrencyRupee, HiOutlineSparkles, HiOutlineLightningBolt
+  HiOutlineCurrencyRupee, HiOutlineSparkles, HiOutlineLightningBolt,
+  HiOutlineDownload, HiOutlineSearchCircle, HiOutlineCheckCircle,
+  HiOutlineCash, HiOutlinePencilAlt, HiOutlineExternalLink, HiOutlineUserGroup
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import servicesApi from "@/services/api/services.api";
-import type { Service, ServiceCategory, CatalogStats, ServicesQueryParams } from "@/types/api.types";
+import type { Service, ServiceAction, ServiceActionKind, ServiceCategory, CatalogStats, ServicesQueryParams } from "@/types/api.types";
 import "./ServiceList.scss";
 
 const PER_PAGE = 24;
@@ -216,11 +218,42 @@ const ServiceList = () => {
   );
 };
 
+const ACTION_ICONS: Record<ServiceActionKind, React.ReactNode> = {
+  apply: <HiOutlineExternalLink />,
+  check: <HiOutlineSearchCircle />,
+  download: <HiOutlineDownload />,
+  verify: <HiOutlineCheckCircle />,
+  pay: <HiOutlineCash />,
+  update: <HiOutlinePencilAlt />,
+};
+
 const ServiceCard = ({ svc }: { svc: Service }) => {
+  const navigate = useNavigate();
   const total = svc.base_government_fee + svc.base_platform_fee;
   const bannerUrl = svc.banner_url || `https://picsum.photos/seed/bm-${svc.code}/600/300`;
+  const actions = (svc.actions || []).slice().sort((a, b) => a.sort_order - b.sort_order);
+  const detailPath = `/services/${svc.slug || svc.code}`;
+
+  const handleAction = (e: React.MouseEvent, action: ServiceAction) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (action.handler === "direct_link" && action.url) {
+      window.open(action.url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (action.handler === "caseworker_form") {
+      navigate(`${detailPath}?action=${action.kind}&route=caseworker`);
+      return;
+    }
+    if (action.handler === "aggregator") {
+      navigate(`${detailPath}?action=${action.kind}&route=aggregator`);
+      return;
+    }
+    navigate(detailPath);
+  };
+
   return (
-    <Link to={`/services/${svc.slug || svc.code}`} className="bm-svc-card" style={{ "--cat-color": svc.category?.color } as React.CSSProperties}>
+    <Link to={detailPath} className="bm-svc-card" style={{ "--cat-color": svc.category?.color } as React.CSSProperties}>
       <div className="bm-svc-image">
         <img src={bannerUrl} alt={svc.name} loading="lazy" />
         <div className="bm-svc-image-badges">
@@ -242,6 +275,27 @@ const ServiceCard = ({ svc }: { svc: Service }) => {
           {svc.department && <span className="bm-svc-meta-item">{svc.department}</span>}
           {svc.base_processing_time && <span className="bm-svc-meta-item">⏱ {svc.base_processing_time}</span>}
         </div>
+
+        {actions.length > 0 && (
+          <div className="bm-svc-actions">
+            {actions.map((a) => {
+              const isCaseworker = a.handler === "caseworker_form";
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  className={`bm-svc-action ${a.is_primary ? "primary" : ""} ${isCaseworker ? "caseworker" : ""}`}
+                  onClick={(e) => handleAction(e, a)}
+                  title={a.helper_text || a.label}
+                >
+                  {isCaseworker ? <HiOutlineUserGroup /> : ACTION_ICONS[a.kind]}
+                  <span>{a.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="bm-svc-foot">
           {svc.is_free ? (
             <span className="bm-svc-fee bm-svc-fee-free">FREE</span>
