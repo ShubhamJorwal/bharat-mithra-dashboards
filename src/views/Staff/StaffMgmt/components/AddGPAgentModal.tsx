@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
 import {
-  HiOutlineSearch,
   HiOutlineX,
-  HiOutlineCheck,
   HiOutlineLocationMarker,
-  HiOutlineUserAdd,
   HiOutlinePhone,
   HiOutlineSupport,
   HiOutlineBriefcase,
+  HiOutlineMail,
+  HiOutlineUser,
+  HiOutlineDeviceMobile,
+  HiOutlineIdentification,
+  HiOutlineCheckCircle,
+  HiOutlineClipboardCopy,
+  HiOutlineExclamationCircle,
 } from "react-icons/hi";
 import { useBodyScrollLock } from "@/hooks";
 import managementApi from "@/services/api/management.api";
+import staffApi from "@/services/api/staff.api";
 import type {
   CreateAssignmentRequest,
-  StaffMini,
+  CreateStaffRequest,
   SlotDefinitionsResponse,
+  Staff,
 } from "@/types/api.types";
 
 interface Props {
@@ -34,65 +40,135 @@ interface Props {
 }
 
 const AGENT_ROLES = [
-  { code: "caseworker", label: "Caseworker", icon: HiOutlineBriefcase, supportsSub: false },
-  { code: "telecaller", label: "Telecaller", icon: HiOutlinePhone, supportsSub: true },
-  { code: "support_staff", label: "Support Staff", icon: HiOutlineSupport, supportsSub: false },
+  {
+    code: "caseworker",
+    label: "Caseworker",
+    icon: HiOutlineBriefcase,
+    supportsSub: false,
+    description: "Fulfills citizen applications and changes their status.",
+    designation: "Caseworker",
+    department: "Field",
+  },
+  {
+    code: "telecaller",
+    label: "Telecaller",
+    icon: HiOutlinePhone,
+    supportsSub: true,
+    description: "Outbound + inbound citizen calls for this GP.",
+    designation: "Telecaller",
+    department: "Operations",
+  },
+  {
+    code: "support_staff",
+    label: "Support Staff",
+    icon: HiOutlineSupport,
+    supportsSub: false,
+    description: "On-ground support and citizen handholding.",
+    designation: "Support Staff",
+    department: "Support",
+  },
 ];
+
+type SuccessInfo = {
+  staff: Staff;
+  tempPassword?: string;
+};
 
 const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
   useBodyScrollLock(open);
 
+  // Role + sub-role
   const [roleCode, setRoleCode] = useState("caseworker");
   const [subRole, setSubRole] = useState("");
-  const [picked, setPicked] = useState<StaffMini | null>(null);
-  const [notes, setNotes] = useState("");
 
-  const [staffQ, setStaffQ] = useState("");
-  const [staffResults, setStaffResults] = useState<StaffMini[]>([]);
-  const [staffLoading, setStaffLoading] = useState(false);
+  // Agent form fields
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [department, setDepartment] = useState("");
+  const [notes, setNotes] = useState("");
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<SuccessInfo | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const selectedRole = AGENT_ROLES.find((r) => r.code === roleCode);
   const supportsSub = !!selectedRole?.supportsSub;
+  const subRoles = defs?.sub_roles || [];
 
-  // Reset state every time it opens
+  // Reset state every time the modal opens
   useEffect(() => {
     if (!open) return;
     setRoleCode("caseworker");
     setSubRole("");
-    setPicked(null);
+    setFullName("");
+    setEmail("");
+    setMobile("");
+    setDesignation("Caseworker");
+    setDepartment("Field");
     setNotes("");
-    setStaffQ("");
     setError(null);
+    setSuccess(null);
+    setCopied(false);
+    setSaving(false);
   }, [open]);
 
-  // Debounced staff search
+  // Auto-fill designation + department from the role choice (only if the
+  // user hasn't manually edited them — track the previous role's defaults).
   useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
-    const t = window.setTimeout(async () => {
-      setStaffLoading(true);
-      try {
-        const r = await managementApi.searchStaff(staffQ, scope.state_code);
-        if (!cancelled) setStaffResults(r.data?.results || []);
-      } catch {
-        if (!cancelled) setStaffResults([]);
-      } finally {
-        if (!cancelled) setStaffLoading(false);
-      }
-    }, 200);
-    return () => { cancelled = true; window.clearTimeout(t); };
-  }, [staffQ, open, scope.state_code]);
+    if (!selectedRole) return;
+    setDesignation((prev) => {
+      const prevRoleDef = AGENT_ROLES.find((r) => r.designation === prev);
+      // If the current value matches a role's default OR is empty, swap it.
+      if (!prev || prevRoleDef) return selectedRole.designation;
+      return prev;
+    });
+    setDepartment((prev) => {
+      const prevRoleDef = AGENT_ROLES.find((r) => r.department === prev);
+      if (!prev || prevRoleDef) return selectedRole.department;
+      return prev;
+    });
+  }, [roleCode]);
+
+  const validateForm = (): string | null => {
+    if (!fullName.trim()) return "Full name is required";
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return "Email looks invalid";
+    if (!mobile.trim()) return "Mobile is required";
+    const cleanMobile = mobile.replace(/\D/g, "");
+    if (cleanMobile.length !== 10) return "Mobile must be 10 digits";
+    return null;
+  };
 
   const handleSave = async () => {
-    if (!picked) { setError("Pick a staff member first"); return; }
-    setSaving(true); setError(null);
+    const v = validateForm();
+    if (v) { setError(v); return; }
+    setSaving(true);
+    setError(null);
+
     try {
-      // Backend assigns at the district level with this single GP in gp_ids.
-      const body: CreateAssignmentRequest = {
-        staff_id: picked.id,
+      // 1. Create the new staff member.
+      const staffBody: CreateStaffRequest = {
+        full_name: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        mobile: mobile.replace(/\D/g, ""),
+        designation: designation.trim() || selectedRole?.designation,
+        department: department.trim() || selectedRole?.department,
+        home_state_code: scope.state_code,
+        home_district_id: scope.district_id,
+      };
+      const staffRes = await staffApi.create(staffBody);
+      if (!staffRes.success || !staffRes.data?.staff?.id) {
+        throw new Error(staffRes.message || "Failed to create staff member");
+      }
+      const newStaff = staffRes.data.staff;
+      const tempPassword = staffRes.data.temp_password;
+
+      // 2. Assign the new staff to this GP (district-level role + gp_ids).
+      const assignBody: CreateAssignmentRequest = {
+        staff_id: newStaff.id,
         level: "district",
         state_id: scope.state_id,
         district_id: scope.district_id,
@@ -102,28 +178,104 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
         notes: notes.trim() || undefined,
         gp_ids: [scope.gram_panchayat_id],
       };
-      await managementApi.createAssignment(body);
+      await managementApi.createAssignment(assignBody);
+
+      setSuccess({ staff: newStaff, tempPassword });
       onSaved();
-      onClose();
     } catch (e: any) {
-      setError(e?.response?.data?.message || e?.message || "Failed to assign agent");
+      const msg = e?.response?.data?.message
+        || e?.response?.data?.error?.message
+        || e?.message
+        || "Failed to create agent";
+      setError(msg);
     } finally {
       setSaving(false);
     }
   };
 
+  const copyPassword = async () => {
+    if (!success?.tempPassword) return;
+    try {
+      await navigator.clipboard.writeText(success.tempPassword);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {/* ignore */}
+  };
+
   if (!open) return null;
 
-  const subRoles = defs?.sub_roles || [];
+  // ─── Success state ───────────────────────────────────────────────
+  if (success) {
+    return (
+      <div className="bm-sm-overlay" onClick={onClose} role="presentation">
+        <div className="bm-sm-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="bm-sm-header">
+            <div>
+              <div className="bm-sm-eyebrow bm-sm-eyebrow-success">Agent created</div>
+              <h2>{success.staff.full_name} is ready</h2>
+              {scope.gp_name && (
+                <div className="bm-gp-modal-sub">
+                  <HiOutlineLocationMarker /> Assigned to {scope.gp_name}
+                </div>
+              )}
+            </div>
+            <button type="button" onClick={onClose} className="bm-sm-close" aria-label="Close">
+              <HiOutlineX />
+            </button>
+          </div>
 
+          <div className="bm-sm-form">
+            <div className="bm-success-card">
+              <HiOutlineCheckCircle className="bm-success-check" />
+              <div>
+                <div className="bm-success-title">Staff record created</div>
+                <div className="bm-success-meta">
+                  <strong>{success.staff.employee_code}</strong> · {success.staff.email} · {success.staff.mobile}
+                </div>
+              </div>
+            </div>
+
+            {success.tempPassword && (
+              <div className="bm-temp-pw">
+                <div className="bm-temp-pw-label">
+                  <HiOutlineExclamationCircle /> Temporary password — share securely with the agent
+                </div>
+                <div className="bm-temp-pw-value">
+                  <code>{success.tempPassword}</code>
+                  <button type="button" className="bm-temp-pw-copy" onClick={copyPassword} title="Copy">
+                    <HiOutlineClipboardCopy /> {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <div className="bm-temp-pw-hint">
+                  The agent will be forced to reset this on first login. This password is shown only once.
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="bm-sm-footer">
+            <button type="button" className="bm-btn bm-btn-primary" onClick={onClose}>
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Form state ──────────────────────────────────────────────────
   return (
     <div className="bm-sm-overlay" onClick={onClose} role="presentation">
-      <div className="bm-sm-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="bm-sm-modal bm-sm-modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="bm-sm-header">
           <div>
-            <div className="bm-sm-eyebrow">Assign agent</div>
-            <h2>Add agent to {scope.gp_name || "GP"}</h2>
-            {scope.gp_code && <div className="bm-gp-modal-sub"><HiOutlineLocationMarker /> {scope.gp_code}</div>}
+            <div className="bm-sm-eyebrow">New agent</div>
+            <h2>Add agent for {scope.gp_name || "GP"}</h2>
+            {scope.gp_code && (
+              <div className="bm-gp-modal-sub">
+                <HiOutlineLocationMarker /> {scope.gp_code}
+              </div>
+            )}
           </div>
           <button type="button" onClick={onClose} className="bm-sm-close" aria-label="Close">
             <HiOutlineX />
@@ -131,20 +283,25 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
         </div>
 
         <div className="bm-sm-form">
-          {/* Role picker */}
+          {/* Role */}
           <div className="bm-form-row">
-            <label className="bm-form-label">Role</label>
-            <div className="bm-role-grid">
+            <label className="bm-form-label">Agent role</label>
+            <div className="bm-role-cards">
               {AGENT_ROLES.map((r) => {
                 const Icon = r.icon;
+                const on = roleCode === r.code;
                 return (
                   <button
                     key={r.code}
                     type="button"
-                    className={`bm-role-chip ${roleCode === r.code ? "is-on" : ""}`}
+                    className={`bm-role-card ${on ? "is-on" : ""}`}
                     onClick={() => { setRoleCode(r.code); setSubRole(""); }}
                   >
-                    <Icon /> {r.label}
+                    <div className="bm-role-card-icon"><Icon /></div>
+                    <div className="bm-role-card-text">
+                      <div className="bm-role-card-name">{r.label}</div>
+                      <div className="bm-role-card-desc">{r.description}</div>
+                    </div>
                   </button>
                 );
               })}
@@ -154,7 +311,7 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
           {/* Sub-role for telecaller */}
           {supportsSub && subRoles.length > 0 && (
             <div className="bm-form-row">
-              <label className="bm-form-label">Sub-role <span className="bm-form-opt">(optional)</span></label>
+              <label className="bm-form-label">Sub-role <span className="bm-form-opt">(optional badge)</span></label>
               <div className="bm-sub-pills">
                 {subRoles.map((sr) => (
                   <button
@@ -170,53 +327,67 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
             </div>
           )}
 
-          {/* Staff picker */}
-          <div className="bm-form-row">
-            <label className="bm-form-label">Staff member</label>
-            <div className="bm-sm-search bm-sm-search-inline">
-              <HiOutlineSearch />
+          {/* Personal details */}
+          <div className="bm-form-grid-2">
+            <div className="bm-form-row">
+              <label className="bm-form-label">
+                <HiOutlineUser /> Full name <span className="bm-form-required">*</span>
+              </label>
               <input
-                autoFocus
                 type="text"
-                placeholder="Search by name, email, mobile, code…"
-                value={staffQ}
-                onChange={(e) => setStaffQ(e.target.value)}
+                className="bm-input"
+                placeholder="e.g. Anita Sharma"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
-
-            <div className="bm-sm-results bm-sm-results-mid">
-              {staffLoading && <div className="bm-sm-loading">Searching…</div>}
-              {!staffLoading && staffResults.length === 0 && (
-                <div className="bm-sm-empty">
-                  <HiOutlineUserAdd />
-                  <p>No staff found.</p>
-                  <small>Add the person via /staff/members first.</small>
-                </div>
-              )}
-              {!staffLoading && staffResults.map((s) => {
-                const isPicked = picked?.id === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className={`bm-sm-row ${isPicked ? "is-picked" : ""}`}
-                    onClick={() => setPicked(s)}
-                  >
-                    <div className="bm-staff-avatar">
-                      {s.profile_photo_url
-                        ? <img src={s.profile_photo_url} alt={s.full_name} />
-                        : <span>{s.full_name.split(/\s+/).slice(0,2).map(c=>c[0]).join("").toUpperCase()}</span>}
-                    </div>
-                    <div className="bm-staff-text">
-                      <div className="bm-staff-name">{s.full_name}</div>
-                      <div className="bm-staff-meta">
-                        {s.designation || s.department || "—"} · {s.email}
-                      </div>
-                    </div>
-                    {isPicked && <HiOutlineCheck className="bm-sm-check" />}
-                  </button>
-                );
-              })}
+            <div className="bm-form-row">
+              <label className="bm-form-label">
+                <HiOutlineDeviceMobile /> Mobile <span className="bm-form-required">*</span>
+              </label>
+              <input
+                type="tel"
+                inputMode="numeric"
+                className="bm-input"
+                placeholder="10-digit mobile"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
+                maxLength={10}
+              />
+            </div>
+            <div className="bm-form-row bm-form-row-wide">
+              <label className="bm-form-label">
+                <HiOutlineMail /> Email <span className="bm-form-required">*</span>
+              </label>
+              <input
+                type="email"
+                className="bm-input"
+                placeholder="agent@bharatmithra.in"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="bm-form-row">
+              <label className="bm-form-label">
+                <HiOutlineIdentification /> Designation
+              </label>
+              <input
+                type="text"
+                className="bm-input"
+                placeholder={selectedRole?.designation || "Designation"}
+                value={designation}
+                onChange={(e) => setDesignation(e.target.value)}
+              />
+            </div>
+            <div className="bm-form-row">
+              <label className="bm-form-label">Department</label>
+              <input
+                type="text"
+                className="bm-input"
+                placeholder={selectedRole?.department || "Department"}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
             </div>
           </div>
 
@@ -227,23 +398,34 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
               className="bm-input bm-textarea"
               rows={2}
               value={notes}
-              placeholder="Anything to remember about this assignment…"
+              placeholder="Anything to remember about this agent…"
               onChange={(e) => setNotes(e.target.value)}
             />
+          </div>
+
+          <div className="bm-form-info">
+            <HiOutlineExclamationCircle />
+            <span>
+              A new staff record will be created and the agent will be assigned to{" "}
+              <strong>{scope.gp_name || "this GP"}</strong>. A temporary password will be
+              generated — you'll see it on the next screen.
+            </span>
           </div>
 
           {error && <div className="bm-sm-error">{error}</div>}
         </div>
 
         <div className="bm-sm-footer">
-          <button type="button" className="bm-btn bm-btn-ghost" onClick={onClose}>Cancel</button>
+          <button type="button" className="bm-btn bm-btn-ghost" onClick={onClose} disabled={saving}>
+            Cancel
+          </button>
           <button
             type="button"
             className="bm-btn bm-btn-primary"
-            disabled={!picked || saving}
+            disabled={saving}
             onClick={handleSave}
           >
-            {saving ? "Assigning…" : `Assign ${picked ? picked.full_name : "agent"}`}
+            {saving ? "Creating agent…" : "Create agent & assign"}
           </button>
         </div>
       </div>

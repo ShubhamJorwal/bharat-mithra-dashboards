@@ -13,6 +13,8 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineUserGroup,
   HiOutlineUserAdd,
+  HiOutlineViewGrid,
+  HiOutlineViewList,
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import geographyApi from "@/services/api/geography.api";
@@ -34,6 +36,7 @@ import "../StaffMgmt/StaffMgmt.scss";
 import "../StateStaff/StateStaff.scss";
 
 type GPFilter = "all" | "active" | "vacant";
+type GPView = "list" | "grid";
 
 const TalukStaff = () => {
   const { code, districtId, talukId } = useParams<{ code: string; districtId: string; talukId: string }>();
@@ -56,6 +59,7 @@ const TalukStaff = () => {
   const [gpStaffByID, setGpStaffByID] = useState<Map<string, GPRow>>(new Map());
   const [gpSearch, setGpSearch] = useState("");
   const [gpFilter, setGpFilter] = useState<GPFilter>("all");
+  const [gpView, setGpView] = useState<GPView>("list");
 
   const loadAll = async () => {
     if (!talukId) return;
@@ -250,21 +254,43 @@ const TalukStaff = () => {
                   </button>
                 )}
               </div>
-              <div className="bm-segmented">
-                {([
-                  { v: "all" as const, label: "All", tone: "" as const },
-                  { v: "active" as const, label: "Active", tone: "active" as const },
-                  { v: "vacant" as const, label: "Vacant", tone: "vacant" as const },
-                ]).map((opt) => (
+              <div className="bm-toolbar-controls">
+                <div className="bm-segmented">
+                  {([
+                    { v: "all" as const, label: "All", tone: "" as const },
+                    { v: "active" as const, label: "Active", tone: "active" as const },
+                    { v: "vacant" as const, label: "Vacant", tone: "vacant" as const },
+                  ]).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      className={`bm-seg ${gpFilter === opt.v ? "is-on" : ""} ${opt.tone ? `tone-${opt.tone}` : ""}`}
+                      onClick={() => setGpFilter(opt.v)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="bm-view-toggle">
                   <button
-                    key={opt.v}
                     type="button"
-                    className={`bm-seg ${gpFilter === opt.v ? "is-on" : ""} ${opt.tone ? `tone-${opt.tone}` : ""}`}
-                    onClick={() => setGpFilter(opt.v)}
+                    className={gpView === "grid" ? "is-on" : ""}
+                    onClick={() => setGpView("grid")}
+                    title="Grid view"
+                    aria-label="Grid view"
                   >
-                    {opt.label}
+                    <HiOutlineViewGrid />
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    className={gpView === "list" ? "is-on" : ""}
+                    onClick={() => setGpView("list")}
+                    title="List view"
+                    aria-label="List view"
+                  >
+                    <HiOutlineViewList />
+                  </button>
+                </div>
               </div>
             </div>
           </>
@@ -279,15 +305,24 @@ const TalukStaff = () => {
             <p>No GPs match your filter.</p>
           </div>
         ) : (
-          <div className="bm-gp-rows">
-            {filteredGPs.map((gp) => (
-              <TalukGPRow
-                key={gp.id}
-                gp={gp}
-                staff={gpStaffByID.get(gp.id)}
-                onAddAgent={() => setAgentForGP(gp)}
-              />
-            ))}
+          <div className={gpView === "grid" ? "bm-gp-grid" : "bm-gp-rows"}>
+            {filteredGPs.map((gp) =>
+              gpView === "grid" ? (
+                <TalukGPCard
+                  key={gp.id}
+                  gp={gp}
+                  staff={gpStaffByID.get(gp.id)}
+                  onAddAgent={() => setAgentForGP(gp)}
+                />
+              ) : (
+                <TalukGPRow
+                  key={gp.id}
+                  gp={gp}
+                  staff={gpStaffByID.get(gp.id)}
+                  onAddAgent={() => setAgentForGP(gp)}
+                />
+              ),
+            )}
           </div>
         )}
       </section>
@@ -382,5 +417,54 @@ const RoleStack = ({ icon, label, staff }: { icon: React.ReactNode; label: strin
     <span className="bm-role-stack-label">{label}</span>
   </div>
 );
+
+const TalukGPCard = ({
+  gp,
+  staff,
+  onAddAgent,
+}: {
+  gp: GramPanchayat;
+  staff?: GPRow;
+  onAddAgent: () => void;
+}) => {
+  const hasAgent = !!staff?.has_agent;
+  const total = (staff?.caseworkers?.length || 0) + (staff?.telecallers?.length || 0) + (staff?.support_staff?.length || 0);
+  return (
+    <div className={`bm-gp-card ${hasAgent ? "is-active" : "is-vacant"}`}>
+      <div className="bm-gp-card-head">
+        <div className="bm-gp-row-icon"><HiOutlineLocationMarker /></div>
+        <span className={`bm-gp-pill tone-${hasAgent ? "active" : "vacant"}`}>
+          {hasAgent ? <><span className="bm-pill-dot" /> {total} agent{total === 1 ? "" : "s"}</> : "Vacant"}
+        </span>
+      </div>
+      <div className="bm-gp-card-body">
+        <div className="bm-gp-card-name">{gp.name}</div>
+        <div className="bm-gp-card-meta">
+          {gp.code || ""}{gp.lgd_code && ` · LGD ${gp.lgd_code}`}
+        </div>
+        {hasAgent && (
+          <div className="bm-gp-agents">
+            {staff!.caseworkers.length > 0 && (
+              <RoleStack icon={<HiOutlineBriefcase />} label="Caseworker" staff={staff!.caseworkers} />
+            )}
+            {staff!.telecallers.length > 0 && (
+              <RoleStack icon={<HiOutlinePhone />} label="Telecaller" staff={staff!.telecallers} />
+            )}
+            {staff!.support_staff.length > 0 && (
+              <RoleStack icon={<HiOutlineSupport />} label="Support" staff={staff!.support_staff} />
+            )}
+          </div>
+        )}
+      </div>
+      <button
+        type="button"
+        className={`bm-gp-add-btn ${hasAgent ? "is-secondary" : "is-primary"} bm-gp-card-cta`}
+        onClick={onAddAgent}
+      >
+        <HiOutlineUserAdd /> {hasAgent ? "Add another agent" : "Add agent"}
+      </button>
+    </div>
+  );
+};
 
 export default TalukStaff;
