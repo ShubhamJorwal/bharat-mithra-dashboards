@@ -3,6 +3,31 @@
 .bm-state-staff {
   padding: 0 $spacing-xl $spacing-2xl;
 
+  .bm-actions {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  .bm-state-bottom {
+    margin-top: $spacing-2xl;
+    text-align: center;
+  }
+
+  .bm-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: $font-sm;
+    padding: 8px 14px;
+    border-radius: $radius-md;
+    border: 1px solid var(--color-border);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    &:hover { color: var(--color-primary); border-color: var(--color-primary); background: rgba(99, 102, 241, 0.05); }
+  }
+
   .bm-btn-back {
     display: inline-flex;
     align-items: center;

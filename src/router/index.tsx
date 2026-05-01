@@ -29,6 +29,9 @@ const StaffDetails = lazy(() => import("@/views/Staff/StaffDetails/StaffDetails"
 const StaffEdit = lazy(() => import("@/views/Staff/StaffEdit/StaffEdit"));
 const StatePicker = lazy(() => import("@/views/Staff/StatePicker/StatePicker"));
 const StateStaff = lazy(() => import("@/views/Staff/StateStaff/StateStaff"));
+const DistrictStaff = lazy(() => import("@/views/Staff/DistrictStaff/DistrictStaff"));
+const TalukStaff = lazy(() => import("@/views/Staff/TalukStaff/TalukStaff"));
+const GPList = lazy(() => import("@/views/Staff/GPList/GPList"));
 
 // ─── Services (rebuilt 2026-04-30) ──────────────────────────────────────────
 const ServiceList = lazy(() => import("@/views/Services/ServiceList/ServiceList"));
@@ -104,6 +107,9 @@ const routerConfig = [
       { path: "staff", element: lazyRoute(<StatePicker />) },
       { path: "staff/members", element: lazyRoute(<StaffList />) },
       { path: "staff/state/:code", element: lazyRoute(<StateStaff />) },
+      { path: "staff/state/:code/district/:districtId", element: lazyRoute(<DistrictStaff />) },
+      { path: "staff/state/:code/district/:districtId/gps", element: lazyRoute(<GPList />) },
+      { path: "staff/state/:code/district/:districtId/taluk/:talukId", element: lazyRoute(<TalukStaff />) },
       { path: "staff/new", element: lazyRoute(<StaffCreate />) },
       { path: "staff/:id", element: lazyRoute(<StaffDetails />) },
       { path: "staff/:id/edit", element: lazyRoute(<StaffEdit />) },

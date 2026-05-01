@@ -921,3 +921,148 @@ export interface UpdateStateManagementRequest {
   banner_image_url?: string;
   tagline?: string;
 }
+
+// ─── Staff Management — multi-level assignments (added 2026-05-01) ──────
+export type AssignmentLevel = 'state' | 'district' | 'taluk' | 'gp';
+
+export interface StaffMini {
+  id: string;
+  employee_code: string;
+  full_name: string;
+  email: string;
+  mobile: string;
+  designation?: string;
+  department?: string;
+  profile_photo_url?: string;
+  status: string;
+  home_state_code?: string;
+}
+
+export interface AssignmentGP {
+  gram_panchayat_id: string;
+  code: string;
+  name: string;
+  taluk_id: string;
+  taluk_name: string;
+}
+
+export interface AssignmentPermission {
+  module_code: string;
+  can_view: boolean;
+  can_edit: boolean;
+}
+
+export interface StaffAssignment {
+  id: string;
+  level: AssignmentLevel;
+  role_code: string;
+  custom_role_label?: string;
+  sub_role?: string;
+  notes?: string;
+  is_active: boolean;
+  state_id: string;
+  district_id?: string;
+  taluk_id?: string;
+  gram_panchayat_id?: string;
+  staff: StaffMini;
+  gps?: AssignmentGP[];
+  permissions?: AssignmentPermission[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SlotDefinition {
+  role_code: string;
+  label: string;
+  icon: string;
+}
+
+export interface SlotResponse extends SlotDefinition {
+  assignment?: StaffAssignment;
+}
+
+export interface LevelCounts {
+  total_staff: number;
+  filled_slots: number;
+  vacant_slots: number;
+  custom_roles: number;
+}
+
+export interface StateLevelResponse {
+  state_id: string;
+  slots: SlotResponse[];
+  custom: StaffAssignment[];
+  counts: LevelCounts;
+}
+
+export interface DistrictLevelResponse {
+  district_id: string;
+  slots: SlotResponse[];
+  custom: StaffAssignment[];
+  counts: LevelCounts;
+}
+
+export interface TalukLevelResponse {
+  taluk_id: string;
+  custom: StaffAssignment[];
+  counts: LevelCounts;
+}
+
+export interface GPRow {
+  gram_panchayat_id: string;
+  code: string;
+  name: string;
+  taluk_id: string;
+  taluk_name: string;
+  caseworkers: StaffMini[];
+  telecallers: StaffMini[];
+  support_staff: StaffMini[];
+  has_agent: boolean;
+}
+
+export interface GPLevelResponse {
+  district_id: string;
+  total: number;
+  active: number;
+  vacant: number;
+  rows: GPRow[];
+}
+
+export interface SlotDefinitionsResponse {
+  state: SlotDefinition[];
+  district: SlotDefinition[];
+  taluk: SlotDefinition[];
+  gp: SlotDefinition[];
+  district_role_options: Array<{
+    code: string;
+    label: string;
+    gp_scoped: boolean;
+    supports_sub_role?: boolean;
+    is_custom?: boolean;
+  }>;
+  sub_roles: string[];
+  modules: Array<{ code: string; label: string }>;
+}
+
+export interface CreateAssignmentRequest {
+  staff_id: string;
+  level: AssignmentLevel;
+  state_id: string;
+  district_id?: string;
+  taluk_id?: string;
+  gram_panchayat_id?: string;
+  role_code: string;
+  custom_role_label?: string;
+  sub_role?: string;
+  notes?: string;
+  gp_ids?: string[];
+  permissions?: AssignmentPermission[];
+}
+
+export interface UpdateAssignmentRequest {
+  custom_role_label?: string;
+  sub_role?: string;
+  notes?: string;
+  gp_ids?: string[];
+  permissions?: AssignmentPermission[];
+}
