@@ -19,6 +19,7 @@ import type {
   StaffMini,
 } from "@/types/api.types";
 import "../StaffMgmt/StaffMgmt.scss";
+import "../StateStaff/StateStaff.scss";
 
 type FilterMode = "all" | "active" | "vacant";
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HiOutlineArrowLeft,
@@ -7,6 +7,8 @@ import {
   HiOutlineChevronRight,
   HiOutlineLocationMarker,
   HiOutlineMap,
+  HiOutlineUserGroup,
+  HiOutlineOfficeBuilding,
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import geographyApi from "@/services/api/geography.api";
@@ -24,6 +26,7 @@ import CustomRoleCard from "../StaffMgmt/components/CustomRoleCard";
 import AssignSlotModal from "../StaffMgmt/components/AssignSlotModal";
 import AddCustomStaffModal from "../StaffMgmt/components/AddCustomStaffModal";
 import "../StaffMgmt/StaffMgmt.scss";
+import "../StateStaff/StateStaff.scss";
 
 const DistrictStaff = () => {
   const { code, districtId } = useParams<{ code: string; districtId: string }>();
@@ -73,6 +76,13 @@ const DistrictStaff = () => {
 
   const stateCode = (code || "").toUpperCase();
 
+  const staffStats = useMemo(() => {
+    const filled = level?.counts.filled_slots || 0;
+    const vacant = level?.counts.vacant_slots || 0;
+    const custom = level?.counts.custom_roles || 0;
+    return { filled, vacant, custom, total: filled + custom };
+  }, [level]);
+
   return (
     <div className="bm-state-staff">
       <PageHeader
@@ -102,6 +112,39 @@ const DistrictStaff = () => {
       </div>
 
       {error && <div className="bm-error">{error}</div>}
+
+      {/* Coverage stats */}
+      <div className="bm-coverage-stats">
+        <div className="bm-coverage-tile tone-indigo">
+          <div className="bm-coverage-icon"><HiOutlineMap /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{taluks.length}</div>
+            <div className="bm-coverage-label">Taluks</div>
+          </div>
+        </div>
+        <div className="bm-coverage-tile tone-cyan">
+          <div className="bm-coverage-icon"><HiOutlineOfficeBuilding /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{(district?.total_gram_panchayats || 0).toLocaleString()}</div>
+            <div className="bm-coverage-label">Gram Panchayats</div>
+          </div>
+        </div>
+        <div className="bm-coverage-tile tone-green">
+          <div className="bm-coverage-icon"><HiOutlineLocationMarker /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{(district?.total_villages || 0).toLocaleString()}</div>
+            <div className="bm-coverage-label">Villages</div>
+          </div>
+        </div>
+        <div className="bm-coverage-tile tone-amber">
+          <div className="bm-coverage-icon"><HiOutlineUserGroup /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{staffStats.total}</div>
+            <div className="bm-coverage-label">Staff assigned</div>
+            {staffStats.vacant > 0 && <div className="bm-coverage-sub">{staffStats.vacant} vacant slots</div>}
+          </div>
+        </div>
+      </div>
 
       {/* District-level slots */}
       <section className="bm-mgmt-section">

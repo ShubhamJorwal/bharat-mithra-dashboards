@@ -10,6 +10,8 @@ import {
   HiOutlinePhone,
   HiOutlineSupport,
   HiOutlineBriefcase,
+  HiOutlineOfficeBuilding,
+  HiOutlineUserGroup,
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import geographyApi from "@/services/api/geography.api";
@@ -27,6 +29,7 @@ import type {
 import CustomRoleCard from "../StaffMgmt/components/CustomRoleCard";
 import AddCustomStaffModal from "../StaffMgmt/components/AddCustomStaffModal";
 import "../StaffMgmt/StaffMgmt.scss";
+import "../StateStaff/StateStaff.scss";
 
 type GPFilter = "all" | "active" | "vacant";
 
@@ -153,6 +156,32 @@ const TalukStaff = () => {
       </div>
 
       {error && <div className="bm-error">{error}</div>}
+
+      {/* Coverage stats */}
+      <div className="bm-coverage-stats">
+        <div className="bm-coverage-tile tone-cyan">
+          <div className="bm-coverage-icon"><HiOutlineOfficeBuilding /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{gpStats.total}</div>
+            <div className="bm-coverage-label">Gram Panchayats</div>
+          </div>
+        </div>
+        <div className="bm-coverage-tile tone-green">
+          <div className="bm-coverage-icon"><HiOutlineLocationMarker /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{(taluk?.total_villages || 0).toLocaleString()}</div>
+            <div className="bm-coverage-label">Villages</div>
+          </div>
+        </div>
+        <div className="bm-coverage-tile tone-amber">
+          <div className="bm-coverage-icon"><HiOutlineUserGroup /></div>
+          <div className="bm-coverage-text">
+            <div className="bm-coverage-value">{level?.counts.custom_roles || 0}</div>
+            <div className="bm-coverage-label">Custom roles</div>
+            {gpStats.vacant > 0 && <div className="bm-coverage-sub">{gpStats.vacant} vacant GPs</div>}
+          </div>
+        </div>
+      </div>
 
       {/* ─── Taluk-level custom roles ────────────────────────────── */}
       <section className="bm-mgmt-section">

@@ -154,12 +154,13 @@
   }
   &.is-vacant {
     border-style: dashed;
-    opacity: 0.85;
+    border-width: 1.5px;
+    border-color: rgba(99, 102, 241, 0.35);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, var(--color-card-bg) 60%);
     &:hover {
-      opacity: 1;
-      border-color: var(--color-primary);
+      border-color: $secondary-color;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px -12px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 24px -14px rgba(99, 102, 241, 0.5);
     }
   }
 }
@@ -170,16 +171,19 @@
   gap: $spacing-md;
 }
 .bm-slot-icon {
-  width: 38px; height: 38px;
+  width: 40px; height: 40px;
   border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(99, 102, 241, 0.18));
-  color: $secondary-color;
-  font-size: 1.2rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(16, 185, 129, 0.18));
+  color: #16a34a;
+  font-size: 1.25rem;
   flex-shrink: 0;
-  .is-vacant & { background: var(--color-hover); color: var(--color-text-secondary); }
+  .is-vacant & {
+    background: rgba(99, 102, 241, 0.12);
+    color: $secondary-color;
+  }
 }
 .bm-slot-titles { flex: 1; min-width: 0; }
 .bm-slot-label { font-weight: $font-semibold; font-size: $font-sm; color: var(--color-text); }
@@ -188,9 +192,10 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-secondary);
-  font-weight: $font-semibold;
+  font-weight: $font-bold;
   margin-top: 2px;
   .is-filled & { color: #16a34a; }
+  .is-vacant & { color: #d97706; }
 }
 .bm-slot-menu {
   background: transparent;
@@ -222,9 +227,17 @@
 }
 .bm-slot-body-link { /* alias */ }
 .bm-slot-body-vacant {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 1px dashed var(--color-border);
+  background: rgba(99, 102, 241, 0.06);
+  color: var(--color-text);
+  border: 1.5px dashed rgba(99, 102, 241, 0.45);
+  transition: background 0.15s ease, border-color 0.15s ease, border-style 0s linear 0.15s;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.14);
+    border-color: $secondary-color;
+    border-style: solid;
+    transition: background 0.15s ease, border-color 0.15s ease, border-style 0s;
+  }
 }
 
 .bm-vacant-illust {
