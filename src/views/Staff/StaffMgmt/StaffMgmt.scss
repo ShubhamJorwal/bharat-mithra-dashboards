@@ -590,6 +590,44 @@
 }
 
 .bm-gp-agents { display: flex; gap: $spacing-sm; flex-wrap: wrap; }
+
+.bm-gp-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: $radius-md;
+  font-size: 0.75rem;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  svg { font-size: 0.95rem; }
+
+  &.is-primary {
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px -4px rgba(99, 102, 241, 0.55);
+    &:hover {
+      filter: brightness(1.07);
+      box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.7);
+      transform: translateY(-1px);
+    }
+  }
+  &.is-secondary {
+    background: var(--color-card-bg);
+    color: var(--color-text);
+    border-color: var(--color-border);
+    &:hover {
+      background: var(--color-hover);
+      border-color: $secondary-color;
+      color: $secondary-color;
+    }
+  }
+  &:active { transform: translateY(0); }
+}
 .bm-role-stack {
   display: inline-flex;
   align-items: center;
@@ -662,6 +700,17 @@
   font-weight: $font-bold;
   color: $secondary-color;
   margin-bottom: 4px;
+}
+.bm-gp-modal-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  font-weight: $font-medium;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+  svg { font-size: 0.85rem; color: $secondary-color; }
 }
 .bm-sm-close {
   background: transparent;

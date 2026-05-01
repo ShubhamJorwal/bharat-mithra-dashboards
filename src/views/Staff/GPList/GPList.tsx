@@ -8,6 +8,7 @@ import {
   HiOutlinePhone,
   HiOutlineSupport,
   HiOutlineBriefcase,
+  HiOutlineUserAdd,
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import geographyApi from "@/services/api/geography.api";
@@ -17,7 +18,9 @@ import type {
   GPLevelResponse,
   GPRow,
   StaffMini,
+  SlotDefinitionsResponse,
 } from "@/types/api.types";
+import AddGPAgentModal from "../StaffMgmt/components/AddGPAgentModal";
 import "../StaffMgmt/StaffMgmt.scss";
 import "../StateStaff/StateStaff.scss";
 
@@ -29,21 +32,28 @@ const GPList = () => {
 
   const [district, setDistrict] = useState<District | null>(null);
   const [data, setData] = useState<GPLevelResponse | null>(null);
+  const [defs, setDefs] = useState<SlotDefinitionsResponse | null>(null);
+  const [stateId, setStateId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [agentForGP, setAgentForGP] = useState<GPRow | null>(null);
 
   const loadAll = async () => {
     if (!districtId) return;
     setLoading(true); setError(null);
     try {
-      const [dRes, gRes] = await Promise.all([
+      const [dRes, gRes, defsRes] = await Promise.all([
         geographyApi.getDistrictById(districtId),
         managementApi.getDistrictGPs(districtId),
+        managementApi.getSlotDefinitions(),
       ]);
-      setDistrict((dRes as any).data as District);
+      const d = (dRes as any).data as District;
+      setDistrict(d);
+      setStateId(d.state_id || "");
       setData(gRes.data || null);
+      setDefs(defsRes.data);
     } catch (e: any) {
       setError(e?.response?.data?.message || e?.message || "Failed to load GPs");
     } finally {
@@ -146,14 +156,32 @@ const GPList = () => {
           {!loading && rowsFiltered.length === 0 && (
             <div className="bm-mgmt-empty"><p>No GPs match.</p></div>
           )}
-          {rowsFiltered.map((r) => <GPRowCard key={r.gram_panchayat_id} row={r} />)}
+          {rowsFiltered.map((r) => (
+            <GPRowCard key={r.gram_panchayat_id} row={r} onAddAgent={() => setAgentForGP(r)} />
+          ))}
         </div>
       </section>
+
+      <AddGPAgentModal
+        open={!!agentForGP}
+        defs={defs}
+        scope={{
+          state_id: stateId,
+          state_code: stateCode,
+          district_id: districtId || "",
+          taluk_id: agentForGP?.taluk_id || "",
+          gram_panchayat_id: agentForGP?.gram_panchayat_id || "",
+          gp_name: agentForGP?.name,
+          gp_code: agentForGP?.code,
+        }}
+        onClose={() => setAgentForGP(null)}
+        onSaved={loadAll}
+      />
     </div>
   );
 };
 
-const GPRowCard = ({ row }: { row: GPRow }) => {
+const GPRowCard = ({ row, onAddAgent }: { row: GPRow; onAddAgent: () => void }) => {
   const totalAgents = row.caseworkers.length + row.telecallers.length + row.support_staff.length;
   return (
     <div className={`bm-gp-row-card ${row.has_agent ? "is-active" : "is-vacant"}`}>
@@ -187,6 +215,14 @@ const GPRowCard = ({ row }: { row: GPRow }) => {
         ) : (
           <span className="bm-gp-pill tone-vacant">Vacant — no agent</span>
         )}
+        <button
+          type="button"
+          className={`bm-gp-add-btn ${row.has_agent ? "is-secondary" : "is-primary"}`}
+          onClick={onAddAgent}
+          title={row.has_agent ? `Add another agent to ${row.name}` : `Assign an agent to ${row.name}`}
+        >
+          <HiOutlineUserAdd /> {row.has_agent ? "Add" : "Add agent"}
+        </button>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   HiOutlineBriefcase,
   HiOutlineOfficeBuilding,
   HiOutlineUserGroup,
+  HiOutlineUserAdd,
 } from "react-icons/hi";
 import { PageHeader } from "@/components/common/PageHeader";
 import geographyApi from "@/services/api/geography.api";
@@ -28,6 +29,7 @@ import type {
 } from "@/types/api.types";
 import CustomRoleCard from "../StaffMgmt/components/CustomRoleCard";
 import AddCustomStaffModal from "../StaffMgmt/components/AddCustomStaffModal";
+import AddGPAgentModal from "../StaffMgmt/components/AddGPAgentModal";
 import "../StaffMgmt/StaffMgmt.scss";
 import "../StateStaff/StateStaff.scss";
 
@@ -45,6 +47,9 @@ const TalukStaff = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+
+  // Per-GP agent assignment modal
+  const [agentForGP, setAgentForGP] = useState<GramPanchayat | null>(null);
 
   // GP list state — pulls all GPs in this taluk plus their staff coverage.
   const [gps, setGps] = useState<GramPanchayat[]>([]);
@@ -280,6 +285,7 @@ const TalukStaff = () => {
                 key={gp.id}
                 gp={gp}
                 staff={gpStaffByID.get(gp.id)}
+                onAddAgent={() => setAgentForGP(gp)}
               />
             ))}
           </div>
@@ -294,6 +300,22 @@ const TalukStaff = () => {
         onClose={() => setAddOpen(false)}
         onSaved={loadAll}
       />
+
+      <AddGPAgentModal
+        open={!!agentForGP}
+        defs={defs}
+        scope={{
+          state_id: stateId,
+          state_code: stateCode,
+          district_id: districtId || "",
+          taluk_id: talukId || "",
+          gram_panchayat_id: agentForGP?.id || "",
+          gp_name: agentForGP?.name,
+          gp_code: agentForGP?.code,
+        }}
+        onClose={() => setAgentForGP(null)}
+        onSaved={loadAll}
+      />
     </div>
   );
 };
@@ -301,9 +323,11 @@ const TalukStaff = () => {
 const TalukGPRow = ({
   gp,
   staff,
+  onAddAgent,
 }: {
   gp: GramPanchayat;
   staff?: GPRow;
+  onAddAgent: () => void;
 }) => {
   const hasAgent = !!staff?.has_agent;
   const total = (staff?.caseworkers?.length || 0) + (staff?.telecallers?.length || 0) + (staff?.support_staff?.length || 0);
@@ -338,6 +362,14 @@ const TalukGPRow = ({
         ) : (
           <span className="bm-gp-pill tone-vacant">Vacant — no agent</span>
         )}
+        <button
+          type="button"
+          className={`bm-gp-add-btn ${hasAgent ? "is-secondary" : "is-primary"}`}
+          onClick={onAddAgent}
+          title={hasAgent ? `Add another agent to ${gp.name}` : `Assign an agent to ${gp.name}`}
+        >
+          <HiOutlineUserAdd /> {hasAgent ? "Add" : "Add agent"}
+        </button>
       </div>
     </div>
   );
