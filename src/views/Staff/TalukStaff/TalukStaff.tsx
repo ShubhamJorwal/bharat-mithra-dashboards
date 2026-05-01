@@ -338,7 +338,6 @@ const TalukStaff = () => {
 
       <AddGPAgentModal
         open={!!agentForGP}
-        defs={defs}
         scope={{
           state_id: stateId,
           state_code: stateCode,
@@ -364,8 +363,8 @@ const TalukGPRow = ({
   staff?: GPRow;
   onAddAgent: () => void;
 }) => {
-  const hasAgent = !!staff?.has_agent;
-  const total = (staff?.caseworkers?.length || 0) + (staff?.telecallers?.length || 0) + (staff?.support_staff?.length || 0);
+  const agent = staff?.agent;
+  const hasAgent = !!agent;
   return (
     <div className={`bm-gp-row-card ${hasAgent ? "is-active" : "is-vacant"}`}>
       <div className="bm-gp-row-left">
@@ -378,37 +377,51 @@ const TalukGPRow = ({
       <div className="bm-gp-row-right">
         {hasAgent ? (
           <>
-            <span className="bm-gp-pill tone-active">
-              <span className="bm-pill-dot" />
-              {total} agent{total === 1 ? "" : "s"}
-            </span>
-            <div className="bm-gp-agents">
-              {staff!.caseworkers.length > 0 && (
-                <RoleStack icon={<HiOutlineBriefcase />} label="Caseworker" staff={staff!.caseworkers} />
-              )}
-              {staff!.telecallers.length > 0 && (
-                <RoleStack icon={<HiOutlinePhone />} label="Telecaller" staff={staff!.telecallers} />
-              )}
-              {staff!.support_staff.length > 0 && (
-                <RoleStack icon={<HiOutlineSupport />} label="Support" staff={staff!.support_staff} />
-              )}
+            <div className="bm-gp-agent-pill" title={`Agent: ${agent!.full_name}`}>
+              <div className="bm-gp-agent-avatar">
+                {agent!.profile_photo_url
+                  ? <img src={agent!.profile_photo_url} alt={agent!.full_name} />
+                  : <span>{initials(agent!.full_name)}</span>}
+              </div>
+              <div className="bm-gp-agent-text">
+                <div className="bm-gp-agent-name">{agent!.full_name}</div>
+                <div className="bm-gp-agent-role">Agent</div>
+              </div>
             </div>
+            {(staff!.caseworkers.length > 0 || staff!.telecallers.length > 0 || staff!.support_staff.length > 0) && (
+              <div className="bm-gp-agents">
+                {staff!.caseworkers.length > 0 && (
+                  <RoleStack icon={<HiOutlineBriefcase />} label="Caseworker" staff={staff!.caseworkers} />
+                )}
+                {staff!.telecallers.length > 0 && (
+                  <RoleStack icon={<HiOutlinePhone />} label="Telecaller" staff={staff!.telecallers} />
+                )}
+                {staff!.support_staff.length > 0 && (
+                  <RoleStack icon={<HiOutlineSupport />} label="Support" staff={staff!.support_staff} />
+                )}
+              </div>
+            )}
           </>
         ) : (
-          <span className="bm-gp-pill tone-vacant">Vacant — no agent</span>
+          <span className="bm-gp-pill tone-vacant">No agent assigned</span>
         )}
-        <button
-          type="button"
-          className={`bm-gp-add-btn ${hasAgent ? "is-secondary" : "is-primary"}`}
-          onClick={onAddAgent}
-          title={hasAgent ? `Add another agent to ${gp.name}` : `Assign an agent to ${gp.name}`}
-        >
-          <HiOutlineUserAdd /> {hasAgent ? "Add" : "Add agent"}
-        </button>
+        {!hasAgent && (
+          <button
+            type="button"
+            className="bm-gp-add-btn is-primary"
+            onClick={onAddAgent}
+            title={`Assign an agent to ${gp.name}`}
+          >
+            <HiOutlineUserAdd /> Add agent
+          </button>
+        )}
       </div>
     </div>
   );
 };
+
+const initials = (name: string) =>
+  name.trim().split(/\s+/).slice(0, 2).map((s) => s[0]).join("").toUpperCase();
 
 const RoleStack = ({ icon, label, staff }: { icon: React.ReactNode; label: string; staff: StaffMini[] }) => (
   <div className="bm-role-stack" title={`${label}: ${staff.map((s) => s.full_name).join(", ")}`}>
@@ -427,14 +440,14 @@ const TalukGPCard = ({
   staff?: GPRow;
   onAddAgent: () => void;
 }) => {
-  const hasAgent = !!staff?.has_agent;
-  const total = (staff?.caseworkers?.length || 0) + (staff?.telecallers?.length || 0) + (staff?.support_staff?.length || 0);
+  const agent = staff?.agent;
+  const hasAgent = !!agent;
   return (
     <div className={`bm-gp-card ${hasAgent ? "is-active" : "is-vacant"}`}>
       <div className="bm-gp-card-head">
         <div className="bm-gp-row-icon"><HiOutlineLocationMarker /></div>
         <span className={`bm-gp-pill tone-${hasAgent ? "active" : "vacant"}`}>
-          {hasAgent ? <><span className="bm-pill-dot" /> {total} agent{total === 1 ? "" : "s"}</> : "Vacant"}
+          {hasAgent ? <><span className="bm-pill-dot" /> Active</> : "No agent"}
         </span>
       </div>
       <div className="bm-gp-card-body">
@@ -443,6 +456,19 @@ const TalukGPCard = ({
           {gp.code || ""}{gp.lgd_code && ` · LGD ${gp.lgd_code}`}
         </div>
         {hasAgent && (
+          <div className="bm-gp-agent-pill bm-gp-agent-pill-card" title={`Agent: ${agent!.full_name}`}>
+            <div className="bm-gp-agent-avatar">
+              {agent!.profile_photo_url
+                ? <img src={agent!.profile_photo_url} alt={agent!.full_name} />
+                : <span>{initials(agent!.full_name)}</span>}
+            </div>
+            <div className="bm-gp-agent-text">
+              <div className="bm-gp-agent-name">{agent!.full_name}</div>
+              <div className="bm-gp-agent-role">Agent</div>
+            </div>
+          </div>
+        )}
+        {hasAgent && (staff!.caseworkers.length > 0 || staff!.telecallers.length > 0 || staff!.support_staff.length > 0) && (
           <div className="bm-gp-agents">
             {staff!.caseworkers.length > 0 && (
               <RoleStack icon={<HiOutlineBriefcase />} label="Caseworker" staff={staff!.caseworkers} />
@@ -456,13 +482,15 @@ const TalukGPCard = ({
           </div>
         )}
       </div>
-      <button
-        type="button"
-        className={`bm-gp-add-btn ${hasAgent ? "is-secondary" : "is-primary"} bm-gp-card-cta`}
-        onClick={onAddAgent}
-      >
-        <HiOutlineUserAdd /> {hasAgent ? "Add another agent" : "Add agent"}
-      </button>
+      {!hasAgent && (
+        <button
+          type="button"
+          className="bm-gp-add-btn is-primary bm-gp-card-cta"
+          onClick={onAddAgent}
+        >
+          <HiOutlineUserAdd /> Add agent
+        </button>
+      )}
     </div>
   );
 };

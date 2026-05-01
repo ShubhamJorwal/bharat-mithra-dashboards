@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import {
   HiOutlineX,
   HiOutlineLocationMarker,
-  HiOutlinePhone,
-  HiOutlineSupport,
-  HiOutlineBriefcase,
   HiOutlineMail,
   HiOutlineUser,
   HiOutlineDeviceMobile,
@@ -12,6 +9,7 @@ import {
   HiOutlineCheckCircle,
   HiOutlineClipboardCopy,
   HiOutlineExclamationCircle,
+  HiOutlineUserAdd,
 } from "react-icons/hi";
 import { useBodyScrollLock } from "@/hooks";
 import managementApi from "@/services/api/management.api";
@@ -19,7 +17,6 @@ import staffApi from "@/services/api/staff.api";
 import type {
   CreateAssignmentRequest,
   CreateStaffRequest,
-  SlotDefinitionsResponse,
   Staff,
 } from "@/types/api.types";
 
@@ -36,52 +33,18 @@ interface Props {
     gp_name?: string;
     gp_code?: string;
   };
-  defs: SlotDefinitionsResponse | null;
 }
-
-const AGENT_ROLES = [
-  {
-    code: "caseworker",
-    label: "Caseworker",
-    icon: HiOutlineBriefcase,
-    supportsSub: false,
-    description: "Fulfills citizen applications and changes their status.",
-    designation: "Caseworker",
-    department: "Field",
-  },
-  {
-    code: "telecaller",
-    label: "Telecaller",
-    icon: HiOutlinePhone,
-    supportsSub: true,
-    description: "Outbound + inbound citizen calls for this GP.",
-    designation: "Telecaller",
-    department: "Operations",
-  },
-  {
-    code: "support_staff",
-    label: "Support Staff",
-    icon: HiOutlineSupport,
-    supportsSub: false,
-    description: "On-ground support and citizen handholding.",
-    designation: "Support Staff",
-    department: "Support",
-  },
-];
 
 type SuccessInfo = {
   staff: Staff;
   tempPassword?: string;
 };
 
-const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
+const AddGPAgentModal = ({ open, onClose, onSaved, scope }: Props) => {
   useBodyScrollLock(open);
 
-  // Role + sub-role
-  const [roleCode, setRoleCode] = useState("caseworker");
-  const [subRole, setSubRole] = useState("");
-
-  // Agent form fields
+  // Single-role form: Agent. No role picker — agents are the one role
+  // that lives at the GP level, exactly one per GP.
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
@@ -94,16 +57,10 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
   const [success, setSuccess] = useState<SuccessInfo | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const selectedRole = AGENT_ROLES.find((r) => r.code === roleCode);
-  const supportsSub = !!selectedRole?.supportsSub;
-  const subRoles = defs?.sub_roles || [];
-
   // Reset state every time the modal opens. All fields start empty —
-  // the role-specific text appears as input placeholders only.
+  // role-specific helper text shows as input placeholders only.
   useEffect(() => {
     if (!open) return;
-    setRoleCode("caseworker");
-    setSubRole("");
     setFullName("");
     setEmail("");
     setMobile("");
@@ -138,8 +95,8 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
         full_name: fullName.trim(),
         email: email.trim().toLowerCase(),
         mobile: mobile.replace(/\D/g, ""),
-        designation: designation.trim() || selectedRole?.designation,
-        department: department.trim() || selectedRole?.department,
+        designation: designation.trim() || "Agent",
+        department: department.trim() || "Field",
         home_state_code: scope.state_code,
         home_district_id: scope.district_id,
       };
@@ -150,17 +107,19 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
       const newStaff = staffRes.data.staff;
       const tempPassword = staffRes.data.temp_password;
 
-      // 2. Assign the new staff to this GP (district-level role + gp_ids).
+      // 2. Assign the new staff as the Agent of this GP.
+      //    level='gp' + role_code='agent' + gram_panchayat_id pinpoints
+      //    the slot. The DB has a partial UNIQUE index that enforces
+      //    'one Agent per GP'.
       const assignBody: CreateAssignmentRequest = {
         staff_id: newStaff.id,
-        level: "district",
+        level: "gp",
         state_id: scope.state_id,
         district_id: scope.district_id,
         taluk_id: scope.taluk_id,
-        role_code: roleCode,
-        sub_role: subRole || undefined,
+        gram_panchayat_id: scope.gram_panchayat_id,
+        role_code: "agent",
         notes: notes.trim() || undefined,
-        gp_ids: [scope.gram_panchayat_id],
       };
       await managementApi.createAssignment(assignBody);
 
@@ -188,7 +147,7 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
 
   if (!open) return null;
 
-  // ─── Success state ───────────────────────────────────────────────
+  // ─── Success state ─────────────────────────────────────────────
   if (success) {
     return (
       <div className="bm-sm-overlay" onClick={onClose} role="presentation">
@@ -235,6 +194,15 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
                 </div>
               </div>
             )}
+
+            <div className="bm-form-info">
+              <HiOutlineExclamationCircle />
+              <span>
+                Work this agent submits will be routed to the <strong>Caseworker</strong>{" "}
+                covering this GP. You can assign caseworkers to the GP from the
+                district staff page.
+              </span>
+            </div>
           </div>
 
           <div className="bm-sm-footer">
@@ -247,13 +215,13 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
     );
   }
 
-  // ─── Form state ──────────────────────────────────────────────────
+  // ─── Form state ────────────────────────────────────────────────
   return (
     <div className="bm-sm-overlay" onClick={onClose} role="presentation">
       <div className="bm-sm-modal bm-sm-modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="bm-sm-header">
           <div>
-            <div className="bm-sm-eyebrow">New agent</div>
+            <div className="bm-sm-eyebrow">New Agent</div>
             <h2>Add agent for {scope.gp_name || "GP"}</h2>
             {scope.gp_code && (
               <div className="bm-gp-modal-sub">
@@ -267,49 +235,18 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
         </div>
 
         <div className="bm-sm-form">
-          {/* Role */}
-          <div className="bm-form-row">
-            <label className="bm-form-label">Agent role</label>
-            <div className="bm-role-cards">
-              {AGENT_ROLES.map((r) => {
-                const Icon = r.icon;
-                const on = roleCode === r.code;
-                return (
-                  <button
-                    key={r.code}
-                    type="button"
-                    className={`bm-role-card ${on ? "is-on" : ""}`}
-                    onClick={() => { setRoleCode(r.code); setSubRole(""); }}
-                  >
-                    <div className="bm-role-card-icon"><Icon /></div>
-                    <div className="bm-role-card-text">
-                      <div className="bm-role-card-name">{r.label}</div>
-                      <div className="bm-role-card-desc">{r.description}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sub-role for telecaller */}
-          {supportsSub && subRoles.length > 0 && (
-            <div className="bm-form-row">
-              <label className="bm-form-label">Sub-role <span className="bm-form-opt">(optional badge)</span></label>
-              <div className="bm-sub-pills">
-                {subRoles.map((sr) => (
-                  <button
-                    key={sr}
-                    type="button"
-                    className={`bm-pill ${subRole === sr ? "is-on" : ""}`}
-                    onClick={() => setSubRole(subRole === sr ? "" : sr)}
-                  >
-                    {sr}
-                  </button>
-                ))}
+          {/* Role banner — fixed to Agent */}
+          <div className="bm-agent-role-banner">
+            <div className="bm-agent-role-icon"><HiOutlineUserAdd /></div>
+            <div>
+              <div className="bm-agent-role-name">Agent</div>
+              <div className="bm-agent-role-desc">
+                Ground-level worker for this GP. Citizens come to them for services;
+                they collect documents and submit applications which route to the
+                Caseworker covering this GP.
               </div>
             </div>
-          )}
+          </div>
 
           {/* Personal details */}
           <div className="bm-form-grid-2">
@@ -358,7 +295,7 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
               <input
                 type="text"
                 className="bm-input"
-                placeholder={selectedRole?.designation || "Designation"}
+                placeholder="Agent"
                 value={designation}
                 onChange={(e) => setDesignation(e.target.value)}
               />
@@ -368,7 +305,7 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
               <input
                 type="text"
                 className="bm-input"
-                placeholder={selectedRole?.department || "Department"}
+                placeholder="Field"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
               />
@@ -391,8 +328,8 @@ const AddGPAgentModal = ({ open, onClose, onSaved, scope, defs }: Props) => {
             <HiOutlineExclamationCircle />
             <span>
               A new staff record will be created and the agent will be assigned to{" "}
-              <strong>{scope.gp_name || "this GP"}</strong>. A temporary password will be
-              generated — you'll see it on the next screen.
+              <strong>{scope.gp_name || "this GP"}</strong>. Each GP can have exactly{" "}
+              <strong>one Agent</strong>. A temporary password will be generated.
             </span>
           </div>
 

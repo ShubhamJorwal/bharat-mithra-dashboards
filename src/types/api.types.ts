@@ -1014,6 +1014,9 @@ export interface GPRow {
   name: string;
   taluk_id: string;
   taluk_name: string;
+  /** The dedicated GP-level Agent (one per GP). Their work routes to
+   *  the Caseworkers covering this GP. */
+  agent?: StaffMini;
   caseworkers: StaffMini[];
   telecallers: StaffMini[];
   support_staff: StaffMini[];
