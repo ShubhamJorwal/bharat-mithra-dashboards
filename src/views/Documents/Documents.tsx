@@ -18,6 +18,7 @@ import {
   HiOutlineCheck,
 } from 'react-icons/hi';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { PageHeader } from '../../components/common/PageHeader';
 import './Documents.scss';
 
@@ -96,6 +97,7 @@ const Documents = () => {
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  useBodyScrollLock(showModal || showViewModal || showDeleteConfirm);
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null);
   const [deletingDoc, setDeletingDoc] = useState<Document | null>(null);

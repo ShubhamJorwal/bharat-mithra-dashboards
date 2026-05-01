@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import {
   HiOutlineSupport,
   HiOutlineSearch,
@@ -101,6 +102,7 @@ const SupportDashboard = () => {
   const [filterChannel, setFilterChannel] = useState('all');
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
+  useBodyScrollLock(!!selectedTicket || showNewTicketModal);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   // ─── Mock Data ──────────────────────────────────────────

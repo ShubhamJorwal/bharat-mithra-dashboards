@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { HiOutlineSearch, HiOutlineX, HiOutlineUserAdd, HiOutlineCheck } from "react-icons/hi";
+import { useBodyScrollLock } from "@/hooks";
 import managementApi from "@/services/api/management.api";
 import type {
   AssignmentLevel,
@@ -29,6 +30,8 @@ const AssignSlotModal = ({ open, onClose, onSaved, level, slot, scope }: Props) 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     if (!open) { setQ(""); setResults([]); setPicked(null); setError(null); return; }

@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import managementApi from "@/services/api/management.api";
 import type { StateButton, StatesManagementResponse } from "@/types/api.types";
 import { stateImageFor, fallbackImage } from "./stateImages";
+import { useBodyScrollLock } from "@/hooks";
 import "./StatePicker.scss";
 
 type ViewFilter = "all" | "active" | "inactive";
@@ -340,7 +341,9 @@ const ComingSoonOverlay = ({
 }: {
   state: StateButton;
   onClose: () => void;
-}) => (
+}) => {
+  useBodyScrollLock(true);
+  return (
   <div className="bm-coming-soon-overlay" onClick={onClose} role="presentation">
     <div className="bm-coming-soon-card" onClick={(e) => e.stopPropagation()}>
       <button
@@ -377,6 +380,7 @@ const ComingSoonOverlay = ({
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default StatePicker;

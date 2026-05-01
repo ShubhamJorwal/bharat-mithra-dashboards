@@ -12,6 +12,7 @@ import {
   HiOutlineRefresh,
   HiOutlineClipboardCopy,
 } from 'react-icons/hi';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import './PaymentGateways.scss';
 
 // Types
@@ -136,6 +137,7 @@ const PaymentGateways = () => {
   // Modal states
   const [showBankModal, setShowBankModal] = useState(false);
   const [showUpiModal, setShowUpiModal] = useState(false);
+  useBodyScrollLock(showBankModal || showUpiModal);
   const [editingBank, setEditingBank] = useState<BankDetail | null>(null);
   const [editingUpi, setEditingUpi] = useState<UpiDetail | null>(null);
   const [viewScreenshot, setViewScreenshot] = useState<string | null>(null);

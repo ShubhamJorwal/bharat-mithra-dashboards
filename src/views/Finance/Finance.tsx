@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import {
   HiOutlineCurrencyRupee,
   HiOutlineTrendingUp,
@@ -178,6 +179,7 @@ const Finance = () => {
   // Modals
   const [viewModal, setViewModal] = useState<{ type: 'transaction' | 'invoice' | 'account' | 'budget'; data: unknown } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: string; id: string; name: string } | null>(null);
+  useBodyScrollLock(!!viewModal || !!deleteConfirm);
 
   // ─── Formatters ────────────────────────────────────────
 

@@ -20,6 +20,7 @@ import {
   HiOutlineSortAscending,
   HiOutlinePause,
 } from 'react-icons/hi';
+import { useBodyScrollLock } from '../../../hooks/useBodyScrollLock';
 import './WalletStatements.scss';
 
 // Types
@@ -171,6 +172,7 @@ const WalletStatements = () => {
   const [perPage, setPerPage] = useState(15);
   const [selectedTxn, setSelectedTxn] = useState<WalletTransaction | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  useBodyScrollLock(!!selectedTxn || showAddModal);
   const [actionRemarks, setActionRemarks] = useState('');
 
   // New transaction form

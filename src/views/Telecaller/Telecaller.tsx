@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import {
   HiOutlinePhone,
   HiOutlinePhoneIncoming,
@@ -118,6 +119,7 @@ const Telecaller = () => {
   const [selectedAgent, setSelectedAgent] = useState<TelecallerAgent | null>(null);
   const [showNewCallModal, setShowNewCallModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  useBodyScrollLock(!!selectedCall || !!selectedAgent || showNewCallModal || !!showDeleteConfirm);
 
   // ─── Mock Data ──────────────────────────────────────────
 

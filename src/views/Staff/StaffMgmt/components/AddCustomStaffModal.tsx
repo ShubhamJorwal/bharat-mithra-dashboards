@@ -6,6 +6,7 @@ import {
   HiOutlineLocationMarker,
   HiOutlineUserAdd,
 } from "react-icons/hi";
+import { useBodyScrollLock } from "@/hooks";
 import managementApi from "@/services/api/management.api";
 import geographyApi from "@/services/api/geography.api";
 import type {
@@ -39,6 +40,7 @@ interface GPOption {
 }
 
 const AddCustomStaffModal = ({ open, onClose, onSaved, level, scope, defs }: Props) => {
+  useBodyScrollLock(open);
   // Form state
   const [roleCode, setRoleCode] = useState("caseworker");
   const [customLabel, setCustomLabel] = useState("");

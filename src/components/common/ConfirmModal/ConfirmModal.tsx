@@ -5,6 +5,7 @@ import {
   HiOutlineTrash,
   HiOutlineX
 } from 'react-icons/hi';
+import { useBodyScrollLock } from '@/hooks';
 import './ConfirmModal.scss';
 
 interface ConfirmModalProps {
@@ -35,6 +36,8 @@ const ConfirmModal = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
+  useBodyScrollLock(isOpen);
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -45,14 +48,12 @@ const ConfirmModal = ({
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
       // Focus the cancel button when modal opens
       setTimeout(() => confirmButtonRef.current?.focus(), 100);
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
     };
   }, [isOpen, onClose, loading]);
 

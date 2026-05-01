@@ -14,6 +14,7 @@ import {
   HiOutlineFilter,
 } from 'react-icons/hi';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { PageHeader } from '../../components/common/PageHeader';
 import './Calendar.scss';
 
@@ -91,6 +92,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  useBodyScrollLock(showModal);
   const [filterType, setFilterType] = useState<string>('all');
   const [showEventDetail, setShowEventDetail] = useState<CalendarEvent | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);

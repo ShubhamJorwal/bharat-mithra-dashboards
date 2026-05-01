@@ -22,6 +22,7 @@ import {
   HiOutlineExclamation,
 } from 'react-icons/hi';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { PageHeader } from '../../components/common/PageHeader';
 import './Reports.scss';
 
@@ -116,6 +117,7 @@ const Reports = () => {
   // Modal state
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ScheduledReport | null>(null);
+  useBodyScrollLock(showScheduleModal);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [deleteType, setDeleteType] = useState<'schedule' | 'history'>('schedule');
 
