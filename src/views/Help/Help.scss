@@ -1,0 +1,258 @@
+@use '../../styles/variables' as *;
+
+.bm-help {
+  padding: 0 $spacing-xl $spacing-2xl;
+
+  .bm-help-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: $spacing-lg;
+    margin-top: $spacing-lg;
+    @media (max-width: 900px) { grid-template-columns: 1fr; }
+  }
+
+  // ─── Card shells ───────────────────────────────────────────────────
+  .bm-help-card,
+  .bm-help-side-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-lg $spacing-xl;
+  }
+
+  .bm-help-card {
+    h3 {
+      margin: 0 0 4px;
+      font-size: $font-lg;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+    }
+  }
+  .bm-help-card-sub {
+    margin: 0 0 $spacing-lg;
+    font-size: $font-sm;
+    color: var(--color-text-secondary);
+  }
+
+  // ─── Form ──────────────────────────────────────────────────────────
+  .bm-help-form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .bm-help-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+
+  .bm-help-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    > span {
+      font-size: 12px;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+      em {
+        color: $danger-color;
+        font-style: normal;
+        margin-left: 2px;
+      }
+      small {
+        color: var(--color-text-secondary);
+        font-weight: $font-normal;
+        margin-left: 4px;
+      }
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: $font-sm;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+
+      &::placeholder { color: var(--color-text-secondary); opacity: 0.7; }
+      &:focus {
+        border-color: $primary-color;
+        background: var(--color-card-bg);
+      }
+    }
+
+    textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
+  }
+
+  // ─── Actions row ───────────────────────────────────────────────────
+  .bm-help-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-md;
+    margin-top: $spacing-sm;
+    padding-top: $spacing-md;
+    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+  }
+  .bm-help-hint {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    strong { color: var(--color-text); font-weight: $font-semibold; }
+  }
+
+  // ─── Buttons (local copy of bm-btn primary style) ──────────────────
+  .bm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    color: var(--color-text);
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    svg { width: 15px; height: 15px; }
+  }
+  .bm-btn-primary {
+    background: $primary-color;
+    color: #fff;
+    border-color: $primary-color;
+    &:hover { background: $primary-deep; color: #fff; border-color: $primary-deep; }
+  }
+
+  // ─── Success state ─────────────────────────────────────────────────
+  .bm-help-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: $spacing-xl 0;
+    h4 {
+      margin: $spacing-md 0 6px;
+      font-size: $font-lg;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+    }
+    p {
+      margin: 0 0 $spacing-md;
+      font-size: $font-sm;
+      color: var(--color-text-secondary);
+      max-width: 400px;
+      line-height: 1.55;
+      strong { color: var(--color-text); font-weight: $font-semibold; }
+    }
+  }
+  .bm-help-success-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba($success-color, 0.12);
+    color: $success-color;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    svg { width: 30px; height: 30px; }
+  }
+
+  // ─── Side panel ────────────────────────────────────────────────────
+  .bm-help-side {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .bm-help-side-card {
+    h4 {
+      margin: 0 0 $spacing-sm;
+      font-size: 12px;
+      font-weight: $font-semibold;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+
+  .bm-help-side-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm 0;
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: $radius-md;
+    transition: background 0.15s;
+
+    > svg {
+      width: 18px; height: 18px;
+      color: $primary-color;
+      flex-shrink: 0;
+    }
+    > div { display: flex; flex-direction: column; }
+
+    &:hover .bm-help-side-value { color: $primary-color; }
+  }
+  .bm-help-side-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: $font-semibold;
+  }
+  .bm-help-side-value {
+    font-size: $font-sm;
+    color: var(--color-text);
+    font-weight: $font-medium;
+    transition: color 0.15s;
+  }
+
+  .bm-help-side-hours {
+    margin-top: $spacing-sm;
+    padding-top: $spacing-sm;
+    border-top: 1px solid var(--color-border-light);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    strong {
+      display: block;
+      color: var(--color-text);
+      font-weight: $font-semibold;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+  }
+
+  .bm-help-tips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--color-text-secondary);
+      padding: 6px 0;
+      padding-left: 14px;
+      position: relative;
+      &::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: $primary-color;
+        font-weight: $font-bold;
+      }
+      strong { color: var(--color-text); font-weight: $font-semibold; }
+    }
+  }
+}
