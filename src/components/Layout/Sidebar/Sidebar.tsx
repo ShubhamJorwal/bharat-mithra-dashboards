@@ -5,14 +5,11 @@ import {
   HiOutlineDocumentText,
   HiOutlineUsers,
   HiOutlineChartBar,
-  HiOutlineQuestionMarkCircle,
-  HiOutlineLightningBolt,
   HiOutlineBell,
   HiOutlineFolder,
   HiOutlineChevronLeft,
   HiOutlineChevronRight,
   HiOutlineChevronDown,
-  HiOutlineCog,
   HiOutlineGlobe,
   HiOutlineCash,
   HiOutlineCreditCard,
@@ -111,11 +108,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     { path: '/files', icon: HiOutlineFolder, label: 'Files', badge: null },
   ];
 
-  const bottomNavItems: NavItem[] = [
-    { path: '/shortcuts', icon: HiOutlineLightningBolt, label: 'Shortcuts', badge: null },
-    { path: '/help', icon: HiOutlineQuestionMarkCircle, label: 'Help', badge: null },
-    { path: '/settings', icon: HiOutlineCog, label: 'Settings', badge: null },
-  ];
+  // Shortcuts / Help / Settings live in the SidebarLauncher row (footer);
+  // no Support section in the sidebar nav anymore.
 
   // Helper to check if a sub-item path matches current location
   const isSubItemActive = (subPath: string) => {
@@ -288,27 +282,21 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
           </div>
         </div>
 
-        <div className="bm-nav-section">
-          {!isCollapsed && <span className="bm-nav-section-title">Support</span>}
-          <div className="bm-nav-list">
-            {bottomNavItems.map(renderNavItem)}
-          </div>
-        </div>
       </nav>
 
       <div className="bm-sidebar-footer">
-        <div className="bm-collapse-section">
-          <button
-            className="bm-collapse-btn"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? 'Expand' : 'Collapse'}
-          >
-            {isCollapsed ? <HiOutlineChevronRight /> : <HiOutlineChevronLeft />}
-            {!isCollapsed && <span>Collapse</span>}
-          </button>
-        </div>
         <SidebarLauncher isCollapsed={isCollapsed} />
       </div>
+
+      {/* Circular collapse handle sitting on the right border */}
+      <button
+        className="bm-collapse-handle"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        title={isCollapsed ? 'Expand' : 'Collapse'}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {isCollapsed ? <HiOutlineChevronRight /> : <HiOutlineChevronLeft />}
+      </button>
 
       {!isCollapsed && (
         <div
