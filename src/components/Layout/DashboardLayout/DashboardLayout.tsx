@@ -4,7 +4,6 @@ import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
 import AnimatedBackground from '../../common/AnimatedBackground';
 import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
-import FloatingLauncher from '../../common/FloatingLauncher/FloatingLauncher';
 import { bootstrapFromBackend } from '@/services/planner/plannerStore';
 import './DashboardLayout.scss';
 
@@ -109,7 +108,6 @@ const DashboardLayout = () => {
           <Outlet />
         </div>
       </main>
-      <FloatingLauncher />
     </div>
   );
 };

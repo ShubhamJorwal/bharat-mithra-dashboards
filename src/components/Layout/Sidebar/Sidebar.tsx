@@ -14,12 +14,14 @@ import {
   HiOutlineChevronDown,
   HiOutlineCog,
   HiOutlineGlobe,
+  HiOutlineCash,
   HiOutlineCreditCard,
   HiOutlineCurrencyRupee,
   HiOutlinePhone,
   HiOutlineSupport,
   HiOutlineViewGrid,
 } from 'react-icons/hi';
+import SidebarLauncher from '../SidebarLauncher/SidebarLauncher';
 import './Sidebar.scss';
 
 interface NavItem {
@@ -84,10 +86,20 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     },
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
-    // Calendar, Notebook, Wallet, Transactions live in the floating
-    // launcher (bottom-right ✨ button). Their routes are still active.
+    {
+      path: '/wallet',
+      icon: HiOutlineCash,
+      label: 'Wallet',
+      badge: null,
+      subItems: [
+        { path: '/wallet', label: 'Overview' },
+        { path: '/transactions', label: 'Transactions' },
+      ]
+    },
     { path: '/payment-gateways', icon: HiOutlineCreditCard, label: 'Payment Gateways', badge: null },
     { path: '/finance', icon: HiOutlineCurrencyRupee, label: 'Finance', badge: null },
+    // Calendar + Notebook live in the animated planner launcher in the
+    // sidebar footer (below the Collapse button). Routes still active.
   ];
 
   const secondaryNavItems: NavItem[] = [
@@ -295,6 +307,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
             {!isCollapsed && <span>Collapse</span>}
           </button>
         </div>
+        <SidebarLauncher isCollapsed={isCollapsed} />
       </div>
 
       {!isCollapsed && (
