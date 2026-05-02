@@ -38,6 +38,11 @@ import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
 import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
 import { loadTransactions, computeSnapshot, subscribe, type WalletTransaction } from '@/services/wallet/walletStore';
+import {
+  fetchInbox, fetchUnreadCount, markRead, markAllRead,
+  subscribe as subscribeNotifications, fmtRelative as fmtNotifTime,
+  type NotificationView,
+} from '@/services/notifications/notificationsStore';
 import './Topbar.scss';
 
 // Brand text animation variants — one picked randomly on each mount/refresh
@@ -196,11 +201,31 @@ const Topbar = ({ isMobile = false, isDrawerOpen = false, onMenuClick }: TopbarP
   const searchRef = useRef<HTMLDivElement>(null);
   const walletRef = useRef<HTMLDivElement>(null);
 
-  const notifications = [
-    { id: 1, title: 'Application Approved', message: 'Your passport application has been approved', time: '2m ago', unread: true },
-    { id: 2, title: 'Document Required', message: 'Please upload your address proof', time: '1h ago', unread: true },
-    { id: 3, title: 'Payment Received', message: 'Payment of Rs. 500 received successfully', time: '3h ago', unread: false },
-  ];
+  // Live notifications — backed by /api/v1/notifications
+  const [notifItems, setNotifItems] = useState<NotificationView[]>([]);
+  const [notifUnread, setNotifUnread] = useState<number>(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      const [r, n] = await Promise.all([fetchInbox({ limit: 8 }), fetchUnreadCount()]);
+      if (cancelled) return;
+      setNotifItems(r.items);
+      setNotifUnread(n);
+    };
+    void refresh();
+    // Re-poll on focus + every 60s in the background
+    const onFocus = () => { void refresh(); };
+    window.addEventListener('focus', onFocus);
+    const t = setInterval(() => { void refresh(); }, 60_000);
+    const unsub = subscribeNotifications(() => { void refresh(); });
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+      window.removeEventListener('focus', onFocus);
+      unsub();
+    };
+  }, []);
 
   // Live wallet data — subscribes to walletStore changes
   useEffect(() => {
@@ -349,7 +374,7 @@ const Topbar = ({ isMobile = false, isDrawerOpen = false, onMenuClick }: TopbarP
     navigate('/login', { replace: true });
   };
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifUnread;
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-IN', {
@@ -724,22 +749,47 @@ const Topbar = ({ isMobile = false, isDrawerOpen = false, onMenuClick }: TopbarP
             <div className="bm-dropdown-backdrop" onClick={() => setShowNotifications(false)} />
             <div className="bm-notification-dropdown bm-dark-dropdown">
               <div className="bm-dropdown-header">
-                <span>Notifications</span>
-                <button className="bm-mark-read">Mark all read</button>
+                <span>Notifications {notifUnread > 0 && <em style={{ color: '#fcd34d', fontStyle: 'normal' }}>({notifUnread})</em>}</span>
+                {notifUnread > 0 && (
+                  <button className="bm-mark-read" onClick={() => { void markAllRead(); }}>
+                    Mark all read
+                  </button>
+                )}
               </div>
               <div className="bm-notification-list">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className={`bm-notification-item ${notification.unread ? 'unread' : ''}`}>
-                    <div className="bm-notification-content">
-                      <span className="bm-notification-title">{notification.title}</span>
-                      <span className="bm-notification-message">{notification.message}</span>
-                    </div>
-                    <span className="bm-notification-time">{notification.time}</span>
+                {notifItems.length === 0 ? (
+                  <div className="bm-notification-empty" style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: 13 }}>
+                    No notifications yet.<br />
+                    <small style={{ opacity: 0.7 }}>Updates from the team will appear here.</small>
                   </div>
-                ))}
+                ) : notifItems.map((n) => {
+                  const unread = !n.readAt;
+                  return (
+                    <div
+                      key={n.recipientId}
+                      className={`bm-notification-item ${unread ? 'unread' : ''}`}
+                      onClick={() => {
+                        if (unread) void markRead(n.recipientId);
+                        if (n.actionUrl) { navigate(n.actionUrl); setShowNotifications(false); }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="bm-notification-content">
+                        <span className="bm-notification-title">{n.title}</span>
+                        {n.body && <span className="bm-notification-message">{n.body}</span>}
+                      </div>
+                      <span className="bm-notification-time">{fmtNotifTime(n.createdAt)}</span>
+                    </div>
+                  );
+                })}
               </div>
               <div className="bm-dropdown-footer">
-                <button onClick={() => navigate('/notifications')}>View all notifications</button>
+                <button onClick={() => { navigate('/notifications'); setShowNotifications(false); }}>
+                  View all notifications
+                </button>
+                <button onClick={() => { navigate('/notifications/compose'); setShowNotifications(false); }} style={{ marginLeft: 8 }}>
+                  Compose
+                </button>
               </div>
             </div>
             </>

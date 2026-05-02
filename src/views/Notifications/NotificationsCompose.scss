@@ -1,0 +1,303 @@
+@use '../../styles/variables' as *;
+
+.bm-compose {
+  padding: 0 $spacing-xl $spacing-2xl;
+
+  .bm-compose-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: $spacing-lg;
+    margin-top: $spacing-lg;
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+  }
+
+  .bm-compose-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-lg $spacing-xl;
+    margin-bottom: $spacing-md;
+
+    h4 {
+      margin: 0 0 $spacing-sm;
+      font-size: 12px;
+      font-weight: $font-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-secondary);
+    }
+  }
+  .bm-compose-card-sub {
+    margin: 0 0 $spacing-md;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  // Form fields
+  .bm-compose-row-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+
+    > label {
+      display: flex; flex-direction: column; gap: 6px;
+      > span {
+        font-size: 12px;
+        font-weight: $font-semibold;
+        color: var(--color-text);
+      }
+    }
+  }
+  .bm-compose-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: $spacing-md;
+
+    > span {
+      font-size: 12px;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+      em { color: $danger-color; font-style: normal; margin-left: 2px; }
+      small { color: var(--color-text-secondary); font-weight: $font-normal; margin-left: 4px; }
+    }
+    > small {
+      align-self: flex-end;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: $font-sm;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      &:focus { border-color: $primary-color; }
+    }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  }
+
+  select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: $font-sm;
+    color: var(--color-text);
+    outline: none;
+    &:focus { border-color: $primary-color; }
+  }
+
+  // Severity row
+  .bm-compose-sev-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .bm-compose-sev {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 7px 12px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    svg { width: 14px; height: 14px; }
+    &:hover { border-color: var(--color-text-secondary); }
+    &.active.sev-info     { border-color: $primary-color; background: rgba($primary-color, 0.10); color: $primary-color; }
+    &.active.sev-success  { border-color: $success-color; background: rgba($success-color, 0.10); color: $success-color; }
+    &.active.sev-warning  { border-color: $warning-color; background: rgba($warning-color, 0.10); color: $warning-color; }
+    &.active.sev-critical { border-color: $danger-color;  background: rgba($danger-color, 0.10);  color: $danger-color;  }
+  }
+
+  // Audience section
+  .bm-compose-section {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-lg;
+    border-top: 1px solid var(--color-border-light);
+  }
+  .bm-compose-aud-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: $spacing-md;
+    flex-wrap: wrap;
+  }
+  .bm-compose-aud-tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 13px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    svg { width: 14px; height: 14px; }
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &.active {
+      background: $primary-color;
+      color: #fff;
+      border-color: $primary-color;
+    }
+  }
+
+  .bm-compose-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px;
+    background: var(--color-background);
+    border-radius: $radius-md;
+  }
+  .bm-compose-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    background: var(--color-card-bg);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-full;
+    font-size: 12px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    text-transform: capitalize;
+    transition: $transition-fast;
+    &:hover { border-color: $primary-color; }
+    &.active {
+      background: $primary-color;
+      color: #fff;
+      border-color: $primary-color;
+    }
+  }
+  .bm-compose-chip-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  // Actions
+  .bm-compose-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .bm-compose-summary {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    strong { color: var(--color-text); font-weight: $font-semibold; }
+  }
+
+  // Buttons
+  .bm-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    color: var(--color-text);
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    cursor: pointer;
+    text-decoration: none;
+    transition: $transition-base;
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    svg { width: 15px; height: 15px; }
+  }
+  .bm-btn-primary {
+    background: $primary-color; color: #fff; border-color: $primary-color;
+    &:hover { background: $primary-deep; color: #fff; border-color: $primary-deep; }
+    &:disabled { background: var(--color-border); border-color: var(--color-border); color: #fff; }
+  }
+
+  // Right pane
+  .bm-compose-side {
+    display: flex;
+    flex-direction: column;
+  }
+  .bm-compose-preview-row {
+    display: flex;
+    gap: 0;
+    background: var(--color-background);
+    border-radius: $radius-md;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+  .bm-compose-preview-bar {
+    width: 4px;
+    flex-shrink: 0;
+  }
+  .sev-info     .bm-compose-preview-bar { background: $primary-color; }
+  .sev-success  .bm-compose-preview-bar { background: $success-color; }
+  .sev-warning  .bm-compose-preview-bar { background: $warning-color; }
+  .sev-critical .bm-compose-preview-bar { background: $danger-color; }
+  .bm-compose-preview-body {
+    padding: 12px 14px;
+    flex: 1;
+  }
+  .bm-compose-preview-title {
+    font-size: 13px;
+    font-weight: $font-semibold;
+    color: var(--color-text);
+    margin-bottom: 4px;
+  }
+  .bm-compose-preview-text {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+    margin-bottom: 6px;
+  }
+  .bm-compose-preview-action {
+    font-size: 11px;
+    color: $primary-color;
+    font-weight: $font-medium;
+    margin-bottom: 6px;
+  }
+  .bm-compose-preview-meta {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bm-compose-templates {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bm-compose-tpl {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    text-align: left;
+    cursor: pointer;
+    transition: $transition-fast;
+    &:hover { border-color: $primary-color; }
+    strong { font-size: 12px; color: var(--color-text); }
+    small { font-size: 11px; color: var(--color-text-secondary); font-family: ui-monospace, monospace; }
+  }
+  .bm-compose-tpl-empty {
+    display: block;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+}

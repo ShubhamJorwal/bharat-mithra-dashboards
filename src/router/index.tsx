@@ -82,6 +82,8 @@ const Documents = lazy(() => import("@/views/Documents/Documents"));
 const Shortcuts = lazy(() => import("@/views/Shortcuts/Shortcuts"));
 const Settings = lazy(() => import("@/views/Settings/Settings"));
 const Help = lazy(() => import("@/views/Help/Help"));
+const NotificationsInbox = lazy(() => import("@/views/Notifications/NotificationsInbox"));
+const NotificationsCompose = lazy(() => import("@/views/Notifications/NotificationsCompose"));
 const Telecaller = lazy(() => import("@/views/Telecaller/Telecaller"));
 const SupportDashboard = lazy(() => import("@/views/SupportDashboard/SupportDashboard"));
 const TestPlan = lazy(() => import("@/views/TestPlan/TestPlan"));
@@ -191,6 +193,10 @@ const routerConfig = [
       { path: "shortcuts", element: lazyRoute(<Shortcuts />) },
       { path: "settings", element: lazyRoute(<Settings />) },
       { path: "help", element: lazyRoute(<Help />) },
+
+      // Notifications module (migration 214)
+      { path: "notifications", element: lazyRoute(<NotificationsInbox />) },
+      { path: "notifications/compose", element: lazyRoute(<NotificationsCompose />) },
 
       // Test Plan — Full Blueprint
       { path: "test", element: lazyRoute(<TestPlan />) },
