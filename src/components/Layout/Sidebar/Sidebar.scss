@@ -289,40 +289,13 @@
   }
 }
 
-// Footer — clean top divider, animated soft gradient backdrop.
+// Footer — clean top divider only.
 // Launcher row footer height ≈ 64px (10px top + 44px buttons + 10px bottom).
 .bm-sidebar-footer {
   position: relative;
   padding: 10px 10px;
   border-top: 1px solid var(--color-border);
-  background:
-    linear-gradient(135deg,
-      rgba($primary-color, 0.08) 0%,
-      rgba(168, 85, 247, 0.06) 30%,
-      rgba(245, 87, 108, 0.06) 60%,
-      rgba($primary-color, 0.08) 100%);
-  background-size: 220% 220%;
-  animation: bm-sidebar-footer-shift 14s ease-in-out infinite;
-  overflow: hidden;
-
-  // Soft inner glow on top edge
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse at 50% -20%,
-      rgba(255, 255, 255, 0.18),
-      transparent 60%
-    );
-    pointer-events: none;
-  }
-}
-
-@keyframes bm-sidebar-footer-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  background: transparent;
 }
 
 // Collapse handle — sits ON the top divider of the launcher footer
