@@ -2,356 +2,156 @@
 
 .bm-sl {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 0 0;
+  padding: 10px 0 4px;
   margin-top: 6px;
   border-top: 1px solid var(--color-border-light);
 }
 
-// ─── Sidebar buttons ──────────────────────────────────────────────────
-.bm-sl-btn {
-  position: relative;
+.bm-sl-row {
   display: flex;
-  align-items: center;
   gap: 10px;
-  width: 100%;
-  height: 40px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  overflow: visible;
-  background-size: 200% 200%;
-  box-shadow:
-    0 4px 12px rgba(118, 75, 162, 0.28),
-    0 2px 4px rgba(0, 0, 0, 0.08);
-  transition:
-    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s,
-    background-position 4s ease infinite;
+  justify-content: center;
+  align-items: center;
 
   &.collapsed {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    justify-content: center;
-    align-self: center;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+// ─── Circular icon buttons ────────────────────────────────────────────
+.bm-sl-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
-    transform: translateY(-1px) scale(1.02);
+    background: var(--color-background);
+    border-color: $primary-color;
+    color: $primary-color;
   }
 
-  &:active { transform: scale(0.97); }
-
-  // ✨ Planner — purple/pink gradient
-  &.bm-sl-btn-planner {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f5576c 100%);
-    background-size: 200% 200%;
-    animation:
-      bm-sl-gradient 6s ease infinite,
-      bm-sl-pulse 2.6s ease-in-out infinite;
-
-    &:hover {
-      box-shadow:
-        0 8px 20px rgba(118, 75, 162, 0.45),
-        0 4px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    &.open {
-      background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
-      animation: bm-sl-gradient 6s ease infinite;
-      .bm-sl-btn-rays, .bm-sl-btn-glow { display: none; }
-      .bm-sl-btn-icon { transform: rotate(180deg); }
-    }
+  &.open {
+    background: $primary-color;
+    border-color: $primary-color;
+    color: #fff;
   }
-
-  // ⚡ Shortcuts — blue/cyan gradient
-  &.bm-sl-btn-shortcuts {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
-    background-size: 200% 200%;
-    animation:
-      bm-sl-gradient 7s ease infinite,
-      bm-sl-pulse-cyan 2.8s ease-in-out infinite;
-
-    &:hover {
-      box-shadow:
-        0 8px 20px rgba(0, 242, 254, 0.45),
-        0 4px 8px rgba(0, 0, 0, 0.12);
-    }
-  }
-}
-
-// Rays around the button
-.bm-sl-btn-rays {
-  position: absolute;
-  inset: -6px;
-  border-radius: 14px;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg, rgba(255, 255, 255, 0.42) 30deg, transparent 60deg,
-    transparent 120deg, rgba(255, 255, 255, 0.42) 150deg, transparent 180deg,
-    transparent 240deg, rgba(255, 255, 255, 0.42) 270deg, transparent 300deg
-  );
-  filter: blur(3px);
-  opacity: 0.55;
-  animation: bm-sl-spin 9s linear infinite;
-  pointer-events: none;
-  z-index: 0;
-}
-
-// Outer glow
-.bm-sl-btn-glow {
-  position: absolute;
-  inset: -4px;
-  border-radius: 14px;
-  filter: blur(8px);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: bm-sl-glow 3.2s ease-in-out infinite;
-  z-index: 0;
-}
-.bm-sl-btn-planner .bm-sl-btn-glow {
-  background: radial-gradient(ellipse, rgba(245, 87, 108, 0.5) 0%, transparent 70%);
-}
-.bm-sl-btn-shortcuts .bm-sl-btn-glow {
-  background: radial-gradient(ellipse, rgba(67, 233, 123, 0.45) 0%, transparent 70%);
-}
-
-.bm-sl-btn-icon {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  svg {
-    width: 18px;
-    height: 18px;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-  }
-}
-
-.bm-sl-btn-label {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  white-space: nowrap;
-}
-
-// Animations
-@keyframes bm-sl-gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-@keyframes bm-sl-pulse {
-  0%, 100% {
-    box-shadow:
-      0 4px 12px rgba(118, 75, 162, 0.28),
-      0 2px 4px rgba(0, 0, 0, 0.08),
-      0 0 0 0 rgba(245, 87, 108, 0.4);
-  }
-  50% {
-    box-shadow:
-      0 4px 12px rgba(118, 75, 162, 0.28),
-      0 2px 4px rgba(0, 0, 0, 0.08),
-      0 0 0 8px rgba(245, 87, 108, 0);
-  }
-}
-@keyframes bm-sl-pulse-cyan {
-  0%, 100% {
-    box-shadow:
-      0 4px 12px rgba(0, 242, 254, 0.28),
-      0 2px 4px rgba(0, 0, 0, 0.08),
-      0 0 0 0 rgba(67, 233, 123, 0.4);
-  }
-  50% {
-    box-shadow:
-      0 4px 12px rgba(0, 242, 254, 0.28),
-      0 2px 4px rgba(0, 0, 0, 0.08),
-      0 0 0 8px rgba(67, 233, 123, 0);
-  }
-}
-@keyframes bm-sl-spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes bm-sl-glow {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50% { opacity: 0.95; transform: scale(1.12); }
 }
 
 // ─── Popup panel ──────────────────────────────────────────────────────
 .bm-sl-panel {
   pointer-events: none;
   position: absolute;
-  bottom: 0;
-  left: calc(100% + 12px);
-  width: 320px;
+  bottom: 8px;
+  left: calc(100% + 10px);
+  width: 300px;
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-radius: 18px;
-  box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.22),
-    0 4px 12px rgba(0, 0, 0, 0.06);
-  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  padding: 12px;
   opacity: 0;
-  transform: translateX(-20px) scale(0.94);
-  transform-origin: bottom left;
-  transition:
-    opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-6px);
+  transition: opacity 0.15s, transform 0.15s;
   visibility: hidden;
   z-index: 1200;
 
   &.open {
     pointer-events: auto;
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0);
     visibility: visible;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 18px;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(102, 126, 234, 0.07), transparent 50%),
-      radial-gradient(circle at 80% 100%, rgba(245, 87, 108, 0.07), transparent 50%);
-    pointer-events: none;
   }
 }
 
 .bm-sl-panel-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
-  position: relative;
-  z-index: 1;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-light);
 }
 .bm-sl-panel-title {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--color-text);
-  letter-spacing: -0.01em;
-}
-.bm-sl-panel-subtitle {
-  font-size: 11px;
-  color: var(--color-text-secondary);
-  margin-top: 2px;
 }
 .bm-sl-panel-close {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: none;
-  background: var(--color-background);
+  background: transparent;
   border-radius: 50%;
   cursor: pointer;
   display: grid;
   place-items: center;
   color: var(--color-text-secondary);
-  transition: all 0.18s;
   &:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: $danger-color;
-    transform: rotate(90deg);
+    background: var(--color-background);
+    color: var(--color-text);
   }
   svg { width: 14px; height: 14px; }
 }
 
 .bm-sl-panel-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .bm-sl-panel-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
   text-align: left;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateX(8px);
-  animation: bm-sl-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition:
-    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.18s;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      120deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.18) 50%,
-      transparent 70%
-    );
-    transform: translateX(-100%);
-    transition: transform 0.55s ease;
-  }
+  color: var(--color-text);
+  transition: background 0.12s, border-color 0.12s;
 
   &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-    &::after { transform: translateX(100%); }
+    background: var(--color-background);
+    border-color: var(--color-border);
   }
-
-  &:active { transform: translateY(0) scale(0.99); }
 }
 
 .bm-sl-panel-item-icon {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 9px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   display: grid;
   place-items: center;
-  backdrop-filter: blur(6px);
-  svg {
-    width: 20px;
-    height: 20px;
-    color: #fff;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
-  }
+  color: $primary-color;
+  svg { width: 16px; height: 16px; }
 }
 .bm-sl-panel-item-body { flex: 1; min-width: 0; }
 .bm-sl-panel-item-label {
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--color-text);
   margin-bottom: 2px;
 }
 .bm-sl-panel-item-desc {
   font-size: 11px;
-  opacity: 0.9;
+  color: var(--color-text-secondary);
   line-height: 1.35;
-  font-weight: 500;
-}
-
-@keyframes bm-sl-item-in {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }

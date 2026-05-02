@@ -11,7 +11,6 @@ interface PopupItem {
   label: string;
   description: string;
   icon: React.ReactNode;
-  gradient: string;
 }
 
 const PLANNER_ITEMS: PopupItem[] = [
@@ -20,14 +19,12 @@ const PLANNER_ITEMS: PopupItem[] = [
     label: 'Calendar',
     description: 'Tasks, events, deadlines & shared notes',
     icon: <HiOutlineCalendar />,
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   },
   {
     path: '/notebook',
     label: 'Notebook',
     description: 'Personal & shared notes, sticky notes, playbooks',
     icon: <HiOutlineBookOpen />,
-    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
 ];
 
@@ -69,53 +66,41 @@ const SidebarLauncher = ({ isCollapsed }: SidebarLauncherProps) => {
 
   return (
     <div className="bm-sl" ref={wrapRef}>
-      {/* Planner button — opens popup with Calendar + Notebook */}
-      <button
-        className={`bm-sl-btn bm-sl-btn-planner ${openPanel === 'planner' ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}
-        onClick={() => setOpenPanel(p => p === 'planner' ? null : 'planner')}
-        title={isCollapsed ? 'Planner' : undefined}
-        aria-label="Open planner"
-      >
-        <span className="bm-sl-btn-rays" />
-        <span className="bm-sl-btn-glow" />
-        <span className="bm-sl-btn-icon">
+      <div className={`bm-sl-row ${isCollapsed ? 'collapsed' : ''}`}>
+        {/* Planner button — opens popup with Calendar + Notebook */}
+        <button
+          className={`bm-sl-btn bm-sl-btn-planner ${openPanel === 'planner' ? 'open' : ''}`}
+          onClick={() => setOpenPanel(p => p === 'planner' ? null : 'planner')}
+          title="Planner"
+          aria-label="Open planner"
+        >
           {openPanel === 'planner' ? <HiOutlineX /> : <HiOutlineSparkles />}
-        </span>
-        {!isCollapsed && <span className="bm-sl-btn-label">Planner</span>}
-      </button>
+        </button>
 
-      {/* Shortcuts button — navigates to /shortcuts */}
-      <button
-        className={`bm-sl-btn bm-sl-btn-shortcuts ${isCollapsed ? 'collapsed' : ''}`}
-        onClick={handleShortcuts}
-        title={isCollapsed ? 'Shortcuts' : undefined}
-        aria-label="Shortcuts"
-      >
-        <span className="bm-sl-btn-rays" />
-        <span className="bm-sl-btn-glow" />
-        <span className="bm-sl-btn-icon">
+        {/* Shortcuts button */}
+        <button
+          className="bm-sl-btn bm-sl-btn-shortcuts"
+          onClick={handleShortcuts}
+          title="Shortcuts"
+          aria-label="Shortcuts"
+        >
           <HiOutlineLightningBolt />
-        </span>
-        {!isCollapsed && <span className="bm-sl-btn-label">Shortcuts</span>}
-      </button>
+        </button>
+      </div>
 
       {/* Planner popup — Calendar + Notebook */}
-      <div className={`bm-sl-panel ${openPanel === 'planner' ? 'open' : ''} ${isCollapsed ? 'anchor-collapsed' : ''}`}>
+      <div className={`bm-sl-panel ${openPanel === 'planner' ? 'open' : ''}`}>
         <div className="bm-sl-panel-head">
-          <div>
-            <div className="bm-sl-panel-title">Planner ✨</div>
-            <div className="bm-sl-panel-subtitle">Pick your workspace</div>
-          </div>
+          <div className="bm-sl-panel-title">Planner</div>
           <button className="bm-sl-panel-close" onClick={() => setOpenPanel(null)} aria-label="Close">
             <HiOutlineX />
           </button>
         </div>
         <div className="bm-sl-panel-grid">
-          {PLANNER_ITEMS.map((it, idx) => (
+          {PLANNER_ITEMS.map(it => (
             <button
               key={it.path}
               className="bm-sl-panel-item"
-              style={{ background: it.gradient, animationDelay: `${idx * 60}ms` }}
               onClick={() => { navigate(it.path); setOpenPanel(null); }}
             >
               <div className="bm-sl-panel-item-icon">{it.icon}</div>
