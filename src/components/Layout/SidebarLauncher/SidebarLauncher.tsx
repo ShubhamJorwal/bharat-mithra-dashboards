@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   HiOutlineSparkles, HiOutlineLightningBolt, HiOutlineX,
   HiOutlineCalendar, HiOutlineBookOpen,
+  HiOutlineCog, HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi';
 import './SidebarLauncher.scss';
 
@@ -59,32 +60,40 @@ const SidebarLauncher = ({ isCollapsed }: SidebarLauncherProps) => {
     return () => document.removeEventListener('keydown', handler);
   }, [openPanel]);
 
-  const handleShortcuts = () => {
+  const go = (path: string) => {
     setOpenPanel(null);
-    navigate('/shortcuts');
+    navigate(path);
   };
 
   return (
     <div className="bm-sl" ref={wrapRef}>
       <div className={`bm-sl-row ${isCollapsed ? 'collapsed' : ''}`}>
-        {/* Planner button — opens popup with Calendar + Notebook */}
+        {/* Planner — opens popup with Calendar + Notebook */}
         <button
-          className={`bm-sl-btn bm-sl-btn-planner ${openPanel === 'planner' ? 'open' : ''}`}
+          className={`bm-sl-btn ${openPanel === 'planner' ? 'open' : ''}`}
           onClick={() => setOpenPanel(p => p === 'planner' ? null : 'planner')}
-          title="Planner"
           aria-label="Open planner"
         >
           {openPanel === 'planner' ? <HiOutlineX /> : <HiOutlineSparkles />}
+          <span className="bm-sl-tooltip">Planner</span>
         </button>
 
-        {/* Shortcuts button */}
-        <button
-          className="bm-sl-btn bm-sl-btn-shortcuts"
-          onClick={handleShortcuts}
-          title="Shortcuts"
-          aria-label="Shortcuts"
-        >
+        {/* Shortcuts */}
+        <button className="bm-sl-btn" onClick={() => go('/shortcuts')} aria-label="Shortcuts">
           <HiOutlineLightningBolt />
+          <span className="bm-sl-tooltip">Shortcuts</span>
+        </button>
+
+        {/* Settings */}
+        <button className="bm-sl-btn" onClick={() => go('/settings')} aria-label="Settings">
+          <HiOutlineCog />
+          <span className="bm-sl-tooltip">Settings</span>
+        </button>
+
+        {/* Help */}
+        <button className="bm-sl-btn" onClick={() => go('/help')} aria-label="Help">
+          <HiOutlineQuestionMarkCircle />
+          <span className="bm-sl-tooltip">Help</span>
         </button>
       </div>
 
