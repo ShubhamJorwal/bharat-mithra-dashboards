@@ -19,6 +19,48 @@ $sl-ut: $success-alt;          // UTs     → emerald
 // STATE-SPECIFIC EXTRAS
 // ============================================
 
+// Curated landmark image at the top of each card (Mysore Palace for KA,
+// Taj Mahal for UP, etc. — sourced from STATE_IMAGES in Staff/StatePicker)
+.sl-card {
+  // Tighten the head padding now that the image sits above it
+  &__landmark {
+    position: relative;
+    width: 100%;
+    height: 130px;
+    overflow: hidden;
+    background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+    border-bottom: 1px dashed var(--color-border-light, var(--color-border));
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    // Soft bottom gradient so the badges below read clearly
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 50%;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.05) 60%,
+        rgba(0, 0, 0, 0.18) 100%
+      );
+      pointer-events: none;
+    }
+  }
+
+  &:hover &__landmark img {
+    transform: scale(1.06);
+  }
+}
+
 // Card state/UT variant — the view-icon adopts the right color
 .sl-card {
   &--state .sl-card__view-icon {

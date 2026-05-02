@@ -385,3 +385,63 @@ body.dark-mode {
     background: var(--color-background);
   }
 }
+
+// =====================================================================
+// MOBILE DRAWER MODE  (added 2026-05-02)
+// Below 1024 px the sidebar becomes an off-canvas drawer that slides in
+// from the left over a backdrop, and the resize/collapse handles hide.
+// =====================================================================
+.bm-sidebar.is-drawer {
+  // Fixed slide-in width — overrides the inline width style on mobile
+  width: 280px !important;
+  max-width: 86vw;
+  // Sit on top of everything (above the backdrop at z:98)
+  z-index: 1000;
+  // Smooth slide
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  // Stronger shadow so it reads as floating over content
+  box-shadow: 12px 0 36px rgba(0, 0, 0, 0.18);
+  // Force expanded behavior — section titles and full nav items always visible
+  .bm-nav-section-title { display: block !important; }
+  .bm-nav-item {
+    justify-content: flex-start !important;
+    padding: 6px 14px !important;
+    .bm-nav-icon { margin-right: 10px !important; }
+  }
+
+  // Hide desktop-only chrome
+  .bm-collapse-handle,
+  .bm-resize-handle {
+    display: none !important;
+  }
+}
+
+.bm-sidebar.is-drawer.is-closed {
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.bm-sidebar.is-drawer.is-open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+// Backdrop behind the drawer — click closes it
+.bm-drawer-backdrop {
+  position: fixed;
+  inset: 48px 0 0 0; // start below the topbar
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  animation: bmDrawerFadeIn 0.18s ease-out;
+}
+
+@keyframes bmDrawerFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-sidebar.is-drawer { transition: none !important; }
+  .bm-drawer-backdrop { animation: none !important; }
+}

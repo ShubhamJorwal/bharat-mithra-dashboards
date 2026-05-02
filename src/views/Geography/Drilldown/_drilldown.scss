@@ -1,0 +1,916 @@
+@use 'sass:color';
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+// =====================================================================
+// GEOGRAPHY DRILLDOWN — shared styles for State / District / Taluk / GP /
+// Village pages. One stylesheet, parameterised by --level-color so each
+// level gets its own theme automatically.
+//
+// Levels & default colors:
+//   States      → $primary-color (blue)
+//   Districts   → $success-alt   (emerald)
+//   Taluks      → #ec4899        (pink)
+//   GPs         → $warning-color (amber)
+//   Villages    → #6366f1        (indigo)
+// =====================================================================
+
+.geo-dd {
+  --level-color: #{$primary-color};
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 58px);
+  padding-bottom: 80px;
+
+  &--district { --level-color: #{$success-alt}; }
+  &--taluk    { --level-color: #ec4899; }
+  &--gp       { --level-color: #{$warning-color}; }
+  &--village  { --level-color: #6366f1; }
+}
+
+// =====================================================================
+// BREADCRUMB
+// =====================================================================
+.geo-dd__crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 0 10px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.geo-dd__crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--color-border-light, var(--color-border));
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.18s ease;
+
+  svg { font-size: 14px; }
+
+  &:hover {
+    background: var(--color-background);
+    border-color: var(--level-color);
+    color: var(--level-color);
+  }
+
+  &--current {
+    background: var(--level-color);
+    border-color: var(--level-color);
+    color: #fff;
+    font-weight: 600;
+    cursor: default;
+    &:hover { background: var(--level-color); border-color: var(--level-color); color: #fff; }
+  }
+}
+
+.geo-dd__crumb-sep {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+// =====================================================================
+// HERO — banner image + level badge + title + meta + stats
+// =====================================================================
+.geo-dd__hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 0;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light, var(--color-border));
+  background: var(--color-background);
+  flex-shrink: 0;
+  margin-bottom: 24px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.geo-dd__hero-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 36px;
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--level-color) 14%, transparent), transparent 60%),
+    var(--color-background);
+
+  @media (max-width: 600px) { padding: 24px 20px; }
+}
+
+.geo-dd__hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--level-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--level-color) 28%, transparent);
+  color: var(--level-color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  width: fit-content;
+
+  svg { font-size: 13px; }
+}
+
+.geo-dd__hero-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--color-text);
+
+  @media (max-width: 600px) { font-size: 24px; }
+}
+
+.geo-dd__hero-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: $radius-sm;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--color-border-light, var(--color-border));
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+.geo-dd__hero-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  svg { font-size: 14px; color: var(--level-color); opacity: 0.85; }
+}
+
+.geo-dd__hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--color-border-light, var(--color-border));
+}
+
+.geo-dd__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-text);
+    letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+  }
+  span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Hero image side
+.geo-dd__hero-image {
+  position: relative;
+  min-height: 220px;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    grid-row: 1;
+    min-height: 180px;
+  }
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .geo-dd__hero:hover & img { transform: scale(1.04); }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--color-background) 0%, transparent 25%);
+    pointer-events: none;
+
+    @media (max-width: 900px) {
+      background: linear-gradient(180deg, transparent 50%, var(--color-background) 100%);
+    }
+  }
+}
+
+// =====================================================================
+// CHILDREN SECTION (toolbar + grid)
+// =====================================================================
+.geo-dd__section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.geo-dd__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 0 16px;
+  border-bottom: 1px dashed var(--color-border-light, var(--color-border));
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.geo-dd__section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.2px;
+
+  small {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+}
+
+.geo-dd__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.geo-dd__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  min-width: 240px;
+  transition: all 0.18s ease;
+
+  &:focus-within {
+    border-color: var(--level-color);
+    background: var(--color-background);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--level-color) 14%, transparent);
+  }
+
+  svg { font-size: 16px; color: var(--color-text-secondary); flex-shrink: 0; }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--color-text);
+    outline: none;
+    &::placeholder { color: var(--color-text-secondary); }
+  }
+}
+
+// =====================================================================
+// CHILD GRID + CARDS
+// =====================================================================
+.geo-dd__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.geo-dd__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: $radius-lg;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--child-color, var(--level-color)) 35%, transparent);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+
+    .geo-dd__card-arrow {
+      background: var(--child-color, var(--level-color));
+      color: #fff;
+      transform: translateX(2px);
+    }
+    .geo-dd__card-img img { transform: scale(1.06); }
+  }
+}
+
+.geo-dd__card-img {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--child-color, var(--level-color)) 8%, var(--color-background-secondary));
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 60%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.45) 100%);
+    pointer-events: none;
+  }
+}
+
+.geo-dd__card-img-letter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--child-color, var(--level-color));
+  opacity: 0.35;
+  letter-spacing: -2px;
+}
+
+.geo-dd__card-pin {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--child-color, var(--level-color));
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.geo-dd__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 12px;
+}
+
+.geo-dd__card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.geo-dd__card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+
+  span { display: inline-flex; align-items: center; gap: 4px; }
+  svg { font-size: 13px; opacity: 0.7; }
+}
+
+.geo-dd__card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-top: 1px dashed var(--color-border-light, var(--color-border));
+}
+
+.geo-dd__card-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+
+  strong {
+    color: var(--color-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-right: 2px;
+  }
+}
+
+.geo-dd__card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+
+  svg { font-size: 14px; }
+}
+
+// =====================================================================
+// TYPOGRAPHIC CARD — used below state level
+// Square image of the parent state on the left, name + meta + stats on
+// the right. Dashed border in the level color for visual identity.
+// =====================================================================
+.geo-dd__tcard {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--color-background);
+  border: 1.5px dashed color-mix(in srgb, var(--child-color, var(--level-color)) 32%, transparent);
+  border-radius: $radius-lg;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--child-color, var(--level-color));
+    border-style: solid;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+
+    .geo-dd__tcard-mark img { transform: scale(1.06); }
+    .geo-dd__tcard-arrow {
+      background: var(--child-color, var(--level-color));
+      color: #fff;
+      transform: translateX(2px);
+      border-color: var(--child-color, var(--level-color));
+    }
+  }
+}
+
+// Square image mark on the left — the parent state's landmark
+.geo-dd__tcard-mark {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--child-color, var(--level-color)) 8%, var(--color-background-secondary));
+  flex-shrink: 0;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  // First-letter fallback on top-left when image is missing/loading —
+  // visible only when the image hasn't loaded (z-index below img).
+  &-letter {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--child-color, var(--level-color));
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1;
+    z-index: 0;
+    text-transform: uppercase;
+  }
+}
+
+.geo-dd__tcard-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding-right: 36px; // leave room for the arrow button on the right
+}
+
+.geo-dd__tcard-pin {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--child-color, var(--level-color)) 12%, transparent);
+  color: var(--child-color, var(--level-color));
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.geo-dd__tcard-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 600px) { font-size: 16px; }
+}
+
+.geo-dd__tcard-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  svg { font-size: 13px; opacity: 0.75; }
+}
+
+.geo-dd__tcard-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--color-border-light, var(--color-border));
+  font-size: 12px;
+  color: var(--color-text-secondary);
+
+  span {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.geo-dd__tcard-arrow {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+
+  svg { font-size: 14px; }
+}
+
+// Slightly tighter on mobile
+@media (max-width: 600px) {
+  .geo-dd__tcard {
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  .geo-dd__tcard-mark {
+    width: 72px;
+    height: 72px;
+  }
+  .geo-dd__tcard-mark-letter {
+    font-size: 28px;
+  }
+  .geo-dd__tcard-arrow {
+    width: 26px;
+    height: 26px;
+  }
+  .geo-dd__tcard-body { padding-right: 32px; }
+}
+
+// =====================================================================
+// LOADING / EMPTY / ERROR
+// =====================================================================
+.geo-dd__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: var(--color-text-secondary);
+
+  &-spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--level-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p { margin: 0; font-size: 13px; font-weight: 500; }
+}
+
+.geo-dd__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 10px;
+
+  svg {
+    font-size: 44px;
+    color: var(--color-text-secondary);
+    opacity: 0.4;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    max-width: 320px;
+  }
+}
+
+.geo-dd__alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  border-radius: $radius-md;
+  font-size: 13px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: $danger-deep;
+  flex-shrink: 0;
+
+  svg { font-size: 18px; flex-shrink: 0; }
+  span { flex: 1; }
+}
+
+// =====================================================================
+// SKELETON CARDS — matches the typographic card shape (mark + body row)
+// =====================================================================
+.geo-dd__skel {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--color-background);
+  border: 1.5px dashed var(--color-border-light, var(--color-border));
+  border-radius: $radius-lg;
+
+  &-mark {
+    width: 96px;
+    height: 96px;
+    border-radius: $radius-md;
+    background: linear-gradient(90deg,
+      var(--color-background-secondary) 0%,
+      var(--color-background) 50%,
+      var(--color-background-secondary) 100%);
+    background-size: 200% 100%;
+    animation: geoDdShimmer 1.4s ease-in-out infinite;
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &-line {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+      var(--color-background-secondary) 0%,
+      var(--color-background) 50%,
+      var(--color-background-secondary) 100%);
+    background-size: 200% 100%;
+    animation: geoDdShimmer 1.4s ease-in-out infinite;
+
+    &--short { width: 50%; height: 12px; }
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+    padding: 12px;
+    &-mark { width: 72px; height: 72px; }
+  }
+}
+
+@keyframes geoDdShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// =====================================================================
+// VILLAGE LEAF PAGE
+// =====================================================================
+.geo-dd__leaf {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 18px;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.geo-dd__leaf-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.geo-dd__leaf-head {
+  padding: 16px 20px;
+  border-bottom: 1px dashed var(--color-border-light, var(--color-border));
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.3px;
+}
+
+.geo-dd__leaf-rows {
+  display: flex;
+  flex-direction: column;
+
+  .row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--color-border-light, var(--color-border));
+    font-size: 13px;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  .key {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .val {
+    color: var(--color-text);
+    font-weight: 600;
+    word-break: break-word;
+  }
+}
+
+.geo-dd__leaf-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.geo-dd__leaf-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border-radius: $radius-md;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--color-border-light, var(--color-border));
+
+  strong {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text);
+    line-height: 1;
+    letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+  }
+  span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+}
+
+// =====================================================================
+// REDUCED MOTION
+// =====================================================================
+@media (prefers-reduced-motion: reduce) {
+  .geo-dd__skel-img,
+  .geo-dd__skel-line,
+  .geo-dd__loading-spinner,
+  .geo-dd__hero-image img,
+  .geo-dd__card-img img {
+    animation: none !important;
+    transition: none !important;
+  }
+  .geo-dd__card { transition: none !important; }
+}

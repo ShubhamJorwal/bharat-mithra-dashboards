@@ -167,11 +167,15 @@ const Calendar = () => {
         {/* Viewer = "I'm logged in as" */}
         <div className="bm-cal-viewer">
           <span className="bm-cal-viewer-label">Viewing as</span>
+          <span
+            className="bm-cal-viewer-dot"
+            style={{ background: viewer.color }}
+            aria-hidden
+          />
           <select
             value={viewer.id}
             onChange={e => { setViewer(e.target.value); refresh(); }}
             className="bm-cal-viewer-select"
-            style={{ borderLeftColor: viewer.color }}
           >
             {STAFF_DIRECTORY.map(s => (
               <option key={s.id} value={s.id}>{s.initials} · {s.name} ({s.role})</option>
@@ -179,20 +183,20 @@ const Calendar = () => {
           </select>
         </div>
 
-        {/* Scope tabs — For you / Shared / Mine / All */}
-        <div className="bm-cal-scope">
-          <button className={`bm-cal-scope-tab ${scope === 'foryou' ? 'active' : ''}`} onClick={() => setScope('foryou')}>
-            <HiOutlineUser /> For you
-          </button>
-          <button className={`bm-cal-scope-tab ${scope === 'mine' ? 'active' : ''}`} onClick={() => setScope('mine')}>
-            By me
-          </button>
-          <button className={`bm-cal-scope-tab ${scope === 'shared' ? 'active' : ''}`} onClick={() => setScope('shared')}>
-            <HiOutlineUserGroup /> Shared with me
-          </button>
-          <button className={`bm-cal-scope-tab ${scope === 'all' ? 'active' : ''}`} onClick={() => setScope('all')}>
-            All staff
-          </button>
+        {/* Scope dropdown — replaces the wrap-and-scroll tab row */}
+        <div className="bm-cal-scope-wrap">
+          <span className="bm-cal-viewer-label">Show</span>
+          <select
+            className="bm-cal-scope-select"
+            value={scope}
+            onChange={(e) => setScope(e.target.value as ScopeFilter)}
+            aria-label="Scope filter"
+          >
+            <option value="foryou">⭐ For you</option>
+            <option value="mine">📌 By me</option>
+            <option value="shared">👥 Shared with me</option>
+            <option value="all">🌐 All staff</option>
+          </select>
         </div>
 
         {/* Search */}
@@ -221,17 +225,53 @@ const Calendar = () => {
         </div>
       </div>
 
-      {/* Calendar nav */}
+      {/* Calendar nav — bigger title on the left, segmented view on the right */}
       <div className="bm-cal-nav">
         <div className="bm-cal-nav-left">
-          <button className="bm-cal-nav-btn" onClick={() => navigate(-1)}><HiOutlineChevronLeft /></button>
-          <div className="bm-cal-nav-title">{navTitle}</div>
-          <button className="bm-cal-nav-btn" onClick={() => navigate(1)}><HiOutlineChevronRight /></button>
+          <div className="bm-cal-nav-arrows">
+            <button
+              className="bm-cal-nav-btn"
+              onClick={() => navigate(-1)}
+              aria-label={`Previous ${view}`}
+            >
+              <HiOutlineChevronLeft />
+            </button>
+            <button
+              className="bm-cal-nav-btn"
+              onClick={() => navigate(1)}
+              aria-label={`Next ${view}`}
+            >
+              <HiOutlineChevronRight />
+            </button>
+          </div>
+          <div className="bm-cal-nav-title-block">
+            {view === 'month' ? (
+              <>
+                <h2 className="bm-cal-nav-month">
+                  {cursor.toLocaleDateString('en-IN', { month: 'long' })}
+                </h2>
+                <span className="bm-cal-nav-year">
+                  {cursor.getFullYear()}
+                </span>
+              </>
+            ) : (
+              <h2 className="bm-cal-nav-month">{navTitle}</h2>
+            )}
+          </div>
+          <button
+            className="bm-cal-today-btn"
+            onClick={() => setCursor(new Date())}
+            title="Jump to today"
+          >
+            Today
+          </button>
         </div>
-        <div className="bm-cal-view-tabs">
+        <div className="bm-cal-view-tabs" role="tablist" aria-label="Calendar view">
           {(['month', 'week', 'day', 'agenda'] as ViewMode[]).map(v => (
             <button
               key={v}
+              role="tab"
+              aria-selected={view === v}
               className={`bm-cal-view-tab ${view === v ? 'active' : ''}`}
               onClick={() => setView(v)}
             >
@@ -425,15 +465,15 @@ const ItemPill = ({ item, onClick }: { item: CalendarItem; onClick: () => void }
   return (
     <button
       className={`bm-cal-item-pill type-${item.type} ${isDone ? 'done' : ''}`}
-      style={{ borderLeftColor: color }}
+      style={{ '--pill-color': color } as React.CSSProperties}
       onClick={onClick}
       title={item.title}
     >
-      <span className="bm-cal-item-emoji">{meta.emoji}</span>
-      <span className="bm-cal-item-title">{item.title}</span>
+      <span className="bm-cal-item-dot" aria-hidden />
       {!item.isAllDay && item.startTime && (
         <span className="bm-cal-item-time">{item.startTime}</span>
       )}
+      <span className="bm-cal-item-title">{item.title}</span>
       {owner && (
         <span className="bm-cal-item-owner" style={{ background: owner.color }} title={owner.name}>
           {owner.initials}

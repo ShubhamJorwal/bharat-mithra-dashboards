@@ -1,616 +1,325 @@
 @use '../../styles/variables' as *;
-@use '../Calendar/Calendar.scss';  // share toolbar/scope/modal styles
 
-.bm-nb-page {
-  padding: 0 $spacing-xl $spacing-2xl;
+// =====================================================================
+// NOTEBOOK — clean 3-column layout
+// Notebooks (left) → Pages (middle) → Editor (right)
+// Neutral palette. No decorative gradients/banners/persona switchers.
+// =====================================================================
 
-  // Stats
-  .bm-nb-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: $spacing-md;
-    margin: $spacing-lg 0;
-    @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+.nb {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 58px);
+  min-height: 540px;
+}
+
+// 3-column grid that fills remaining height
+.nb-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 240px 280px 1fr;
+  gap: 14px;
+  margin-top: 12px;
+  min-height: 0;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 200px 240px 1fr;
   }
-  .bm-nb-stat {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
-    padding: $spacing-md $spacing-lg;
-    border-left: 4px solid;
-    &.tone-primary { border-left-color: $primary-color; }
-    &.tone-success { border-left-color: $success-color; }
-    &.tone-warn    { border-left-color: $warning-color; }
-    &.tone-danger  { border-left-color: $danger-color; }
+  @media (max-width: 840px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(180px, auto) minmax(180px, auto) minmax(360px, 1fr);
+    height: auto;
+    min-height: calc(100vh - 58px);
   }
-  .bm-nb-stat-value {
-    font-size: $font-2xl;
-    font-weight: $font-bold;
-    color: var(--color-text);
-    letter-spacing: -0.01em;
-    line-height: 1;
-  }
-  .bm-nb-stat-label {
+}
+
+// ----- Column shell (notebooks + pages) -----
+.nb-col {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: $radius-lg;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.nb-col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border-light, var(--color-border));
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.02));
+  flex-shrink: 0;
+
+  span {
     font-size: 12px;
-    color: var(--color-text-secondary);
+    font-weight: 700;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-top: 4px;
+    color: var(--color-text);
   }
 
-  // Toolbar (uses bm-cal-* shared classes)
-  .bm-nb-toolbar {
-    display: grid;
-    grid-template-columns: minmax(220px, auto) 1fr minmax(220px, auto);
-    gap: $spacing-md;
-    margin-bottom: $spacing-md;
-    align-items: center;
-    @media (max-width: 1100px) { grid-template-columns: 1fr; }
-  }
-
-  // Workspace — 3 or 4 columns
-  .bm-nb-workspace {
-    display: grid;
-    grid-template-columns: 280px 320px 1fr;
-    gap: $spacing-md;
-    height: calc(100vh - 380px);
-    min-height: 500px;
-    &.with-stickies {
-      grid-template-columns: 240px 280px 1fr 280px;
-    }
-    @media (max-width: 1300px) {
-      grid-template-columns: 240px 280px 1fr;
-      &.with-stickies { grid-template-columns: 240px 280px 1fr; }
-      .bm-nb-stickies { display: none; }
-    }
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
-      height: auto;
-      .bm-nb-pages, .bm-nb-stickies { display: none; }
-    }
-  }
-
-  // Notebook list
-  .bm-nb-notebooks, .bm-nb-pages, .bm-nb-stickies {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
-    display: flex; flex-direction: column;
-    overflow: hidden;
-  }
-  .bm-nb-section-head {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: $spacing-sm $spacing-md;
+  em {
+    font-style: normal;
+    padding: 2px 8px;
+    border-radius: 999px;
     background: var(--color-background);
-    border-bottom: 1px solid var(--color-border);
-    font-size: 12px;
-    font-weight: $font-bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    border: 1px solid var(--color-border-light, var(--color-border));
     color: var(--color-text-secondary);
-    flex-shrink: 0;
-    span {
-      display: inline-flex; align-items: center; gap: 6px;
-      svg { width: 14px; height: 14px; }
-    }
-  }
-  .bm-nb-section-actions {
-    display: flex; gap: 2px;
-  }
-  .bm-nb-section-btn {
-    background: none; border: none; cursor: pointer;
-    width: 26px; height: 26px;
-    border-radius: $radius-md;
-    display: grid; place-items: center;
-    color: var(--color-text-secondary);
-    &:hover { background: var(--color-card-bg); color: var(--color-text); }
-    svg { width: 14px; height: 14px; }
-  }
-  .bm-nb-notebook-list, .bm-nb-page-list, .bm-nb-sticky-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .bm-nb-empty {
-    text-align: center;
-    padding: $spacing-xl $spacing-md;
-    color: var(--color-text-secondary);
-    font-size: $font-sm;
-    p { margin: 0 0 $spacing-sm; }
-  }
-
-  .bm-nb-notebook {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-sm 10px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-left: 3px solid;
-    border-radius: $radius-md;
-    cursor: pointer;
-    text-align: left;
-    transition: $transition-fast;
-    &:hover { background: var(--color-background); }
-    &.active {
-      background: rgba($primary-color, 0.08);
-      border-color: rgba($primary-color, 0.2);
-    }
-  }
-  .bm-nb-notebook-emoji {
-    font-size: 22px;
-    flex-shrink: 0;
-    width: 36px; height: 36px;
-    display: grid; place-items: center;
-  }
-  .bm-nb-notebook-body {
-    flex: 1;
-    min-width: 0;
-  }
-  .bm-nb-notebook-title {
-    font-size: $font-sm;
-    font-weight: $font-semibold;
-    color: var(--color-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .bm-nb-pinned-star {
-    width: 13px; height: 13px;
-    color: $warning-color;
-    fill: $warning-color;
-  }
-  .bm-nb-notebook-meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 2px;
     font-size: 11px;
-    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
-  .bm-nb-shared-tag {
-    background: rgba($primary-color, 0.12);
-    color: $primary-color;
-    font-size: 9px;
-    font-weight: $font-bold;
-    padding: 1px 6px;
-    border-radius: $radius-full;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .bm-nb-owner-tag {
-    width: 18px; height: 18px;
-    border-radius: $radius-full;
-    color: #fff;
-    font-size: 9px;
-    font-weight: $font-bold;
-    display: grid; place-items: center;
+}
+
+.nb-col-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  min-height: 0;
+}
+
+// ----- Items (notebook + page rows) -----
+.nb-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  margin: 0 0 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
   }
 
-  // Pages list
-  .bm-nb-add-page {
-    background: var(--color-background);
-    border: 1px dashed var(--color-border);
-    border-radius: $radius-md;
-    padding: 8px;
-    margin: 6px;
-    font-size: 12px;
-    font-weight: $font-medium;
-    color: var(--color-text);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 4px;
-    transition: $transition-fast;
-    &:hover { border-color: $primary-color; color: $primary-color; }
-    svg { width: 14px; height: 14px; }
+  &.is-active {
+    background: var(--color-background-secondary, rgba(0, 0, 0, 0.04));
+    border-color: var(--color-border);
   }
-  .bm-nb-page-card {
-    display: flex; flex-direction: column;
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-top: 4px solid;
-    border-radius: $radius-md;
-    padding: $spacing-sm 10px;
-    cursor: pointer;
-    text-align: left;
-    transition: $transition-fast;
-    &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: translateY(-1px); }
-    &.active {
-      border-color: $primary-color;
-      background: rgba($primary-color, 0.04);
-    }
+}
+
+.nb-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.1px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+}
+
+.nb-item-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+// "+ New page" button at the top of the pages column
+.nb-add-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: calc(100% - 8px);
+  margin: 0 4px 8px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px dashed var(--color-border);
+  border-radius: $radius-md;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg { font-size: 14px; }
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    border-style: solid;
   }
-  .bm-nb-page-card-head {
-    display: flex; justify-content: flex-start;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 4px;
-  }
-  .bm-nb-page-emoji { font-size: 18px; }
-  .bm-nb-page-title {
+}
+
+// ----- Empty state -----
+.nb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+  gap: 10px;
+  color: var(--color-text-secondary);
+
+  p {
+    margin: 0;
     font-size: 13px;
-    font-weight: $font-semibold;
-    color: var(--color-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 2px;
-  }
-  .bm-nb-page-preview {
-    font-size: 11px;
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    margin-bottom: 4px;
-  }
-  .bm-nb-page-labels {
-    display: flex; gap: 3px; flex-wrap: wrap;
-    margin-bottom: 4px;
-  }
-  .bm-nb-label-mini {
-    font-size: 9px;
-    font-weight: $font-bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #fff;
-    padding: 1px 5px;
-    border-radius: 3px;
-  }
-  .bm-nb-page-time {
-    font-size: 10px;
-    color: var(--color-text-secondary);
-    margin-top: auto;
   }
 
-  // Editor
-  .bm-nb-editor-pane {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
-    overflow: hidden;
-    overflow-y: auto;
-  }
-  .bm-nb-editor-empty {
-    height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: $spacing-sm;
-    color: var(--color-text-secondary);
-    padding: $spacing-2xl;
-    svg { width: 56px; height: 56px; opacity: 0.3; }
-    h3 { margin: 0; color: var(--color-text); font-weight: $font-semibold; }
-    p { margin: 0; font-size: $font-sm; }
-  }
-  .bm-nb-editor {
-    height: 100%;
-    display: flex; flex-direction: column;
-  }
-  .bm-nb-editor-cover {
-    height: 80px;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .bm-nb-editor-cover-actions {
-    position: absolute;
-    top: 8px; right: 8px;
-    display: flex; gap: 4px;
-  }
-  .bm-nb-cover-btn {
-    background: rgba(255,255,255,0.85);
-    border: none;
-    border-radius: $radius-md;
-    width: 28px; height: 28px;
-    cursor: pointer;
-    display: grid; place-items: center;
-    &:hover { background: #fff; }
-    svg { width: 16px; height: 16px; color: var(--color-text); }
-  }
-  .bm-nb-editor-content {
-    padding: $spacing-lg $spacing-2xl $spacing-2xl;
-    flex: 1;
-    overflow-y: auto;
-  }
-  .bm-nb-editor-emoji {
-    position: relative;
-    margin-top: -40px;
-    margin-bottom: $spacing-md;
-    width: fit-content;
-    .bm-nb-emoji-picker {
-      position: absolute;
-      top: 100%; left: 0;
-      background: var(--color-card-bg);
-      border: 1px solid var(--color-border);
-      border-radius: $radius-md;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      padding: 8px;
-      display: none;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 4px;
-      z-index: 10;
-      min-width: 280px;
-    }
-    &:hover .bm-nb-emoji-picker { display: grid; }
-    .bm-nb-emoji-picker button {
-      background: none; border: none; cursor: pointer;
-      width: 32px; height: 32px;
-      font-size: 20px;
-      border-radius: $radius-md;
-      &:hover { background: var(--color-background); }
-    }
-  }
-  .bm-nb-emoji-btn {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    width: 64px; height: 64px;
-    font-size: 36px;
-    cursor: pointer;
-    display: grid; place-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    &:hover { transform: scale(1.05); }
-  }
-  .bm-nb-editor-title {
-    width: 100%;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 2rem;
-    font-weight: $font-bold;
-    letter-spacing: -0.02em;
-    color: var(--color-text);
-    padding: 0;
-    margin-bottom: $spacing-sm;
-    &::placeholder { color: var(--color-text-secondary); opacity: 0.4; }
-  }
-  .bm-nb-editor-meta {
-    display: flex; gap: $spacing-sm;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: $spacing-md;
-  }
-  .bm-nb-pin-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: $font-medium;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    &:hover { border-color: $warning-color; color: $warning-color; }
-    svg { width: 13px; height: 13px; }
-  }
-  .bm-nb-meta-item {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 12px;
-    color: var(--color-text-secondary);
-    em { font-style: normal; opacity: 0.7; }
-    &.bm-nb-saved { color: $success-color; }
-    svg { width: 13px; height: 13px; }
-  }
-  .bm-nb-staff-initials {
-    width: 18px; height: 18px;
-    border-radius: $radius-full;
-    color: #fff;
-    font-size: 9px;
-    font-weight: $font-bold;
-    display: grid; place-items: center;
-  }
-  .bm-nb-editor-labels {
-    display: flex; flex-wrap: wrap; gap: 4px;
-    margin-bottom: $spacing-md;
-    align-items: center;
-    padding: 8px 12px;
-    background: var(--color-background);
-    border-radius: $radius-md;
-  }
-  .bm-nb-labels-label {
-    font-size: 11px;
-    font-weight: $font-bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-text-secondary);
-    display: inline-flex; align-items: center; gap: 4px;
-    svg { width: 13px; height: 13px; }
-    margin-right: 4px;
-  }
-  .bm-nb-label-toggle {
-    padding: 3px 8px;
-    border: 1.5px solid;
-    border-radius: $radius-full;
-    font-size: 11px;
-    font-weight: $font-medium;
-    cursor: pointer;
-    transition: $transition-fast;
-  }
-  .bm-nb-editor-textarea {
-    width: 100%;
-    min-height: 400px;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--color-text);
-    resize: vertical;
-    &::placeholder { color: var(--color-text-secondary); opacity: 0.5; }
-  }
-  .bm-nb-settings {
-    margin-top: $spacing-md;
-    padding: $spacing-md;
-    background: var(--color-background);
-    border-radius: $radius-md;
-    border: 1px solid var(--color-border);
-    h4 { margin: 0 0 $spacing-sm; font-size: $font-sm; color: var(--color-text); }
-  }
-  .bm-nb-settings-row {
-    display: flex; align-items: center; gap: $spacing-md;
-    padding: 8px 0;
-    label {
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      font-weight: $font-semibold;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      min-width: 100px;
-    }
-  }
+  &--lg {
+    padding: 80px 24px;
+    gap: 14px;
 
-  .bm-nb-color-picker {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    &.bm-nb-color-picker-large .bm-nb-color-swatch {
-      width: 28px; height: 28px;
+    svg {
+      font-size: 48px;
+      opacity: 0.35;
     }
+    p { font-size: 14px; }
   }
-  .bm-nb-color-swatch {
-    width: 22px; height: 22px;
-    border-radius: $radius-full;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: $transition-fast;
-    &:hover { transform: scale(1.1); }
-    &.active {
-      border-color: var(--color-text);
-      box-shadow: 0 0 0 2px var(--color-card-bg), 0 0 0 4px var(--color-text);
-    }
-  }
+}
 
-  // Stickies pane
-  .bm-nb-sticky-list {
-    padding: 8px;
-  }
-  .bm-nb-sticky-composer {
-    margin: 8px;
-    padding: 10px;
-    border-radius: $radius-md;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    textarea {
-      width: 100%;
-      border: none;
-      background: transparent;
-      outline: none;
-      font-family: inherit;
-      font-size: 13px;
-      color: #1a1a1a;
-      resize: none;
-      &::placeholder { color: rgba(0,0,0,0.4); }
-    }
-  }
-  .bm-nb-sticky-composer-actions {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 6px;
-  }
-  .bm-nb-sticky {
-    background: #fef3c7;
-    border-radius: $radius-md;
-    padding: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    color: #1a1a1a;
-    font-size: 13px;
-    line-height: 1.45;
-    transition: $transition-fast;
-    &:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
-    textarea {
-      width: 100%;
-      background: transparent;
-      border: 1px dashed rgba(0,0,0,0.3);
-      border-radius: 4px;
-      padding: 6px;
-      font-family: inherit;
-      font-size: 13px;
-      resize: vertical;
-      outline: none;
-    }
-  }
-  .bm-nb-sticky-actions {
-    display: flex; gap: 4px;
-    justify-content: flex-end;
-    margin-bottom: 4px;
-    button {
-      background: rgba(0,0,0,0.06);
-      border: none;
-      width: 22px; height: 22px;
-      border-radius: $radius-full;
-      cursor: pointer;
-      display: grid; place-items: center;
-      color: #1a1a1a;
-      &:hover { background: rgba(0,0,0,0.12); }
-      svg { width: 12px; height: 12px; }
-    }
-  }
-  .bm-nb-sticky-body {
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .bm-nb-sticky-meta {
-    font-size: 10px;
-    color: rgba(0,0,0,0.55);
-    margin-top: 6px;
-  }
+.nb-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
 
-  // Notebook modal extras
-  .bm-nb-modal-emoji-row {
-    display: flex; gap: $spacing-md;
-    align-items: center;
-  }
-  .bm-nb-modal-emoji-preview {
-    width: 60px; height: 60px;
-    border-radius: $radius-md;
-    font-size: 32px;
-    color: #fff;
-    display: grid; place-items: center;
-    flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  .bm-nb-modal-emoji-picker {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
-    flex: 1;
-    button {
-      background: var(--color-background);
-      border: 1.5px solid transparent;
-      border-radius: $radius-md;
-      width: 32px; height: 32px;
-      font-size: 20px;
-      cursor: pointer;
-      &:hover { background: var(--color-card-bg); }
-      &.active {
-        border-color: $primary-color;
-        background: rgba($primary-color, 0.1);
-      }
-    }
-  }
+  svg { font-size: 14px; }
 
-  // Buttons (shared with Calendar)
-  .bm-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px;
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    color: var(--color-text);
-    font-size: $font-sm;
-    font-weight: $font-medium;
-    cursor: pointer;
-    text-decoration: none;
-    transition: $transition-base;
-    &:hover { border-color: $primary-color; color: $primary-color; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
   }
-  .bm-btn-primary {
-    background: $primary-color; color: #fff; border-color: $primary-color;
-    &:hover { background: $primary-deep; color: #fff; }
+}
+
+// ----- Editor pane -----
+.nb-editor {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light, var(--color-border));
+  border-radius: $radius-lg;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.nb-edit {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.nb-edit-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-border-light, var(--color-border));
+  flex-shrink: 0;
+}
+
+.nb-edit-title {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--color-text);
+  outline: none;
+
+  &::placeholder { color: var(--color-text-secondary); }
+}
+
+.nb-edit-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.nb-edit-muted {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.nb-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $success-color;
+
+  svg { font-size: 13px; }
+}
+
+// Compact icon-only button (delete actions)
+.nb-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg { font-size: 15px; }
+
+  &:hover {
+    background: rgba($danger-color, 0.08);
+    border-color: rgba($danger-color, 0.25);
+    color: $danger-color;
   }
-  .bm-btn-danger {
-    background: $danger-color; color: #fff; border-color: $danger-color;
-    &:hover { filter: brightness(0.92); color: #fff; }
+}
+
+// The actual writing area
+.nb-edit-area {
+  flex: 1;
+  width: 100%;
+  padding: 18px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text);
+  min-height: 0;
+
+  &::placeholder { color: var(--color-text-secondary); }
+}
+
+// Tidy scrollbars in dark mode
+body.dark-mode {
+  .nb-col-body,
+  .nb-edit-area {
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track { background: transparent; }
   }
 }

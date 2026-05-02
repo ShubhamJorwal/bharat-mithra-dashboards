@@ -27,6 +27,12 @@ import {
   HiOutlinePhone,
   HiOutlineMail,
   HiOutlineBadgeCheck,
+  HiOutlineHome,
+  HiOutlineGlobe,
+  HiOutlineLightningBolt,
+  HiOutlineSparkles,
+  HiOutlineArrowRight,
+  HiOutlineMenu,
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
@@ -129,21 +135,52 @@ const fmtRelativeTime = (iso: string): string => {
   return `${Math.floor(diff / 86_400_000)}d ago`;
 };
 
-// Quick search suggestions
-const searchSuggestions = [
-  { icon: HiOutlineCollection, label: 'Services', path: '/services', type: 'page' },
-  { icon: HiOutlineDocumentText, label: 'Applications', path: '/applications', type: 'page' },
-  { icon: HiOutlineUserGroup, label: 'Users', path: '/users', type: 'page' },
-  { icon: HiOutlineChartBar, label: 'Reports', path: '/reports', type: 'page' },
+// Command-palette suggestions, grouped by section.
+// Each section renders as its own block in the popup. Live-filtered against
+// the search query in the JSX below.
+type CmdItem = {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint?: string;
+  path: string;
+  keywords?: string;
+  group: 'actions' | 'pages' | 'recents';
+};
+
+const commandItems: CmdItem[] = [
+  // Quick actions — verbs the user can do in one click
+  { icon: HiOutlinePlus,            label: 'New application',     hint: 'Create',       path: '/applications/new',     keywords: 'add new create application',  group: 'actions' },
+  { icon: HiOutlinePlus,            label: 'Add staff',           hint: 'Invite',       path: '/staff/new',            keywords: 'add new invite staff team',   group: 'actions' },
+  { icon: HiOutlinePlus,            label: 'Add service',         hint: 'Catalog',      path: '/services/new',         keywords: 'add new service catalog',     group: 'actions' },
+  { icon: HiOutlineCreditCard,      label: 'Top up wallet',       hint: 'Money in',     path: '/wallet',               keywords: 'wallet money credit add',     group: 'actions' },
+
+  // Pages — main destinations
+  { icon: HiOutlineHome,            label: 'Dashboard',           hint: 'Overview',     path: '/',                     keywords: 'dashboard overview home',     group: 'pages' },
+  { icon: HiOutlineCollection,      label: 'Services',            hint: 'Catalog',      path: '/services',             keywords: 'services catalog',            group: 'pages' },
+  { icon: HiOutlineDocumentText,    label: 'Applications',        hint: 'All',          path: '/applications',         keywords: 'applications cases',          group: 'pages' },
+  { icon: HiOutlineUserGroup,       label: 'Users',               hint: 'Citizens',     path: '/users',                keywords: 'users citizens customers',    group: 'pages' },
+  { icon: HiOutlineUserGroup,       label: 'Staff',               hint: 'Team',         path: '/staff',                keywords: 'staff team employees',        group: 'pages' },
+  { icon: HiOutlineGlobe,           label: 'Geography',           hint: 'India',        path: '/geography',            keywords: 'geography india states',      group: 'pages' },
+  { icon: HiOutlineChartBar,        label: 'Reports',             hint: 'Analytics',    path: '/reports',              keywords: 'reports analytics insights',  group: 'pages' },
+  { icon: HiOutlineCreditCard,      label: 'Wallet',              hint: 'Balance',      path: '/wallet',               keywords: 'wallet balance money',        group: 'pages' },
+  { icon: HiOutlineCog,             label: 'Settings',            hint: 'Preferences',  path: '/settings',             keywords: 'settings preferences theme',  group: 'pages' },
 ];
 
-const Topbar = () => {
+interface TopbarProps {
+  // Provided by DashboardLayout when the layout is in mobile (drawer) mode.
+  isMobile?: boolean;
+  isDrawerOpen?: boolean;
+  onMenuClick?: () => void;
+}
+
+const Topbar = ({ isMobile = false, isDrawerOpen = false, onMenuClick }: TopbarProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const { logout: doLogout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [searchSelectedIndex, setSearchSelectedIndex] = useState(0);
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -256,6 +293,51 @@ const Topbar = () => {
     navigate(path);
     setShowSearch(false);
     setSearchQuery('');
+    setSearchSelectedIndex(0);
+  };
+
+  // Live-filter command-palette items by query (matches label + keywords)
+  const filteredCommandItems = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return commandItems;
+    return commandItems.filter((item) =>
+      item.label.toLowerCase().includes(q) ||
+      (item.keywords || '').toLowerCase().includes(q) ||
+      (item.hint || '').toLowerCase().includes(q),
+    );
+  }, [searchQuery]);
+
+  // Group items in a stable order: actions → pages → recents
+  const groupedCommandItems = useMemo(() => {
+    const groups = { actions: [] as CmdItem[], pages: [] as CmdItem[], recents: [] as CmdItem[] };
+    filteredCommandItems.forEach((item) => groups[item.group].push(item));
+    return groups;
+  }, [filteredCommandItems]);
+
+  // Reset selection whenever the visible list changes
+  useEffect(() => {
+    setSearchSelectedIndex(0);
+  }, [searchQuery, showSearch]);
+
+  // Keyboard navigation inside the search input — arrow up/down + Enter
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSearch) return;
+    const flat = filteredCommandItems;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSearchSelectedIndex((i) => Math.min(i + 1, Math.max(0, flat.length - 1)));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSearchSelectedIndex((i) => Math.max(0, i - 1));
+    } else if (e.key === 'Enter') {
+      const item = flat[searchSelectedIndex];
+      if (item) {
+        e.preventDefault();
+        handleSearchNavigate(item.path);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSearch(false);
+    }
   };
 
   const toggleTheme = () => {
@@ -287,21 +369,26 @@ const Topbar = () => {
   };
 
   return (
-    <header className="bm-topbar">
+    <header className={`bm-topbar ${isMobile ? 'is-mobile' : ''}`}>
       {/* Left Section */}
       <div className="bm-topbar-left">
+        {/* Hamburger — only on mobile, opens the sidebar drawer */}
+        {isMobile && (
+          <button
+            className={`bm-menu-btn ${isDrawerOpen ? 'is-active' : ''}`}
+            onClick={onMenuClick}
+            aria-label={isDrawerOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isDrawerOpen}
+            type="button"
+          >
+            <HiOutlineMenu />
+          </button>
+        )}
+
         {/* Bharat Mithra Logo */}
         <BharatMithraLogo />
 
-        {/* Divider */}
-        {/* <div className="bm-topbar-divider"></div> */}
-
-        {/* Menu Icon */}
-        {/* <button className="bm-menu-btn" title="Menu">
-          <HiOutlineMenu />
-        </button> */}
-
-        {/* Navigation Controls */}
+        {/* Navigation Controls (back/forward/history) — desktop only */}
         <div className="bm-nav-controls">
           <button
             className={`bm-nav-btn ${!canGoBack ? 'disabled' : ''}`}
@@ -366,31 +453,92 @@ const Topbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowSearch(true)}
+              onKeyDown={handleSearchKeyDown}
             />
             <kbd className="bm-search-shortcut">Ctrl+K</kbd>
           </div>
 
-          {/* Search Popup */}
+          {/* Command Palette Popup */}
           {showSearch && (
-            <div className="bm-search-dropdown bm-dark-dropdown">
-              <div className="bm-search-dropdown-header">
-                <span>Quick Navigation</span>
+            <div className="bm-cmdp" role="listbox">
+              {/* Decorative aurora layers behind the content */}
+              <span className="bm-cmdp-aurora bm-cmdp-aurora--gold" aria-hidden />
+              <span className="bm-cmdp-aurora bm-cmdp-aurora--blue" aria-hidden />
+              <span className="bm-cmdp-grid" aria-hidden />
+
+              <div className="bm-cmdp-content">
+                {filteredCommandItems.length === 0 ? (
+                  <div className="bm-cmdp-empty">
+                    <HiOutlineSearch />
+                    <p>No results for <strong>"{searchQuery}"</strong></p>
+                    <span>Try different keywords or browse the sections below.</span>
+                  </div>
+                ) : (
+                  <>
+                    {(['actions', 'pages', 'recents'] as const).map((group) => {
+                      const items = groupedCommandItems[group];
+                      if (!items.length) return null;
+                      const groupLabel =
+                        group === 'actions' ? 'Quick actions' :
+                        group === 'pages'   ? 'Pages' :
+                                              'Recents';
+                      const groupIcon =
+                        group === 'actions' ? <HiOutlineLightningBolt /> :
+                        group === 'pages'   ? <HiOutlineSparkles /> :
+                                              <HiOutlineClock />;
+                      return (
+                        <div key={group} className="bm-cmdp-group">
+                          <div className="bm-cmdp-group-head">
+                            {groupIcon}
+                            <span>{groupLabel}</span>
+                            <em>{items.length}</em>
+                          </div>
+                          <div className="bm-cmdp-list">
+                            {items.map((item) => {
+                              const flatIndex = filteredCommandItems.indexOf(item);
+                              const isSelected = flatIndex === searchSelectedIndex;
+                              return (
+                                <button
+                                  key={item.path + item.label}
+                                  type="button"
+                                  role="option"
+                                  aria-selected={isSelected}
+                                  className={`bm-cmdp-item ${isSelected ? 'is-selected' : ''}`}
+                                  onMouseEnter={() => setSearchSelectedIndex(flatIndex)}
+                                  onClick={() => handleSearchNavigate(item.path)}
+                                >
+                                  <span className="bm-cmdp-item-icon">
+                                    <item.icon />
+                                  </span>
+                                  <div className="bm-cmdp-item-text">
+                                    <span className="bm-cmdp-item-label">{item.label}</span>
+                                    {item.hint && <span className="bm-cmdp-item-hint">{item.hint}</span>}
+                                  </div>
+                                  <span className="bm-cmdp-item-go">
+                                    <HiOutlineArrowRight />
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
               </div>
-              <div className="bm-search-suggestions">
-                {searchSuggestions.map((item) => (
-                  <button
-                    key={item.path}
-                    className="bm-search-suggestion-item"
-                    onClick={() => handleSearchNavigate(item.path)}
-                  >
-                    <item.icon className="bm-suggestion-icon" />
-                    <span className="bm-suggestion-label">{item.label}</span>
-                    <span className="bm-suggestion-type">{item.type}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="bm-search-dropdown-footer">
-                <span>Press <kbd>Enter</kbd> to search</span>
+
+              <div className="bm-cmdp-foot">
+                <span className="bm-cmdp-foot-keys">
+                  <kbd>↑</kbd><kbd>↓</kbd> navigate
+                </span>
+                <span className="bm-cmdp-foot-keys">
+                  <kbd>Enter</kbd> open
+                </span>
+                <span className="bm-cmdp-foot-keys">
+                  <kbd>Esc</kbd> close
+                </span>
+                <span className="bm-cmdp-foot-brand">Bharat Mithra · Command</span>
               </div>
             </div>
           )}
@@ -404,6 +552,7 @@ const Topbar = () => {
           onClick={() => setShowWallet(!showWallet)}
           title="Wallet"
         >
+          <span className="bm-wallet-btn__dot" aria-hidden />
           <HiOutlineCreditCard className="bm-wallet-icon" />
           <span className="bm-wallet-balance">{formatCurrency(walletSnapshot.balance)}</span>
         </button>
@@ -411,59 +560,125 @@ const Topbar = () => {
         {showWallet && (
           <>
           <div className="bm-dropdown-backdrop" onClick={() => setShowWallet(false)} />
-          <div className="bm-wallet-dropdown bm-dark-dropdown">
-            <div className="bm-dropdown-header">
-              <span>Wallet</span>
-              <button className="bm-wallet-add-btn" onClick={() => { navigate('/wallet'); setShowWallet(false); }}>
-                <HiOutlinePlus />
-                Add Money
+          <div className="bm-wlt">
+            {/* Decorative aurora behind the balance hero */}
+            <span className="bm-wlt-aurora" aria-hidden />
+
+            {/* Compact header */}
+            <div className="bm-wlt-head">
+              <div className="bm-wlt-head-title">
+                <HiOutlineCreditCard />
+                <span>Wallet</span>
+              </div>
+              <button
+                type="button"
+                className="bm-wlt-close"
+                onClick={() => setShowWallet(false)}
+                aria-label="Close"
+              >
+                <HiOutlineX />
               </button>
             </div>
 
-            <div className="bm-wallet-balance-section">
-              <span className="bm-wallet-balance-label">Available Balance</span>
-              <span className="bm-wallet-balance-amount">{formatCurrency(walletSnapshot.balance)}</span>
-              <div className="bm-wallet-balance-stats">
-                <div className="bm-wallet-stat">
-                  <span className="bm-wallet-stat-label">Today's Credits</span>
-                  <span className="bm-wallet-stat-value credit">{formatCurrency(walletSnapshot.todayCredits)}</span>
+            {/* Big balance hero */}
+            <div className="bm-wlt-hero">
+              <span className="bm-wlt-hero-label">Available Balance</span>
+              <div className="bm-wlt-hero-amount">
+                <span className="bm-wlt-hero-currency">₹</span>
+                <span className="bm-wlt-hero-value">
+                  {walletSnapshot.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+              <div className="bm-wlt-hero-meta">
+                <span className="bm-wlt-hero-dot" />
+                <span>Live · synced just now</span>
+              </div>
+            </div>
+
+            {/* Quick actions */}
+            <div className="bm-wlt-actions">
+              <button
+                type="button"
+                className="bm-wlt-action bm-wlt-action--primary"
+                onClick={() => { navigate('/wallet'); setShowWallet(false); }}
+              >
+                <HiOutlinePlus />
+                <span>Add money</span>
+              </button>
+              <button
+                type="button"
+                className="bm-wlt-action"
+                onClick={() => { navigate('/wallet'); setShowWallet(false); }}
+              >
+                <HiOutlineArrowUp />
+                <span>Send</span>
+              </button>
+              <button
+                type="button"
+                className="bm-wlt-action"
+                onClick={() => { navigate('/transactions'); setShowWallet(false); }}
+              >
+                <HiOutlineClock />
+                <span>History</span>
+              </button>
+            </div>
+
+            {/* Stats strip */}
+            <div className="bm-wlt-stats">
+              <div className="bm-wlt-stat">
+                <span className="bm-wlt-stat-icon credit"><HiOutlineArrowDown /></span>
+                <div className="bm-wlt-stat-text">
+                  <span className="bm-wlt-stat-label">Today in</span>
+                  <span className="bm-wlt-stat-value credit">{formatCurrency(walletSnapshot.todayCredits)}</span>
                 </div>
-                <div className="bm-wallet-stat">
-                  <span className="bm-wallet-stat-label">Pending</span>
-                  <span className="bm-wallet-stat-value pending">{formatCurrency(walletSnapshot.pendingCredits)}</span>
+              </div>
+              <div className="bm-wlt-stat">
+                <span className="bm-wlt-stat-icon pending"><HiOutlineClock /></span>
+                <div className="bm-wlt-stat-text">
+                  <span className="bm-wlt-stat-label">Pending</span>
+                  <span className="bm-wlt-stat-value pending">{formatCurrency(walletSnapshot.pendingCredits)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bm-wallet-transactions-header">
-              <span>Recent Transactions</span>
+            {/* Recent transactions */}
+            <div className="bm-wlt-tx-head">
+              <span>Recent activity</span>
+              <button
+                type="button"
+                onClick={() => { navigate('/transactions'); setShowWallet(false); }}
+              >
+                See all <HiOutlineArrowRight />
+              </button>
             </div>
-            <div className="bm-wallet-transactions">
+            <div className="bm-wlt-tx-list">
               {walletRecent.length === 0 ? (
-                <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-secondary)' }}>
-                  No transactions yet.
+                <div className="bm-wlt-tx-empty">
+                  <HiOutlineClock />
+                  <p>No transactions yet</p>
+                  <span>Top up your wallet to get started.</span>
                 </div>
               ) : walletRecent.map((txn) => {
                 const isCredit = txn.type === 'credit';
                 const isRequest = txn.type === 'request';
                 const cssType = isCredit ? 'credit' : isRequest ? 'pending' : 'debit';
                 return (
-                  <div key={txn.id} className={`bm-wallet-txn ${cssType}`}>
-                    <div className="bm-wallet-txn-icon">
+                  <div key={txn.id} className={`bm-wlt-tx ${cssType}`}>
+                    <div className="bm-wlt-tx-icon">
                       {isCredit ? <HiOutlineArrowDown /> :
                        isRequest ? <HiOutlineClock /> :
                        <HiOutlineArrowUp />}
                     </div>
-                    <div className="bm-wallet-txn-info">
-                      <span className="bm-wallet-txn-desc">{txn.description}</span>
-                      <span className="bm-wallet-txn-time">
+                    <div className="bm-wlt-tx-info">
+                      <span className="bm-wlt-tx-desc">{txn.description}</span>
+                      <span className="bm-wlt-tx-time">
                         {fmtRelativeTime(txn.createdAt)}
                         {txn.status !== 'success' && (
-                          <> · <em style={{ color: txn.status === 'failed' || txn.status === 'reversed' ? '#ef4444' : '#f59e0b' }}>{txn.status}</em></>
+                          <> · <em className={`bm-wlt-tx-status bm-wlt-tx-status--${txn.status}`}>{txn.status}</em></>
                         )}
                       </span>
                     </div>
-                    <span className={`bm-wallet-txn-amount ${cssType}`}>
+                    <span className={`bm-wlt-tx-amount ${cssType}`}>
                       {isCredit ? '+' : isRequest ? '' : '−'} {formatCurrency(txn.amount)}
                     </span>
                   </div>
@@ -471,9 +686,15 @@ const Topbar = () => {
               })}
             </div>
 
-            <div className="bm-dropdown-footer">
-              <button onClick={() => { navigate('/wallet'); setShowWallet(false); }}>Open Wallet</button>
-              <button onClick={() => { navigate('/transactions'); setShowWallet(false); }}>View All Transactions</button>
+            {/* Footer */}
+            <div className="bm-wlt-foot">
+              <button
+                type="button"
+                className="bm-wlt-foot-btn"
+                onClick={() => { navigate('/wallet'); setShowWallet(false); }}
+              >
+                Open Wallet <HiOutlineArrowRight />
+              </button>
             </div>
           </div>
           </>

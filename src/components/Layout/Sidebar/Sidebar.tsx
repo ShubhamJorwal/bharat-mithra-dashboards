@@ -34,9 +34,21 @@ interface SidebarProps {
   setIsCollapsed: (collapsed: boolean) => void;
   sidebarWidth: number;
   setSidebarWidth: (width: number) => void;
+  // Mobile drawer mode (added for responsive shell). The drawer auto-
+  // closes on route change in DashboardLayout, so we don't need a
+  // closeDrawer callback here yet.
+  isMobile?: boolean;
+  isDrawerOpen?: boolean;
 }
 
-const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }: SidebarProps) => {
+const Sidebar = ({
+  isCollapsed,
+  setIsCollapsed,
+  sidebarWidth,
+  setSidebarWidth,
+  isMobile = false,
+  isDrawerOpen = false,
+}: SidebarProps) => {
   const location = useLocation();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
@@ -261,11 +273,22 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     );
   };
 
+  // On mobile, the sidebar is an overlay drawer — it's never "collapsed"
+  // to a rail; it's either fully open (full nav width) or hidden off-canvas.
+  // We also disable inline width when in drawer mode so the SCSS owns it.
+  const drawerClass = isMobile
+    ? `is-drawer ${isDrawerOpen ? 'is-open' : 'is-closed'}`
+    : '';
+  const computedStyle: React.CSSProperties = isMobile
+    ? {} // SCSS controls width on mobile
+    : { width: isCollapsed ? collapsedWidth : sidebarWidth };
+
   return (
     <aside
       ref={sidebarRef}
-      className={`bm-sidebar ${isCollapsed ? 'collapsed' : ''} ${isResizing ? 'resizing' : ''}`}
-      style={{ width: isCollapsed ? collapsedWidth : sidebarWidth }}
+      className={`bm-sidebar ${isCollapsed && !isMobile ? 'collapsed' : ''} ${isResizing ? 'resizing' : ''} ${drawerClass}`.trim()}
+      style={computedStyle}
+      aria-hidden={isMobile && !isDrawerOpen}
     >
       <nav className="bm-sidebar-nav">
         <div className="bm-nav-section">

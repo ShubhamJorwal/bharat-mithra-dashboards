@@ -1,181 +1,417 @@
+@use 'sass:color';
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-.sc-page {
-  padding: $spacing-lg;
-  min-height: 100%;
+// =====================================================================
+// SHORTCUTS — radial action wheel
+// 6 tiles arranged on a circle around a center hub. The wheel rotates
+// very slowly on its own; the tiles counter-rotate so their text
+// stays upright. Hover a tile to highlight it and preview at the hub.
+// =====================================================================
+
+.sc {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 58px);
+  padding-bottom: 40px;
 }
 
-// ============================================
-// SEARCH
-// ============================================
-.sc-search {
+// ----- Stage (the framed canvas the wheel lives in) -----
+.sc-stage {
+  position: relative;
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  border-radius: $radius-md;
-  margin-bottom: $spacing-lg;
-  max-width: 480px;
-  transition: border-color 0.2s ease;
-
-  &:focus-within { border-color: var(--color-primary); }
-
-  svg { font-size: 18px; color: var(--color-text-secondary); flex-shrink: 0; }
-
-  input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    color: var(--color-text);
-    font-family: inherit;
-    &::placeholder { color: var(--color-text-muted); }
-    &:focus { outline: none; }
-  }
-}
-
-// ============================================
-// SECTIONS
-// ============================================
-.sc-section {
-  margin-bottom: $spacing-lg;
-
-  &__title {
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-text-secondary);
-    margin: 0 0 14px;
-  }
-}
-
-// ============================================
-// GRID
-// ============================================
-.sc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-
-  @media (max-width: 640px) { grid-template-columns: 1fr; }
-}
-
-.sc-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border-light);
-  border-radius: $radius-lg;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  text-align: left;
-  font-family: inherit;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-md;
-    border-color: var(--color-primary-light);
-  }
-
-  &__icon {
-    width: 44px;
-    height: 44px;
-    border-radius: $radius-md;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    svg { font-size: 22px; }
-  }
-
-  &__info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  &__desc {
-    display: block;
-    font-size: 12px;
-    color: var(--color-text-secondary);
-    margin-top: 2px;
-  }
-}
-
-// ============================================
-// KEYBOARD SHORTCUTS
-// ============================================
-.sc-keyboard-card {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border-light);
-  border-radius: $radius-lg;
+  justify-content: center;
+  margin-top: 12px;
+  min-height: 600px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 50%, var(--color-background-secondary, rgba(0, 0, 0, 0.02)) 0%, transparent 70%),
+    var(--color-background);
+  border: 1px solid var(--color-border-light, var(--color-border));
   overflow: hidden;
+  isolation: isolate;
 }
 
-.sc-keyboard-row {
+// ----- Aurora blobs (subtle background depth) -----
+.sc-aurora {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+
+  &--1 {
+    top: 8%;
+    left: 12%;
+    background: radial-gradient(circle, #f59e0b 0%, transparent 70%);
+    animation: scAurora1 20s ease-in-out infinite;
+  }
+
+  &--2 {
+    bottom: 8%;
+    right: 12%;
+    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+    animation: scAurora2 26s ease-in-out infinite;
+    opacity: 0.16;
+  }
+}
+
+@keyframes scAurora1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(60px, 40px) scale(1.1); }
+}
+@keyframes scAurora2 {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50%      { transform: translate(-40px, -30px) scale(0.95); }
+}
+
+// ----- Outer dashed ring (visual guide for the orbit) -----
+$wheel-radius: 240px;
+
+.sc-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: #{$wheel-radius * 2};
+  height: #{$wheel-radius * 2};
+  border-radius: 50%;
+  border: 1.5px dashed var(--color-border-light, var(--color-border));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.45;
+  z-index: 1;
+
+  // A subtle conic glint that sweeps along the ring (hint of motion)
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(245, 158, 11, 0.35) 30deg,
+      transparent 60deg,
+      transparent 360deg
+    );
+    -webkit-mask: radial-gradient(circle, transparent calc(50% - 3px), #000 calc(50% - 3px), #000 50%, transparent 50%);
+            mask: radial-gradient(circle, transparent calc(50% - 3px), #000 calc(50% - 3px), #000 50%, transparent 50%);
+    animation: scRingSpin 14s linear infinite;
+  }
+}
+
+@keyframes scRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+// ----- The wheel container (rotates very slowly) -----
+.sc-wheel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: #{$wheel-radius * 2};
+  height: #{$wheel-radius * 2};
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  animation: scWheelSpin 40s linear infinite;
+
+  // Pause when the user hovers any tile
+  &:hover { animation-play-state: paused; }
+}
+
+@keyframes scWheelSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+// ----- Single tile -----
+.sc-tile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 124px;
+  height: 124px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px dashed color-mix(in srgb, var(--tile-color) 32%, transparent);
+  border-radius: 22px;
+  background: var(--color-background);
+  cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--color-border-light);
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--color-text);
 
-  &:last-child { border-bottom: none; }
+  // The orbit math is baked into the keyframe (see scTileCounter) so the
+  // tile spins around the wheel center and counter-rotates to stay upright.
+  animation: scTileCounter 40s linear infinite;
+  // Pause counter-rotation in sync with the wheel
+  .sc-wheel:hover & { animation-play-state: paused; }
 
-  &:hover { background: rgba(var(--color-primary-rgb), 0.02); }
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover,
+  &.is-hovered {
+    border-color: var(--tile-color);
+    border-style: solid;
+    box-shadow:
+      0 12px 32px color-mix(in srgb, var(--tile-color) 28%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--tile-color) 20%, transparent);
+    z-index: 3;
+
+    .sc-tile-icon { color: var(--tile-color); transform: scale(1.12); }
+    .sc-tile-key { background: var(--tile-color); color: #fff; border-color: var(--tile-color); }
+    .sc-tile-glow { opacity: 1; }
+  }
+
+  &.is-pressed {
+    .sc-tile-icon { transform: scale(0.92); }
+  }
 }
 
-.sc-keys {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+// Soft outward glow halo (only visible on hover)
+.sc-tile-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 28px;
+  background: radial-gradient(circle at center, var(--tile-color) 0%, transparent 60%);
+  opacity: 0;
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 0.25s ease;
 }
 
-.sc-kbd {
+// Counter-rotation keyframe — keeps tile content upright as the wheel spins.
+// Math: from origin (50% 50%), rotate to the angle, push out to radius,
+// undo the angle so the tile is upright at rest, then negative-rotate over
+// time at the same speed as the wheel spins forward.
+@keyframes scTileCounter {
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--tile-angle))
+      translate(#{$wheel-radius})
+      rotate(calc(-1 * var(--tile-angle)))
+      rotate(0deg);
+  }
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--tile-angle))
+      translate(#{$wheel-radius})
+      rotate(calc(-1 * var(--tile-angle)))
+      rotate(-360deg);
+  }
+}
+
+// Small key badge (1..6) at the top-left of each tile
+.sc-tile-key {
+  position: absolute;
+  top: 8px;
+  left: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.sc-kbd-plus {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  margin: 0 2px;
-}
-
-.sc-keyboard-desc {
-  font-size: 13px;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--color-border-light, var(--color-border));
   color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-// ============================================
-// DARK MODE
-// ============================================
-body.dark-mode {
-  .sc-search { background: var(--color-background-secondary); }
-  .sc-item { background: var(--color-background-secondary); }
-  .sc-keyboard-card { background: var(--color-background-secondary); }
-  .sc-kbd { background: var(--color-background); border-color: rgba(255, 255, 255, 0.08); }
+.sc-tile-icon {
+  font-size: 32px;
+  color: var(--color-text-secondary);
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+}
+
+.sc-tile-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: 0.1px;
+  padding: 0 8px;
+  line-height: 1.2;
+}
+
+// ----- Center hub -----
+.sc-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%,
+      var(--color-background) 0%,
+      var(--color-background-secondary, rgba(0, 0, 0, 0.04)) 100%);
+  border: 1px solid var(--color-border-light, var(--color-border));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 0 28px;
+  z-index: 4;
+  pointer-events: none; // hub is read-only, never blocks tile clicks
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  // Soft pulsing rings around the hub
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--color-border-light, var(--color-border));
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  &::before {
+    inset: -14px;
+    animation: scHubPulse 3s ease-in-out infinite;
+  }
+  &::after {
+    inset: -28px;
+    opacity: 0.2;
+    animation: scHubPulse 3s ease-in-out infinite 0.8s;
+  }
+}
+
+@keyframes scHubPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.4; }
+  50%      { transform: scale(1.04); opacity: 0.1; }
+}
+
+.sc-hub-preview {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 4px;
+  animation: scHubPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scHubPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.sc-hub-glyph {
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+
+.sc-hub-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+.sc-hub-hint {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+// ----- Reduced motion -----
+@media (prefers-reduced-motion: reduce) {
+  .sc-aurora,
+  .sc-ring::before,
+  .sc-wheel,
+  .sc-tile,
+  .sc-hub::before,
+  .sc-hub::after {
+    animation: none !important;
+  }
+  // Without the keyframe, tiles lose their orbit position. Re-apply
+  // the static end-state transform.
+  .sc-tile {
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--tile-angle))
+      translate(#{$wheel-radius})
+      rotate(calc(-1 * var(--tile-angle))) !important;
+  }
+}
+
+// ----- Smaller screens: shrink the wheel -----
+@media (max-width: 760px) {
+  $r-sm: 180px;
+
+  .sc-stage { min-height: 480px; }
+
+  .sc-ring,
+  .sc-wheel { width: #{$r-sm * 2}; height: #{$r-sm * 2}; }
+
+  .sc-hub { width: 180px; height: 180px; padding: 0 18px; }
+  .sc-hub-preview { font-size: 44px; }
+  .sc-hub-label { font-size: 14px; }
+
+  .sc-tile {
+    width: 96px;
+    height: 96px;
+    border-radius: 18px;
+    gap: 4px;
+  }
+  .sc-tile-icon { font-size: 24px; }
+  .sc-tile-label { font-size: 10px; }
+
+  // Override the keyframe for the smaller radius
+  @keyframes scTileCounter {
+    from {
+      transform:
+        translate(-50%, -50%)
+        rotate(var(--tile-angle))
+        translate(#{$r-sm})
+        rotate(calc(-1 * var(--tile-angle)))
+        rotate(0deg);
+    }
+    to {
+      transform:
+        translate(-50%, -50%)
+        rotate(var(--tile-angle))
+        translate(#{$r-sm})
+        rotate(calc(-1 * var(--tile-angle)))
+        rotate(-360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sc-tile {
+      transform:
+        translate(-50%, -50%)
+        rotate(var(--tile-angle))
+        translate(#{$r-sm})
+        rotate(calc(-1 * var(--tile-angle))) !important;
+    }
+  }
 }

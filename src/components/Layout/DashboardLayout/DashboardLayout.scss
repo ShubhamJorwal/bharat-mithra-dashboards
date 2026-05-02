@@ -19,6 +19,33 @@
   @include custom-scrollbar;
 }
 
+// ─── Mobile / tablet adjustments ──────────────────────────────────
+// Below 1024 px the sidebar is an off-canvas drawer (handled by
+// Sidebar.scss), so the main area gets the full width with no left
+// margin. We tighten padding so phones feel snug, not wasteful.
+@media (max-width: 1023px) {
+  .bm-main-area {
+    margin-left: 0 !important;
+    padding: 8px;
+    padding-top: 56px;
+    height: calc(100vh - 64px);
+  }
+}
+
+@media (max-width: 767px) {
+  .bm-main-area {
+    padding: 6px;
+    padding-top: 54px;
+    height: calc(100vh - 60px);
+  }
+}
+
+// While the drawer is open on mobile, prevent any horizontal overflow
+// from the underlying page from leaking past the backdrop.
+.bm-layout-wrapper.drawer-open {
+  overflow-x: hidden;
+}
+
 body.dark-mode {
   .bm-layout-wrapper {
     background: var(--color-background);

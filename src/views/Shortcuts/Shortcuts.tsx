@@ -1,134 +1,188 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HiOutlineLightningBolt,
-  HiOutlineHome,
-  HiOutlineUserGroup,
-  HiOutlineDocumentText,
-  HiOutlineCollection,
-  HiOutlineClipboardList,
-  HiOutlineCalendar,
-  HiOutlineChartBar,
-  HiOutlineCog,
-  HiOutlineCash,
-  HiOutlineCreditCard,
-  HiOutlineGlobe,
   HiOutlinePlus,
+  HiOutlineUserGroup,
+  HiOutlineCollection,
+  HiOutlineCash,
   HiOutlineSearch,
-  HiOutlineFolder,
-} from 'react-icons/hi';
-import { PageHeader } from '../../components/common/PageHeader';
-import './Shortcuts.scss';
+  HiOutlineSun,
+  HiOutlineMoon,
+} from "react-icons/hi";
+import { PageHeader } from "../../components/common/PageHeader";
+import { useTheme } from "../../context/ThemeContext";
+import "./Shortcuts.scss";
 
-interface ShortcutItem {
+type ShortcutAction = {
+  key: string;          // single keyboard char (1..6)
   label: string;
-  description: string;
-  path: string;
+  hint: string;
   icon: React.ReactNode;
   color: string;
-  category: string;
-}
-
-const shortcuts: ShortcutItem[] = [
-  // Navigation
-  { label: 'Dashboard', description: 'Go to main dashboard', path: '/', icon: <HiOutlineHome />, color: '#3b82f6', category: 'Navigation' },
-  { label: 'Services Portal', description: 'Browse all services', path: '/services/portal', icon: <HiOutlineCollection />, color: '#8b5cf6', category: 'Navigation' },
-  { label: 'Applications', description: 'View all applications', path: '/applications', icon: <HiOutlineClipboardList />, color: '#f59e0b', category: 'Navigation' },
-  { label: 'Documents', description: 'Manage documents', path: '/documents', icon: <HiOutlineDocumentText />, color: '#06b6d4', category: 'Navigation' },
-  { label: 'Calendar', description: 'View calendar events', path: '/calendar', icon: <HiOutlineCalendar />, color: '#10b981', category: 'Navigation' },
-  { label: 'Reports', description: 'Generate and view reports', path: '/reports', icon: <HiOutlineChartBar />, color: '#ec4899', category: 'Navigation' },
-  { label: 'Geography', description: 'India geography data', path: '/geography', icon: <HiOutlineGlobe />, color: '#14b8a6', category: 'Navigation' },
-  { label: 'Staff Members', description: 'Manage staff', path: '/staff', icon: <HiOutlineUserGroup />, color: '#6366f1', category: 'Navigation' },
-
-  // Quick Actions
-  { label: 'New Application', description: 'Create new application', path: '/applications/new', icon: <HiOutlinePlus />, color: '#22c55e', category: 'Quick Actions' },
-  { label: 'Upload Document', description: 'Upload a new document', path: '/documents', icon: <HiOutlineFolder />, color: '#0ea5e9', category: 'Quick Actions' },
-  { label: 'Wallet Statements', description: 'View wallet transactions', path: '/statements/wallet', icon: <HiOutlineCash />, color: '#f97316', category: 'Quick Actions' },
-  { label: 'Payment Gateways', description: 'Manage payment methods', path: '/payment-gateways', icon: <HiOutlineCreditCard />, color: '#a855f7', category: 'Quick Actions' },
-
-  // Admin
-  { label: 'User Management', description: 'Manage users', path: '/users', icon: <HiOutlineUserGroup />, color: '#ef4444', category: 'Administration' },
-  { label: 'Settings', description: 'App settings', path: '/settings', icon: <HiOutlineCog />, color: '#64748b', category: 'Administration' },
-  { label: 'All Services', description: 'Manage service catalog', path: '/services', icon: <HiOutlineCollection />, color: '#d946ef', category: 'Administration' },
-  { label: 'Service Categories', description: 'Manage categories', path: '/services/categories', icon: <HiOutlineCollection />, color: '#0891b2', category: 'Administration' },
-];
-
-const keyboardShortcuts = [
-  { keys: ['Ctrl', '/'], description: 'Open search' },
-  { keys: ['Ctrl', 'N'], description: 'New application' },
-  { keys: ['Ctrl', 'D'], description: 'Go to dashboard' },
-  { keys: ['Ctrl', 'S'], description: 'Go to services' },
-  { keys: ['Ctrl', ','], description: 'Open settings' },
-  { keys: ['Esc'], description: 'Close modal/popup' },
-  { keys: ['?'], description: 'Show keyboard shortcuts' },
-];
+  run: () => void;
+};
 
 const Shortcuts = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { theme, setTheme } = useTheme();
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [pressedKey, setPressedKey] = useState<string | null>(null);
 
-  const categories = [...new Set(shortcuts.map(s => s.category))];
+  const isDark = theme === "darkMode";
 
-  const filteredShortcuts = shortcuts.filter(s =>
-    s.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.description.toLowerCase().includes(searchQuery.toLowerCase())
+  // The 6 actions on the wheel — verbs, not nav links.
+  const actions: ShortcutAction[] = useMemo(
+    () => [
+      {
+        key: "1",
+        label: "New application",
+        hint: "Create a citizen application",
+        icon: <HiOutlinePlus />,
+        color: "#3b82f6",
+        run: () => navigate("/applications/new"),
+      },
+      {
+        key: "2",
+        label: "Add staff",
+        hint: "Invite a team member",
+        icon: <HiOutlineUserGroup />,
+        color: "#10b981",
+        run: () => navigate("/staff/new"),
+      },
+      {
+        key: "3",
+        label: "Add service",
+        hint: "Catalog a new service",
+        icon: <HiOutlineCollection />,
+        color: "#f59e0b",
+        run: () => navigate("/services/new"),
+      },
+      {
+        key: "4",
+        label: "Top up wallet",
+        hint: "Add money to wallet",
+        icon: <HiOutlineCash />,
+        color: "#22c55e",
+        run: () => navigate("/wallet"),
+      },
+      {
+        key: "5",
+        label: "Search command",
+        hint: "Open the command palette",
+        icon: <HiOutlineSearch />,
+        color: "#a855f7",
+        run: () => {
+          // Focus the topbar search input — it expands the dropdown on focus
+          const input = document.querySelector<HTMLInputElement>(".bm-search-input");
+          input?.focus();
+        },
+      },
+      {
+        key: "6",
+        label: isDark ? "Light theme" : "Dark theme",
+        hint: "Toggle the app theme",
+        icon: isDark ? <HiOutlineSun /> : <HiOutlineMoon />,
+        color: "#ec4899",
+        run: () => setTheme(isDark ? "confluence" : "darkMode"),
+      },
+    ],
+    [navigate, setTheme, isDark]
   );
 
+  // 1..6 keyboard hotkeys
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // ignore when typing in inputs
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+      const action = actions.find((a) => a.key === e.key);
+      if (!action) return;
+      e.preventDefault();
+      setPressedKey(action.key);
+      action.run();
+      // brief visual press feedback
+      window.setTimeout(() => setPressedKey(null), 180);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [actions]);
+
+  const hovered = actions.find((a) => a.key === hoveredKey) || null;
+
   return (
-    <div className="sc-page">
+    <div className="sc">
       <PageHeader
         icon={<HiOutlineLightningBolt />}
         title="Shortcuts"
-        description="Quick access to all modules and keyboard shortcuts"
+        description="Quick actions you do most often. Press 1–6 on your keyboard, or click."
       />
 
-      {/* Search */}
-      <div className="sc-search">
-        <HiOutlineSearch />
-        <input type="text" placeholder="Search shortcuts..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-      </div>
+      <div className="sc-stage">
+        {/* Decorative aurora behind the wheel */}
+        <span className="sc-aurora sc-aurora--1" aria-hidden />
+        <span className="sc-aurora sc-aurora--2" aria-hidden />
 
-      {/* Quick Access Grid */}
-      {categories.map(category => {
-        const items = filteredShortcuts.filter(s => s.category === category);
-        if (items.length === 0) return null;
-        return (
-          <div key={category} className="sc-section">
-            <h2 className="sc-section__title">{category}</h2>
-            <div className="sc-grid">
-              {items.map(item => (
-                <button key={item.path + item.label} className="sc-item" onClick={() => navigate(item.path)}>
-                  <div className="sc-item__icon" style={{ color: item.color, background: `${item.color}15` }}>
-                    {item.icon}
-                  </div>
-                  <div className="sc-item__info">
-                    <span className="sc-item__label">{item.label}</span>
-                    <span className="sc-item__desc">{item.description}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+        {/* Outer ring guide */}
+        <div className="sc-ring" aria-hidden />
 
-      {/* Keyboard Shortcuts */}
-      <div className="sc-section">
-        <h2 className="sc-section__title">Keyboard Shortcuts</h2>
-        <div className="sc-keyboard-card">
-          {keyboardShortcuts.map((ks, i) => (
-            <div key={i} className="sc-keyboard-row">
-              <div className="sc-keys">
-                {ks.keys.map((key, j) => (
-                  <span key={j}>
-                    <kbd className="sc-kbd">{key}</kbd>
-                    {j < ks.keys.length - 1 && <span className="sc-kbd-plus">+</span>}
-                  </span>
-                ))}
-              </div>
-              <span className="sc-keyboard-desc">{ks.description}</span>
-            </div>
-          ))}
+        {/* The wheel — rotates slowly on its own */}
+        <div
+          className="sc-wheel"
+          onMouseLeave={() => setHoveredKey(null)}
+        >
+          {actions.map((a, idx) => {
+            // 6 actions evenly around 360°, starting from top
+            const angle = -90 + (360 / actions.length) * idx;
+            const isHovered = hoveredKey === a.key;
+            const isPressed = pressedKey === a.key;
+            return (
+              <button
+                key={a.key}
+                type="button"
+                className={`sc-tile ${isHovered ? "is-hovered" : ""} ${isPressed ? "is-pressed" : ""}`}
+                style={
+                  {
+                    "--tile-angle": `${angle}deg`,
+                    "--tile-color": a.color,
+                  } as React.CSSProperties
+                }
+                onMouseEnter={() => setHoveredKey(a.key)}
+                onClick={() => {
+                  setPressedKey(a.key);
+                  a.run();
+                  window.setTimeout(() => setPressedKey(null), 180);
+                }}
+                title={a.label}
+              >
+                <span className="sc-tile-glow" aria-hidden />
+                <span className="sc-tile-key">{a.key}</span>
+                <span className="sc-tile-icon">{a.icon}</span>
+                <span className="sc-tile-label">{a.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Center hub — previews the hovered action */}
+        <div className="sc-hub" aria-live="polite">
+          {hovered ? (
+            <>
+              <span className="sc-hub-preview" style={{ color: hovered.color }}>
+                {hovered.icon}
+              </span>
+              <span className="sc-hub-label">{hovered.label}</span>
+              <span className="sc-hub-hint">{hovered.hint}</span>
+            </>
+          ) : (
+            <>
+              <span className="sc-hub-glyph">⌘</span>
+              <span className="sc-hub-label">Pick an action</span>
+              <span className="sc-hub-hint">Hover or press 1–6</span>
+            </>
+          )}
         </div>
       </div>
     </div>
