@@ -289,20 +289,24 @@
   }
 }
 
-// Footer
+// Footer — minimal: no border, no background, no top padding.
+// Launcher row sits flush against the nav above.
 .bm-sidebar-footer {
-  padding: 6px 10px;
-  border-top: 1px solid var(--color-border-light);
-  background: rgba(255, 255, 255, 0.3);
+  padding: 0 10px 10px;
+  background: transparent;
 }
 
-// Collapse handle — small circle sitting on the right border of the sidebar
+// Collapse handle — sits on the right border at the boundary between
+// the nav scroll area and the launcher footer (a "T-junction" anchor).
+// We compute the offset from the bottom so it lands right on the divider.
 .bm-collapse-handle {
   position: absolute;
-  top: 80px;
-  right: -12px;
-  width: 24px;
-  height: 24px;
+  // Footer height ≈ 32px button + 10px bottom padding = 42px. Sit the
+  // 22px circle so its centre is on that boundary line.
+  bottom: 32px;
+  right: -11px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
@@ -311,19 +315,19 @@
   display: grid;
   place-items: center;
   z-index: 30;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 
   &:hover {
     background: $primary-color;
     border-color: $primary-color;
     color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   }
 }
 
