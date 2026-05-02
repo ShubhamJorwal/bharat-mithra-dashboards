@@ -27,13 +27,11 @@ import {
   HiOutlinePhone,
   HiOutlineMail,
   HiOutlineBadgeCheck,
-  HiOutlinePhotograph,
-  HiOutlineCheck,
-  HiOutlineCash,
 } from 'react-icons/hi';
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
 import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
+import { loadTransactions, computeSnapshot, subscribe, type WalletTransaction } from '@/services/wallet/walletStore';
 import './Topbar.scss';
 
 // Brand text animation variants — one picked randomly on each mount/refresh
@@ -110,19 +108,6 @@ const dashboardInfo = {
   agentName: 'Thimma Shetty'
 };
 
-// Wallet mock data
-const walletData = {
-  balance: 12458.60,
-  todayEarnings: 3240.00,
-  pendingSettlement: 1850.00,
-  recentTransactions: [
-    { id: 1, type: 'credit', description: 'Service Fee - PAN Card', amount: 250.00, time: '10m ago' },
-    { id: 2, type: 'credit', description: 'Service Fee - Aadhaar Update', amount: 150.00, time: '1h ago' },
-    { id: 3, type: 'debit', description: 'Commission Payout', amount: -1200.00, time: '3h ago' },
-    { id: 4, type: 'credit', description: 'Service Fee - Passport', amount: 500.00, time: '5h ago' },
-  ]
-};
-
 // Profile mock data
 const profileData = {
   firstName: 'Thimma',
@@ -132,9 +117,16 @@ const profileData = {
   mobile: '+91 98765 43210',
   role: 'Agent',
   joinedAt: '15 Jan 2025',
-  balance: 12458.60,
   verified: true,
   photoUrl: '',
+};
+
+const fmtRelativeTime = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60_000) return 'just now';
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  return `${Math.floor(diff / 86_400_000)}d ago`;
 };
 
 // Quick search suggestions
@@ -157,10 +149,7 @@ const Topbar = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showWallet, setShowWallet] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showAddMoney, setShowAddMoney] = useState(false);
-  const [addMoneyForm, setAddMoneyForm] = useState({ amount: '', utrNumber: '', paymentMethodId: '', screenshot: '' });
-  const [addMoneySubmitting, setAddMoneySubmitting] = useState(false);
-  const addMoneyFileRef = useRef<HTMLInputElement>(null);
+  const [walletTxns, setWalletTxns] = useState<WalletTransaction[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -175,6 +164,16 @@ const Topbar = () => {
     { id: 2, title: 'Document Required', message: 'Please upload your address proof', time: '1h ago', unread: true },
     { id: 3, title: 'Payment Received', message: 'Payment of Rs. 500 received successfully', time: '3h ago', unread: false },
   ];
+
+  // Live wallet data — subscribes to walletStore changes
+  useEffect(() => {
+    const refresh = () => setWalletTxns(loadTransactions());
+    refresh();
+    return subscribe(refresh);
+  }, []);
+
+  const walletSnapshot = useMemo(() => computeSnapshot(walletTxns), [walletTxns]);
+  const walletRecent = useMemo(() => walletTxns.slice(0, 5), [walletTxns]);
 
   // Track navigation history
   useEffect(() => {
@@ -285,68 +284,6 @@ const Topbar = () => {
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return new Date(timestamp).toLocaleDateString();
-  };
-
-  // Load active payment methods from localStorage (set by PaymentGateways page)
-  const getActivePaymentMethods = () => {
-    const methods: { id: string; label: string; type: 'bank' | 'upi'; detail: string }[] = [];
-    try {
-      const banks = JSON.parse(localStorage.getItem('bm_payment_banks') || '[]');
-      banks.filter((b: { isActive: boolean }) => b.isActive).forEach((b: { id: string; bankName: string; accountNumber: string }) => {
-        methods.push({ id: b.id, label: b.bankName, type: 'bank', detail: b.accountNumber });
-      });
-      const upis = JSON.parse(localStorage.getItem('bm_payment_upi') || '[]');
-      upis.filter((u: { isActive: boolean }) => u.isActive).forEach((u: { id: string; providerName: string; upiId: string }) => {
-        methods.push({ id: u.id, label: u.providerName, type: 'upi', detail: u.upiId });
-      });
-    } catch { /* ignore */ }
-    return methods;
-  };
-
-  const handleAddMoneyScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || file.size > 5 * 1024 * 1024) return;
-    const reader = new FileReader();
-    reader.onload = () => setAddMoneyForm(prev => ({ ...prev, screenshot: reader.result as string }));
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmitAddMoney = () => {
-    if (!addMoneyForm.amount || !addMoneyForm.utrNumber || !addMoneyForm.paymentMethodId) return;
-    setAddMoneySubmitting(true);
-
-    // Create a pending wallet request in localStorage
-    try {
-      const existing = JSON.parse(localStorage.getItem('bm_wallet_transactions') || '[]');
-      const methods = getActivePaymentMethods();
-      const selectedMethod = methods.find(m => m.id === addMoneyForm.paymentMethodId);
-
-      const newTxn = {
-        id: `TXN${String(existing.length + 1).padStart(5, '0')}`,
-        agentId: 'AG_SELF',
-        agentName: profileData.firstName + ' ' + profileData.lastName,
-        agentCode: profileData.username,
-        type: 'request',
-        category: 'wallet_request',
-        amount: parseFloat(addMoneyForm.amount),
-        status: 'pending',
-        description: `Add Money via ${selectedMethod?.label || 'Unknown'} - UTR: ${addMoneyForm.utrNumber}`,
-        reference: `UTR-${addMoneyForm.utrNumber}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        paymentMethod: selectedMethod ? `${selectedMethod.label} (${selectedMethod.detail})` : 'N/A',
-        screenshot: addMoneyForm.screenshot,
-      };
-
-      localStorage.setItem('bm_wallet_transactions', JSON.stringify([newTxn, ...existing]));
-    } catch { /* ignore */ }
-
-    setTimeout(() => {
-      setAddMoneySubmitting(false);
-      setShowAddMoney(false);
-      setShowWallet(false);
-      setAddMoneyForm({ amount: '', utrNumber: '', paymentMethodId: '', screenshot: '' });
-    }, 500);
   };
 
   return (
@@ -468,7 +405,7 @@ const Topbar = () => {
           title="Wallet"
         >
           <HiOutlineCreditCard className="bm-wallet-icon" />
-          <span className="bm-wallet-balance">{formatCurrency(walletData.balance)}</span>
+          <span className="bm-wallet-balance">{formatCurrency(walletSnapshot.balance)}</span>
         </button>
 
         {showWallet && (
@@ -477,7 +414,7 @@ const Topbar = () => {
           <div className="bm-wallet-dropdown bm-dark-dropdown">
             <div className="bm-dropdown-header">
               <span>Wallet</span>
-              <button className="bm-wallet-add-btn" onClick={() => { setShowAddMoney(true); setShowWallet(false); }}>
+              <button className="bm-wallet-add-btn" onClick={() => { navigate('/wallet'); setShowWallet(false); }}>
                 <HiOutlinePlus />
                 Add Money
               </button>
@@ -485,15 +422,15 @@ const Topbar = () => {
 
             <div className="bm-wallet-balance-section">
               <span className="bm-wallet-balance-label">Available Balance</span>
-              <span className="bm-wallet-balance-amount">{formatCurrency(walletData.balance)}</span>
+              <span className="bm-wallet-balance-amount">{formatCurrency(walletSnapshot.balance)}</span>
               <div className="bm-wallet-balance-stats">
                 <div className="bm-wallet-stat">
-                  <span className="bm-wallet-stat-label">Today's Earnings</span>
-                  <span className="bm-wallet-stat-value credit">{formatCurrency(walletData.todayEarnings)}</span>
+                  <span className="bm-wallet-stat-label">Today's Credits</span>
+                  <span className="bm-wallet-stat-value credit">{formatCurrency(walletSnapshot.todayCredits)}</span>
                 </div>
                 <div className="bm-wallet-stat">
                   <span className="bm-wallet-stat-label">Pending</span>
-                  <span className="bm-wallet-stat-value pending">{formatCurrency(walletData.pendingSettlement)}</span>
+                  <span className="bm-wallet-stat-value pending">{formatCurrency(walletSnapshot.pendingCredits)}</span>
                 </div>
               </div>
             </div>
@@ -502,24 +439,41 @@ const Topbar = () => {
               <span>Recent Transactions</span>
             </div>
             <div className="bm-wallet-transactions">
-              {walletData.recentTransactions.map((txn) => (
-                <div key={txn.id} className={`bm-wallet-txn ${txn.type}`}>
-                  <div className="bm-wallet-txn-icon">
-                    {txn.type === 'credit' ? <HiOutlineArrowDown /> : <HiOutlineArrowUp />}
-                  </div>
-                  <div className="bm-wallet-txn-info">
-                    <span className="bm-wallet-txn-desc">{txn.description}</span>
-                    <span className="bm-wallet-txn-time">{txn.time}</span>
-                  </div>
-                  <span className={`bm-wallet-txn-amount ${txn.type}`}>
-                    {txn.type === 'credit' ? '+' : '-'} {formatCurrency(txn.amount)}
-                  </span>
+              {walletRecent.length === 0 ? (
+                <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                  No transactions yet.
                 </div>
-              ))}
+              ) : walletRecent.map((txn) => {
+                const isCredit = txn.type === 'credit';
+                const isRequest = txn.type === 'request';
+                const cssType = isCredit ? 'credit' : isRequest ? 'pending' : 'debit';
+                return (
+                  <div key={txn.id} className={`bm-wallet-txn ${cssType}`}>
+                    <div className="bm-wallet-txn-icon">
+                      {isCredit ? <HiOutlineArrowDown /> :
+                       isRequest ? <HiOutlineClock /> :
+                       <HiOutlineArrowUp />}
+                    </div>
+                    <div className="bm-wallet-txn-info">
+                      <span className="bm-wallet-txn-desc">{txn.description}</span>
+                      <span className="bm-wallet-txn-time">
+                        {fmtRelativeTime(txn.createdAt)}
+                        {txn.status !== 'success' && (
+                          <> · <em style={{ color: txn.status === 'failed' || txn.status === 'reversed' ? '#ef4444' : '#f59e0b' }}>{txn.status}</em></>
+                        )}
+                      </span>
+                    </div>
+                    <span className={`bm-wallet-txn-amount ${cssType}`}>
+                      {isCredit ? '+' : isRequest ? '' : '−'} {formatCurrency(txn.amount)}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="bm-dropdown-footer">
-              <button onClick={() => { navigate('/statements/wallet'); setShowWallet(false); }}>View All Transactions</button>
+              <button onClick={() => { navigate('/wallet'); setShowWallet(false); }}>Open Wallet</button>
+              <button onClick={() => { navigate('/transactions'); setShowWallet(false); }}>View All Transactions</button>
             </div>
           </div>
           </>
@@ -684,9 +638,9 @@ const Topbar = () => {
                 </div>
                 <div className="bm-profile-modal__row">
                   <span className="bm-profile-modal__label">
-                    <HiOutlineCreditCard /> Balance
+                    <HiOutlineCreditCard /> Wallet balance
                   </span>
-                  <span className="bm-profile-modal__value bm-profile-modal__balance">{formatCurrency(profileData.balance)}</span>
+                  <span className="bm-profile-modal__value bm-profile-modal__balance">{formatCurrency(walletSnapshot.balance)}</span>
                 </div>
                 <div className="bm-profile-modal__row">
                   <span className="bm-profile-modal__label">
@@ -701,132 +655,6 @@ const Topbar = () => {
           </div>
         </>
       )}
-
-      {/* Add Money Modal */}
-      {showAddMoney && (() => {
-        const activeMethods = getActivePaymentMethods();
-        return (
-          <>
-            <div className="bm-modal-backdrop" onClick={() => setShowAddMoney(false)} />
-            <div className="bm-addmoney-modal">
-              <div className="bm-addmoney-modal__header">
-                <h3><HiOutlineCash /> Add Money to Wallet</h3>
-                <button className="bm-profile-modal__close" onClick={() => setShowAddMoney(false)}>
-                  <HiOutlineX />
-                </button>
-              </div>
-
-              <div className="bm-addmoney-modal__body">
-                {/* Select Payment Method */}
-                <div className="bm-addmoney-field">
-                  <label>Select Payment Method *</label>
-                  {activeMethods.length === 0 ? (
-                    <div className="bm-addmoney-no-methods">
-                      <p>No active payment methods available.</p>
-                      <button onClick={() => { navigate('/payment-gateways'); setShowAddMoney(false); }}>
-                        <HiOutlinePlus /> Add Payment Method
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="bm-addmoney-methods">
-                      {activeMethods.map(method => (
-                        <button
-                          key={method.id}
-                          className={`bm-addmoney-method ${addMoneyForm.paymentMethodId === method.id ? 'selected' : ''}`}
-                          onClick={() => setAddMoneyForm(p => ({ ...p, paymentMethodId: method.id }))}
-                        >
-                          <div className={`bm-addmoney-method__icon ${method.type}`}>
-                            {method.type === 'bank' ? (
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" /></svg>
-                            ) : (
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>
-                            )}
-                          </div>
-                          <div className="bm-addmoney-method__info">
-                            <strong>{method.label}</strong>
-                            <small>{method.detail}</small>
-                          </div>
-                          {addMoneyForm.paymentMethodId === method.id && (
-                            <span className="bm-addmoney-method__check"><HiOutlineCheck /></span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Amount */}
-                <div className="bm-addmoney-field">
-                  <label>Amount (INR) *</label>
-                  <div className="bm-addmoney-input-wrap">
-                    <span className="bm-addmoney-currency">₹</span>
-                    <input
-                      type="number"
-                      placeholder="Enter amount"
-                      value={addMoneyForm.amount}
-                      onChange={e => setAddMoneyForm(p => ({ ...p, amount: e.target.value }))}
-                      min="1"
-                    />
-                  </div>
-                </div>
-
-                {/* UTR Number */}
-                <div className="bm-addmoney-field">
-                  <label>UTR / Transaction Reference Number *</label>
-                  <input
-                    type="text"
-                    placeholder="Enter UTR number from your payment"
-                    value={addMoneyForm.utrNumber}
-                    onChange={e => setAddMoneyForm(p => ({ ...p, utrNumber: e.target.value }))}
-                  />
-                </div>
-
-                {/* Screenshot Upload */}
-                <div className="bm-addmoney-field">
-                  <label>Payment Screenshot *</label>
-                  <div className="bm-addmoney-upload" onClick={() => addMoneyFileRef.current?.click()}>
-                    {addMoneyForm.screenshot ? (
-                      <div className="bm-addmoney-upload__preview">
-                        <img src={addMoneyForm.screenshot} alt="Payment screenshot" />
-                        <button
-                          className="bm-addmoney-upload__remove"
-                          onClick={e => { e.stopPropagation(); setAddMoneyForm(p => ({ ...p, screenshot: '' })); }}
-                        >
-                          <HiOutlineX />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="bm-addmoney-upload__placeholder">
-                        <HiOutlinePhotograph />
-                        <span>Upload payment screenshot</span>
-                        <small>PNG, JPG up to 5MB</small>
-                      </div>
-                    )}
-                    <input
-                      ref={addMoneyFileRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAddMoneyScreenshot}
-                      hidden
-                    />
-                  </div>
-                </div>
-
-                <div className="bm-addmoney-footer">
-                  <button className="bm-addmoney-cancel" onClick={() => setShowAddMoney(false)}>Cancel</button>
-                  <button
-                    className="bm-addmoney-submit"
-                    onClick={handleSubmitAddMoney}
-                    disabled={!addMoneyForm.amount || !addMoneyForm.utrNumber || !addMoneyForm.paymentMethodId || addMoneySubmitting}
-                  >
-                    {addMoneySubmitting ? 'Submitting...' : 'Submit Request'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-      })()}
 
     </header>
   );

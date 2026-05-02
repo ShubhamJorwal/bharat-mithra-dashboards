@@ -80,22 +80,21 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
       subItems: [
         { path: '/geography', label: 'India Overview' },
         { path: '/geography/states', label: 'States & UTs' },
-        { path: '/geography/districts', label: 'Districts' },
-        { path: '/geography/taluks', label: 'Taluks' },
-        { path: '/geography/gram-panchayats', label: 'Gram Panchayats' },
-        { path: '/geography/villages', label: 'Villages' },
+        // Districts / Taluks / GPs / Villages now reached by drilling into a state.
+        // Old flat list routes remain accessible for admin CRUD direct links.
       ]
     },
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/calendar', icon: HiOutlineCalendar, label: 'Calendar', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
     {
-      path: '/statements',
+      path: '/wallet',
       icon: HiOutlineCash,
-      label: 'Statements',
+      label: 'Wallet',
       badge: null,
       subItems: [
-        { path: '/statements/wallet', label: 'Wallet' },
+        { path: '/wallet', label: 'Overview' },
+        { path: '/transactions', label: 'Transactions' },
       ]
     },
     { path: '/payment-gateways', icon: HiOutlineCreditCard, label: 'Payment Gateways', badge: null },
@@ -231,7 +230,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
                   <NavLink
                     key={sub.path}
                     to={sub.path}
-                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/statements/wallet'}
+                    end={sub.path === '/geography' || sub.path === '/services' || sub.path === '/wallet'}
                     className={({ isActive: navIsActive }) => `bm-nav-subitem ${navIsActive ? 'active' : ''}`}
                   >
                     <span className="bm-nav-label">{sub.label}</span>

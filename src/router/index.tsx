@@ -63,10 +63,18 @@ const VillageList = lazy(() => import("@/views/Geography/Villages/VillageList"))
 const VillageForm = lazy(() => import("@/views/Geography/Villages/VillageForm"));
 const VillageDetails = lazy(() => import("@/views/Geography/Villages/VillageDetails"));
 
+// New drill-down hierarchy under /geography/states/:code/…
+const StateGeography = lazy(() => import("@/views/Geography/Drilldown/StateGeography"));
+const DistrictGeography = lazy(() => import("@/views/Geography/Drilldown/DistrictGeography"));
+const TalukGeography = lazy(() => import("@/views/Geography/Drilldown/TalukGeography"));
+const GPGeography = lazy(() => import("@/views/Geography/Drilldown/GPGeography"));
+const VillageGeography = lazy(() => import("@/views/Geography/Drilldown/VillageGeography"));
+
 // ─── Other top-level pages ──────────────────────────────────────────────────
 const Reports = lazy(() => import("@/views/Reports/Reports"));
 const Calendar = lazy(() => import("@/views/Calendar/Calendar"));
-const WalletStatements = lazy(() => import("@/views/Statements/Wallet/WalletStatements"));
+const Wallet = lazy(() => import("@/views/Wallet/Wallet"));
+const Transactions = lazy(() => import("@/views/Wallet/Transactions"));
 const PaymentGateways = lazy(() => import("@/views/PaymentGateways/PaymentGateways"));
 const Finance = lazy(() => import("@/views/Finance/Finance"));
 const Documents = lazy(() => import("@/views/Documents/Documents"));
@@ -135,6 +143,14 @@ const routerConfig = [
       { path: "geography", element: lazyRoute(<NationalDashboard />) },
       { path: "geography/states", element: lazyRoute(<StateList />) },
       { path: "geography/states/new", element: lazyRoute(<StateForm />) },
+
+      // Drill-down by state code (KA, MH, …) — must precede the :id catch-all
+      { path: "geography/states/code/:code", element: lazyRoute(<StateGeography />) },
+      { path: "geography/states/code/:code/districts/:districtId", element: lazyRoute(<DistrictGeography />) },
+      { path: "geography/states/code/:code/districts/:districtId/taluks/:talukId", element: lazyRoute(<TalukGeography />) },
+      { path: "geography/states/code/:code/districts/:districtId/taluks/:talukId/gps/:gpId", element: lazyRoute(<GPGeography />) },
+      { path: "geography/states/code/:code/districts/:districtId/taluks/:talukId/gps/:gpId/villages/:villageId", element: lazyRoute(<VillageGeography />) },
+
       { path: "geography/states/:id", element: lazyRoute(<StateDetails />) },
       { path: "geography/states/:id/edit", element: lazyRoute(<StateForm />) },
       { path: "geography/districts", element: lazyRoute(<DistrictList />) },
@@ -154,8 +170,10 @@ const routerConfig = [
       { path: "geography/villages/:id", element: lazyRoute(<VillageDetails />) },
       { path: "geography/villages/:id/edit", element: lazyRoute(<VillageForm />) },
 
-      // Statements / Finance / Payments
-      { path: "statements/wallet", element: lazyRoute(<WalletStatements />) },
+      // Wallet & transactions (rebuilt 2026-05-02)
+      { path: "wallet", element: lazyRoute(<Wallet />) },
+      { path: "transactions", element: lazyRoute(<Transactions />) },
+      { path: "statements/wallet", element: lazyRoute(<Transactions />) }, // legacy alias
       { path: "payment-gateways", element: lazyRoute(<PaymentGateways />) },
       { path: "finance", element: lazyRoute(<Finance />) },
 
