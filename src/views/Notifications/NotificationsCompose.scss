@@ -1,23 +1,96 @@
 @use '../../styles/variables' as *;
 
-.bm-compose {
+.bm-cmp {
   padding: 0 $spacing-xl $spacing-2xl;
 
-  .bm-compose-grid {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: $spacing-lg;
-    margin-top: $spacing-lg;
-    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+  // ─── Stepper ───────────────────────────────────────────────────
+  .bm-cmp-stepper {
+    display: flex;
+    align-items: center;
+    margin: $spacing-lg 0 $spacing-md;
+    gap: 0;
+  }
+  .bm-cmp-stepper-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    &:last-child { flex: 0; }
+  }
+  .bm-cmp-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: $transition-fast;
+    font-size: 13px;
+    font-weight: $font-medium;
+    color: var(--color-text-secondary);
+    position: relative;
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &.active {
+      background: $primary-color;
+      color: #fff;
+      border-color: $primary-color;
+      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    }
+    &.done {
+      border-color: $success-color;
+      color: $success-color;
+      background: rgba($success-color, 0.05);
+      .bm-cmp-step-icon { color: $success-color; }
+      &.active {
+        background: $success-color; color: #fff;
+        .bm-cmp-step-icon { color: #fff; }
+      }
+    }
+  }
+  .bm-cmp-step-icon {
+    width: 22px; height: 22px;
+    display: grid; place-items: center;
+    svg { width: 16px; height: 16px; }
+  }
+  .bm-cmp-step-label { white-space: nowrap; }
+  .bm-cmp-step-warn {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: $warning-color;
+    box-shadow: 0 0 0 2px var(--color-card-bg);
+  }
+  .bm-cmp-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--color-border);
+    margin: 0 8px;
+    border-radius: 1px;
+    transition: background 0.3s;
+    &.done { background: $success-color; }
   }
 
-  .bm-compose-card {
+  // ─── Layout ─────────────────────────────────────────────────────
+  .bm-cmp-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: $spacing-lg;
+    @media (max-width: 1100px) { grid-template-columns: 1fr; }
+  }
+  .bm-cmp-card {
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: $radius-lg;
-    padding: $spacing-lg $spacing-xl;
-    margin-bottom: $spacing-md;
-
+    padding: $spacing-xl;
+    h3 {
+      margin: 0 0 $spacing-md;
+      font-size: $font-lg;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+      letter-spacing: -0.01em;
+    }
     h4 {
       margin: 0 0 $spacing-sm;
       font-size: 12px;
@@ -27,110 +100,46 @@
       color: var(--color-text-secondary);
     }
   }
-  .bm-compose-card-sub {
-    margin: 0 0 $spacing-md;
-    font-size: 12px;
-    color: var(--color-text-secondary);
-  }
-
-  // Form fields
-  .bm-compose-row-inline {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $spacing-md;
+  .bm-cmp-section-head {
+    display: flex; justify-content: space-between; align-items: center;
     margin-bottom: $spacing-md;
-    @media (max-width: 600px) { grid-template-columns: 1fr; }
-
-    > label {
-      display: flex; flex-direction: column; gap: 6px;
-      > span {
-        font-size: 12px;
-        font-weight: $font-semibold;
-        color: var(--color-text);
-      }
-    }
+    flex-wrap: wrap;
+    gap: 8px;
+    h3 { margin: 0; }
   }
-  .bm-compose-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: $spacing-md;
-
-    > span {
-      font-size: 12px;
-      font-weight: $font-semibold;
-      color: var(--color-text);
-      em { color: $danger-color; font-style: normal; margin-left: 2px; }
-      small { color: var(--color-text-secondary); font-weight: $font-normal; margin-left: 4px; }
-    }
-    > small {
-      align-self: flex-end;
-      font-size: 11px;
-      color: var(--color-text-secondary);
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 9px 12px;
-      background: var(--color-background);
-      border: 1px solid var(--color-border);
-      border-radius: $radius-md;
-      font-size: $font-sm;
-      color: var(--color-text);
-      font-family: inherit;
-      outline: none;
-      &:focus { border-color: $primary-color; }
-    }
-    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
-  }
-
-  select {
-    width: 100%;
-    padding: 9px 12px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    font-size: $font-sm;
+  .bm-cmp-recipient-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, rgba($primary-color, 0.10), rgba(168, 85, 247, 0.10));
+    border: 1px solid rgba($primary-color, 0.25);
+    border-radius: $radius-full;
+    font-size: 13px;
     color: var(--color-text);
-    outline: none;
-    &:focus { border-color: $primary-color; }
-  }
-
-  // Severity row
-  .bm-compose-sev-row {
-    display: flex; gap: 6px; flex-wrap: wrap;
-  }
-  .bm-compose-sev {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 7px 12px;
-    background: var(--color-background);
-    border: 1.5px solid var(--color-border);
-    border-radius: $radius-md;
-    font-size: 12px;
     font-weight: $font-medium;
-    color: var(--color-text);
-    cursor: pointer;
-    transition: $transition-fast;
-    svg { width: 14px; height: 14px; }
-    &:hover { border-color: var(--color-text-secondary); }
-    &.active.sev-info     { border-color: $primary-color; background: rgba($primary-color, 0.10); color: $primary-color; }
-    &.active.sev-success  { border-color: $success-color; background: rgba($success-color, 0.10); color: $success-color; }
-    &.active.sev-warning  { border-color: $warning-color; background: rgba($warning-color, 0.10); color: $warning-color; }
-    &.active.sev-critical { border-color: $danger-color;  background: rgba($danger-color, 0.10);  color: $danger-color;  }
+    strong { font-size: 16px; font-weight: $font-bold; color: $primary-color; letter-spacing: -0.01em; }
+    svg { width: 14px; height: 14px; color: $primary-color; }
+    &.empty {
+      background: rgba($danger-color, 0.06);
+      border-color: rgba($danger-color, 0.25);
+      strong { color: $danger-color; }
+      svg { color: $danger-color; }
+    }
+  }
+  .bm-cmp-hint {
+    margin: 0 0 $spacing-md;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
   }
 
-  // Audience section
-  .bm-compose-section {
-    margin-top: $spacing-lg;
-    padding-top: $spacing-lg;
-    border-top: 1px solid var(--color-border-light);
-  }
-  .bm-compose-aud-tabs {
+  // ─── Audience: tabs ─────────────────────────────────────────────
+  .bm-cmp-aud-tabs {
     display: flex;
     gap: 6px;
     margin-bottom: $spacing-md;
     flex-wrap: wrap;
   }
-  .bm-compose-aud-tab {
+  .bm-cmp-aud-tab {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 14px;
     background: var(--color-background);
@@ -147,28 +156,75 @@
       background: $primary-color;
       color: #fff;
       border-color: $primary-color;
+      box-shadow: 0 2px 8px rgba($primary-color, 0.25);
     }
   }
 
-  .bm-compose-chips {
+  // ─── Audience: presets ──────────────────────────────────────────
+  .bm-cmp-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+  }
+  .bm-cmp-preset {
+    display: flex; align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    cursor: pointer;
+    text-align: left;
+    transition: $transition-fast;
+    position: relative;
+    &:hover { border-color: $primary-color; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    &.active { border-color: $primary-color; }
+  }
+  .bm-cmp-preset-icon {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    border-radius: $radius-md;
+    background: $primary-color;
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 18px;
+  }
+  .bm-cmp-preset-body {
+    flex: 1;
+    display: flex; flex-direction: column;
+    gap: 2px;
+    strong { font-size: $font-sm; font-weight: $font-semibold; color: var(--color-text); }
+    small { font-size: 12px; color: var(--color-text-secondary); }
+  }
+  .bm-cmp-preset-meta {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .bm-cmp-preset-check {
+    width: 20px; height: 20px;
+    color: $primary-color;
+    flex-shrink: 0;
+  }
+
+  // ─── Audience: chips & staff ────────────────────────────────────
+  .bm-cmp-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    padding: 12px;
-    background: var(--color-background);
-    border-radius: $radius-md;
   }
-  .bm-compose-chip {
+  .bm-cmp-chip {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px;
-    background: var(--color-card-bg);
+    padding: 6px 12px;
+    background: var(--color-background);
     border: 1.5px solid var(--color-border);
     border-radius: $radius-full;
     font-size: 12px;
     font-weight: $font-medium;
     color: var(--color-text);
     cursor: pointer;
-    text-transform: capitalize;
     transition: $transition-fast;
     &:hover { border-color: $primary-color; }
     &.active {
@@ -177,30 +233,363 @@
       border-color: $primary-color;
     }
   }
-  .bm-compose-chip-dot {
-    width: 10px; height: 10px;
+  .bm-cmp-chip-emoji { font-size: 14px; }
+
+  .bm-cmp-staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+  }
+  .bm-cmp-staff {
+    display: flex; align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    cursor: pointer;
+    text-align: left;
+    transition: $transition-fast;
+    > div { flex: 1; display: flex; flex-direction: column; }
+    strong { font-size: 13px; color: var(--color-text); }
+    small { font-size: 11px; color: var(--color-text-secondary); }
+    &:hover { border-color: $primary-color; }
+    &.active { border-color: $primary-color; background: rgba($primary-color, 0.05); }
+    > svg { color: $primary-color; }
+  }
+  .bm-cmp-staff-avatar {
+    width: 32px; height: 32px;
     border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: $font-bold;
+    display: grid; place-items: center;
     flex-shrink: 0;
   }
 
-  // Actions
-  .bm-compose-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: $spacing-lg;
+  // ─── Save preset row ────────────────────────────────────────────
+  .bm-cmp-save-preset {
+    margin-top: $spacing-md;
     padding-top: $spacing-md;
-    border-top: 1px solid var(--color-border-light);
-    flex-wrap: wrap;
-    gap: 10px;
+    border-top: 1px dashed var(--color-border);
   }
-  .bm-compose-summary {
-    font-size: 13px;
-    color: var(--color-text-secondary);
-    strong { color: var(--color-text); font-weight: $font-semibold; }
+  .bm-cmp-save-row {
+    display: flex; gap: 6px;
+    input {
+      flex: 1;
+      padding: 9px 12px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: 13px;
+      color: var(--color-text);
+      outline: none;
+      &:focus { border-color: $primary-color; }
+    }
   }
 
-  // Buttons
+  // ─── Info box ──────────────────────────────────────────────────
+  .bm-cmp-info-box {
+    display: flex; gap: 12px;
+    padding: 14px;
+    background: rgba($warning-color, 0.06);
+    border: 1px solid rgba($warning-color, 0.25);
+    border-radius: $radius-md;
+    > svg { width: 22px; height: 22px; color: $warning-color; flex-shrink: 0; margin-top: 2px; }
+    strong { display: block; font-size: 13px; color: var(--color-text); margin-bottom: 2px; }
+    p { margin: 0; font-size: 12px; color: var(--color-text-secondary); line-height: 1.45; }
+  }
+
+  // ─── Empty state ───────────────────────────────────────────────
+  .bm-cmp-empty {
+    padding: 24px;
+    background: var(--color-background);
+    border-radius: $radius-md;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+  }
+  .bm-cmp-empty-actions {
+    padding: 32px;
+    svg { width: 36px; height: 36px; opacity: 0.4; margin-bottom: 8px; }
+    p { margin: 0; }
+  }
+
+  // ─── Form rows ─────────────────────────────────────────────────
+  .bm-cmp-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+  .bm-cmp-field {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    margin-bottom: $spacing-md;
+    > label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px;
+      font-weight: $font-semibold;
+      color: var(--color-text);
+      em { color: $danger-color; font-style: normal; }
+      small { color: var(--color-text-secondary); font-weight: $font-normal; margin-left: auto; }
+      svg { width: 13px; height: 13px; color: var(--color-text-secondary); }
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: $font-sm;
+      color: var(--color-text);
+      font-family: inherit;
+      outline: none;
+      &:focus { border-color: $primary-color; box-shadow: 0 0 0 3px rgba($primary-color, 0.1); }
+    }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  }
+
+  // ─── Categories & severity ─────────────────────────────────────
+  .bm-cmp-cats, .bm-cmp-sevs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .bm-cmp-cat {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 12px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    &:hover { border-color: var(--color-text-secondary); }
+  }
+  .bm-cmp-sev {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    svg { width: 14px; height: 14px; }
+    &:hover { border-color: var(--color-text-secondary); }
+    &.active.sev-info     { border-color: $primary-color; background: rgba($primary-color, 0.10); color: $primary-color; }
+    &.active.sev-success  { border-color: $success-color; background: rgba($success-color, 0.10); color: $success-color; }
+    &.active.sev-warning  { border-color: $warning-color; background: rgba($warning-color, 0.10); color: $warning-color; }
+    &.active.sev-critical { border-color: $danger-color;  background: rgba($danger-color, 0.10);  color: $danger-color;  }
+  }
+
+  // ─── Templates ─────────────────────────────────────────────────
+  .bm-cmp-templates-block {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px dashed var(--color-border);
+  }
+  .bm-cmp-tpl-row {
+    display: flex; gap: 6px;
+    flex-wrap: wrap;
+  }
+  .bm-cmp-tpl {
+    display: flex; flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 12px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: $transition-fast;
+    &:hover { border-color: $primary-color; transform: translateY(-1px); }
+    strong { font-size: 12px; color: var(--color-text); margin-bottom: 2px; }
+    small { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+  }
+  .bm-cmp-tpl-empty {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  // ─── Actions builder ───────────────────────────────────────────
+  .bm-cmp-actions-list {
+    display: flex; flex-direction: column;
+    gap: 8px;
+    margin-bottom: $spacing-md;
+  }
+  .bm-cmp-action-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+  }
+  .bm-cmp-action-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 130px 1fr 110px 150px;
+    gap: 6px;
+    @media (max-width: 800px) { grid-template-columns: 1fr 1fr; }
+    input, select {
+      padding: 7px 10px;
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: 12px;
+      color: var(--color-text);
+      outline: none;
+      &:focus { border-color: $primary-color; }
+    }
+  }
+  .bm-cmp-action-key {
+    font-family: ui-monospace, monospace;
+  }
+  .bm-cmp-action-url {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 7px 10px !important;
+    background: var(--color-card-bg) !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: $radius-md !important;
+    font-size: 12px;
+  }
+  .bm-cmp-action-del {
+    width: 32px; height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: $radius-md;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: grid; place-items: center;
+    &:hover { background: rgba($danger-color, 0.10); color: $danger-color; }
+    svg { width: 15px; height: 15px; }
+  }
+
+  // Quick-add row
+  .bm-cmp-quick-actions {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px dashed var(--color-border);
+  }
+  .bm-cmp-quick-row {
+    display: flex; gap: 6px;
+    flex-wrap: wrap;
+    button {
+      padding: 6px 10px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--color-text);
+      &:hover { border-color: $primary-color; color: $primary-color; }
+    }
+  }
+
+  // ─── Channels ──────────────────────────────────────────────────
+  .bm-cmp-channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+  }
+  .bm-cmp-channel {
+    display: flex; align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    cursor: pointer;
+    text-align: left;
+    transition: $transition-fast;
+    position: relative;
+    > div { flex: 1; display: flex; flex-direction: column; }
+    strong { font-size: 13px; color: var(--color-text); }
+    small { font-size: 11px; color: var(--color-text-secondary); }
+    &:hover { border-color: $primary-color; }
+    &.active { border-color: $primary-color; background: rgba($primary-color, 0.05); }
+    &.not-ready { opacity: 0.7; }
+  }
+  .bm-cmp-channel-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--color-card-bg);
+    display: grid; place-items: center;
+    color: $primary-color;
+    flex-shrink: 0;
+    svg { width: 16px; height: 16px; }
+  }
+  .bm-cmp-channel-check {
+    width: 16px; height: 16px;
+    color: $primary-color;
+  }
+
+  // ─── Schedule tabs ─────────────────────────────────────────────
+  .bm-cmp-schedule-tabs {
+    display: flex; gap: 6px;
+  }
+  .bm-cmp-sched-tab {
+    flex: 1;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 14px;
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: $radius-md;
+    font-size: 13px;
+    font-weight: $font-medium;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: $transition-fast;
+    svg { width: 14px; height: 14px; }
+    &:hover { border-color: $primary-color; color: $primary-color; }
+    &.active {
+      background: $primary-color;
+      color: #fff;
+      border-color: $primary-color;
+    }
+  }
+
+  // ─── Summary ──────────────────────────────────────────────────
+  .bm-cmp-summary {
+    margin-top: $spacing-lg;
+    padding: $spacing-md;
+    background: linear-gradient(135deg, rgba($primary-color, 0.05), rgba(168, 85, 247, 0.05));
+    border: 1px solid rgba($primary-color, 0.20);
+    border-radius: $radius-md;
+    h4 {
+      margin: 0 0 $spacing-sm;
+      color: var(--color-text);
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: $font-sm;
+    }
+    ul {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex; flex-direction: column;
+      gap: 6px;
+      li {
+        display: flex; gap: 12px;
+        font-size: 12px;
+        span { color: var(--color-text-secondary); min-width: 80px; }
+        strong { color: var(--color-text); font-weight: $font-semibold; }
+      }
+    }
+  }
+
+  // ─── Footer ───────────────────────────────────────────────────
+  .bm-cmp-foot {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px solid var(--color-border);
+    display: flex; align-items: center; gap: $spacing-sm;
+  }
+
+  // ─── Buttons ──────────────────────────────────────────────────
   .bm-btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 9px 16px;
@@ -213,91 +602,186 @@
     cursor: pointer;
     text-decoration: none;
     transition: $transition-base;
+    svg { width: 15px; height: 15px; }
     &:hover { border-color: $primary-color; color: $primary-color; }
     &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  .bm-btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-md;
+    color: var(--color-text-secondary);
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    cursor: pointer;
+    transition: $transition-fast;
     svg { width: 15px; height: 15px; }
+    &:hover { background: var(--color-background); color: var(--color-text); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
   }
   .bm-btn-primary {
     background: $primary-color; color: #fff; border-color: $primary-color;
     &:hover { background: $primary-deep; color: #fff; border-color: $primary-deep; }
-    &:disabled { background: var(--color-border); border-color: var(--color-border); color: #fff; }
+    &:disabled { background: var(--color-border); color: #fff; border-color: var(--color-border); }
+  }
+  .bm-btn-send {
+    background: linear-gradient(135deg, $primary-color, #a855f7);
+    box-shadow: 0 4px 14px rgba($primary-color, 0.35);
+    &:hover { filter: brightness(1.05); }
   }
 
-  // Right pane
-  .bm-compose-side {
-    display: flex;
-    flex-direction: column;
+  // ─── Live preview ─────────────────────────────────────────────
+  .bm-cmp-preview {
+    display: flex; flex-direction: column;
+    gap: $spacing-md;
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
   }
-  .bm-compose-preview-row {
+  .bm-cmp-preview-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    h4 {
+      margin: 0 0 $spacing-sm;
+      font-size: 12px;
+      font-weight: $font-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-secondary);
+    }
+  }
+  .bm-cmp-preview-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+    > span:first-child {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px;
+      font-weight: $font-bold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-secondary);
+      svg { width: 14px; height: 14px; }
+    }
+  }
+  .bm-cmp-preview-channels {
+    display: inline-flex; gap: 4px;
+    svg {
+      width: 14px; height: 14px;
+      color: $primary-color;
+      padding: 4px;
+      background: rgba($primary-color, 0.10);
+      border-radius: 4px;
+      box-sizing: content-box;
+    }
+  }
+
+  // The "phone" preview card
+  .bm-cmp-pv-card {
     display: flex;
-    gap: 0;
     background: var(--color-background);
     border-radius: $radius-md;
     overflow: hidden;
     border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
-  .bm-compose-preview-bar {
+  .bm-cmp-pv-bar {
     width: 4px;
     flex-shrink: 0;
   }
-  .sev-info     .bm-compose-preview-bar { background: $primary-color; }
-  .sev-success  .bm-compose-preview-bar { background: $success-color; }
-  .sev-warning  .bm-compose-preview-bar { background: $warning-color; }
-  .sev-critical .bm-compose-preview-bar { background: $danger-color; }
-  .bm-compose-preview-body {
+  .sev-info     .bm-cmp-pv-bar { background: $primary-color; }
+  .sev-success  .bm-cmp-pv-bar { background: $success-color; }
+  .sev-warning  .bm-cmp-pv-bar { background: $warning-color; }
+  .sev-critical .bm-cmp-pv-bar { background: $danger-color; }
+
+  .bm-cmp-pv-body {
     padding: 12px 14px;
     flex: 1;
+    min-width: 0;
   }
-  .bm-compose-preview-title {
+  .bm-cmp-pv-meta {
+    display: flex; justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: $font-bold;
+  }
+  .bm-cmp-pv-cat { color: $primary-color; }
+  .bm-cmp-pv-time { color: var(--color-text-secondary); }
+  .bm-cmp-pv-title {
     font-size: 13px;
     font-weight: $font-semibold;
     color: var(--color-text);
     margin-bottom: 4px;
+    word-wrap: break-word;
   }
-  .bm-compose-preview-text {
+  .bm-cmp-pv-text {
     font-size: 12px;
     color: var(--color-text-secondary);
     line-height: 1.45;
     margin-bottom: 6px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
-  .bm-compose-preview-action {
+  .bm-cmp-pv-nav {
+    display: inline-flex; align-items: center; gap: 4px;
     font-size: 11px;
     color: $primary-color;
-    font-weight: $font-medium;
+    text-decoration: none;
+    margin-bottom: 6px;
+    svg { width: 11px; height: 11px; }
+  }
+  .bm-cmp-pv-actions {
+    display: flex; gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+  }
+  .bm-cmp-pv-act {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid;
+    font-size: 11px;
+    font-weight: $font-semibold;
+    cursor: pointer;
+    transition: filter 0.15s;
+    &:hover { filter: brightness(1.05); }
+  }
+  .bm-cmp-pv-act-primary { background: $primary-color; color: #fff; border-color: $primary-color; }
+  .bm-cmp-pv-act-success { background: $success-color; color: #fff; border-color: $success-color; }
+  .bm-cmp-pv-act-danger  { background: $danger-color;  color: #fff; border-color: $danger-color;  }
+  .bm-cmp-pv-act-ghost   { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+
+  // Reach stat
+  .bm-cmp-preview-stats {
+    text-align: center;
+  }
+  .bm-cmp-preview-stat {
+    display: flex; flex-direction: column; align-items: center;
     margin-bottom: 6px;
   }
-  .bm-compose-preview-meta {
-    font-size: 10px;
+  .bm-cmp-preview-stat-num {
+    font-size: 2.4rem;
+    font-weight: $font-bold;
+    letter-spacing: -0.02em;
+    color: $primary-color;
+    line-height: 1;
+  }
+  .bm-cmp-preview-stat-label {
+    font-size: 11px;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
   }
-
-  .bm-compose-templates {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .bm-compose-tpl {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 10px 12px;
-    background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    text-align: left;
-    cursor: pointer;
-    transition: $transition-fast;
-    &:hover { border-color: $primary-color; }
-    strong { font-size: 12px; color: var(--color-text); }
-    small { font-size: 11px; color: var(--color-text-secondary); font-family: ui-monospace, monospace; }
-  }
-  .bm-compose-tpl-empty {
-    display: block;
-    padding: 12px;
+  .bm-cmp-preview-stat-channels {
     font-size: 12px;
     color: var(--color-text-secondary);
-    text-align: center;
+    em { font-style: normal; color: $danger-color; }
   }
 }

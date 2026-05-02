@@ -18,6 +18,19 @@ const BASE = '/api/v1/notifications';
 export type Category = 'operations' | 'financial' | 'system' | 'announcement' | 'mention' | 'task';
 export type Severity = 'critical' | 'warning' | 'info' | 'success';
 
+export type ActionStyle = 'primary' | 'danger' | 'success' | 'ghost';
+export type ActionHandler = 'callback' | 'link' | 'dismiss' | 'snooze';
+export type Channel = 'in_app' | 'email' | 'sms' | 'whatsapp' | 'push';
+
+export interface NotificationAction {
+  key: string;
+  label: string;
+  style?: ActionStyle;
+  handler: ActionHandler;
+  url?: string;
+  payload?: Record<string, unknown>;
+}
+
 export interface NotificationView {
   // notification fields
   id: string;
@@ -29,6 +42,8 @@ export interface NotificationView {
   icon?: string;
   actionUrl?: string;
   actionLabel?: string;
+  actions: NotificationAction[];
+  channelsRequested: Channel[];
   payload: Record<string, unknown>;
   audienceSpec: Record<string, unknown>;
   createdBy?: string;
@@ -42,6 +57,36 @@ export interface NotificationView {
   readAt?: string;
   dismissedAt?: string;
   pinned: boolean;
+  snoozedUntil?: string;
+  actionTaken?: string;
+  actionTakenAt?: string;
+}
+
+export interface AudiencePreset {
+  id: string;
+  name: string;
+  description?: string;
+  spec: AudienceSpec;
+  icon?: string;
+  color?: string;
+  createdBy: string;
+  isShared: boolean;
+  useCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotifAnalytics {
+  totalSent: number;
+  totalRecipients: number;
+  totalRead: number;
+  totalClicked: number;
+  readRate: number;
+  clickRate: number;
+  byCategory: Record<string, { sent: number; recipients: number }>;
+  bySeverity: Record<string, { sent: number; recipients: number }>;
+  last30Days: { date: string; sent: number; read: number }[];
+  topActions: { actionKey: string; count: number }[];
 }
 
 export interface Template {
@@ -85,11 +130,17 @@ export interface PublishInput {
   icon?: string;
   actionUrl?: string;
   actionLabel?: string;
+  actions?: NotificationAction[];
+  channels?: Channel[];
   payload?: Record<string, unknown>;
   audience: AudienceSpec;
   createdBy?: string;
   sourceType?: string;
   sourceId?: string;
+  scheduledFor?: string; // ISO
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly';
+  recurrenceUntil?: string;
+  presetId?: string;
 }
 
 // ─── Cache keys ──────────────────────────────────────────────────────
@@ -212,19 +263,110 @@ export const markAllRead = async (): Promise<void> => {
   } catch { /* ignore */ }
 };
 
-export const publish = async (input: PublishInput): Promise<{ id: string; recipientCount: number } | null> => {
+export const publish = async (
+  input: PublishInput
+): Promise<{ id: string; recipientCount: number; scheduleStatus: 'sent' | 'pending' } | null> => {
+  // v2 endpoint supports actions/channels/scheduling/presets;
+  // falls back to the v1 endpoint if v2 isn't deployed yet.
+  const body = { ...input, createdBy: input.createdBy ?? getViewerStaffId() };
   try {
-    const r = await axiosInstance.post(`${BASE}/publish`, {
-      ...input,
-      createdBy: input.createdBy ?? getViewerStaffId(),
-    });
+    const r = await axiosInstance.post(`${BASE}/v2/publish`, body);
+    if (r.data?.success) {
+      fire();
+      return {
+        id: r.data.data?.notification?.id,
+        recipientCount: r.data.data?.recipientCount ?? r.data.data?.recipient_count ?? 0,
+        scheduleStatus: r.data.data?.scheduleStatus ?? 'sent',
+      };
+    }
+  } catch { /* fall back */ }
+  try {
+    const r = await axiosInstance.post(`${BASE}/publish`, body);
     if (r.data?.success) {
       fire();
       return {
         id: r.data.data?.notification?.id,
         recipientCount: r.data.data?.recipient_count ?? 0,
+        scheduleStatus: 'sent',
       };
     }
+  } catch { /* ignore */ }
+  return null;
+};
+
+// Live recipient count for the compose-page audience picker.
+export const estimateAudience = async (
+  spec: AudienceSpec | { presetId: string }
+): Promise<number> => {
+  try {
+    const body = 'presetId' in spec ? spec : { audience: spec };
+    const r = await axiosInstance.post(`${BASE}/estimate-audience`, body);
+    if (r.data?.success) return r.data.data?.count ?? 0;
+  } catch { /* ignore */ }
+  return 0;
+};
+
+export const snooze = async (recipientId: string, minutes = 60): Promise<void> => {
+  try {
+    await axiosInstance.post(
+      `${BASE}/recipients/${encodeURIComponent(recipientId)}/snooze`,
+      null,
+      { params: { minutes } }
+    );
+    fire();
+  } catch { /* ignore */ }
+};
+
+export const triggerAction = async (
+  recipientId: string,
+  actionKey: string,
+  payload: Record<string, unknown> = {}
+): Promise<boolean> => {
+  try {
+    const r = await axiosInstance.post(
+      `${BASE}/recipients/${encodeURIComponent(recipientId)}/action`,
+      { recipientId, actionKey, staffId: getViewerStaffId(), payload }
+    );
+    fire();
+    return !!r.data?.success;
+  } catch { return false; }
+};
+
+export const fetchPresets = async (): Promise<AudiencePreset[]> => {
+  const staffId = getViewerStaffId();
+  try {
+    const r = await axiosInstance.get(`${BASE}/presets`, { params: { staffId } });
+    if (r.data?.success) return r.data.data || [];
+  } catch { /* ignore */ }
+  return [];
+};
+
+export const upsertPreset = async (preset: Partial<AudiencePreset>): Promise<AudiencePreset | null> => {
+  const body = {
+    ...preset,
+    createdBy: preset.createdBy || getViewerStaffId(),
+    spec: preset.spec || { allStaff: false },
+  };
+  try {
+    const r = preset.id
+      ? await axiosInstance.put(`${BASE}/presets/${encodeURIComponent(preset.id)}`, body)
+      : await axiosInstance.post(`${BASE}/presets`, body);
+    if (r.data?.success) return r.data.data;
+  } catch { /* ignore */ }
+  return null;
+};
+
+export const deletePreset = async (id: string): Promise<boolean> => {
+  try {
+    await axiosInstance.delete(`${BASE}/presets/${encodeURIComponent(id)}`);
+    return true;
+  } catch { return false; }
+};
+
+export const fetchAnalytics = async (days = 30): Promise<NotifAnalytics | null> => {
+  try {
+    const r = await axiosInstance.get(`${BASE}/analytics`, { params: { days } });
+    if (r.data?.success) return r.data.data;
   } catch { /* ignore */ }
   return null;
 };

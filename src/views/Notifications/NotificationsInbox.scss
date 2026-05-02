@@ -3,7 +3,7 @@
 .bm-notif {
   padding: 0 $spacing-xl $spacing-2xl;
 
-  // Tabs
+  // ─── Tabs ─────────────────────────────────────────────────────
   .bm-notif-tabs {
     display: flex;
     gap: 4px;
@@ -44,7 +44,7 @@
     &.primary { background: rgba($primary-color, 0.15); color: $primary-color; }
   }
 
-  // Filters
+  // ─── Filters ──────────────────────────────────────────────────
   .bm-notif-filters {
     display: flex;
     gap: $spacing-md;
@@ -90,57 +90,90 @@
     }
   }
 
-  // List
+  // ─── Sectioned list (day grouping) ─────────────────────────────
+  .bm-notif-section {
+    margin-bottom: $spacing-md;
+  }
+  .bm-notif-section-h {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin: $spacing-sm 0 8px;
+    font-size: 11px;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    svg { width: 13px; height: 13px; color: $warning-color; }
+  }
+
+  // ─── Loading ──────────────────────────────────────────────────
   .bm-notif-loading {
     text-align: center;
     padding: 48px;
     color: var(--color-text-secondary);
   }
+
+  // ─── List + rows ──────────────────────────────────────────────
   .bm-notif-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
   .bm-notif-row {
     position: relative;
-    display: flex;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: 4px 42px 1fr auto;
+    gap: 12px;
     align-items: flex-start;
-    padding: 14px 16px;
+    padding: 14px 16px 14px 0;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: $radius-lg;
     cursor: pointer;
     transition: $transition-fast;
+    overflow: hidden;
     &:hover {
-      transform: translateX(2px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
       border-color: $primary-color;
+      .bm-notif-row-side { opacity: 1; }
     }
-    &.unread {
-      border-left: 3px solid $primary-color;
-    }
-    &.read {
-      opacity: 0.78;
-      .bm-notif-row-title { font-weight: $font-medium; }
-    }
+    &.read .bm-notif-row-title { font-weight: $font-medium; }
+    &.read .bm-notif-row-body-text { opacity: 0.85; }
+    &.unread .bm-notif-row-title { font-weight: $font-bold; }
     &.pinned {
       background: linear-gradient(180deg, rgba($warning-color, 0.04), var(--color-card-bg));
+      border-color: rgba($warning-color, 0.30);
+    }
+    &.acted {
+      background: rgba($success-color, 0.03);
     }
   }
+  .bm-notif-row-rail {
+    width: 4px;
+    height: 100%;
+    align-self: stretch;
+  }
+  .sev-info     .bm-notif-row-rail { background: $primary-color; }
+  .sev-success  .bm-notif-row-rail { background: $success-color; }
+  .sev-warning  .bm-notif-row-rail { background: $warning-color; }
+  .sev-critical .bm-notif-row-rail { background: $danger-color; }
+
   .bm-notif-row-icon {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: $radius-full;
+    width: 42px;
+    height: 42px;
+    border-radius: $radius-md;
     background: var(--color-background);
     display: grid; place-items: center;
-    svg { width: 20px; height: 20px; }
+    margin-top: 2px;
+    svg { width: 22px; height: 22px; }
   }
-  .bm-notif-row-body { flex: 1; min-width: 0; }
+  .bm-notif-row-body {
+    flex: 1;
+    min-width: 0;
+  }
   .bm-notif-row-line1 {
     display: flex;
     align-items: center;
@@ -150,11 +183,13 @@
   }
   .bm-notif-row-title {
     font-size: $font-sm;
-    font-weight: $font-semibold;
     color: var(--color-text);
     letter-spacing: -0.005em;
   }
-  .bm-notif-row-cat, .bm-notif-row-sev {
+
+  .bm-notif-row-cat,
+  .bm-notif-row-sev,
+  .bm-notif-row-pinned {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 1px 7px;
     border-radius: $radius-full;
@@ -179,32 +214,87 @@
     &.sev-info     { background: rgba($primary-color, 0.10); color: $primary-color; }
     &.sev-success  { background: rgba($success-color, 0.10); color: $success-color; }
   }
+  .bm-notif-row-pinned {
+    background: rgba($warning-color, 0.13);
+    color: $warning-color;
+  }
+
   .bm-notif-row-body-text {
     font-size: 13px;
     color: var(--color-text-secondary);
     line-height: 1.45;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
+
+  // ─── Inline actions ────────────────────────────────────────────
+  .bm-notif-row-acts {
+    display: flex; gap: 6px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--color-border-light);
+  }
+  .bm-notif-row-act {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid;
+    border-radius: $radius-md;
+    font-size: 12px;
+    font-weight: $font-semibold;
+    cursor: pointer;
+    transition: $transition-fast;
+    &:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+    &.taken { box-shadow: 0 0 0 2px rgba($success-color, 0.30); }
+    svg { width: 13px; height: 13px; }
+  }
+  .bm-notif-row-act-primary { background: $primary-color; color: #fff; border-color: $primary-color; }
+  .bm-notif-row-act-success { background: $success-color; color: #fff; border-color: $success-color; }
+  .bm-notif-row-act-danger  { background: $danger-color;  color: #fff; border-color: $danger-color; }
+  .bm-notif-row-act-ghost   { background: transparent;    color: var(--color-text); border-color: var(--color-border);
+                              &:hover { background: var(--color-background); } }
+
+  // ─── Meta ──────────────────────────────────────────────────────
   .bm-notif-row-meta {
     display: flex;
-    gap: 12px;
+    gap: 14px;
+    flex-wrap: wrap;
     font-size: 11px;
     color: var(--color-text-secondary);
+    span {
+      display: inline-flex; align-items: center; gap: 3px;
+      svg { width: 11px; height: 11px; }
+    }
   }
   .bm-notif-row-action {
     color: $primary-color;
     font-weight: $font-medium;
   }
-  .bm-notif-row-actions {
+  .bm-notif-row-channels {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: $font-bold;
+    opacity: 0.7;
+  }
+  .bm-notif-row-acted {
+    color: $success-color;
+    font-weight: $font-semibold;
+  }
+
+  // ─── Right-side action buttons ─────────────────────────────────
+  .bm-notif-row-side {
     display: flex;
     gap: 4px;
     flex-shrink: 0;
     opacity: 0;
     transition: opacity 0.15s;
+    align-self: flex-start;
+    margin-top: 2px;
   }
-  .bm-notif-row:hover .bm-notif-row-actions { opacity: 1; }
   .bm-notif-row-btn {
-    width: 28px; height: 28px;
+    width: 30px; height: 30px;
     border: 1px solid var(--color-border);
     background: var(--color-card-bg);
     border-radius: $radius-md;
@@ -214,10 +304,51 @@
     &:hover { border-color: $primary-color; color: $primary-color; }
     svg { width: 14px; height: 14px; }
   }
+
+  // Snooze menu
+  .bm-notif-row-snooze {
+    position: relative;
+  }
+  .bm-notif-snooze-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 6px;
+    min-width: 140px;
+    z-index: 50;
+    display: flex; flex-direction: column;
+    gap: 2px;
+    button {
+      padding: 7px 10px;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      text-align: left;
+      font-size: 12px;
+      color: var(--color-text);
+      cursor: pointer;
+      &:hover { background: var(--color-background); }
+    }
+  }
+  .bm-notif-snooze-menu-head {
+    display: block;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: $font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+
+  // Unread dot
   .bm-notif-row-dot {
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 16px;
+    right: 16px;
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -225,7 +356,7 @@
     box-shadow: 0 0 0 3px rgba($primary-color, 0.18);
   }
 
-  // Buttons
+  // ─── Buttons (header) ──────────────────────────────────────────
   .bm-btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 14px;
@@ -238,6 +369,7 @@
     cursor: pointer;
     text-decoration: none;
     transition: $transition-base;
+    svg { width: 14px; height: 14px; }
     &:hover { border-color: $primary-color; color: $primary-color; }
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
