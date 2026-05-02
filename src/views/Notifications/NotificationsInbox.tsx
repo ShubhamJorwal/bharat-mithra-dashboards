@@ -7,10 +7,10 @@ import {
   HiOutlineCog, HiOutlineCash, HiOutlineClock, HiOutlineArchive,
   HiOutlineStar, HiOutlineSpeakerphone, HiOutlineChartBar,
   HiOutlineExternalLink, HiOutlineCog as HiOutlineSystem,
+  HiOutlineLightningBolt,
 } from 'react-icons/hi';
-import { PageHeader } from '@/components/common/PageHeader';
-import EmptyState from '@/components/common/EmptyState/EmptyState';
 import { useToast } from '@/components/common/Toast/ToastContext';
+import { PageHeader } from '@/components/common/PageHeader';
 import {
   fetchInbox, markRead, markAllRead, dismiss, togglePin,
   snooze, triggerAction, subscribe,
@@ -260,7 +260,7 @@ const NotificationsInbox = () => {
             )}
             {n.channelsRequested.length > 1 && (
               <span className="bm-notif-row-channels">
-                {n.channelsRequested.join(' · ')}
+                {n.channelsRequested.map(c => <span key={c}>{c}</span>)}
               </span>
             )}
             {acted && n.actionTakenAt && (
@@ -313,22 +313,20 @@ const NotificationsInbox = () => {
     );
   };
 
+  // Derived stats for the hero strip
+  const actedCount = items.filter(i => i.actionTaken).length;
+
   return (
     <div className="bm-notif">
       <PageHeader
         icon={<HiOutlineBell />}
         title="Notifications"
-        description={`${total} total · ${unreadCount} unread${pinnedCount ? ` · ${pinnedCount} pinned` : ''}`}
+        description="Stay on top of every update — applications, team broadcasts, wallet activity, and more."
         actions={
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="bm-btn" onClick={() => void load()} title="Refresh">
               <HiOutlineRefresh />
             </button>
-            {unreadCount > 0 && (
-              <button className="bm-btn" onClick={handleMarkAllRead} disabled={busy}>
-                <HiOutlineCheck /> Mark all read
-              </button>
-            )}
             <Link to="/notifications/analytics" className="bm-btn">
               <HiOutlineChartBar /> Analytics
             </Link>
@@ -339,56 +337,112 @@ const NotificationsInbox = () => {
         }
       />
 
-      <div className="bm-notif-tabs">
-        <button className={`bm-notif-tab ${tab === 'all' ? 'active' : ''}`} onClick={() => setTab('all')}>
-          All <span className="bm-notif-tab-count">{total}</span>
-        </button>
-        <button className={`bm-notif-tab ${tab === 'unread' ? 'active' : ''}`} onClick={() => setTab('unread')}>
-          Unread {unreadCount > 0 && <span className="bm-notif-tab-count primary">{unreadCount}</span>}
-        </button>
-        <button className={`bm-notif-tab ${tab === 'pinned' ? 'active' : ''}`} onClick={() => setTab('pinned')}>
-          <HiOutlineStar /> Pinned {pinnedCount > 0 && <span className="bm-notif-tab-count">{pinnedCount}</span>}
-        </button>
+      {/* ─── Hero KPI strip ─── */}
+      <div className="bm-notif-hero">
+        <div className="bm-notif-hero-main">
+          <div className="bm-notif-hero-eyebrow">
+            <HiOutlineBell /> Inbox
+          </div>
+          <div className="bm-notif-hero-num">{unreadCount}</div>
+          <div className="bm-notif-hero-tagline">
+            {unreadCount === 0
+              ? "You're all caught up. Nothing waiting for you."
+              : `${unreadCount === 1 ? 'notification' : 'notifications'} waiting for your attention`}
+          </div>
+          <div className="bm-notif-hero-actions">
+            {unreadCount > 0 && (
+              <button className="bm-notif-hero-btn" onClick={handleMarkAllRead} disabled={busy}>
+                <HiOutlineCheck /> Mark all read
+              </button>
+            )}
+            <Link to="/notifications/compose" className="bm-notif-hero-btn">
+              <HiOutlinePaperAirplane /> New broadcast
+            </Link>
+          </div>
+        </div>
+
+        <div className="bm-notif-stat tone-pinned">
+          <div className="bm-notif-stat-icon"><HiOutlineStar /></div>
+          <div className="bm-notif-stat-num">{pinnedCount}</div>
+          <div className="bm-notif-stat-label">Pinned</div>
+        </div>
+        <div className="bm-notif-stat tone-actioned">
+          <div className="bm-notif-stat-icon"><HiOutlineLightningBolt /></div>
+          <div className="bm-notif-stat-num">{actedCount}</div>
+          <div className="bm-notif-stat-label">You responded</div>
+        </div>
+        <div className="bm-notif-stat tone-archived">
+          <div className="bm-notif-stat-icon"><HiOutlineArchive /></div>
+          <div className="bm-notif-stat-num">{total}</div>
+          <div className="bm-notif-stat-label">Total in inbox</div>
+        </div>
       </div>
 
-      <div className="bm-notif-filters">
-        <div className="bm-notif-search">
-          <HiOutlineSearch />
-          <input
-            placeholder="Search title, body…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          {search && <button onClick={() => setSearch('')}><HiOutlineX /></button>}
+      {/* ─── Toolbar: tabs + filters ─── */}
+      <div className="bm-notif-toolbar">
+        <div className="bm-notif-tabs">
+          <button className={`bm-notif-tab ${tab === 'all' ? 'active' : ''}`} onClick={() => setTab('all')}>
+            All <span className="bm-notif-tab-count">{total}</span>
+          </button>
+          <button className={`bm-notif-tab ${tab === 'unread' ? 'active' : ''}`} onClick={() => setTab('unread')}>
+            Unread {unreadCount > 0 && <span className="bm-notif-tab-count primary">{unreadCount}</span>}
+          </button>
+          <button className={`bm-notif-tab ${tab === 'pinned' ? 'active' : ''}`} onClick={() => setTab('pinned')}>
+            <HiOutlineStar /> Pinned {pinnedCount > 0 && <span className="bm-notif-tab-count">{pinnedCount}</span>}
+          </button>
         </div>
-        <div className="bm-notif-filter">
-          <HiOutlineFilter />
-          <select value={category} onChange={e => setCategory(e.target.value as Category | '')}>
-            {CATEGORY_OPTS.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
-          </select>
-          <select value={severity} onChange={e => setSeverity(e.target.value as Severity | '')}>
-            {SEVERITY_OPTS.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
-          </select>
+
+        <div className="bm-notif-filters">
+          <div className="bm-notif-search">
+            <HiOutlineSearch />
+            <input
+              placeholder="Search title, body…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            {search && <button onClick={() => setSearch('')}><HiOutlineX /></button>}
+          </div>
+          <div className="bm-notif-filter-pill">
+            <HiOutlineFilter />
+            <select value={category} onChange={e => setCategory(e.target.value as Category | '')}>
+              {CATEGORY_OPTS.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
+            </select>
+          </div>
+          <div className="bm-notif-filter-pill">
+            <HiOutlineExclamation />
+            <select value={severity} onChange={e => setSeverity(e.target.value as Severity | '')}>
+              {SEVERITY_OPTS.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
+      {/* ─── Body ─── */}
       {loading ? (
-        <div className="bm-notif-loading">Loading…</div>
+        <div className="bm-notif-loading">
+          <div className="bm-notif-skel" />
+          <div className="bm-notif-skel" />
+          <div className="bm-notif-skel" />
+        </div>
       ) : visible.length === 0 ? (
-        <EmptyState
-          icon={<HiOutlineBell />}
-          title={
-            tab === 'unread' ? 'No unread notifications' :
-            tab === 'pinned' ? 'No pinned notifications' :
-            'No notifications yet'
-          }
-          description={
-            tab === 'all'
-              ? "Updates from applications, the team, wallet activity, and broadcasts will land here."
-              : 'Try a different filter or tab.'
-          }
-          size="lg"
-        />
+        <div className="bm-notif-empty-wrap">
+          <div className="bm-notif-empty-icon"><HiOutlineBell /></div>
+          <h3 className="bm-notif-empty-title">
+            {tab === 'unread' ? 'Inbox zero — nice work' :
+             tab === 'pinned' ? 'Nothing pinned yet' :
+             'No notifications yet'}
+          </h3>
+          <p className="bm-notif-empty-desc">
+            {tab === 'all'
+              ? "Updates from applications, the team, wallet activity, and broadcasts will land here in real time."
+              : tab === 'unread'
+                ? "You've read everything in your inbox. Pour yourself a coffee."
+                : "Tap the star on any notification to pin it and keep it at the top of your list."}
+          </p>
+          <Link to="/notifications/compose" className="bm-btn bm-btn-primary">
+            <HiOutlinePaperAirplane /> Send a notification
+          </Link>
+        </div>
       ) : (
         <>
           {/* Pinned banner */}

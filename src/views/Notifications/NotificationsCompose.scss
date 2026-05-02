@@ -3,70 +3,99 @@
 .bm-cmp {
   padding: 0 $spacing-xl $spacing-2xl;
 
-  // ─── Stepper ───────────────────────────────────────────────────
+  // ─── Stepper — premium pill train ─────────────────────────────
   .bm-cmp-stepper {
     display: flex;
     align-items: center;
-    margin: $spacing-lg 0 $spacing-md;
-    gap: 0;
+    gap: 4px;
+    padding: 12px;
+    margin: $spacing-lg 0;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    overflow-x: auto;
   }
   .bm-cmp-stepper-item {
     display: flex;
     align-items: center;
     flex: 1;
+    min-width: 0;
     &:last-child { flex: 0; }
   }
   .bm-cmp-step {
+    flex: 1;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: $radius-md;
+    gap: 10px;
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
-    transition: $transition-fast;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     font-size: 13px;
-    font-weight: $font-medium;
+    font-weight: 600;
     color: var(--color-text-secondary);
     position: relative;
-    &:hover { border-color: $primary-color; color: $primary-color; }
+    white-space: nowrap;
+    &:hover {
+      background: rgba($primary-color, 0.06);
+      color: $primary-color;
+    }
     &.active {
-      background: $primary-color;
+      background: linear-gradient(135deg, $primary-color, #6366f1);
       color: #fff;
-      border-color: $primary-color;
-      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+      box-shadow: 0 6px 20px rgba($primary-color, 0.32);
+      .bm-cmp-step-icon {
+        background: rgba(255,255,255,0.20);
+        color: #fff;
+      }
     }
     &.done {
-      border-color: $success-color;
       color: $success-color;
-      background: rgba($success-color, 0.05);
-      .bm-cmp-step-icon { color: $success-color; }
+      background: rgba($success-color, 0.08);
+      .bm-cmp-step-icon {
+        background: $success-color;
+        color: #fff;
+      }
       &.active {
-        background: $success-color; color: #fff;
-        .bm-cmp-step-icon { color: #fff; }
+        background: linear-gradient(135deg, $success-color, #16a34a);
+        color: #fff;
       }
     }
   }
   .bm-cmp-step-icon {
-    width: 22px; height: 22px;
+    width: 28px; height: 28px;
+    background: var(--color-background);
+    color: var(--color-text-secondary);
     display: grid; place-items: center;
+    border-radius: 8px;
+    transition: all 0.22s;
     svg { width: 16px; height: 16px; }
   }
-  .bm-cmp-step-label { white-space: nowrap; }
+  .bm-cmp-step-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .bm-cmp-step-warn {
     position: absolute;
-    top: -4px; right: -4px;
-    width: 10px; height: 10px;
+    top: 4px; right: 4px;
+    width: 8px; height: 8px;
     border-radius: 50%;
     background: $warning-color;
     box-shadow: 0 0 0 2px var(--color-card-bg);
+    animation: bm-cmp-warn-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes bm-cmp-warn-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.3); }
   }
   .bm-cmp-step-line {
-    flex: 1;
+    flex: 0 0 24px;
     height: 2px;
     background: var(--color-border);
-    margin: 0 8px;
     border-radius: 1px;
     transition: background 0.3s;
     &.done { background: $success-color; }
@@ -108,22 +137,44 @@
     h3 { margin: 0; }
   }
   .bm-cmp-recipient-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 14px;
-    background: linear-gradient(135deg, rgba($primary-color, 0.10), rgba(168, 85, 247, 0.10));
-    border: 1px solid rgba($primary-color, 0.25);
-    border-radius: $radius-full;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba($primary-color, 0.12), rgba(168, 85, 247, 0.12));
+    border: 1px solid rgba($primary-color, 0.30);
+    border-radius: 999px;
     font-size: 13px;
     color: var(--color-text);
-    font-weight: $font-medium;
-    strong { font-size: 16px; font-weight: $font-bold; color: $primary-color; letter-spacing: -0.01em; }
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba($primary-color, 0.10);
+    transition: all 0.25s;
+    strong {
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, $primary-color, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+      animation: bm-count-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
     svg { width: 14px; height: 14px; color: $primary-color; }
     &.empty {
-      background: rgba($danger-color, 0.06);
-      border-color: rgba($danger-color, 0.25);
-      strong { color: $danger-color; }
+      background: rgba($danger-color, 0.08);
+      border-color: rgba($danger-color, 0.30);
+      box-shadow: 0 4px 12px rgba($danger-color, 0.10);
+      strong {
+        background: linear-gradient(135deg, $danger-color, #f87171);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
       svg { color: $danger-color; }
     }
+  }
+  @keyframes bm-count-pop {
+    0%   { transform: scale(0.8); opacity: 0.4; }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
   }
   .bm-cmp-hint {
     margin: 0 0 $spacing-md;
@@ -632,7 +683,7 @@
     &:hover { filter: brightness(1.05); }
   }
 
-  // ─── Live preview ─────────────────────────────────────────────
+  // ─── Live preview — premium ───────────────────────────────────
   .bm-cmp-preview {
     display: flex; flex-direction: column;
     gap: $spacing-md;
@@ -643,14 +694,15 @@
   .bm-cmp-preview-card {
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
-    padding: $spacing-md;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
     h4 {
       margin: 0 0 $spacing-sm;
-      font-size: 12px;
-      font-weight: $font-bold;
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.10em;
       color: var(--color-text-secondary);
     }
   }
@@ -679,23 +731,27 @@
     }
   }
 
-  // The "phone" preview card
+  // The phone-style preview card
   .bm-cmp-pv-card {
+    position: relative;
     display: flex;
-    background: var(--color-background);
-    border-radius: $radius-md;
+    background: linear-gradient(180deg, var(--color-card-bg), var(--color-background));
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--color-border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    transition: all 0.22s;
+    &:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.10); }
   }
   .bm-cmp-pv-bar {
-    width: 4px;
+    width: 5px;
     flex-shrink: 0;
+    border-radius: 0 3px 3px 0;
   }
-  .sev-info     .bm-cmp-pv-bar { background: $primary-color; }
-  .sev-success  .bm-cmp-pv-bar { background: $success-color; }
-  .sev-warning  .bm-cmp-pv-bar { background: $warning-color; }
-  .sev-critical .bm-cmp-pv-bar { background: $danger-color; }
+  .sev-info     .bm-cmp-pv-bar { background: linear-gradient(180deg, #60a5fa, $primary-color); }
+  .sev-success  .bm-cmp-pv-bar { background: linear-gradient(180deg, #4ade80, $success-color); }
+  .sev-warning  .bm-cmp-pv-bar { background: linear-gradient(180deg, #fbbf24, $warning-color); }
+  .sev-critical .bm-cmp-pv-bar { background: linear-gradient(180deg, #f87171, $danger-color); }
 
   .bm-cmp-pv-body {
     padding: 12px 14px;
@@ -757,31 +813,39 @@
   .bm-cmp-pv-act-danger  { background: $danger-color;  color: #fff; border-color: $danger-color;  }
   .bm-cmp-pv-act-ghost   { background: transparent; color: var(--color-text); border-color: var(--color-border); }
 
-  // Reach stat
+  // Reach stat — gradient
   .bm-cmp-preview-stats {
     text-align: center;
+    background: linear-gradient(135deg, rgba($primary-color, 0.05), rgba(168,85,247, 0.05));
+    border-color: rgba($primary-color, 0.20);
   }
   .bm-cmp-preview-stat {
     display: flex; flex-direction: column; align-items: center;
     margin-bottom: 6px;
   }
   .bm-cmp-preview-stat-num {
-    font-size: 2.4rem;
-    font-weight: $font-bold;
-    letter-spacing: -0.02em;
-    color: $primary-color;
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, $primary-color, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     line-height: 1;
   }
   .bm-cmp-preview-stat-label {
     font-size: 11px;
     color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-top: 4px;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    margin-top: 6px;
   }
   .bm-cmp-preview-stat-channels {
     font-size: 12px;
-    color: var(--color-text-secondary);
-    em { font-style: normal; color: $danger-color; }
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 12px;
+    em { font-style: normal; color: $danger-color; font-weight: 600; }
   }
 }

@@ -747,48 +747,80 @@ const Topbar = ({ isMobile = false, isDrawerOpen = false, onMenuClick }: TopbarP
           {showNotifications && (
             <>
             <div className="bm-dropdown-backdrop" onClick={() => setShowNotifications(false)} />
-            <div className="bm-notification-dropdown bm-dark-dropdown">
-              <div className="bm-dropdown-header">
-                <span>Notifications {notifUnread > 0 && <em style={{ color: '#fcd34d', fontStyle: 'normal' }}>({notifUnread})</em>}</span>
+            <div className="bm-notification-dropdown bm-dark-dropdown bm-notif-dd">
+              {/* Hero gradient header */}
+              <div className="bm-notif-dd-hero">
+                <div className="bm-notif-dd-hero-text">
+                  <div className="bm-notif-dd-hero-eyebrow">
+                    <HiOutlineBell />
+                    Inbox
+                  </div>
+                  <div className="bm-notif-dd-hero-num">{notifUnread}</div>
+                  <div className="bm-notif-dd-hero-tag">
+                    {notifUnread === 0 ? 'all caught up' : `unread notification${notifUnread === 1 ? '' : 's'}`}
+                  </div>
+                </div>
                 {notifUnread > 0 && (
-                  <button className="bm-mark-read" onClick={() => { void markAllRead(); }}>
+                  <button className="bm-notif-dd-hero-clear" onClick={() => { void markAllRead(); }}>
                     Mark all read
                   </button>
                 )}
               </div>
-              <div className="bm-notification-list">
+
+              {/* List */}
+              <div className="bm-notif-dd-list">
                 {notifItems.length === 0 ? (
-                  <div className="bm-notification-empty" style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: 13 }}>
-                    No notifications yet.<br />
-                    <small style={{ opacity: 0.7 }}>Updates from the team will appear here.</small>
+                  <div className="bm-notif-dd-empty">
+                    <div className="bm-notif-dd-empty-icon">
+                      <HiOutlineBell />
+                    </div>
+                    <div className="bm-notif-dd-empty-title">You&rsquo;re all caught up</div>
+                    <div className="bm-notif-dd-empty-text">
+                      New updates from the team, applications, and wallet activity will land here.
+                    </div>
                   </div>
                 ) : notifItems.map((n) => {
                   const unread = !n.readAt;
+                  const initials = (n.title || '?').split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
                   return (
-                    <div
+                    <button
                       key={n.recipientId}
-                      className={`bm-notification-item ${unread ? 'unread' : ''}`}
+                      type="button"
+                      className={`bm-notif-dd-row sev-${n.severity} ${unread ? 'unread' : 'read'}`}
                       onClick={() => {
                         if (unread) void markRead(n.recipientId);
                         if (n.actionUrl) { navigate(n.actionUrl); setShowNotifications(false); }
                       }}
-                      style={{ cursor: 'pointer' }}
                     >
-                      <div className="bm-notification-content">
-                        <span className="bm-notification-title">{n.title}</span>
-                        {n.body && <span className="bm-notification-message">{n.body}</span>}
+                      <div className="bm-notif-dd-row-avatar">
+                        {initials}
                       </div>
-                      <span className="bm-notification-time">{fmtNotifTime(n.createdAt)}</span>
-                    </div>
+                      <div className="bm-notif-dd-row-body">
+                        <div className="bm-notif-dd-row-title">{n.title}</div>
+                        {n.body && <div className="bm-notif-dd-row-text">{n.body}</div>}
+                        <div className="bm-notif-dd-row-meta">
+                          <span className="bm-notif-dd-row-time">{fmtNotifTime(n.createdAt)}</span>
+                          <span className={`bm-notif-dd-row-cat cat-${n.category}`}>
+                            {n.category}
+                          </span>
+                        </div>
+                      </div>
+                      {unread && <span className="bm-notif-dd-row-dot" />}
+                    </button>
                   );
                 })}
               </div>
-              <div className="bm-dropdown-footer">
+
+              {/* Footer */}
+              <div className="bm-notif-dd-foot">
                 <button onClick={() => { navigate('/notifications'); setShowNotifications(false); }}>
-                  View all notifications
+                  View all
                 </button>
-                <button onClick={() => { navigate('/notifications/compose'); setShowNotifications(false); }} style={{ marginLeft: 8 }}>
-                  Compose
+                <button
+                  className="bm-notif-dd-foot-primary"
+                  onClick={() => { navigate('/notifications/compose'); setShowNotifications(false); }}
+                >
+                  + Compose
                 </button>
               </div>
             </div>

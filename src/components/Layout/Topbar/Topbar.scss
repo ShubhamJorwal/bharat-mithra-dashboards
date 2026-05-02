@@ -1,5 +1,6 @@
 @use '../../../styles/variables' as *;
 @use '../../../styles/mixins' as *;
+@use './notification-dropdown';
 
 // Navy Blue Theme Colors
 $navy-dark: #0a1628;

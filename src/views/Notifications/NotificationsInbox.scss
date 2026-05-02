@@ -1,175 +1,454 @@
 @use '../../styles/variables' as *;
 
+// =====================================================================
+// NOTIFICATION INBOX — premium UI
+// Hero KPI strip · day-grouped feed · gradient severity rails ·
+// glowing unread state · animated action buttons · pinned banner
+// =====================================================================
+
 .bm-notif {
   padding: 0 $spacing-xl $spacing-2xl;
 
-  // ─── Tabs ─────────────────────────────────────────────────────
+  // ─── Hero KPI strip ─────────────────────────────────────────────
+  .bm-notif-hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: $spacing-md;
+    margin: $spacing-lg 0;
+    @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 480px) { grid-template-columns: 1fr; }
+  }
+
+  // The big "you have N unread" card — gradient + animated bell
+  .bm-notif-hero-main {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #5b6cff 0%, #8b5cf6 50%, #ec4899 100%);
+    color: #fff;
+    box-shadow:
+      0 12px 32px rgba(91, 108, 255, 0.30),
+      0 4px 8px rgba(0, 0, 0, 0.06);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 80% 0%,
+        rgba(255,255,255,0.20) 0%,
+        transparent 50%
+      );
+      pointer-events: none;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -50%;
+      right: -10%;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 60%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  }
+  .bm-notif-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.92;
+    margin-bottom: 6px;
+    position: relative; z-index: 1;
+    svg {
+      width: 13px; height: 13px;
+      animation: bm-bell-wobble 3s ease-in-out infinite;
+    }
+  }
+  @keyframes bm-bell-wobble {
+    0%, 100% { transform: rotate(0); }
+    10%, 30% { transform: rotate(-12deg); }
+    20%, 40% { transform: rotate(12deg); }
+    50% { transform: rotate(0); }
+  }
+  .bm-notif-hero-num {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    position: relative; z-index: 1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  }
+  .bm-notif-hero-tagline {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.88;
+    margin-top: 6px;
+    position: relative; z-index: 1;
+  }
+  .bm-notif-hero-actions {
+    display: flex; gap: 8px;
+    margin-top: 14px;
+    position: relative; z-index: 1;
+  }
+  .bm-notif-hero-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 14px;
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    svg { width: 13px; height: 13px; }
+    &:hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateY(-1px);
+    }
+  }
+
+  // Smaller stat cards
+  .bm-notif-stat {
+    position: relative;
+    padding: 18px 20px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.25s;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    &.tone-pinned   { &::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+                      .bm-notif-stat-icon { background: rgba($warning-color, 0.14); color: $warning-color; } }
+    &.tone-actioned { &::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+                      .bm-notif-stat-icon { background: rgba($success-color, 0.14); color: $success-color; } }
+    &.tone-archived { &::before { background: linear-gradient(90deg, #6b7280, #9ca3af); }
+                      .bm-notif-stat-icon { background: rgba(#6b7280, 0.14);    color: #6b7280;      } }
+  }
+  .bm-notif-stat-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    margin-bottom: 12px;
+    svg { width: 18px; height: 18px; }
+  }
+  .bm-notif-stat-num {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    line-height: 1;
+  }
+  .bm-notif-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+  }
+
+  // ─── Toolbar (tabs + filters) ───────────────────────────────────
+  .bm-notif-toolbar {
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+    margin: $spacing-lg 0 $spacing-md;
+    flex-wrap: wrap;
+  }
+
   .bm-notif-tabs {
     display: flex;
     gap: 4px;
-    margin: $spacing-lg 0 $spacing-md;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
+    border-radius: 12px;
     padding: 4px;
-    width: fit-content;
   }
   .bm-notif-tab {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 14px;
+    padding: 8px 16px;
     background: transparent;
     border: none;
-    border-radius: $radius-md;
-    font-size: $font-sm;
-    font-weight: $font-medium;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--color-text-secondary);
     cursor: pointer;
-    transition: $transition-fast;
+    transition: all 0.18s;
+    white-space: nowrap;
     &:hover { color: var(--color-text); }
     &.active {
-      background: $primary-color;
+      background: linear-gradient(135deg, $primary-color, #6366f1);
       color: #fff;
-      .bm-notif-tab-count { background: rgba(255,255,255,0.25); color: #fff; }
+      box-shadow: 0 4px 12px rgba($primary-color, 0.30);
+      .bm-notif-tab-count { background: rgba(255,255,255,0.30); color: #fff; }
     }
     svg { width: 14px; height: 14px; }
   }
   .bm-notif-tab-count {
-    display: inline-block;
-    padding: 1px 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
     background: var(--color-background);
     color: var(--color-text);
-    border-radius: $radius-full;
-    font-size: 11px;
-    font-weight: $font-bold;
-    &.primary { background: rgba($primary-color, 0.15); color: $primary-color; }
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    &.primary { background: $primary-color; color: #fff; }
   }
 
-  // ─── Filters ──────────────────────────────────────────────────
   .bm-notif-filters {
-    display: flex;
-    gap: $spacing-md;
-    margin-bottom: $spacing-md;
+    display: flex; align-items: center; gap: 8px;
+    flex: 1;
     flex-wrap: wrap;
   }
   .bm-notif-search {
     flex: 1;
-    min-width: 280px;
-    display: flex; align-items: center; gap: 6px;
+    min-width: 240px;
+    display: flex; align-items: center; gap: 8px;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    padding: 0 12px;
-    height: 38px;
-    &:focus-within { border-color: $primary-color; }
+    border-radius: 12px;
+    padding: 0 14px;
+    height: 40px;
+    transition: all 0.18s;
+    &:focus-within {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 4px rgba($primary-color, 0.10);
+    }
     > svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
     input {
       flex: 1;
       border: none; background: transparent; outline: none;
-      font-size: $font-sm; color: var(--color-text);
+      font-size: 13px; color: var(--color-text);
+      font-weight: 500;
       &::placeholder { color: var(--color-text-secondary); }
     }
     button {
       background: none; border: none; cursor: pointer;
       width: 22px; height: 22px;
-      border-radius: $radius-full;
+      border-radius: 50%;
       color: var(--color-text-secondary);
+      display: grid; place-items: center;
       &:hover { background: var(--color-background); }
     }
   }
-  .bm-notif-filter {
-    display: flex; align-items: center; gap: 6px;
-    > svg { width: 16px; height: 16px; color: var(--color-text-secondary); }
+  .bm-notif-filter-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 40px;
+    padding: 0 12px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
     select {
-      height: 38px;
-      padding: 0 10px;
-      background: var(--color-card-bg);
-      border: 1px solid var(--color-border);
-      border-radius: $radius-md;
-      font-size: 13px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--color-text);
+      cursor: pointer;
+      outline: none;
     }
+    > svg { width: 14px; height: 14px; color: var(--color-text-secondary); }
   }
 
-  // ─── Sectioned list (day grouping) ─────────────────────────────
+  // ─── Day groups ─────────────────────────────────────────────────
   .bm-notif-section {
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-lg;
   }
   .bm-notif-section-h {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin: $spacing-sm 0 8px;
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 $spacing-sm;
     font-size: 11px;
-    font-weight: $font-bold;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.10em;
     color: var(--color-text-secondary);
+
+    &::before {
+      content: "";
+      flex: 0 0 4px;
+      width: 4px; height: 16px;
+      background: linear-gradient(180deg, $primary-color, #8b5cf6);
+      border-radius: 2px;
+    }
     svg { width: 13px; height: 13px; color: $warning-color; }
   }
 
-  // ─── Loading ──────────────────────────────────────────────────
+  // ─── Loading shimmer ────────────────────────────────────────────
   .bm-notif-loading {
-    text-align: center;
-    padding: 48px;
-    color: var(--color-text-secondary);
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 24px 0;
+  }
+  .bm-notif-skel {
+    height: 96px;
+    background: linear-gradient(
+      90deg,
+      var(--color-card-bg),
+      rgba(124,140,255,0.05),
+      var(--color-card-bg)
+    );
+    background-size: 200% 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    animation: bm-shimmer 1.4s ease-in-out infinite;
+  }
+  @keyframes bm-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
-  // ─── List + rows ──────────────────────────────────────────────
+  // ─── List ───────────────────────────────────────────────────────
   .bm-notif-list {
     list-style: none;
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+
+  // The notification card — premium feel
   .bm-notif-row {
     position: relative;
     display: grid;
-    grid-template-columns: 4px 42px 1fr auto;
-    gap: 12px;
+    grid-template-columns: 6px 44px 1fr auto;
+    gap: 14px;
     align-items: flex-start;
-    padding: 14px 16px 14px 0;
+    padding: 16px 18px 16px 0;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-lg;
+    border-radius: 14px;
     cursor: pointer;
-    transition: $transition-fast;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     overflow: hidden;
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-      border-color: $primary-color;
-      .bm-notif-row-side { opacity: 1; }
+    isolation: isolate;
+
+    // Subtle gradient sheen on the card
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(124, 140, 255, 0.025) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: -1;
     }
-    &.read .bm-notif-row-title { font-weight: $font-medium; }
-    &.read .bm-notif-row-body-text { opacity: 0.85; }
-    &.unread .bm-notif-row-title { font-weight: $font-bold; }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.04);
+      border-color: rgba($primary-color, 0.40);
+      &::before { opacity: 1; }
+      .bm-notif-row-side { opacity: 1; transform: translateX(0); }
+    }
+
+    &.unread {
+      border-left: 0;
+      background: linear-gradient(
+        90deg,
+        rgba($primary-color, 0.04),
+        var(--color-card-bg) 60%
+      );
+      .bm-notif-row-title { font-weight: 700; }
+    }
+    &.read {
+      .bm-notif-row-title { font-weight: 500; }
+      .bm-notif-row-body-text { opacity: 0.78; }
+    }
+
     &.pinned {
-      background: linear-gradient(180deg, rgba($warning-color, 0.04), var(--color-card-bg));
-      border-color: rgba($warning-color, 0.30);
+      background: linear-gradient(
+        135deg,
+        rgba($warning-color, 0.06),
+        var(--color-card-bg) 50%
+      );
+      border-color: rgba($warning-color, 0.35);
     }
     &.acted {
-      background: rgba($success-color, 0.03);
+      background: rgba($success-color, 0.025);
+    }
+    &.snoozed {
+      opacity: 0.65;
+      background: var(--color-background);
     }
   }
-  .bm-notif-row-rail {
-    width: 4px;
-    height: 100%;
-    align-self: stretch;
-  }
-  .sev-info     .bm-notif-row-rail { background: $primary-color; }
-  .sev-success  .bm-notif-row-rail { background: $success-color; }
-  .sev-warning  .bm-notif-row-rail { background: $warning-color; }
-  .sev-critical .bm-notif-row-rail { background: $danger-color; }
 
-  .bm-notif-row-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: $radius-md;
-    background: var(--color-background);
-    display: grid; place-items: center;
-    margin-top: 2px;
-    svg { width: 22px; height: 22px; }
+  // The vertical severity rail with glow
+  .bm-notif-row-rail {
+    width: 6px;
+    align-self: stretch;
+    border-radius: 0 3px 3px 0;
+    box-shadow: 4px 0 12px -4px;
   }
+  .sev-info     .bm-notif-row-rail { background: linear-gradient(180deg, #60a5fa, #3b82f6); box-shadow-color: rgba($primary-color, 0.30); }
+  .sev-success  .bm-notif-row-rail { background: linear-gradient(180deg, #4ade80, #22c55e); box-shadow-color: rgba($success-color, 0.30); }
+  .sev-warning  .bm-notif-row-rail { background: linear-gradient(180deg, #fbbf24, #f59e0b); box-shadow-color: rgba($warning-color, 0.30); }
+  .sev-critical .bm-notif-row-rail {
+    background: linear-gradient(180deg, #f87171, #ef4444);
+    box-shadow-color: rgba($danger-color, 0.30);
+    animation: bm-critical-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes bm-critical-pulse {
+    0%, 100% { box-shadow: 4px 0 12px -4px rgba($danger-color, 0.30); }
+    50%      { box-shadow: 4px 0 18px -2px rgba($danger-color, 0.55); }
+  }
+
+  // Sender avatar / category icon — circular with soft glow
+  .bm-notif-row-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: inherit;
+      opacity: 0.18;
+      filter: blur(8px);
+      z-index: -1;
+    }
+    svg { width: 20px; height: 20px; }
+  }
+  .sev-info     .bm-notif-row-icon { background: linear-gradient(135deg, rgba($primary-color, 0.12), rgba($primary-color, 0.06)); color: $primary-color; }
+  .sev-success  .bm-notif-row-icon { background: linear-gradient(135deg, rgba($success-color, 0.12), rgba($success-color, 0.06)); color: $success-color; }
+  .sev-warning  .bm-notif-row-icon { background: linear-gradient(135deg, rgba($warning-color, 0.14), rgba($warning-color, 0.06)); color: $warning-color; }
+  .sev-critical .bm-notif-row-icon { background: linear-gradient(135deg, rgba($danger-color, 0.14),  rgba($danger-color, 0.06));  color: $danger-color; }
+
   .bm-notif-row-body {
     flex: 1;
     min-width: 0;
@@ -179,202 +458,316 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   .bm-notif-row-title {
     font-size: $font-sm;
     color: var(--color-text);
     letter-spacing: -0.005em;
+    line-height: 1.35;
   }
 
+  // Pill chips
   .bm-notif-row-cat,
   .bm-notif-row-sev,
   .bm-notif-row-pinned {
     display: inline-flex; align-items: center; gap: 3px;
-    padding: 1px 7px;
-    border-radius: $radius-full;
+    padding: 2px 8px;
+    border-radius: 999px;
     font-size: 10px;
-    font-weight: $font-bold;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     svg { width: 11px; height: 11px; }
   }
   .bm-notif-row-cat {
-    background: rgba($primary-color, 0.08);
+    background: rgba($primary-color, 0.10);
     color: $primary-color;
-    &.cat-financial    { background: rgba($success-color, 0.10); color: $success-color; }
-    &.cat-task         { background: rgba($warning-color, 0.10); color: $warning-color; }
-    &.cat-announcement { background: rgba(#a855f7, 0.10);        color: #a855f7;          }
-    &.cat-mention      { background: rgba(#ec4899, 0.10);        color: #ec4899;          }
-    &.cat-system       { background: rgba(#6b7280, 0.10);        color: #6b7280;          }
+    &.cat-financial    { background: rgba($success-color, 0.12); color: $success-color; }
+    &.cat-task         { background: rgba($warning-color, 0.12); color: $warning-color; }
+    &.cat-announcement { background: rgba(#a855f7, 0.12);        color: #a855f7;          }
+    &.cat-mention      { background: rgba(#ec4899, 0.12);        color: #ec4899;          }
+    &.cat-system       { background: rgba(#6b7280, 0.12);        color: #6b7280;          }
   }
   .bm-notif-row-sev {
-    &.sev-critical { background: rgba($danger-color, 0.10);  color: $danger-color;  }
-    &.sev-warning  { background: rgba($warning-color, 0.10); color: $warning-color; }
-    &.sev-info     { background: rgba($primary-color, 0.10); color: $primary-color; }
-    &.sev-success  { background: rgba($success-color, 0.10); color: $success-color; }
+    &.sev-critical {
+      background: linear-gradient(135deg, rgba($danger-color, 0.14), rgba($danger-color, 0.20));
+      color: $danger-color;
+    }
+    &.sev-warning  { background: rgba($warning-color, 0.13); color: $warning-color; }
+    &.sev-info     { background: rgba($primary-color, 0.12); color: $primary-color; }
+    &.sev-success  { background: rgba($success-color, 0.12); color: $success-color; }
   }
   .bm-notif-row-pinned {
-    background: rgba($warning-color, 0.13);
+    background: linear-gradient(135deg, rgba($warning-color, 0.13), rgba($warning-color, 0.22));
     color: $warning-color;
+    svg { width: 10px; height: 10px; }
   }
 
   .bm-notif-row-body-text {
     font-size: 13px;
     color: var(--color-text-secondary);
-    line-height: 1.45;
+    line-height: 1.55;
     margin-bottom: 8px;
     white-space: pre-wrap;
     word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  // ─── Inline actions ────────────────────────────────────────────
+  // Inline action buttons
   .bm-notif-row-acts {
     display: flex; gap: 6px;
     flex-wrap: wrap;
-    margin: 8px 0;
-    padding: 8px 0;
-    border-top: 1px solid var(--color-border-light);
+    margin: 10px 0 4px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--color-border-light);
   }
   .bm-notif-row-act {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 6px 12px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 14px;
     border: 1px solid;
-    border-radius: $radius-md;
+    border-radius: 10px;
     font-size: 12px;
-    font-weight: $font-semibold;
+    font-weight: 700;
     cursor: pointer;
-    transition: $transition-fast;
-    &:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
-    &:disabled { opacity: 0.6; cursor: not-allowed; }
-    &.taken { box-shadow: 0 0 0 2px rgba($success-color, 0.30); }
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     svg { width: 13px; height: 13px; }
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+      filter: brightness(1.05);
+    }
+    &:active { transform: translateY(0); }
+    &:disabled { opacity: 0.55; cursor: not-allowed; }
+    &.taken {
+      background: rgba($success-color, 0.12) !important;
+      border-color: $success-color !important;
+      color: $success-color !important;
+      box-shadow: 0 0 0 2px rgba($success-color, 0.18);
+      &::before {
+        content: "✓ ";
+        margin-right: 2px;
+      }
+    }
   }
-  .bm-notif-row-act-primary { background: $primary-color; color: #fff; border-color: $primary-color; }
-  .bm-notif-row-act-success { background: $success-color; color: #fff; border-color: $success-color; }
-  .bm-notif-row-act-danger  { background: $danger-color;  color: #fff; border-color: $danger-color; }
-  .bm-notif-row-act-ghost   { background: transparent;    color: var(--color-text); border-color: var(--color-border);
-                              &:hover { background: var(--color-background); } }
+  .bm-notif-row-act-primary {
+    background: linear-gradient(135deg, $primary-color, #6366f1);
+    color: #fff; border-color: $primary-color;
+    box-shadow: 0 2px 6px rgba($primary-color, 0.25);
+  }
+  .bm-notif-row-act-success {
+    background: linear-gradient(135deg, $success-color, #16a34a);
+    color: #fff; border-color: $success-color;
+    box-shadow: 0 2px 6px rgba($success-color, 0.25);
+  }
+  .bm-notif-row-act-danger {
+    background: linear-gradient(135deg, $danger-color, #dc2626);
+    color: #fff; border-color: $danger-color;
+    box-shadow: 0 2px 6px rgba($danger-color, 0.25);
+  }
+  .bm-notif-row-act-ghost {
+    background: var(--color-background);
+    color: var(--color-text);
+    border-color: var(--color-border);
+    &:hover { border-color: $primary-color; color: $primary-color; }
+  }
 
-  // ─── Meta ──────────────────────────────────────────────────────
+  // Meta row
   .bm-notif-row-meta {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
     font-size: 11px;
     color: var(--color-text-secondary);
+    margin-top: 6px;
     span {
-      display: inline-flex; align-items: center; gap: 3px;
+      display: inline-flex; align-items: center; gap: 4px;
       svg { width: 11px; height: 11px; }
     }
   }
   .bm-notif-row-action {
     color: $primary-color;
-    font-weight: $font-medium;
+    font-weight: 600;
   }
   .bm-notif-row-channels {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: $font-bold;
-    opacity: 0.7;
+    display: inline-flex; gap: 4px;
+    span {
+      padding: 2px 6px;
+      background: var(--color-background);
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
   }
   .bm-notif-row-acted {
     color: $success-color;
-    font-weight: $font-semibold;
+    font-weight: 700;
+    &::before {
+      content: "✓ ";
+    }
   }
 
-  // ─── Right-side action buttons ─────────────────────────────────
+  // Right-side hover actions
   .bm-notif-row-side {
     display: flex;
     gap: 4px;
     flex-shrink: 0;
     opacity: 0;
-    transition: opacity 0.15s;
+    transform: translateX(8px);
+    transition: all 0.22s;
     align-self: flex-start;
     margin-top: 2px;
   }
   .bm-notif-row-btn {
-    width: 30px; height: 30px;
+    width: 32px; height: 32px;
     border: 1px solid var(--color-border);
     background: var(--color-card-bg);
-    border-radius: $radius-md;
+    border-radius: 10px;
     cursor: pointer;
     display: grid; place-items: center;
     color: var(--color-text-secondary);
-    &:hover { border-color: $primary-color; color: $primary-color; }
+    transition: all 0.15s;
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
+      background: rgba($primary-color, 0.05);
+      transform: scale(1.06);
+    }
     svg { width: 14px; height: 14px; }
   }
 
-  // Snooze menu
   .bm-notif-row-snooze {
     position: relative;
   }
   .bm-notif-snooze-menu {
     position: absolute;
-    top: calc(100% + 4px);
+    top: calc(100% + 6px);
     right: 0;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-md;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
     padding: 6px;
-    min-width: 140px;
+    min-width: 160px;
     z-index: 50;
     display: flex; flex-direction: column;
     gap: 2px;
+    animation: bm-pop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     button {
-      padding: 7px 10px;
+      padding: 8px 12px;
       background: transparent;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       text-align: left;
       font-size: 12px;
+      font-weight: 500;
       color: var(--color-text);
       cursor: pointer;
-      &:hover { background: var(--color-background); }
+      transition: all 0.12s;
+      &:hover {
+        background: rgba($primary-color, 0.08);
+        color: $primary-color;
+      }
     }
+  }
+  @keyframes bm-pop {
+    from { opacity: 0; transform: translateY(-4px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
   .bm-notif-snooze-menu-head {
     display: block;
-    padding: 4px 10px;
+    padding: 6px 12px 4px;
     font-size: 10px;
-    font-weight: $font-bold;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: var(--color-text-secondary);
   }
 
-  // Unread dot
+  // Animated unread dot
   .bm-notif-row-dot {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 8px;
-    height: 8px;
+    top: 18px;
+    right: 18px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: $primary-color;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.18);
+    background: linear-gradient(135deg, $primary-color, #8b5cf6);
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.20);
+    animation: bm-dot-pulse 2s ease-in-out infinite;
+  }
+  @keyframes bm-dot-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba($primary-color, 0.20); }
+    50%      { box-shadow: 0 0 0 6px rgba($primary-color, 0.10); }
   }
 
-  // ─── Buttons (header) ──────────────────────────────────────────
+  // ─── Buttons (header) ───────────────────────────────────────────
   .bm-btn {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px;
+    padding: 9px 16px;
     background: var(--color-card-bg);
     border: 1px solid var(--color-border);
-    border-radius: $radius-md;
+    border-radius: 10px;
     color: var(--color-text);
-    font-size: $font-sm;
-    font-weight: $font-medium;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: $transition-base;
+    transition: all 0.18s;
     svg { width: 14px; height: 14px; }
-    &:hover { border-color: $primary-color; color: $primary-color; }
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
+      transform: translateY(-1px);
+    }
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
   .bm-btn-primary {
-    background: $primary-color; color: #fff; border-color: $primary-color;
-    &:hover { background: $primary-deep; color: #fff; }
+    background: linear-gradient(135deg, $primary-color, #6366f1);
+    color: #fff !important;
+    border-color: $primary-color;
+    box-shadow: 0 4px 12px rgba($primary-color, 0.25);
+    &:hover {
+      background: linear-gradient(135deg, $primary-deep, $primary-color);
+      box-shadow: 0 6px 18px rgba($primary-color, 0.35);
+    }
+  }
+
+  // Empty state — friendly
+  .bm-notif-empty-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    padding: 48px 24px;
+    background: var(--color-card-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 18px;
+  }
+  .bm-notif-empty-icon {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba($primary-color, 0.08), rgba(#8b5cf6, 0.08));
+    display: grid; place-items: center;
+    margin-bottom: 16px;
+    color: $primary-color;
+    svg { width: 42px; height: 42px; }
+  }
+  .bm-notif-empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
+  .bm-notif-empty-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    max-width: 380px;
+    line-height: 1.6;
+    margin: 0 0 16px;
   }
 }
