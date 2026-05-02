@@ -1,0 +1,93 @@
+@use '../../../styles/variables' as *;
+
+.bm-toast-container {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1500;
+  pointer-events: none;
+  max-width: 380px;
+  width: calc(100vw - 32px);
+}
+
+.bm-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-left-width: 4px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  animation: bm-toast-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &--success { border-left-color: $success-color; }
+  &--error   { border-left-color: $danger-color;  }
+  &--warning { border-left-color: $warning-color; }
+  &--info    { border-left-color: $primary-color; }
+}
+
+.bm-toast-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+
+  svg { width: 22px; height: 22px; }
+}
+.bm-toast--success .bm-toast-icon { color: $success-color; }
+.bm-toast--error   .bm-toast-icon { color: $danger-color;  }
+.bm-toast--warning .bm-toast-icon { color: $warning-color; }
+.bm-toast--info    .bm-toast-icon { color: $primary-color; }
+
+.bm-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+.bm-toast-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+.bm-toast-desc {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+.bm-toast-close {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--color-background);
+    color: var(--color-text);
+  }
+
+  svg { width: 14px; height: 14px; }
+}
+
+@keyframes bm-toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
