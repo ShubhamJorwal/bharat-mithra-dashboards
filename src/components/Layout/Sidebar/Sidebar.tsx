@@ -86,6 +86,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, sidebarWidth, setSidebarWidth }:
     },
     { path: '/documents', icon: HiOutlineDocumentText, label: 'Documents', badge: null },
     { path: '/calendar', icon: HiOutlineCalendar, label: 'Calendar', badge: null },
+    { path: '/notebook', icon: HiOutlineFolder, label: 'Notebook', badge: null },
     { path: '/reports', icon: HiOutlineChartBar, label: 'Reports', badge: null },
     {
       path: '/wallet',

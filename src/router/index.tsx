@@ -73,6 +73,7 @@ const VillageGeography = lazy(() => import("@/views/Geography/Drilldown/VillageG
 // ─── Other top-level pages ──────────────────────────────────────────────────
 const Reports = lazy(() => import("@/views/Reports/Reports"));
 const Calendar = lazy(() => import("@/views/Calendar/Calendar"));
+const Notebook = lazy(() => import("@/views/Notebook/Notebook"));
 const Wallet = lazy(() => import("@/views/Wallet/Wallet"));
 const Transactions = lazy(() => import("@/views/Wallet/Transactions"));
 const PaymentGateways = lazy(() => import("@/views/PaymentGateways/PaymentGateways"));
@@ -177,9 +178,10 @@ const routerConfig = [
       { path: "payment-gateways", element: lazyRoute(<PaymentGateways />) },
       { path: "finance", element: lazyRoute(<Finance />) },
 
-      // Documents / Calendar / Reports
+      // Documents / Calendar / Notebook / Reports
       { path: "documents", element: lazyRoute(<Documents />) },
       { path: "calendar", element: lazyRoute(<Calendar />) },
+      { path: "notebook", element: lazyRoute(<Notebook />) },
       { path: "reports", element: lazyRoute(<Reports />) },
 
       // Telecaller / Support / misc

@@ -1,862 +1,987 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  HiOutlineCalendar,
-  HiOutlinePlus,
-  HiOutlineChevronLeft,
-  HiOutlineChevronRight,
-  HiOutlineX,
-  HiOutlineCheck,
-  HiOutlineTrash,
-  HiOutlinePencil,
-  HiOutlineClock,
-  HiOutlineLocationMarker,
-  HiOutlineTag,
-  HiOutlineFilter,
+  HiOutlineCalendar, HiOutlinePlus, HiOutlineChevronLeft, HiOutlineChevronRight,
+  HiOutlineX, HiOutlineCheck, HiOutlineTrash, HiOutlinePencil, HiOutlineClock,
+  HiOutlineLocationMarker, HiOutlineSearch, HiOutlineUserGroup, HiOutlineUser,
+  HiOutlineRefresh, HiOutlineTag,
+  HiOutlineExclamation, HiOutlineCheckCircle, HiOutlineFire,
 } from 'react-icons/hi';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
-import { PageHeader } from '../../components/common/PageHeader';
+import { PageHeader } from '@/components/common/PageHeader';
+import {
+  loadItems, createItem, updateItem, deleteItem, toggleTaskStatus,
+  loadLabels, subscribe, getViewer, setViewer, getStaff,
+  STAFF_DIRECTORY, TYPE_META, PRIORITY_META, isVisibleTo, isForYou,
+  type CalendarItem, type EventType, type Priority, type RecurrenceFreq,
+  type TaskStatus, type Label, type StaffLite,
+} from '@/services/planner/plannerStore';
 import './Calendar.scss';
 
-// ============================================
-// TYPES
-// ============================================
-interface CalendarEvent {
-  id: string;
-  title: string;
-  description: string;
-  date: string; // YYYY-MM-DD
-  startTime: string; // HH:MM
-  endTime: string; // HH:MM
-  type: 'meeting' | 'task' | 'reminder' | 'holiday' | 'deadline' | 'personal';
-  priority: 'low' | 'medium' | 'high';
-  location?: string;
-  isAllDay?: boolean;
-  createdAt: string;
-}
+type ViewMode = 'month' | 'week' | 'day' | 'agenda';
+type ScopeFilter = 'foryou' | 'all' | 'mine' | 'shared';
 
-type ViewMode = 'month' | 'week' | 'list';
-
-const EVENT_TYPES = [
-  { value: 'meeting', label: 'Meeting', color: '#3b82f6', emoji: '📅' },
-  { value: 'task', label: 'Task', color: '#8b5cf6', emoji: '📋' },
-  { value: 'reminder', label: 'Reminder', color: '#f59e0b', emoji: '🔔' },
-  { value: 'holiday', label: 'Holiday', color: '#22c55e', emoji: '🎉' },
-  { value: 'deadline', label: 'Deadline', color: '#ef4444', emoji: '🔴' },
-  { value: 'personal', label: 'Personal', color: '#06b6d4', emoji: '🧑' },
-];
-
-const PRIORITY_MAP = {
-  low: { label: 'Low', color: '#22c55e' },
-  medium: { label: 'Medium', color: '#f59e0b' },
-  high: { label: 'High', color: '#ef4444' },
+const fmtDate = (d: Date) => d.toISOString().slice(0, 10);
+const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+const startOfWeek = (d: Date) => {
+  const x = new Date(d);
+  const day = x.getDay();
+  x.setDate(x.getDate() - day);
+  return x;
 };
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-// ============================================
-// HELPERS
-// ============================================
-const generateId = () => `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
-const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
-
-const formatDate = (dateStr: string) => {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-};
-
-const formatTime12h = (time: string) => {
-  if (!time) return '';
-  const [h, m] = time.split(':').map(Number);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 || 12;
-  return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
-};
-
-const todayStr = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
-
-// ============================================
-// COMPONENT
-// ============================================
 const Calendar = () => {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [viewMode, setViewMode] = useState<ViewMode>('month');
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-  useBodyScrollLock(showModal);
-  const [filterType, setFilterType] = useState<string>('all');
-  const [showEventDetail, setShowEventDetail] = useState<CalendarEvent | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [items, setItems] = useState<CalendarItem[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [viewer, setViewerState] = useState<StaffLite>(getViewer());
+  const [view, setView] = useState<ViewMode>('month');
+  const [cursor, setCursor] = useState<Date>(new Date());
+  const [scope, setScope] = useState<ScopeFilter>('foryou');
+  const [typeFilter, setTypeFilter] = useState<EventType | 'all'>('all');
+  const [labelFilter, setLabelFilter] = useState<string | 'all'>('all');
+  const [search, setSearch] = useState('');
+  const [editing, setEditing] = useState<CalendarItem | null>(null);
+  const [showCompose, setShowCompose] = useState<{ date?: string } | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
-  // localStorage CRUD
-  const [events, setEvents] = useLocalStorage<CalendarEvent[]>('bm-calendar-events', []);
-
-  // Form state
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    date: todayStr(),
-    startTime: '09:00',
-    endTime: '10:00',
-    type: 'meeting' as CalendarEvent['type'],
-    priority: 'medium' as CalendarEvent['priority'],
-    location: '',
-    isAllDay: false,
-  });
-
-  // ============================================
-  // CRUD OPERATIONS
-  // ============================================
-  const createEvent = useCallback(() => {
-    if (!form.title.trim()) return;
-    const newEvent: CalendarEvent = {
-      id: generateId(),
-      title: form.title.trim(),
-      description: form.description.trim(),
-      date: form.date,
-      startTime: form.isAllDay ? '00:00' : form.startTime,
-      endTime: form.isAllDay ? '23:59' : form.endTime,
-      type: form.type,
-      priority: form.priority,
-      location: form.location.trim() || undefined,
-      isAllDay: form.isAllDay,
-      createdAt: new Date().toISOString(),
-    };
-    setEvents(prev => [...prev, newEvent]);
-    resetForm();
-    setShowModal(false);
-  }, [form, setEvents]);
-
-  const updateEvent = useCallback(() => {
-    if (!editingEvent || !form.title.trim()) return;
-    setEvents(prev =>
-      prev.map(e =>
-        e.id === editingEvent.id
-          ? {
-              ...e,
-              title: form.title.trim(),
-              description: form.description.trim(),
-              date: form.date,
-              startTime: form.isAllDay ? '00:00' : form.startTime,
-              endTime: form.isAllDay ? '23:59' : form.endTime,
-              type: form.type,
-              priority: form.priority,
-              location: form.location.trim() || undefined,
-              isAllDay: form.isAllDay,
-            }
-          : e
-      )
-    );
-    resetForm();
-    setShowModal(false);
-    setEditingEvent(null);
-  }, [editingEvent, form, setEvents]);
-
-  const deleteEvent = useCallback((id: string) => {
-    setEvents(prev => prev.filter(e => e.id !== id));
-    setDeleteConfirm(null);
-    setShowEventDetail(null);
-  }, [setEvents]);
-
-  const resetForm = () => {
-    setForm({
-      title: '',
-      description: '',
-      date: selectedDate || todayStr(),
-      startTime: '09:00',
-      endTime: '10:00',
-      type: 'meeting',
-      priority: 'medium',
-      location: '',
-      isAllDay: false,
-    });
-    setEditingEvent(null);
+  const refresh = () => {
+    setItems(loadItems());
+    setLabels(loadLabels());
+    setViewerState(getViewer());
   };
 
-  const openCreateModal = (date?: string) => {
-    resetForm();
-    if (date) setForm(prev => ({ ...prev, date }));
-    setShowModal(true);
-  };
+  useEffect(() => {
+    refresh();
+    return subscribe(refresh);
+  }, []);
 
-  const openEditModal = (event: CalendarEvent) => {
-    setForm({
-      title: event.title,
-      description: event.description,
-      date: event.date,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      type: event.type,
-      priority: event.priority,
-      location: event.location || '',
-      isAllDay: event.isAllDay || false,
-    });
-    setEditingEvent(event);
-    setShowEventDetail(null);
-    setShowModal(true);
-  };
-
-  // ============================================
-  // NAVIGATION
-  // ============================================
-  const goToPrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear(y => y - 1);
-    } else {
-      setCurrentMonth(m => m - 1);
+  // Filter visible items
+  const visibleItems = useMemo(() => {
+    let data = items.filter(i => isVisibleTo(i, viewer.id));
+    if (scope === 'foryou') data = data.filter(i => isForYou(i, viewer.id));
+    if (scope === 'mine') data = data.filter(i => i.createdBy === viewer.id);
+    if (scope === 'shared') data = data.filter(i => i.createdBy !== viewer.id);
+    if (typeFilter !== 'all') data = data.filter(i => i.type === typeFilter);
+    if (labelFilter !== 'all') data = data.filter(i => i.labels.includes(labelFilter));
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      data = data.filter(i =>
+        i.title.toLowerCase().includes(q) ||
+        i.description?.toLowerCase().includes(q) ||
+        i.location?.toLowerCase().includes(q)
+      );
     }
-  };
+    return data;
+  }, [items, viewer, scope, typeFilter, labelFilter, search]);
 
-  const goToNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear(y => y + 1);
-    } else {
-      setCurrentMonth(m => m + 1);
-    }
-  };
-
-  const goToToday = () => {
-    setCurrentMonth(today.getMonth());
-    setCurrentYear(today.getFullYear());
-    setSelectedDate(todayStr());
-  };
-
-  // ============================================
-  // COMPUTED
-  // ============================================
-  const filteredEvents = useMemo(() => {
-    if (filterType === 'all') return events;
-    return events.filter(e => e.type === filterType);
-  }, [events, filterType]);
-
-  const getEventsForDate = useCallback(
-    (dateStr: string) => filteredEvents.filter(e => e.date === dateStr),
-    [filteredEvents]
-  );
-
-  const selectedDateEvents = useMemo(() => {
-    if (!selectedDate) return [];
-    return getEventsForDate(selectedDate).sort((a, b) => a.startTime.localeCompare(b.startTime));
-  }, [selectedDate, getEventsForDate]);
-
-  const upcomingEvents = useMemo(() => {
-    const now = todayStr();
-    return filteredEvents
-      .filter(e => e.date >= now)
-      .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
-      .slice(0, 8);
-  }, [filteredEvents]);
-
-  // Stats
-  const totalEvents = events.length;
-  const thisMonthEvents = events.filter(e => {
-    const d = new Date(e.date + 'T00:00:00');
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-  }).length;
-  const todayEvents = events.filter(e => e.date === todayStr()).length;
-
-  // ============================================
-  // CALENDAR GRID
-  // ============================================
-  const calendarDays = useMemo(() => {
-    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
-    const prevMonthDays = getDaysInMonth(currentYear, currentMonth === 0 ? 11 : currentMonth - 1);
-
-    const days: { day: number; month: 'prev' | 'current' | 'next'; dateStr: string }[] = [];
-
-    // Previous month days
-    for (let i = firstDay - 1; i >= 0; i--) {
-      const d = prevMonthDays - i;
-      const m = currentMonth === 0 ? 12 : currentMonth;
-      const y = currentMonth === 0 ? currentYear - 1 : currentYear;
-      days.push({
-        day: d,
-        month: 'prev',
-        dateStr: `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
-      });
-    }
-
-    // Current month days
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push({
-        day: i,
-        month: 'current',
-        dateStr: `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`,
-      });
-    }
-
-    // Next month days
-    const remaining = 42 - days.length;
-    for (let i = 1; i <= remaining; i++) {
-      const m = currentMonth === 11 ? 1 : currentMonth + 2;
-      const y = currentMonth === 11 ? currentYear + 1 : currentYear;
-      days.push({
-        day: i,
-        month: 'next',
-        dateStr: `${y}-${String(m).padStart(2, '0')}-${String(i).padStart(2, '0')}`,
-      });
-    }
-
-    return days;
-  }, [currentYear, currentMonth]);
-
-  // ============================================
-  // LIST VIEW DATA
-  // ============================================
-  const listViewEvents = useMemo(() => {
-    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-    const grouped: { date: string; events: CalendarEvent[] }[] = [];
-
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      const dayEvents = getEventsForDate(dateStr);
-      if (dayEvents.length > 0) {
-        grouped.push({ date: dateStr, events: dayEvents.sort((a, b) => a.startTime.localeCompare(b.startTime)) });
+  const itemsByDate = useMemo(() => {
+    const map = new Map<string, CalendarItem[]>();
+    for (const i of visibleItems) {
+      const start = i.date;
+      const end = i.endDate || i.date;
+      // place on every day in range
+      const startD = new Date(start);
+      const endD = new Date(end);
+      for (let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
+        const k = fmtDate(d);
+        const arr = map.get(k) || [];
+        arr.push(i);
+        map.set(k, arr);
       }
     }
+    return map;
+  }, [visibleItems]);
 
-    return grouped;
-  }, [currentYear, currentMonth, getEventsForDate]);
+  const todayStr = fmtDate(new Date());
 
-  // ============================================
-  // RENDER
-  // ============================================
-  const getTypeInfo = (type: string) => EVENT_TYPES.find(t => t.value === type) || EVENT_TYPES[0];
+  // Counts for top stats
+  const stats = useMemo(() => {
+    const today = visibleItems.filter(i => {
+      const start = new Date(i.date);
+      const end = new Date(i.endDate || i.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      return start < tomorrow && end >= today;
+    });
+    const overdueTasks = visibleItems.filter(i =>
+      i.type === 'task' &&
+      i.status !== 'done' &&
+      new Date(i.date) < new Date(todayStr)
+    );
+    const upcoming = visibleItems.filter(i => new Date(i.date) >= new Date(todayStr)).length;
+    const tasksDone = visibleItems.filter(i => i.type === 'task' && i.status === 'done').length;
+    return {
+      today: today.length,
+      overdue: overdueTasks.length,
+      upcoming,
+      tasksDone,
+    };
+  }, [visibleItems, todayStr]);
+
+  const navTitle = useMemo(() => {
+    if (view === 'month') return cursor.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+    if (view === 'week') {
+      const s = startOfWeek(cursor);
+      const e = new Date(s); e.setDate(s.getDate() + 6);
+      return `${s.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${e.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    }
+    if (view === 'day') return cursor.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    return 'Agenda';
+  }, [cursor, view]);
+
+  const navigate = (dir: 1 | -1) => {
+    const next = new Date(cursor);
+    if (view === 'month') next.setMonth(next.getMonth() + dir);
+    else if (view === 'week') next.setDate(next.getDate() + dir * 7);
+    else if (view === 'day') next.setDate(next.getDate() + dir);
+    setCursor(next);
+  };
 
   return (
-    <div className="cal">
+    <div className="bm-cal-page">
       <PageHeader
         icon={<HiOutlineCalendar />}
         title="Calendar"
-        description="Manage events, tasks, reminders and schedules"
+        description={`Plan tasks, events, and notes — share with the team or keep them private.`}
         actions={
-          <div className="cal-header-actions">
-            <button className="cal-btn cal-btn--primary" onClick={() => openCreateModal()}>
-              <HiOutlinePlus />
-              <span>New Event</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="bm-btn" onClick={refresh} title="Refresh"><HiOutlineRefresh /></button>
+            <button className="bm-btn" onClick={() => setCursor(new Date())}>Today</button>
+            <button className="bm-btn bm-btn-primary" onClick={() => setShowCompose({ date: todayStr })}>
+              <HiOutlinePlus /> New
             </button>
           </div>
         }
       />
 
-      {/* Stats Bar */}
-      <div className="cal-stats">
-        <div className="cal-stat">
-          <span className="cal-stat__value">{totalEvents}</span>
-          <span className="cal-stat__label">Total Events</span>
-        </div>
-        <div className="cal-stat">
-          <span className="cal-stat__value">{thisMonthEvents}</span>
-          <span className="cal-stat__label">This Month</span>
-        </div>
-        <div className="cal-stat">
-          <span className="cal-stat__value">{todayEvents}</span>
-          <span className="cal-stat__label">Today</span>
-        </div>
-        <div className="cal-stat">
-          <span className="cal-stat__value">{upcomingEvents.length}</span>
-          <span className="cal-stat__label">Upcoming</span>
-        </div>
+      {/* Stat strip */}
+      <div className="bm-cal-stats">
+        <StatCard icon={<HiOutlineFire />} label="Today" value={stats.today} tone="primary" />
+        <StatCard icon={<HiOutlineExclamation />} label="Overdue" value={stats.overdue} tone="danger" />
+        <StatCard icon={<HiOutlineClock />} label="Upcoming" value={stats.upcoming} tone="warn" />
+        <StatCard icon={<HiOutlineCheckCircle />} label="Tasks done" value={stats.tasksDone} tone="success" />
       </div>
 
-      {/* Controls */}
-      <div className="cal-controls">
-        <div className="cal-controls__left">
-          <button className="cal-nav-btn" onClick={goToPrevMonth}><HiOutlineChevronLeft /></button>
-          <h2 className="cal-month-title">{MONTHS[currentMonth]} {currentYear}</h2>
-          <button className="cal-nav-btn" onClick={goToNextMonth}><HiOutlineChevronRight /></button>
-          <button className="cal-today-btn" onClick={goToToday}>Today</button>
-        </div>
-        <div className="cal-controls__right">
-          <div className="cal-filter">
-            <HiOutlineFilter />
-            <select value={filterType} onChange={e => setFilterType(e.target.value)}>
-              <option value="all">All Types</option>
-              {EVENT_TYPES.map(t => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="cal-view-toggle">
-            {(['month', 'week', 'list'] as ViewMode[]).map(mode => (
-              <button
-                key={mode}
-                className={`cal-view-btn ${viewMode === mode ? 'active' : ''}`}
-                onClick={() => setViewMode(mode)}
-              >
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-              </button>
+      {/* Toolbar — viewer pick + scope + type + search */}
+      <div className="bm-cal-toolbar">
+        {/* Viewer = "I'm logged in as" */}
+        <div className="bm-cal-viewer">
+          <span className="bm-cal-viewer-label">Viewing as</span>
+          <select
+            value={viewer.id}
+            onChange={e => { setViewer(e.target.value); refresh(); }}
+            className="bm-cal-viewer-select"
+            style={{ borderLeftColor: viewer.color }}
+          >
+            {STAFF_DIRECTORY.map(s => (
+              <option key={s.id} value={s.id}>{s.initials} · {s.name} ({s.role})</option>
             ))}
-          </div>
+          </select>
+        </div>
+
+        {/* Scope tabs — For you / Shared / Mine / All */}
+        <div className="bm-cal-scope">
+          <button className={`bm-cal-scope-tab ${scope === 'foryou' ? 'active' : ''}`} onClick={() => setScope('foryou')}>
+            <HiOutlineUser /> For you
+          </button>
+          <button className={`bm-cal-scope-tab ${scope === 'mine' ? 'active' : ''}`} onClick={() => setScope('mine')}>
+            By me
+          </button>
+          <button className={`bm-cal-scope-tab ${scope === 'shared' ? 'active' : ''}`} onClick={() => setScope('shared')}>
+            <HiOutlineUserGroup /> Shared with me
+          </button>
+          <button className={`bm-cal-scope-tab ${scope === 'all' ? 'active' : ''}`} onClick={() => setScope('all')}>
+            All staff
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="bm-cal-search">
+          <HiOutlineSearch />
+          <input
+            placeholder="Search title, description, location…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          {search && <button onClick={() => setSearch('')}><HiOutlineX /></button>}
+        </div>
+
+        {/* Type + label */}
+        <div className="bm-cal-filters-mini">
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value as EventType | 'all')}>
+            <option value="all">All types</option>
+            {(Object.keys(TYPE_META) as EventType[]).map(t => (
+              <option key={t} value={t}>{TYPE_META[t].emoji} {TYPE_META[t].label}</option>
+            ))}
+          </select>
+          <select value={labelFilter} onChange={e => setLabelFilter(e.target.value)}>
+            <option value="all">All labels</option>
+            {labels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+          </select>
         </div>
       </div>
 
-      {/* Main Layout */}
-      <div className="cal-layout">
-        {/* Calendar Grid */}
-        <div className="cal-main">
-          {viewMode === 'month' && (
-            <div className="cal-grid-card">
-              <div className="cal-grid-header">
-                {DAYS.map(day => (
-                  <div key={day} className="cal-grid-day-label">{day}</div>
-                ))}
-              </div>
-              <div className="cal-grid">
-                {calendarDays.map((day, idx) => {
-                  const dayEvents = getEventsForDate(day.dateStr);
-                  const isToday = day.dateStr === todayStr();
-                  const isSelected = day.dateStr === selectedDate;
-                  const isOtherMonth = day.month !== 'current';
-
-                  return (
-                    <div
-                      key={idx}
-                      className={`cal-cell ${isOtherMonth ? 'cal-cell--other' : ''} ${isToday ? 'cal-cell--today' : ''} ${isSelected ? 'cal-cell--selected' : ''}`}
-                      onClick={() => setSelectedDate(day.dateStr)}
-                      onDoubleClick={() => openCreateModal(day.dateStr)}
-                    >
-                      <span className={`cal-cell__day ${isToday ? 'cal-cell__day--today' : ''}`}>
-                        {day.day}
-                      </span>
-                      <div className="cal-cell__events">
-                        {dayEvents.slice(0, 3).map(evt => {
-                          const typeInfo = getTypeInfo(evt.type);
-                          return (
-                            <div
-                              key={evt.id}
-                              className="cal-cell__event"
-                              style={{ background: typeInfo.color + '20', borderLeft: `3px solid ${typeInfo.color}` }}
-                              onClick={(e) => { e.stopPropagation(); setShowEventDetail(evt); }}
-                              title={evt.title}
-                            >
-                              <span className="cal-cell__event-text">{evt.title}</span>
-                            </div>
-                          );
-                        })}
-                        {dayEvents.length > 3 && (
-                          <span className="cal-cell__more">+{dayEvents.length - 3} more</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {viewMode === 'list' && (
-            <div className="cal-list-card">
-              <h3 className="cal-list-title">Events in {MONTHS[currentMonth]} {currentYear}</h3>
-              {listViewEvents.length === 0 ? (
-                <div className="cal-empty">
-                  <HiOutlineCalendar />
-                  <p>No events this month</p>
-                  <button className="cal-btn cal-btn--primary cal-btn--sm" onClick={() => openCreateModal()}>
-                    <HiOutlinePlus /> Add Event
-                  </button>
-                </div>
-              ) : (
-                <div className="cal-list">
-                  {listViewEvents.map(group => (
-                    <div key={group.date} className="cal-list-group">
-                      <div className="cal-list-date">
-                        <span className={`cal-list-date__day ${group.date === todayStr() ? 'cal-list-date__day--today' : ''}`}>
-                          {new Date(group.date + 'T00:00:00').getDate()}
-                        </span>
-                        <span className="cal-list-date__name">
-                          {new Date(group.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', month: 'short' })}
-                        </span>
-                      </div>
-                      <div className="cal-list-events">
-                        {group.events.map(evt => {
-                          const typeInfo = getTypeInfo(evt.type);
-                          return (
-                            <div
-                              key={evt.id}
-                              className="cal-list-event"
-                              onClick={() => setShowEventDetail(evt)}
-                              style={{ borderLeft: `4px solid ${typeInfo.color}` }}
-                            >
-                              <div className="cal-list-event__top">
-                                <span className="cal-list-event__title">{evt.title}</span>
-                                <span className="cal-list-event__badge" style={{ background: typeInfo.color + '15', color: typeInfo.color }}>
-                                  {typeInfo.emoji} {typeInfo.label}
-                                </span>
-                              </div>
-                              <div className="cal-list-event__meta">
-                                <span><HiOutlineClock /> {evt.isAllDay ? 'All Day' : `${formatTime12h(evt.startTime)} - ${formatTime12h(evt.endTime)}`}</span>
-                                {evt.location && <span><HiOutlineLocationMarker /> {evt.location}</span>}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {viewMode === 'week' && (
-            <div className="cal-week-card">
-              <div className="cal-week-notice">
-                <HiOutlineCalendar />
-                <p>Week view shows events for the selected week. Click on a date in month view first, then switch to see the week.</p>
-              </div>
-              {(() => {
-                // Show events for the current week
-                const reference = selectedDate ? new Date(selectedDate + 'T00:00:00') : today;
-                const dayOfWeek = reference.getDay();
-                const weekStart = new Date(reference);
-                weekStart.setDate(reference.getDate() - dayOfWeek);
-
-                const weekDays: string[] = [];
-                for (let i = 0; i < 7; i++) {
-                  const d = new Date(weekStart);
-                  d.setDate(weekStart.getDate() + i);
-                  weekDays.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
-                }
-
-                return (
-                  <div className="cal-week-grid">
-                    {weekDays.map(dateStr => {
-                      const d = new Date(dateStr + 'T00:00:00');
-                      const dayEvents = getEventsForDate(dateStr);
-                      const isToday = dateStr === todayStr();
-                      return (
-                        <div key={dateStr} className={`cal-week-day ${isToday ? 'cal-week-day--today' : ''}`}>
-                          <div className="cal-week-day__header">
-                            <span className="cal-week-day__name">{DAYS[d.getDay()]}</span>
-                            <span className={`cal-week-day__num ${isToday ? 'cal-week-day__num--today' : ''}`}>{d.getDate()}</span>
-                          </div>
-                          <div className="cal-week-day__events">
-                            {dayEvents.length === 0 && <span className="cal-week-day__empty">No events</span>}
-                            {dayEvents.map(evt => {
-                              const typeInfo = getTypeInfo(evt.type);
-                              return (
-                                <div
-                                  key={evt.id}
-                                  className="cal-week-event"
-                                  style={{ background: typeInfo.color + '15', borderLeft: `3px solid ${typeInfo.color}` }}
-                                  onClick={() => setShowEventDetail(evt)}
-                                >
-                                  <span className="cal-week-event__title">{evt.title}</span>
-                                  <span className="cal-week-event__time">
-                                    {evt.isAllDay ? 'All Day' : formatTime12h(evt.startTime)}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
-            </div>
-          )}
+      {/* Calendar nav */}
+      <div className="bm-cal-nav">
+        <div className="bm-cal-nav-left">
+          <button className="bm-cal-nav-btn" onClick={() => navigate(-1)}><HiOutlineChevronLeft /></button>
+          <div className="bm-cal-nav-title">{navTitle}</div>
+          <button className="bm-cal-nav-btn" onClick={() => navigate(1)}><HiOutlineChevronRight /></button>
         </div>
+        <div className="bm-cal-view-tabs">
+          {(['month', 'week', 'day', 'agenda'] as ViewMode[]).map(v => (
+            <button
+              key={v}
+              className={`bm-cal-view-tab ${view === v ? 'active' : ''}`}
+              onClick={() => setView(v)}
+            >
+              {v.charAt(0).toUpperCase() + v.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        {/* Sidebar */}
-        <div className="cal-sidebar">
-          {/* Selected Date Events */}
-          {selectedDate && (
-            <div className="cal-sidebar-card">
-              <div className="cal-sidebar-card__header">
-                <h3>{formatDate(selectedDate)}</h3>
-                <button className="cal-btn cal-btn--sm cal-btn--ghost" onClick={() => openCreateModal(selectedDate)}>
+      {/* Views */}
+      {view === 'month' && (
+        <MonthView
+          cursor={cursor}
+          itemsByDate={itemsByDate}
+          onDayClick={setSelectedDay}
+          onCompose={(date) => setShowCompose({ date })}
+          onItemClick={setEditing}
+        />
+      )}
+      {view === 'week' && (
+        <WeekView
+          cursor={cursor}
+          itemsByDate={itemsByDate}
+          onCompose={(date) => setShowCompose({ date })}
+          onItemClick={setEditing}
+          onItemToggle={(id) => { toggleTaskStatus(id); refresh(); }}
+        />
+      )}
+      {view === 'day' && (
+        <DayView
+          cursor={cursor}
+          itemsByDate={itemsByDate}
+          onCompose={(date) => setShowCompose({ date })}
+          onItemClick={setEditing}
+          onItemToggle={(id) => { toggleTaskStatus(id); refresh(); }}
+        />
+      )}
+      {view === 'agenda' && (
+        <AgendaView
+          items={visibleItems}
+          onItemClick={setEditing}
+          onItemToggle={(id) => { toggleTaskStatus(id); refresh(); }}
+        />
+      )}
+
+      {/* Day drilldown popover (from month-view click) */}
+      {selectedDay && (
+        <DayPopover
+          date={selectedDay}
+          items={itemsByDate.get(selectedDay) || []}
+          onClose={() => setSelectedDay(null)}
+          onCompose={() => { setShowCompose({ date: selectedDay }); setSelectedDay(null); }}
+          onItemClick={(i) => { setEditing(i); setSelectedDay(null); }}
+          onItemToggle={(id) => { toggleTaskStatus(id); refresh(); }}
+        />
+      )}
+
+      {/* Compose modal */}
+      {showCompose && (
+        <ComposeModal
+          defaultDate={showCompose.date || todayStr}
+          viewer={viewer}
+          labels={labels}
+          onClose={() => setShowCompose(null)}
+          onCreate={(input) => {
+            createItem(input);
+            setShowCompose(null);
+            refresh();
+          }}
+        />
+      )}
+
+      {/* Edit modal */}
+      {editing && (
+        <ComposeModal
+          defaultDate={editing.date}
+          viewer={viewer}
+          labels={labels}
+          existing={editing}
+          onClose={() => setEditing(null)}
+          onCreate={(input) => {
+            updateItem(editing.id, input);
+            setEditing(null);
+            refresh();
+          }}
+          onDelete={() => {
+            deleteItem(editing.id);
+            setEditing(null);
+            refresh();
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+const StatCard = ({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: number; tone: string }) => (
+  <div className={`bm-cal-stat tone-${tone}`}>
+    <div className="bm-cal-stat-icon">{icon}</div>
+    <div>
+      <div className="bm-cal-stat-value">{value}</div>
+      <div className="bm-cal-stat-label">{label}</div>
+    </div>
+  </div>
+);
+
+// ─── Month view ────────────────────────────────────────────────────────
+
+const MonthView = ({
+  cursor, itemsByDate, onDayClick, onCompose, onItemClick,
+}: {
+  cursor: Date;
+  itemsByDate: Map<string, CalendarItem[]>;
+  onDayClick: (date: string) => void;
+  onCompose: (date: string) => void;
+  onItemClick: (item: CalendarItem) => void;
+}) => {
+  const monthStart = startOfMonth(cursor);
+  const startDay = new Date(monthStart);
+  startDay.setDate(startDay.getDate() - monthStart.getDay()); // back to Sunday
+
+  const cells: Date[] = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(startDay);
+    d.setDate(startDay.getDate() + i);
+    cells.push(d);
+  }
+
+  const todayStr = fmtDate(new Date());
+  const monthIdx = cursor.getMonth();
+
+  return (
+    <div className="bm-cal-month">
+      <div className="bm-cal-weekdays">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+          <div key={d} className="bm-cal-weekday">{d}</div>
+        ))}
+      </div>
+      <div className="bm-cal-grid">
+        {cells.map((d, idx) => {
+          const dStr = fmtDate(d);
+          const isToday = dStr === todayStr;
+          const isOtherMonth = d.getMonth() !== monthIdx;
+          const items = itemsByDate.get(dStr) || [];
+          return (
+            <div
+              key={idx}
+              className={`bm-cal-cell ${isToday ? 'today' : ''} ${isOtherMonth ? 'other-month' : ''}`}
+            >
+              <div className="bm-cal-cell-head">
+                <span
+                  className="bm-cal-cell-date"
+                  onClick={() => onDayClick(dStr)}
+                >
+                  {d.getDate()}
+                </span>
+                <button
+                  className="bm-cal-cell-add"
+                  onClick={() => onCompose(dStr)}
+                  title="Add"
+                >
                   <HiOutlinePlus />
                 </button>
               </div>
-              {selectedDateEvents.length === 0 ? (
-                <p className="cal-sidebar-empty">No events on this date</p>
-              ) : (
-                <div className="cal-sidebar-events">
-                  {selectedDateEvents.map(evt => {
-                    const typeInfo = getTypeInfo(evt.type);
-                    return (
-                      <div
-                        key={evt.id}
-                        className="cal-sidebar-event"
-                        style={{ borderLeft: `3px solid ${typeInfo.color}` }}
-                        onClick={() => setShowEventDetail(evt)}
-                      >
-                        <span className="cal-sidebar-event__title">{evt.title}</span>
-                        <span className="cal-sidebar-event__time">
-                          <HiOutlineClock />
-                          {evt.isAllDay ? 'All Day' : `${formatTime12h(evt.startTime)} - ${formatTime12h(evt.endTime)}`}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="bm-cal-cell-items">
+                {items.slice(0, 3).map(i => (
+                  <ItemPill key={i.id} item={i} onClick={() => onItemClick(i)} />
+                ))}
+                {items.length > 3 && (
+                  <button
+                    className="bm-cal-cell-more"
+                    onClick={() => onDayClick(dStr)}
+                  >
+                    + {items.length - 3} more
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const ItemPill = ({ item, onClick }: { item: CalendarItem; onClick: () => void }) => {
+  const owner = getStaff(item.createdBy);
+  const meta = TYPE_META[item.type];
+  const color = item.color || meta.color;
+  const isDone = item.status === 'done';
+  return (
+    <button
+      className={`bm-cal-item-pill type-${item.type} ${isDone ? 'done' : ''}`}
+      style={{ borderLeftColor: color }}
+      onClick={onClick}
+      title={item.title}
+    >
+      <span className="bm-cal-item-emoji">{meta.emoji}</span>
+      <span className="bm-cal-item-title">{item.title}</span>
+      {!item.isAllDay && item.startTime && (
+        <span className="bm-cal-item-time">{item.startTime}</span>
+      )}
+      {owner && (
+        <span className="bm-cal-item-owner" style={{ background: owner.color }} title={owner.name}>
+          {owner.initials}
+        </span>
+      )}
+    </button>
+  );
+};
+
+// ─── Week view ────────────────────────────────────────────────────────
+
+const WeekView = ({
+  cursor, itemsByDate, onCompose, onItemClick, onItemToggle,
+}: {
+  cursor: Date;
+  itemsByDate: Map<string, CalendarItem[]>;
+  onCompose: (date: string) => void;
+  onItemClick: (item: CalendarItem) => void;
+  onItemToggle: (id: string) => void;
+}) => {
+  const weekStart = startOfWeek(cursor);
+  const days: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    days.push(d);
+  }
+  const todayStr = fmtDate(new Date());
+  return (
+    <div className="bm-cal-week">
+      {days.map(d => {
+        const dStr = fmtDate(d);
+        const items = (itemsByDate.get(dStr) || []).sort((a, b) => (a.startTime || '99:99').localeCompare(b.startTime || '99:99'));
+        const isToday = dStr === todayStr;
+        return (
+          <div key={dStr} className={`bm-cal-week-col ${isToday ? 'today' : ''}`}>
+            <div className="bm-cal-week-head">
+              <div className="bm-cal-week-dayname">{d.toLocaleDateString('en-IN', { weekday: 'short' })}</div>
+              <div className="bm-cal-week-daynum">{d.getDate()}</div>
+              <button className="bm-cal-cell-add" onClick={() => onCompose(dStr)}><HiOutlinePlus /></button>
+            </div>
+            <div className="bm-cal-week-items">
+              {items.length === 0 && (
+                <div className="bm-cal-week-empty">No items</div>
               )}
+              {items.map(i => (
+                <ItemRow key={i.id} item={i} onClick={() => onItemClick(i)} onToggle={() => onItemToggle(i.id)} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ─── Day view ────────────────────────────────────────────────────────
+
+const DayView = ({
+  cursor, itemsByDate, onCompose, onItemClick, onItemToggle,
+}: {
+  cursor: Date;
+  itemsByDate: Map<string, CalendarItem[]>;
+  onCompose: (date: string) => void;
+  onItemClick: (item: CalendarItem) => void;
+  onItemToggle: (id: string) => void;
+}) => {
+  const dStr = fmtDate(cursor);
+  const items = (itemsByDate.get(dStr) || []).sort((a, b) => (a.startTime || '99:99').localeCompare(b.startTime || '99:99'));
+  return (
+    <div className="bm-cal-day">
+      <div className="bm-cal-day-head">
+        <h3>{cursor.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
+        <button className="bm-btn bm-btn-primary" onClick={() => onCompose(dStr)}>
+          <HiOutlinePlus /> Add for this day
+        </button>
+      </div>
+      {items.length === 0 ? (
+        <div className="bm-cal-day-empty">
+          <HiOutlineCalendar />
+          <p>Nothing scheduled. Quiet day, or add something.</p>
+        </div>
+      ) : (
+        <div className="bm-cal-day-list">
+          {items.map(i => (
+            <ItemRow key={i.id} item={i} onClick={() => onItemClick(i)} onToggle={() => onItemToggle(i.id)} expanded />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Agenda view ─────────────────────────────────────────────────────
+
+const AgendaView = ({
+  items, onItemClick, onItemToggle,
+}: {
+  items: CalendarItem[];
+  onItemClick: (item: CalendarItem) => void;
+  onItemToggle: (id: string) => void;
+}) => {
+  const sorted = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const da = `${a.date}T${a.startTime || '00:00'}`;
+      const db = `${b.date}T${b.startTime || '00:00'}`;
+      return da.localeCompare(db);
+    });
+  }, [items]);
+
+  // Group by date
+  const grouped = useMemo(() => {
+    const map = new Map<string, CalendarItem[]>();
+    for (const i of sorted) {
+      const arr = map.get(i.date) || [];
+      arr.push(i);
+      map.set(i.date, arr);
+    }
+    return Array.from(map.entries());
+  }, [sorted]);
+
+  return (
+    <div className="bm-cal-agenda">
+      {grouped.length === 0 ? (
+        <div className="bm-cal-day-empty">
+          <HiOutlineCalendar />
+          <p>No items match your filters.</p>
+        </div>
+      ) : grouped.map(([date, items]) => {
+        const d = new Date(date);
+        const isToday = date === fmtDate(new Date());
+        return (
+          <div key={date} className="bm-cal-agenda-group">
+            <div className={`bm-cal-agenda-date ${isToday ? 'today' : ''}`}>
+              <div className="bm-cal-agenda-date-num">{d.getDate()}</div>
+              <div className="bm-cal-agenda-date-meta">
+                <div>{d.toLocaleDateString('en-IN', { weekday: 'long' })}</div>
+                <div>{d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</div>
+              </div>
+            </div>
+            <div className="bm-cal-agenda-items">
+              {items.map(i => (
+                <ItemRow key={i.id} item={i} onClick={() => onItemClick(i)} onToggle={() => onItemToggle(i.id)} expanded />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const ItemRow = ({
+  item, onClick, onToggle, expanded,
+}: {
+  item: CalendarItem;
+  onClick: () => void;
+  onToggle: () => void;
+  expanded?: boolean;
+}) => {
+  const owner = getStaff(item.createdBy);
+  const meta = TYPE_META[item.type];
+  const color = item.color || meta.color;
+  const isTask = item.type === 'task';
+  const isDone = item.status === 'done';
+  return (
+    <div className={`bm-cal-row ${isDone ? 'done' : ''}`} style={{ borderLeftColor: color }}>
+      {isTask && (
+        <button
+          className={`bm-cal-row-check ${isDone ? 'checked' : ''}`}
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          title={isDone ? 'Mark incomplete' : 'Mark complete'}
+        >
+          {isDone ? <HiOutlineCheck /> : null}
+        </button>
+      )}
+      <div className="bm-cal-row-body" onClick={onClick}>
+        <div className="bm-cal-row-line1">
+          <span className="bm-cal-row-emoji">{meta.emoji}</span>
+          <span className="bm-cal-row-title">{item.title}</span>
+          <span
+            className={`bm-cal-priority pri-${item.priority}`}
+            style={{ background: PRIORITY_META[item.priority].color }}
+          >
+            {PRIORITY_META[item.priority].label}
+          </span>
+        </div>
+        {expanded && item.description && (
+          <div className="bm-cal-row-desc">{item.description}</div>
+        )}
+        <div className="bm-cal-row-line2">
+          {item.isAllDay ? (
+            <span className="bm-cal-row-meta"><HiOutlineClock /> All day</span>
+          ) : item.startTime && (
+            <span className="bm-cal-row-meta"><HiOutlineClock /> {item.startTime}{item.endTime ? `–${item.endTime}` : ''}</span>
+          )}
+          {item.location && <span className="bm-cal-row-meta"><HiOutlineLocationMarker /> {item.location}</span>}
+          {item.recurrence !== 'none' && <span className="bm-cal-row-meta">↻ {item.recurrence}</span>}
+          {owner && (
+            <span className="bm-cal-row-owner" style={{ background: owner.color }} title={owner.name}>
+              {owner.initials}
+            </span>
+          )}
+          {item.sharedWith.includes('*') && (
+            <span className="bm-cal-row-meta shared"><HiOutlineUserGroup /> All staff</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Day popover ────────────────────────────────────────────────────────
+
+const DayPopover = ({
+  date, items, onClose, onCompose, onItemClick, onItemToggle,
+}: {
+  date: string;
+  items: CalendarItem[];
+  onClose: () => void;
+  onCompose: () => void;
+  onItemClick: (i: CalendarItem) => void;
+  onItemToggle: (id: string) => void;
+}) => {
+  const d = new Date(date);
+  return (
+    <>
+      <div className="bm-modal-backdrop" onClick={onClose} />
+      <div className="bm-cal-popover">
+        <div className="bm-cal-popover-head">
+          <h3>{d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
+          <button className="bm-cal-modal-close" onClick={onClose}><HiOutlineX /></button>
+        </div>
+        <div className="bm-cal-popover-body">
+          {items.length === 0 ? (
+            <div className="bm-cal-day-empty">
+              <p>Nothing scheduled.</p>
+            </div>
+          ) : (
+            items.map(i => (
+              <ItemRow key={i.id} item={i} onClick={() => onItemClick(i)} onToggle={() => onItemToggle(i.id)} expanded />
+            ))
+          )}
+          <button className="bm-btn bm-btn-primary" onClick={onCompose} style={{ marginTop: 12, width: '100%' }}>
+            <HiOutlinePlus /> Add for this day
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// ─── Compose / Edit modal ───────────────────────────────────────────────
+
+interface ComposeModalProps {
+  defaultDate: string;
+  viewer: StaffLite;
+  labels: Label[];
+  existing?: CalendarItem;
+  onClose: () => void;
+  onCreate: (input: Omit<CalendarItem, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onDelete?: () => void;
+}
+
+const ComposeModal = ({
+  defaultDate, viewer, labels, existing, onClose, onCreate, onDelete,
+}: ComposeModalProps) => {
+  const [title, setTitle] = useState(existing?.title || '');
+  const [description, setDescription] = useState(existing?.description || '');
+  const [type, setType] = useState<EventType>(existing?.type || 'task');
+  const [date, setDate] = useState(existing?.date || defaultDate);
+  const [endDate, setEndDate] = useState(existing?.endDate || '');
+  const [isAllDay, setIsAllDay] = useState(existing?.isAllDay ?? false);
+  const [startTime, setStartTime] = useState(existing?.startTime || '09:00');
+  const [endTime, setEndTime] = useState(existing?.endTime || '10:00');
+  const [priority, setPriority] = useState<Priority>(existing?.priority || 'medium');
+  const [location, setLocation] = useState(existing?.location || '');
+  const [recurrence, setRecurrence] = useState<RecurrenceFreq>(existing?.recurrence || 'none');
+  const [reminderMinutes, setReminderMinutes] = useState<number | undefined>(existing?.reminderMinutes);
+  const [status, setStatus] = useState<TaskStatus>(existing?.status || 'todo');
+  const [selectedLabels, setSelectedLabels] = useState<string[]>(existing?.labels || []);
+  const [assignedTo, setAssignedTo] = useState<string>(existing?.assignedTo || viewer.id);
+  const [shareMode, setShareMode] = useState<'private' | 'all' | 'specific'>(
+    existing
+      ? existing.sharedWith.includes('*') ? 'all'
+        : existing.sharedWith.length === 1 && existing.sharedWith[0] === viewer.id ? 'private'
+          : 'specific'
+      : 'private'
+  );
+  const [specificStaff, setSpecificStaff] = useState<string[]>(
+    existing?.sharedWith.filter(s => s !== '*' && s !== viewer.id) || []
+  );
+
+  const toggleLabel = (id: string) => {
+    setSelectedLabels(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  };
+  const toggleStaff = (id: string) => {
+    setSpecificStaff(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  };
+
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    let sharedWith: string[];
+    if (shareMode === 'all') sharedWith = ['*'];
+    else if (shareMode === 'private') sharedWith = [viewer.id];
+    else sharedWith = [viewer.id, ...specificStaff];
+
+    onCreate({
+      type,
+      title: title.trim(),
+      description: description.trim() || undefined,
+      date,
+      endDate: endDate || undefined,
+      startTime: isAllDay ? undefined : startTime,
+      endTime: isAllDay ? undefined : endTime,
+      isAllDay,
+      status: type === 'task' ? status : undefined,
+      priority,
+      location: location.trim() || undefined,
+      labels: selectedLabels,
+      recurrence,
+      reminderMinutes,
+      createdBy: existing?.createdBy || viewer.id,
+      assignedTo: type === 'task' ? assignedTo : undefined,
+      sharedWith,
+    });
+  };
+
+  return (
+    <>
+      <div className="bm-modal-backdrop" onClick={onClose} />
+      <div className="bm-cal-modal">
+        <div className="bm-cal-modal-head">
+          <h3>{existing ? <><HiOutlinePencil /> Edit item</> : <><HiOutlinePlus /> New item</>}</h3>
+          <button className="bm-cal-modal-close" onClick={onClose}><HiOutlineX /></button>
+        </div>
+        <div className="bm-cal-modal-body">
+          {/* Type chooser */}
+          <div className="bm-cal-type-chooser">
+            {(Object.keys(TYPE_META) as EventType[]).map(t => (
+              <button
+                key={t}
+                className={`bm-cal-type-btn ${type === t ? 'active' : ''}`}
+                style={type === t ? { borderColor: TYPE_META[t].color, color: TYPE_META[t].color } : {}}
+                onClick={() => setType(t)}
+              >
+                <span>{TYPE_META[t].emoji}</span> {TYPE_META[t].label}
+              </button>
+            ))}
+          </div>
+
+          {/* Title */}
+          <input
+            className="bm-cal-input bm-cal-input-large"
+            placeholder="Title…"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            autoFocus
+          />
+
+          {/* Description */}
+          <textarea
+            className="bm-cal-textarea"
+            placeholder="Description, agenda, or notes…"
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            rows={3}
+          />
+
+          {/* Date + time */}
+          <div className="bm-cal-row-fields">
+            <div className="bm-cal-field">
+              <label>Date</label>
+              <input type="date" className="bm-cal-input" value={date} onChange={e => setDate(e.target.value)} />
+            </div>
+            <div className="bm-cal-field">
+              <label>End date <small>(optional)</small></label>
+              <input type="date" className="bm-cal-input" value={endDate} onChange={e => setEndDate(e.target.value)} />
+            </div>
+            <div className="bm-cal-field">
+              <label className="bm-cal-checkbox">
+                <input type="checkbox" checked={isAllDay} onChange={e => setIsAllDay(e.target.checked)} />
+                All day
+              </label>
+            </div>
+          </div>
+
+          {!isAllDay && (
+            <div className="bm-cal-row-fields">
+              <div className="bm-cal-field">
+                <label>Start</label>
+                <input type="time" className="bm-cal-input" value={startTime} onChange={e => setStartTime(e.target.value)} />
+              </div>
+              <div className="bm-cal-field">
+                <label>End</label>
+                <input type="time" className="bm-cal-input" value={endTime} onChange={e => setEndTime(e.target.value)} />
+              </div>
             </div>
           )}
 
-          {/* Upcoming Events */}
-          <div className="cal-sidebar-card">
-            <div className="cal-sidebar-card__header">
-              <h3>Upcoming Events</h3>
+          {/* Priority + recurrence + reminder */}
+          <div className="bm-cal-row-fields">
+            <div className="bm-cal-field">
+              <label>Priority</label>
+              <select className="bm-cal-input" value={priority} onChange={e => setPriority(e.target.value as Priority)}>
+                {(Object.keys(PRIORITY_META) as Priority[]).map(p => (
+                  <option key={p} value={p}>{PRIORITY_META[p].label}</option>
+                ))}
+              </select>
             </div>
-            {upcomingEvents.length === 0 ? (
-              <p className="cal-sidebar-empty">No upcoming events</p>
-            ) : (
-              <div className="cal-sidebar-events">
-                {upcomingEvents.map(evt => {
-                  const typeInfo = getTypeInfo(evt.type);
-                  return (
-                    <div
-                      key={evt.id}
-                      className="cal-sidebar-event"
-                      style={{ borderLeft: `3px solid ${typeInfo.color}` }}
-                      onClick={() => setShowEventDetail(evt)}
-                    >
-                      <div className="cal-sidebar-event__row">
-                        <span className="cal-sidebar-event__title">{evt.title}</span>
-                        <span className="cal-sidebar-event__dot" style={{ background: typeInfo.color }}></span>
-                      </div>
-                      <span className="cal-sidebar-event__date">{formatDate(evt.date)}</span>
-                    </div>
-                  );
-                })}
+            <div className="bm-cal-field">
+              <label>Repeat</label>
+              <select className="bm-cal-input" value={recurrence} onChange={e => setRecurrence(e.target.value as RecurrenceFreq)}>
+                <option value="none">No repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div className="bm-cal-field">
+              <label>Remind</label>
+              <select
+                className="bm-cal-input"
+                value={reminderMinutes ?? ''}
+                onChange={e => setReminderMinutes(e.target.value === '' ? undefined : Number(e.target.value))}
+              >
+                <option value="">No reminder</option>
+                <option value="0">At time</option>
+                <option value="5">5 min before</option>
+                <option value="15">15 min before</option>
+                <option value="30">30 min before</option>
+                <option value="60">1 hour before</option>
+                <option value="1440">1 day before</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Task status + assignee */}
+          {type === 'task' && (
+            <div className="bm-cal-row-fields">
+              <div className="bm-cal-field">
+                <label>Status</label>
+                <select className="bm-cal-input" value={status} onChange={e => setStatus(e.target.value as TaskStatus)}>
+                  <option value="todo">To do</option>
+                  <option value="in_progress">In progress</option>
+                  <option value="done">Done</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </div>
+              <div className="bm-cal-field">
+                <label>Assigned to</label>
+                <select className="bm-cal-input" value={assignedTo} onChange={e => setAssignedTo(e.target.value)}>
+                  {STAFF_DIRECTORY.map(s => (
+                    <option key={s.id} value={s.id}>{s.initials} · {s.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* Location */}
+          <div className="bm-cal-field">
+            <label>Location <small>(optional)</small></label>
+            <input
+              type="text"
+              className="bm-cal-input"
+              placeholder="e.g. Bengaluru office, Room 2"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+            />
+          </div>
+
+          {/* Labels */}
+          <div className="bm-cal-field">
+            <label><HiOutlineTag /> Labels</label>
+            <div className="bm-cal-labels-chooser">
+              {labels.map(l => (
+                <button
+                  key={l.id}
+                  className={`bm-cal-label-chip ${selectedLabels.includes(l.id) ? 'active' : ''}`}
+                  style={{
+                    background: selectedLabels.includes(l.id) ? l.color : undefined,
+                    borderColor: l.color,
+                    color: selectedLabels.includes(l.id) ? '#fff' : l.color,
+                  }}
+                  onClick={() => toggleLabel(l.id)}
+                >
+                  {l.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sharing */}
+          <div className="bm-cal-field">
+            <label><HiOutlineUserGroup /> Visibility</label>
+            <div className="bm-cal-share">
+              <button
+                className={`bm-cal-share-btn ${shareMode === 'private' ? 'active' : ''}`}
+                onClick={() => setShareMode('private')}
+              >
+                <HiOutlineUser /> Private (only you)
+              </button>
+              <button
+                className={`bm-cal-share-btn ${shareMode === 'all' ? 'active' : ''}`}
+                onClick={() => setShareMode('all')}
+              >
+                <HiOutlineUserGroup /> All staff
+              </button>
+              <button
+                className={`bm-cal-share-btn ${shareMode === 'specific' ? 'active' : ''}`}
+                onClick={() => setShareMode('specific')}
+              >
+                <HiOutlineUserGroup /> Specific people
+              </button>
+            </div>
+            {shareMode === 'specific' && (
+              <div className="bm-cal-staff-chooser">
+                {STAFF_DIRECTORY.filter(s => s.id !== viewer.id).map(s => (
+                  <button
+                    key={s.id}
+                    className={`bm-cal-staff-chip ${specificStaff.includes(s.id) ? 'active' : ''}`}
+                    style={specificStaff.includes(s.id) ? { background: s.color, borderColor: s.color, color: '#fff' } : {}}
+                    onClick={() => toggleStaff(s.id)}
+                  >
+                    <span className="bm-cal-staff-initials" style={{ background: s.color }}>{s.initials}</span>
+                    {s.name}
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Event Type Legend */}
-          <div className="cal-sidebar-card">
-            <div className="cal-sidebar-card__header">
-              <h3>Event Types</h3>
-            </div>
-            <div className="cal-legend">
-              {EVENT_TYPES.map(t => (
-                <div key={t.value} className="cal-legend__item">
-                  <span className="cal-legend__dot" style={{ background: t.color }}></span>
-                  <span>{t.emoji} {t.label}</span>
-                  <span className="cal-legend__count">
-                    {events.filter(e => e.type === t.value).length}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="bm-cal-modal-actions">
+            {onDelete && (
+              <button className="bm-btn bm-btn-danger" onClick={onDelete}>
+                <HiOutlineTrash /> Delete
+              </button>
+            )}
+            <div style={{ flex: 1 }} />
+            <button className="bm-btn" onClick={onClose}>Cancel</button>
+            <button className="bm-btn bm-btn-primary" onClick={handleSubmit} disabled={!title.trim()}>
+              <HiOutlineCheck /> {existing ? 'Save' : 'Create'}
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Create/Edit Modal */}
-      {showModal && (
-        <div className="cal-modal-overlay" onClick={() => { setShowModal(false); setEditingEvent(null); }}>
-          <div className="cal-modal" onClick={e => e.stopPropagation()}>
-            <div className="cal-modal__header">
-              <h2>{editingEvent ? 'Edit Event' : 'Create Event'}</h2>
-              <button className="cal-modal__close" onClick={() => { setShowModal(false); setEditingEvent(null); }}>
-                <HiOutlineX />
-              </button>
-            </div>
-            <div className="cal-modal__body">
-              <div className="cal-form">
-                <div className="cal-form__field cal-form__field--full">
-                  <label>Title *</label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                    placeholder="Event title"
-                    autoFocus
-                  />
-                </div>
-
-                <div className="cal-form__field cal-form__field--full">
-                  <label>Description</label>
-                  <textarea
-                    value={form.description}
-                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                    placeholder="Add a description..."
-                    rows={2}
-                  />
-                </div>
-
-                <div className="cal-form__field">
-                  <label>Date *</label>
-                  <input
-                    type="date"
-                    value={form.date}
-                    onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                  />
-                </div>
-
-                <div className="cal-form__field">
-                  <label className="cal-form__checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={form.isAllDay}
-                      onChange={e => setForm(f => ({ ...f, isAllDay: e.target.checked }))}
-                    />
-                    All Day Event
-                  </label>
-                </div>
-
-                {!form.isAllDay && (
-                  <>
-                    <div className="cal-form__field">
-                      <label>Start Time</label>
-                      <input
-                        type="time"
-                        value={form.startTime}
-                        onChange={e => setForm(f => ({ ...f, startTime: e.target.value }))}
-                      />
-                    </div>
-                    <div className="cal-form__field">
-                      <label>End Time</label>
-                      <input
-                        type="time"
-                        value={form.endTime}
-                        onChange={e => setForm(f => ({ ...f, endTime: e.target.value }))}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div className="cal-form__field">
-                  <label>Type</label>
-                  <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as CalendarEvent['type'] }))}>
-                    {EVENT_TYPES.map(t => (
-                      <option key={t.value} value={t.value}>{t.emoji} {t.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="cal-form__field">
-                  <label>Priority</label>
-                  <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as CalendarEvent['priority'] }))}>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-
-                <div className="cal-form__field cal-form__field--full">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    value={form.location}
-                    onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                    placeholder="Add location (optional)"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="cal-modal__footer">
-              <button className="cal-btn cal-btn--outline" onClick={() => { setShowModal(false); setEditingEvent(null); }}>
-                Cancel
-              </button>
-              <button
-                className="cal-btn cal-btn--primary"
-                onClick={editingEvent ? updateEvent : createEvent}
-                disabled={!form.title.trim()}
-              >
-                <HiOutlineCheck />
-                {editingEvent ? 'Update Event' : 'Create Event'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Event Detail Modal */}
-      {showEventDetail && (
-        <div className="cal-modal-overlay" onClick={() => setShowEventDetail(null)}>
-          <div className="cal-modal cal-modal--detail" onClick={e => e.stopPropagation()}>
-            <div className="cal-modal__header" style={{ background: getTypeInfo(showEventDetail.type).color }}>
-              <div className="cal-modal__header-info">
-                <span className="cal-modal__emoji">{getTypeInfo(showEventDetail.type).emoji}</span>
-                <div>
-                  <h2>{showEventDetail.title}</h2>
-                  <span className="cal-modal__type-label">{getTypeInfo(showEventDetail.type).label}</span>
-                </div>
-              </div>
-              <div className="cal-modal__header-actions">
-                <button className="cal-modal__action-btn" onClick={() => openEditModal(showEventDetail)} title="Edit">
-                  <HiOutlinePencil />
-                </button>
-                <button className="cal-modal__action-btn" onClick={() => setDeleteConfirm(showEventDetail.id)} title="Delete">
-                  <HiOutlineTrash />
-                </button>
-                <button className="cal-modal__close" onClick={() => setShowEventDetail(null)}>
-                  <HiOutlineX />
-                </button>
-              </div>
-            </div>
-            <div className="cal-modal__body">
-              <div className="cal-detail">
-                <div className="cal-detail__row">
-                  <HiOutlineCalendar />
-                  <span>{formatDate(showEventDetail.date)}</span>
-                </div>
-                <div className="cal-detail__row">
-                  <HiOutlineClock />
-                  <span>{showEventDetail.isAllDay ? 'All Day' : `${formatTime12h(showEventDetail.startTime)} - ${formatTime12h(showEventDetail.endTime)}`}</span>
-                </div>
-                {showEventDetail.location && (
-                  <div className="cal-detail__row">
-                    <HiOutlineLocationMarker />
-                    <span>{showEventDetail.location}</span>
-                  </div>
-                )}
-                <div className="cal-detail__row">
-                  <HiOutlineTag />
-                  <span className="cal-detail__priority" style={{ background: PRIORITY_MAP[showEventDetail.priority].color + '15', color: PRIORITY_MAP[showEventDetail.priority].color }}>
-                    {PRIORITY_MAP[showEventDetail.priority].label} Priority
-                  </span>
-                </div>
-                {showEventDetail.description && (
-                  <div className="cal-detail__desc">
-                    <p>{showEventDetail.description}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirm Modal */}
-      {deleteConfirm && (
-        <div className="cal-modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="cal-modal cal-modal--confirm" onClick={e => e.stopPropagation()}>
-            <div className="cal-confirm">
-              <div className="cal-confirm__icon">
-                <HiOutlineTrash />
-              </div>
-              <h3>Delete Event?</h3>
-              <p>This action cannot be undone. The event will be permanently removed.</p>
-              <div className="cal-confirm__actions">
-                <button className="cal-btn cal-btn--outline" onClick={() => setDeleteConfirm(null)}>Cancel</button>
-                <button className="cal-btn cal-btn--danger" onClick={() => deleteEvent(deleteConfirm)}>
-                  <HiOutlineTrash /> Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
