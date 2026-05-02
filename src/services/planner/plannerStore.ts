@@ -5,9 +5,23 @@
  * Multi-staff aware: every record has a `createdBy` (the staff who owns it)
  * and `sharedWith` (visibility list). UI filters by the current viewer.
  *
- * Persisted to localStorage now. Swap the bodies of load/save when the
- * backend planner endpoints land — the shape stays.
+ * Strategy:
+ * 1. Reads come from localStorage (instant, offline-friendly).
+ * 2. Writes go to localStorage immediately, then fire-and-forget to the
+ *    backend at /api/v1/planner.
+ * 3. On bootstrapFromBackend(), we GET /planner/snapshot — if it succeeds
+ *    AND has data, we replace the localStorage cache with the canonical
+ *    server state. If it fails (backend down, migration not yet run), we
+ *    keep the local cache so the UI still works.
  */
+import {
+  fetchSnapshot,
+  upsertItemRemote, deleteItemRemote,
+  upsertNotebookRemote, deleteNotebookRemote,
+  upsertPageRemote, deletePageRemote,
+  upsertStickyRemote, deleteStickyRemote,
+  upsertLabelRemote, deleteLabelRemote,
+} from './plannerApi';
 
 // ─── Types ───────────────────────────────────────────────────────────────
 
@@ -104,6 +118,7 @@ export interface Label {
   name: string;
   color: string;
   createdBy: string;
+  createdAt?: string;
 }
 
 // ─── Storage keys ────────────────────────────────────────────────────────
@@ -551,6 +566,55 @@ export const saveStickies = (s: StickyNote[]) => save(K_STICKIES, s);
 export const loadLabels = (): Label[] => load(K_LABELS, SEED_LABELS);
 export const saveLabels = (l: Label[]) => save(K_LABELS, l);
 
+/**
+ * Pull the canonical state from the backend and replace local cache.
+ * Safe to call anytime — silently noops if backend is unavailable.
+ * If the backend has zero records (fresh DB), we push our local seeds
+ * up to the backend so other devices can see them.
+ */
+let bootstrapPromise: Promise<void> | null = null;
+export const bootstrapFromBackend = (): Promise<void> => {
+  if (bootstrapPromise) return bootstrapPromise;
+  bootstrapPromise = (async () => {
+    const snap = await fetchSnapshot();
+    if (!snap) return; // backend down — keep local
+
+    const hasAny =
+      snap.items.length + snap.notebooks.length + snap.pages.length +
+      snap.stickies.length + snap.labels.length > 0;
+
+    if (hasAny) {
+      // Backend has data — make it canonical
+      localStorage.setItem(K_ITEMS, JSON.stringify(snap.items));
+      localStorage.setItem(K_NOTEBOOKS, JSON.stringify(snap.notebooks));
+      localStorage.setItem(K_PAGES, JSON.stringify(snap.pages));
+      localStorage.setItem(K_STICKIES, JSON.stringify(snap.stickies));
+      localStorage.setItem(K_LABELS, JSON.stringify(snap.labels));
+      fire();
+      return;
+    }
+
+    // Backend is empty — seed it from our local data (likely the seed set).
+    const items = loadItems();
+    const notebooks = loadNotebooks();
+    const pages = loadPages();
+    const stickies = loadStickies();
+    const labels = loadLabels();
+
+    // Notebooks first (pages have FK)
+    await Promise.all(labels.map(l => upsertLabelRemote(l)));
+    await Promise.all(notebooks.map(n => upsertNotebookRemote(n)));
+    await Promise.all(pages.map(p => upsertPageRemote(p)));
+    await Promise.all(items.map(i => upsertItemRemote(i)));
+    await Promise.all(stickies.map(s => upsertStickyRemote(s)));
+  })();
+  // Reset the promise after a delay so future calls can re-sync
+  bootstrapPromise.finally(() => {
+    setTimeout(() => { bootstrapPromise = null; }, 30_000);
+  });
+  return bootstrapPromise;
+};
+
 // Mutations — calendar items
 
 export const createItem = (input: Omit<CalendarItem, 'id' | 'createdAt' | 'updatedAt'>): CalendarItem => {
@@ -562,30 +626,43 @@ export const createItem = (input: Omit<CalendarItem, 'id' | 'createdAt' | 'updat
     updatedAt: ts(),
   };
   saveItems([item, ...all]);
+  void upsertItemRemote(item);
   return item;
 };
 
 export const updateItem = (id: string, patch: Partial<CalendarItem>): void => {
   const all = loadItems();
-  saveItems(all.map(i => i.id === id ? { ...i, ...patch, updatedAt: ts() } : i));
+  let updated: CalendarItem | undefined;
+  const next = all.map(i => {
+    if (i.id !== id) return i;
+    updated = { ...i, ...patch, updatedAt: ts() };
+    return updated;
+  });
+  saveItems(next);
+  if (updated) void upsertItemRemote(updated);
 };
 
 export const deleteItem = (id: string): void => {
   saveItems(loadItems().filter(i => i.id !== id));
+  void deleteItemRemote(id);
 };
 
 export const toggleTaskStatus = (id: string): void => {
   const all = loadItems();
-  saveItems(all.map(i => {
+  let updated: CalendarItem | undefined;
+  const next = all.map(i => {
     if (i.id !== id) return i;
-    const next: TaskStatus = i.status === 'done' ? 'todo' : 'done';
-    return {
+    const status: TaskStatus = i.status === 'done' ? 'todo' : 'done';
+    updated = {
       ...i,
-      status: next,
-      completedAt: next === 'done' ? ts() : undefined,
+      status,
+      completedAt: status === 'done' ? ts() : undefined,
       updatedAt: ts(),
     };
-  }));
+    return updated;
+  });
+  saveItems(next);
+  if (updated) void upsertItemRemote(updated);
 };
 
 // Mutations — notebooks
@@ -593,16 +670,25 @@ export const createNotebook = (input: Omit<Notebook, 'id' | 'createdAt' | 'updat
   const all = loadNotebooks();
   const nb: Notebook = { ...input, id: newId('nb'), createdAt: ts(), updatedAt: ts() };
   saveNotebooks([nb, ...all]);
+  void upsertNotebookRemote(nb);
   return nb;
 };
 export const updateNotebook = (id: string, patch: Partial<Notebook>): void => {
   const all = loadNotebooks();
-  saveNotebooks(all.map(n => n.id === id ? { ...n, ...patch, updatedAt: ts() } : n));
+  let updated: Notebook | undefined;
+  const next = all.map(n => {
+    if (n.id !== id) return n;
+    updated = { ...n, ...patch, updatedAt: ts() };
+    return updated;
+  });
+  saveNotebooks(next);
+  if (updated) void upsertNotebookRemote(updated);
 };
 export const deleteNotebook = (id: string): void => {
   saveNotebooks(loadNotebooks().filter(n => n.id !== id));
-  // also delete its pages
+  // also delete its pages locally; backend cascades via FK ON DELETE CASCADE
   savePages(loadPages().filter(p => p.notebookId !== id));
+  void deleteNotebookRemote(id);
 };
 
 // Mutations — pages
@@ -612,15 +698,31 @@ export const createPage = (input: Omit<NotebookPage, 'id' | 'createdAt' | 'updat
   savePages([pg, ...all]);
   // bump notebook updatedAt
   const nbs = loadNotebooks();
-  saveNotebooks(nbs.map(n => n.id === pg.notebookId ? { ...n, updatedAt: ts() } : n));
+  let nbUpdated: Notebook | undefined;
+  const nextNbs = nbs.map(n => {
+    if (n.id !== pg.notebookId) return n;
+    nbUpdated = { ...n, updatedAt: ts() };
+    return nbUpdated;
+  });
+  saveNotebooks(nextNbs);
+  void upsertPageRemote(pg);
+  if (nbUpdated) void upsertNotebookRemote(nbUpdated);
   return pg;
 };
 export const updatePage = (id: string, patch: Partial<NotebookPage>): void => {
   const all = loadPages();
-  savePages(all.map(p => p.id === id ? { ...p, ...patch, updatedAt: ts() } : p));
+  let updated: NotebookPage | undefined;
+  const next = all.map(p => {
+    if (p.id !== id) return p;
+    updated = { ...p, ...patch, updatedAt: ts() };
+    return updated;
+  });
+  savePages(next);
+  if (updated) void upsertPageRemote(updated);
 };
 export const deletePage = (id: string): void => {
   savePages(loadPages().filter(p => p.id !== id));
+  void deletePageRemote(id);
 };
 
 // Mutations — stickies
@@ -631,13 +733,21 @@ export const createSticky = (body: string, color: string, createdBy: string): St
     createdAt: ts(), updatedAt: ts(),
   };
   saveStickies([s, ...all]);
+  void upsertStickyRemote(s);
   return s;
 };
 export const updateSticky = (id: string, patch: Partial<StickyNote>): void => {
-  saveStickies(loadStickies().map(s => s.id === id ? { ...s, ...patch, updatedAt: ts() } : s));
+  let updated: StickyNote | undefined;
+  saveStickies(loadStickies().map(s => {
+    if (s.id !== id) return s;
+    updated = { ...s, ...patch, updatedAt: ts() };
+    return updated;
+  }));
+  if (updated) void upsertStickyRemote(updated);
 };
 export const deleteSticky = (id: string): void => {
   saveStickies(loadStickies().filter(s => s.id !== id));
+  void deleteStickyRemote(id);
 };
 
 // Labels
@@ -645,10 +755,12 @@ export const createLabel = (name: string, color: string, createdBy: string): Lab
   const all = loadLabels();
   const l: Label = { id: newId('lbl'), name, color, createdBy };
   saveLabels([l, ...all]);
+  void upsertLabelRemote(l);
   return l;
 };
 export const deleteLabel = (id: string): void => {
   saveLabels(loadLabels().filter(l => l.id !== id));
+  void deleteLabelRemote(id);
 };
 
 // Helpers

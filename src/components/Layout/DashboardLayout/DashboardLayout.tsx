@@ -4,6 +4,8 @@ import Sidebar from '../Sidebar/Sidebar';
 import Topbar from '../Topbar/Topbar';
 import AnimatedBackground from '../../common/AnimatedBackground';
 import InfinityLogo from '../../common/InfinityLogo/InfinityLogo';
+import FloatingLauncher from '../../common/FloatingLauncher/FloatingLauncher';
+import { bootstrapFromBackend } from '@/services/planner/plannerStore';
 import './DashboardLayout.scss';
 
 // Full-screen splash animation variants — one picked randomly per refresh
@@ -50,6 +52,12 @@ const DashboardLayout = () => {
       clearTimeout(exitTimer);
       clearTimeout(removeTimer);
     };
+  }, []);
+
+  // Bootstrap planner data from backend on first dashboard load — silent
+  // fallback to localStorage if the backend is unreachable.
+  useEffect(() => {
+    void bootstrapFromBackend();
   }, []);
 
   useEffect(() => {
@@ -101,6 +109,7 @@ const DashboardLayout = () => {
           <Outlet />
         </div>
       </main>
+      <FloatingLauncher />
     </div>
   );
 };
