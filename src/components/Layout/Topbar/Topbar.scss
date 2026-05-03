@@ -1223,7 +1223,8 @@ $wlt-blue: #60a5fa;
     svg { font-size: 14px; transition: transform 0.18s ease; }
 
     &:hover {
-      color: lighten($wlt-blue, 8%);
+      // Pre-computed lighten($wlt-blue=#60a5fa, 8%) — replaces deprecated lighten()
+      color: #93bffc;
       svg { transform: translateX(2px); }
     }
   }

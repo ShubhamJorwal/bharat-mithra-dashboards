@@ -354,7 +354,7 @@
     background: $danger-color;
     color: #fff;
     border-color: $danger-color;
-    &:hover { background: darken($danger-color, 8%); color: #fff; }
+    &:hover { filter: brightness(0.92); color: #fff; }
   }
 }
 
