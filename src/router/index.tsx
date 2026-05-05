@@ -44,6 +44,7 @@ const ServiceDetails = lazy(() => import("@/views/Services/ServiceDetails/Servic
 const ServiceCreate = lazy(() => import("@/views/Services/ServiceCreate/ServiceCreate"));
 const ServiceEdit = lazy(() => import("@/views/Services/ServiceEdit/ServiceEdit"));
 const CategoryManager = lazy(() => import("@/views/Services/CategoryManager/CategoryManager"));
+const SurepassCatalogue = lazy(() => import("@/views/Surepass/SurepassCatalogue"));
 
 // ─── Geography ──────────────────────────────────────────────────────────────
 const NationalDashboard = lazy(() => import("@/views/Geography/National/NationalDashboard"));
@@ -138,6 +139,9 @@ const routerConfig = [
       { path: "services/categories", element: lazyRoute(<CategoryManager />) },
       { path: "services/:id", element: lazyRoute(<ServiceDetails />) },
       { path: "services/:id/edit", element: lazyRoute(<ServiceEdit />) },
+
+      // Surepass — KYC & Verification (separate section, migrations 216).
+      { path: "services/surepass", element: lazyRoute(<SurepassCatalogue />) },
 
       // Applications (rebuilt 2026-05-02)
       { path: "applications", element: lazyRoute(<ApplicationsList />) },

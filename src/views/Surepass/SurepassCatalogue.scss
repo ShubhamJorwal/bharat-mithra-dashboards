@@ -1,0 +1,561 @@
+// SurepassCatalogue — KYC & Verification (Surepass) section.
+//
+// Scoped to .sp-catalogue. Uses the same dark gradient hero pattern as
+// the Notifications module. Cards mirror the Services list visually
+// but stay separate so we can iterate on them independently.
+
+.sp-catalogue {
+  padding: 24px 28px 48px;
+  color: var(--text, #1f2937);
+
+  // ── Hero ──────────────────────────────────────────────────────
+  .sp-hero {
+    background: linear-gradient(135deg, #5b6cff 0%, #7c3aed 60%, #c084fc 100%);
+    border-radius: 16px;
+    padding: 22px 26px;
+    color: #fff;
+    box-shadow: 0 12px 32px rgba(91, 108, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+
+    &__main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+      svg { width: 32px; height: 32px; }
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.92rem;
+      max-width: 580px;
+    }
+
+    &__stats {
+      display: flex;
+      gap: 12px;
+    }
+
+    &__stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 10px 16px;
+      min-width: 96px;
+      text-align: center;
+
+      &--good { background: rgba(34, 197, 94, 0.22); border-color: rgba(34, 197, 94, 0.45); }
+      &--warn { background: rgba(245, 158, 11, 0.22); border-color: rgba(245, 158, 11, 0.45); }
+    }
+
+    &__n {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    &__l {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.78);
+      margin-top: 2px;
+    }
+  }
+
+  // ── Health bar ──────────────────────────────────────────────────
+  .sp-health {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+
+    &__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    &--ok { border-color: #bbf7d0; background: #f0fdf4; }
+    &--ok .sp-health__dot { background: #22c55e; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15); }
+
+    &--off { border-color: #fed7aa; background: #fff7ed; }
+    &--off .sp-health__dot { background: #f59e0b; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); }
+
+    &__txt {
+      flex: 1;
+      font-size: 0.88rem;
+      color: #374151;
+
+      code {
+        background: rgba(0, 0, 0, 0.06);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .sp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    svg { width: 16px; height: 16px; }
+  }
+
+  .sp-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+
+  .sp-empty {
+    background: #fff;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  // ── Section ────────────────────────────────────────────────────
+  .sp-section {
+    margin: 24px 0;
+
+    &__title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      margin: 0 0 12px;
+      color: #1f2937;
+    }
+
+    &__bar {
+      width: 4px;
+      height: 22px;
+      border-radius: 2px;
+    }
+
+    &__count {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .sp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  // ── Card ───────────────────────────────────────────────────────
+  .sp-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: all 0.15s;
+
+    &:hover {
+      border-color: #c7d2fe;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+
+    &--disabled {
+      opacity: 0.7;
+      &:hover { transform: none; box-shadow: none; }
+    }
+
+    &__head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    &__icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    &__name {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        margin: 0 0 2px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1f2937;
+      }
+    }
+
+    &__desc {
+      margin: 0 0 12px;
+      font-size: 0.83rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    &__meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid #f3f4f6;
+      border-bottom: 1px solid #f3f4f6;
+      margin-bottom: 12px;
+    }
+
+    &__row {
+      span {
+        display: block;
+        font-size: 0.68rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      b {
+        display: block;
+        font-size: 0.92rem;
+        color: #1f2937;
+        margin-top: 2px;
+      }
+    }
+
+    &__foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+
+      code {
+        font-size: 0.72rem;
+        color: #6b7280;
+        background: #f9fafb;
+        padding: 3px 7px;
+        border-radius: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 180px;
+      }
+    }
+
+    &__try {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #5b6cff, #7c3aed);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+
+      &:hover:not(:disabled) {
+        filter: brightness(1.1);
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        background: #e5e7eb;
+        color: #6b7280;
+      }
+
+      svg { width: 14px; height: 14px; }
+    }
+  }
+
+  // ── Pills ──────────────────────────────────────────────────────
+  .sp-pill {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+
+    &--good {
+      background: rgba(34, 197, 94, 0.12);
+      color: #15803d;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    &--warn {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+  }
+
+  // ── Recent calls table ────────────────────────────────────────
+  .sp-table {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+
+    &__head, &__row {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 0.9fr 0.7fr 0.9fr 0.7fr;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      font-size: 0.83rem;
+    }
+
+    &__head {
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    &__row {
+      border-top: 1px solid #f3f4f6;
+
+      code {
+        background: #f3f4f6;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  .sp-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    &--ok  { color: #15803d; }
+    &--err { color: #b91c1c; }
+
+    svg { width: 14px; height: 14px; }
+  }
+
+  @media (max-width: 800px) {
+    padding: 16px;
+
+    .sp-hero {
+      flex-direction: column;
+      align-items: flex-start;
+
+      &__stats { width: 100%; }
+      &__stat  { flex: 1; min-width: 0; }
+    }
+
+    .sp-table__head, .sp-table__row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+    }
+  }
+}
+
+// ── Dark mode overrides ────────────────────────────────────────────
+// Project convention: rest of the dashboard scopes dark styles under
+// `body.dark-mode`. Mirror that here so the page swaps cleanly when
+// the user toggles theme in Settings.
+body.dark-mode .sp-catalogue {
+  color: #e8ecff;
+
+  // Hero gradient stays the same — it's already dark-friendly.
+
+  .sp-health {
+    background: #182046;
+    border-color: #232c5a;
+
+    &--ok  { background: rgba(34, 197, 94, 0.10); border-color: rgba(34, 197, 94, 0.35); }
+    &--off { background: rgba(245, 158, 11, 0.10); border-color: rgba(245, 158, 11, 0.40); }
+
+    &__txt {
+      color: #c0caff;
+      code {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e8ecff;
+      }
+    }
+  }
+
+  .sp-btn {
+    background: #182046;
+    border-color: #2a3470;
+    color: #e8ecff;
+
+    &:hover:not(:disabled) {
+      background: #1f2858;
+      border-color: #3b4790;
+    }
+  }
+
+  .sp-error {
+    background: rgba(239, 68, 68, 0.10);
+    border-color: rgba(239, 68, 68, 0.40);
+    color: #fca5a5;
+  }
+
+  .sp-empty {
+    background: #121833;
+    border-color: #232c5a;
+    color: #98a3d8;
+  }
+
+  .sp-section__title {
+    color: #e8ecff;
+  }
+
+  .sp-section__count {
+    background: #1f2858;
+    color: #c0caff;
+  }
+
+  .sp-card {
+    background: #121833;
+    border-color: #232c5a;
+
+    &:hover {
+      border-color: #4a5db8;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    &__name h3 { color: #e8ecff; }
+    &__desc { color: #98a3d8; }
+
+    &__meta {
+      border-top-color: #232c5a;
+      border-bottom-color: #232c5a;
+    }
+
+    &__row {
+      span { color: #6e7bba; }
+      b    { color: #e8ecff; }
+    }
+
+    &__foot code {
+      background: #0e1430;
+      color: #98a3d8;
+    }
+
+    &__try:disabled {
+      background: #1f2858;
+      color: #6e7bba;
+    }
+  }
+
+  .sp-pill {
+    &--good {
+      background: rgba(34, 197, 94, 0.18);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+    &--warn {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+  }
+
+  .sp-table {
+    background: #121833;
+    border-color: #232c5a;
+
+    &__head {
+      background: #0e1430;
+      color: #98a3d8;
+    }
+
+    &__row {
+      border-top-color: #232c5a;
+      color: #c0caff;
+
+      code {
+        background: #0e1430;
+        color: #c0caff;
+      }
+    }
+  }
+
+  .sp-status {
+    &--ok  { color: #86efac; }
+    &--err { color: #fca5a5; }
+  }
+}

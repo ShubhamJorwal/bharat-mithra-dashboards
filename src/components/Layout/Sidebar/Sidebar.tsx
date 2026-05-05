@@ -69,6 +69,7 @@ const Sidebar = ({
         { path: '/services', label: 'Catalog' },
         { path: '/services/new', label: 'Add Service' },
         { path: '/services/categories', label: 'Categories' },
+        { path: '/services/surepass', label: 'KYC & Verification' },
       ]
     },
     {
